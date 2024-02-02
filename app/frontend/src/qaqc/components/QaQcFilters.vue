@@ -13,7 +13,7 @@
 */
 <template>
   <b-form-row class="search-result-filter" :class="`search-result-filter-${type}`">
-    <b-col v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio'">
+    <b-col v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio' || type === 'nullcheck'">
       <b-form-input
         v-if="type === 'text'"
         type="text"
@@ -45,6 +45,16 @@
         :text-field="textField"
         v-model="localValue[paramNames[0]]"
         @keyup.enter.native="applyFilter()" />
+      <b-col v-else-if="type === 'nullcheck'">
+        <b-button
+          variant="button"
+          class="py-2 px-3"
+          :class="{'active-filter-border': isActive, 'active-filter': isActive}"
+          @click.prevent="toggleNullFilter">
+          Null Fields
+          <span class="fa fa-sm mb-1 pl-1" :class="{'fa-check': !isActive, 'fa-times': isActive}" :aria-label="isActive ? 'Clear' : 'Apply'" />
+        </b-button>
+      </b-col>
       <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
           {{ error }}
@@ -73,7 +83,7 @@
         v-model="localValue[paramNames[1]]"
         @keyup.enter.native="applyFilter()" />
     </b-col>
-    <b-col :sm="(type === 'text') ? 3 : 2">
+    <b-col v-if="type !== 'nullcheck'" :sm="(type === 'text') ? 3 : 2">
       <b-button
         variant="link"
         class="py-2 px-0"
@@ -87,16 +97,6 @@
 </template>
 
 <script>
-/**
- * example usage in another component:
- *
- * <search-result-filter
- *    id="ownerNameFilter"
- *    v-model="ownerNameInput"
- *    placeholder="Type a name!"
- *    :errors="errors['ownerName']"/>   // errors for individual fields must be an array e.g. ['Name already taken']
- *
- */
 export default {
   props: {
     id: { // an ID for the form group that will be used to generate IDs for the related components
@@ -159,6 +159,22 @@ export default {
 
       return localValue
     },
+    toggleNullFilter () {
+      // Check if the null filter is already applied
+      if (this.localValue[this.paramNames[0]] === 'null') {
+        // If yes, clear the filter
+        this.clearFilter()
+      } else {
+        // If no, set the null filter
+        this.applyNullFilter()
+      }
+    },
+    applyNullFilter () {
+      // Set the field to a special value that represents 'null'
+      this.$set(this.localValue, this.paramNames[0], 'null')
+      // Emit an update event (or directly apply the filter if handled within the component)
+      this.applyFilter()
+    },
     applyFilter () {
       if (this.hasLocalValue) {
         this.$emit('input', this.localValue)
@@ -183,6 +199,16 @@ export default {
 </script>
 
 <style lang="scss">
+
+.active-filter-border {
+  border: 5px solid #007bff;
+}
+
+.active-filter {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
 
 .search-result-filter {
   min-width: 8rem;

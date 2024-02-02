@@ -907,6 +907,71 @@ const SEARCH_FIELDS = {
     type: 'text',
     sortable: true,
   },
+  finishedWellDepthNull: {
+    param: 'finished_well_depth',
+    label: 'Finished well depth',
+    type: 'nullcheck'
+  },
+  intendedWaterUseNull: {
+    param: 'intended_water_use',
+    label: 'Intended water use',
+    type: 'nullcheck'
+  },
+  wellClassNull: {
+    param: 'well_class',
+    label: 'Class of well',
+    type: 'nullcheck'
+  },
+  latitudeNull: {
+    param: 'latitude',
+    label: 'Latitude',
+    type: 'nullcheck'
+  },
+  longitudeNull: {
+    param: 'longitude',
+    label: 'Longitude',
+    type: 'nullcheck'
+  },
+  diameterNull: {
+    param: 'diameter',
+    label: 'Casing Diameter (inches)',
+    type: 'nullcheck'
+  },
+  surfaceSealDepthNull: {
+    param: 'surface_seal_depth',
+    label: 'Seal Depth (feet)',
+    type: 'nullcheck'
+  },
+  surfaceSealThicknessNull: {
+    param: 'surface_seal_thickness',
+    label: 'Seal Thickness (inches)',
+    type: 'nullcheck'
+  },
+  aquiferLithologyNull: {
+    param: 'aquifer_lithology',
+    label: 'Lithology',
+    type: 'nullcheck'
+  },
+  wellStatusNull: {
+    param: 'well_status',
+    label: 'Work Type',
+    type: 'nullcheck'
+  },
+  dateOfWorkNull: {
+    param: 'date_of_work',
+    label: 'Work Start Date',
+    type: 'nullcheck'
+  },
+  personResponsibleNull: {
+    param: 'person_responsible_name',
+    label: 'Person Responsible',
+    type: 'nullcheck'
+  },
+  orgResponsibleNull: {
+    param: 'company_of_person_responsible_name',
+    label: 'Company that did the work',
+    type: 'nullcheck'
+  },
 }
 
 export default {

@@ -36,7 +36,8 @@ from wells.filters import (
     WellListFilterBackend,
     WellListOrderingFilter,
     GeometryFilterBackend,
-    RadiusFilterBackend
+    RadiusFilterBackend,
+    WellQaQcFilterBackend
 )
 from wells.models import Well, WellAttachment, \
   WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_CONSTRUCTION, WELL_STATUS_CODE_DECOMMISSION
@@ -592,8 +593,8 @@ class MislocatedWellsListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    filter_backends = (WellQaQcFilterBackend, filters.SearchFilter)
+
     ordering = ('well_tag_number',)
 
     def get_queryset(self):
@@ -616,8 +617,7 @@ class RecordComplianceListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    filter_backends = (WellQaQcFilterBackend, filters.SearchFilter)
     ordering = ('well_tag_number',)
 
     def get_queryset(self):
@@ -628,26 +628,26 @@ class RecordComplianceListView(ListAPIView):
         queryset = get_annotated_well_queryset()
 
         # Filtering for records missing any of the specified fields
-        missing_info_filter = (
-            Q(well_tag_number__isnull=True) |
-            Q(identification_plate_number__isnull=True) |
-            Q(well_class__isnull=True) |
-            Q(geom__isnull=True) | # for latitude and longitude
-            Q(finished_well_depth__isnull=True) |
-            Q(surface_seal_depth__isnull=True) |
-            Q(surface_seal_thickness__isnull=True) |
-            Q(aquifer_lithology__isnull=True) |
-            Q(well_status__isnull=True) |
-            Q(work_start_date__isnull=True) |
-            Q(work_end_date__isnull=True) |
-            Q(person_responsible__isnull=True) |
-            Q(company_of_person_responsible__isnull=True) |
-            Q(create_date__isnull=True) |
-            Q(create_user__isnull=True) |
-            Q(natural_resource_region__isnull=True)
-        )
+        # missing_info_filter = (
+        #     Q(well_tag_number__isnull=True) |
+        #     Q(identification_plate_number__isnull=True) |
+        #     Q(well_class__isnull=True) |
+        #     Q(geom__isnull=True) | # for latitude and longitude
+        #     Q(finished_well_depth__isnull=True) |
+        #     Q(surface_seal_depth__isnull=True) |
+        #     Q(surface_seal_thickness__isnull=True) |
+        #     Q(aquifer_lithology__isnull=True) |
+        #     Q(well_status__isnull=True) |
+        #     Q(work_start_date__isnull=True) |
+        #     Q(work_end_date__isnull=True) |
+        #     Q(person_responsible__isnull=True) |
+        #     Q(company_of_person_responsible__isnull=True) |
+        #     Q(create_date__isnull=True) |
+        #     Q(create_user__isnull=True) |
+        #     Q(natural_resource_region__isnull=True)
+        # )
 
-        queryset = queryset.filter(missing_info_filter)
+        # queryset = queryset.filter(missing_info_filter)
 
         # Additional filtering based on query parameters
         work_start_date = self.request.query_params.get('work_start_date')
@@ -670,8 +670,7 @@ class CrossReferencingListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
-                       filters.SearchFilter, WellListOrderingFilter, GeometryFilterBackend)
+    filter_backends = (WellQaQcFilterBackend, filters.SearchFilter)
     ordering = ('well_tag_number',)
 
     def get_queryset(self):

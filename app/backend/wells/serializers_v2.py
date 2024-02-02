@@ -507,12 +507,16 @@ class CrossReferencingSerializer(serializers.ModelSerializer):
 class RecordComplianceSerializer(serializers.ModelSerializer):
     work_start_date = serializers.DateField(read_only=True)
     work_end_date = serializers.DateField(read_only=True)
+    company_of_person_responsible_name = serializers.ReadOnlyField(
+        source='company_of_person_responsible.name')
+    person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
 
     class Meta:
         model = Well
         fields = [
           'well_tag_number',
           'identification_plate_number',
+          'intended_water_use',
           'well_class',
           'latitude',
           'longitude',
@@ -524,8 +528,8 @@ class RecordComplianceSerializer(serializers.ModelSerializer):
           'well_status',
           'work_start_date',
           'work_end_date',
-          'person_responsible',
-          'company_of_person_responsible',
+          'person_responsible_name',
+          'company_of_person_responsible_name',
           'create_date',
           'create_user',
           'natural_resource_region',

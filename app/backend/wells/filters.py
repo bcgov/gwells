@@ -18,6 +18,7 @@ from collections import OrderedDict
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
+from django.contrib.gis.db import models
 from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
 from django.contrib.gis.gdal import GDALException
@@ -827,4 +828,67 @@ class WellListOrderingFilter(OrderingFilter):
         if ordering:
             return queryset.order_by(*ordering)
 
+        return queryset
+
+
+class WellQaQcFilterBackend(filters.DjangoFilterBackend):
+    """
+    Custom well list filtering logic for the QaQc Dashboard.
+    allows additional 'filter_group' params.
+    """
+    def filter_queryset(self, request, queryset, view):
+        try:
+            filter_groups = request.query_params.getlist('filter_group', [])
+            for group in filter_groups:
+                try:
+                    group_params = json.loads(group)
+                except ValueError as exc:
+                    raise ValidationError({
+                        'filter_group': 'Error parsing JSON data: {}'.format(exc),
+                    })
+
+                if not group_params:
+                    continue
+                
+                q_objects = Q()
+                for field, value in group_params.items():
+                    if field == 'well_tag_number':
+                        queryset = queryset.filter(well_tag_number__icontains=value)
+
+                    elif field == 'identification_plate_number':
+                        queryset = queryset.filter(identification_plate_number__icontains=value)
+
+                    elif field == 'person_responsible_name' and value == 'null':
+                        q_objects |= (Q(person_responsible__isnull=True) | Q(person_responsible__first_name__isnull=True) |
+                                      Q(person_responsible__first_name='') | Q(person_responsible__first_name=' '))
+
+                    elif field == 'company_of_person_responsible_name' and value == 'null':
+                        q_objects |= (Q(company_of_person_responsible__isnull=True) |
+                                      Q(company_of_person_responsible__name__isnull=True) |
+                                      Q(company_of_person_responsible__name='') | Q(company_of_person_responsible__name=' '))
+                    
+                    # Directly handle special cases for fields like latitude and longitude
+                    elif field in ['latitude', 'longitude']:
+                        if value == 'null':
+                            q_objects &= Q(**{'geom__isnull': True})
+                    
+                    elif value == 'null':
+                        # Check if the field exists in the model
+                        try:
+                            field_obj = queryset.model._meta.get_field(field)
+                        except models.FieldDoesNotExist:
+                            continue
+                        
+                        # Now handling CharField, including checks for empty strings and spaces
+                        if isinstance(field_obj, models.CharField):
+                            q_objects &= (Q(**{f'{field}__isnull': True}) | Q(**{f'{field}': ''}) | Q(**{f'{field}': ' '}))
+                        else:
+                            # For other field types, just check for null
+                            q_objects &= Q(**{f'{field}__isnull': True})
+
+                # Apply the combined Q object filters to the queryset
+                queryset = queryset.filter(q_objects)
+
+        except Exception as e:
+            print(e)
         return queryset

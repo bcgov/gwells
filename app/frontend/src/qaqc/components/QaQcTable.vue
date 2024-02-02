@@ -97,7 +97,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <router-link :to="{ name: 'wells-detail', params: {id: row.well_tag_number} }">{{ row.well_tag_number }}</router-link>
+                <a :href="`/wells-detail/${row.well_tag_number}`" target="_blank">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
@@ -240,23 +240,24 @@ export default {
         'wellTagNumber': 'WTN',
         'identificationPlateNumber': 'WIDP',
         'wellClass': 'Class of well',
-        'latitude': 'Lat',
-        'longitude': 'Lon',
-        'finishedWellDepth': 'Finished well depth (feet)',
-        'diameter': 'Casing Diameter (inches)',
-        'surfaceSealDepth': 'Seal Depth (feet)',
-        'surfaceSealThickness': 'Seal Thickness (inches)',
-        'aquiferLithology': 'Lithology',
-        'wellStatus': 'Work Type',
-        'dateOfWork': 'Work Start Date',
-        'personResponsible': 'Person Responsible',
-        'orgResponsible': 'Company that did the work',
+        'intendedWaterUse': 'Intended Water Use',
+        'latitudeNull': 'Lat',
+        'longitudeNull': 'Lon',
+        'finishedWellDepthNull': 'Finished well depth (feet)',
+        'diameterNull': 'Casing Diameter (inches)',
+        'surfaceSealDepthNull': 'Seal Depth (feet)',
+        'surfaceSealThicknessNull': 'Seal Thickness (inches)',
+        'aquiferLithologyNull': 'Lithology',
+        'wellStatusNull': 'Work Type',
+        'dateOfWorkNull': 'Work Start Date',
+        'personResponsibleNull': 'Person Responsible',
+        'orgResponsibleNull': 'Company that did the work',
         'createDate': 'Created Date',
         'createUser': 'Created By',
         'updateDate': 'Updated Date',
         'updateUser': 'Updated By',
         'internalOfficeComments': 'Internal Office Comments',
-        'internalComments': 'Notes',
+        'internalComments': 'Internal Comments',
         'geocodeDistance': 'Geocode Distance',
         'distanceToPid': 'Distance to Matching PID',
         'scoreAddress': 'Score Address',
@@ -397,6 +398,19 @@ export default {
   .sort-button.active {
     opacity: 1;
   }
+}
+
+#qaqcTable thead {
+  position: sticky;
+  top: 0;
+  background-color: white; /* or any color that matches your design */
+  z-index: 1; /* This ensures the header stays on top of other content */
+}
+
+.table-responsive {
+  /* Ensure the container allows the sticky positioning to work */
+  overflow-y: auto;
+  height: 400px; /* Adjust the height as needed */
 }
 
 /* Spinner styles — these can be removed when moving to bootstrap 4.3 */
