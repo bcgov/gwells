@@ -104,7 +104,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <a :href="`/gwells/well/${row.well_tag_number}`" target="_blank" rel="noopener noreferrer">{{ row.well_tag_number }}</a>
+                <a @click="openInNewTab(`/gwells/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
@@ -338,6 +338,10 @@ export default {
       // Return the tooltip content if it exists, or null if it doesn't
       return this.tooltipContent[columnId] || null;
     },
+    openInNewTab(path) {
+      const { href } = this.$router.resolve(path);
+      window.open(href, '_blank');
+    }
   },
   filters: {
     streetAddressFormat (row) {
