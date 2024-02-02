@@ -4,6 +4,7 @@ const VECTOR_TILE_SERVER = `${window.location.protocol}//${window.location.host}
 
 export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
 export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
+export const WELLS_AQUIFER_PARAMETER_LAYER_ID = 'wells-with-aquifer-parameters'
 export const WELLS_UNCORRELATED_LAYER_ID = 'wells-uncorrelated'
 export const WELLS_EMS_LAYER_ID = 'wells-ems'
 export const WELLS_OBSERVATION_LAYER_ID = 'wells-observation'
@@ -283,6 +284,23 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-radius': 3,
     'circle-stroke-color': [
       'case',
+      ['boolean', ['get', 'has_hydraulic_info']], '#5dfa66',
+      ['to-boolean', ['get', 'artesian']], '#EE14CA',
+      'transparent'
+    ],
+    'circle-stroke-width': 2.5
+  })
+
+  const filter = options.filter || wellLayerFilter(false)
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
+}
+export function wellsAquiferParameters (options = {}) {
+  const layerId = options.id || WELLS_AQUIFER_PARAMETER_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-radius': 8,
+    'circle-stroke-color': [
+      'case',
       ['boolean', ['get', 'has_hydraulic_info']], '#5dfa57',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
@@ -294,7 +312,6 @@ export function wellsBaseAndArtesianLayer (options = {}) {
 
   return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
-
 // Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
 export function searchedWellsLayer (options = {}) {
   const layerId = options.id || SEARCHED_WELLS_LAYER_ID

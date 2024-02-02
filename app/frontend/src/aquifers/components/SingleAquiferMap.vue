@@ -35,6 +35,7 @@ import {
   wellsEmsLayer,
   wellsUncorrelatedLayer,
   wellsBaseAndArtesianLayer,
+  wellsAquiferParameters,
   aquifersLineLayer,
   aquifersFillLayer,
   setupAquiferHover,
@@ -44,6 +45,7 @@ import {
   DATABC_ECOCAT_SOURCE_ID,
   AQUIFERS_FILL_LAYER_ID,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+  WELLS_AQUIFER_PARAMETER_LAYER_ID,
   WELLS_EMS_LAYER_ID,
   WELLS_UNCORRELATED_LAYER_ID,
   aquiferLayerFilter,
@@ -134,7 +136,19 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
-            },
+            }
+            ,
+            {
+              imageSrc: wellsAllLegendSrc,
+              label: 'aquifer parameters'
+            }
+          ]
+        },
+        {
+          show: true,
+          id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
+          label: 'Aquifer Parameters',
+          legend: [ 
             {
               imageSrc: wellsHydraulicLegendSrc,
               label: 'aquifer parameters'
@@ -317,6 +331,7 @@ export default {
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer(),
+          wellsAquiferParameters(),
           observationWellsLayer({ layout: { visibility: 'none' } }),
           wellsEmsLayer({ layout: { visibility: 'none' } }),
           wellsUncorrelatedLayer({ layout: { visibility: 'none' } })
