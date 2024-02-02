@@ -587,20 +587,21 @@ export default {
         validateWellClassAndIntendedWaterUse = false
       }
 
-      const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
-      const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
-      //
-      if (wellCoordsMissing) {
-        if (!this.form.latitude){
-          errors.latitude = ['Valid Latitude Required'];
+      if (this.$refs.activitySubmissionForm) {
+        const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
+        const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
+        //
+        if (wellCoordsMissing) {
+          if (!this.form.latitude){
+            errors.latitude = ['Valid Latitude Required'];
+          }
+          if (!this.form.longitude) { 
+            errors.longitude = ['Valid Longitude Required']
+          }
+        } else if (wellCoordsNotWithinBC) {
+          errors.position = ['Coordinates not within BC']
         }
-        if (!this.form.longitude) { 
-          errors.longitude = ['Valid Longitude Required']
-        }
-      } else if (wellCoordsNotWithinBC) {
-        errors.position = ['Coordinates not within BC']
       }
-      
       
       // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
       // well_tag_number specified
