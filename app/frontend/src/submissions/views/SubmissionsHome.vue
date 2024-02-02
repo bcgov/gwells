@@ -583,15 +583,6 @@ export default {
     },
     newlyConstructedWellValidation(errors) {
 
-      // const WELL_OWNER_NAME = this.form.owner_full_name;
-      // const START_DATE_OF_WORK = this.form.construction_start_date;
-      // const END_DATE_OF_WORK = this.form.construction_end_date;
-      // const OWNER_MAILING_ADDRESS = this.form.owner_mailing_address;
-      // const DRILLING_METHODS = this.form.drilling_methods;
-      // const TOTAL_DEPTH_DRILLED = this.form.total_depth_drilled;
-      // const FINISHED_WELL_DEPTH = this.form.finished_well_depth;
-      // const FINAL_CASING_STICK_UP = this.form.final_casing_stick_up
-
       const { 
         owner_full_name, 
         owner_mailing_address,
@@ -611,7 +602,6 @@ export default {
       mandatoryLicensingDate.setHours(0, 0 , 0 , 0);
       const workStartDate = new Date(`${work_start_date}`);
 
-      // TODO: need to rethink this, if we should be doing early returns? probably because we need to run the code again anyway except if the error message is populated in the form then we should not return until the very end
       if (this.activityType !== 'CON') return;
 
       if (isNaN(workStartDate)) return errors.work_start_date = ['Invalid work start date.'];
