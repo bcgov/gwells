@@ -59,3 +59,7 @@ export const TOOLTIP_TEXT = {
     analysis_method: 'Mathematical solutions (Theis, Cooper-Jacob, Neuman, etc.) where response data (discharge, drawdown/time) from pumping tests are used to estimate the hydraulic properties of aquifers.',
   },
 }
+
+export const DEWATERING_DRAINAGE_WELL_CLASS = "DEW_DRA";
+export const WATER_SUPPLY_WELL_CLASS = "WATR_SPPLY";
+export const PERMANENT_SUBCLASS = "46300f40-fc6b-4c77-a58e-74472cd69f5d";
