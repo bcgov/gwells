@@ -625,6 +625,9 @@ export default {
       
       const mandatoryLicensingDate = new Date('2024-01-01');
       mandatoryLicensingDate.setHours(0, 0 , 0 , 0);
+
+      if (work_start_date !== '') return;
+
       const workStartDate = new Date(`${work_start_date}`);
       const workEndDate = new Date(`${work_end_date}`);
 
