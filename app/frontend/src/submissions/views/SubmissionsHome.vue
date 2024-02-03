@@ -669,9 +669,9 @@ export default {
       }
 
       // Total Depth Drilled(?), Finished Well Depth, Final Casing Stick Up
-      if (!total_depth_drilled) { errors.total_depth_drilled = ['Total Depth Drilled Required.'] }
-      if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.'] }
-      if (!final_casing_stick_up) { errors.final_casing_stick_up = ['Final Casing Stick Up'] }
+      if (!total_depth_drilled) { errors.total_depth_drilled = ['Total Depth Drilled Required.']; }
+      if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.']; }
+      if (!final_casing_stick_up) { errors.final_casing_stick_up = ['Final Casing Stick Up']; }
 
     },
     isFormValid () {

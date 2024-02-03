@@ -52,7 +52,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <b-form-group
               id="wellClass"
-              label="Class of Well"
+              label="Class of Well *"
               aria-describedby="wellClassInvalidFeedback">
             <b-form-select
                 v-model="wellClassInput"
@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :options="intendedWaterUseOptions"
             value-field="intended_water_use_code"
             text-field="description"
-            label="Intended Water Use"
+            label="Intended Water Use *"
             placeholder="Select intended use"
             :errors="errors['intended_water_use']"
             :loaded="fieldsLoaded['intended_water_use']"
