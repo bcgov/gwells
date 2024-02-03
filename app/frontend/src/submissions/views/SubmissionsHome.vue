@@ -608,6 +608,32 @@ export default {
         errors.owner_postal_code = ['Owners Postal Code Required.'];
       }
     },
+    validateWellIdentificationPlate(errors) {
+      const { 
+        well_class,
+        well_subclass,
+        identification_plate_number,
+        well_identification_plate_attached,
+      } = this.form
+
+      let isWellIdentificationPlateToBeVerified = false;
+
+      // If Class of Wells is Dewatering/Drainage (and well subclass is permanent) or Water supply: Well Identification Plate Number, Where Identification Plate Attached
+      if (well_class === WELL_CLASS.DEWATERING_DRAINAGE && well_subclass === WELL_SUBCLASS.PERMANENT) { isWellIdentificationPlateToBeVerified = true; }
+      if (well_class === WELL_CLASS.WATER_SUPPLY) { isWellIdentificationPlateToBeVerified = true; }
+      if (well_class === WELL_CLASS.INJECTION) { isWellIdentificationPlateToBeVerified = true; }
+      if (well_class === WELL_CLASS.RECHARGE) { isWellIdentificationPlateToBeVerified = true; }
+      
+      console.log("What are we doing: ", isWellIdentificationPlateToBeVerified);
+      if (isWellIdentificationPlateToBeVerified == false) return;
+
+      if (!identification_plate_number) {
+        errors.identification_plate_number = ['Identification Plate Number Required.'];
+      }
+      if (!well_identification_plate_attached) {
+        errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
+      }
+    },
     newlyConstructedWellValidation(errors) {
 
       const { 
@@ -617,10 +643,6 @@ export default {
         final_casing_stick_up,
         work_start_date,
         work_end_date,
-        well_class,
-        well_subclass,
-        identification_plate_number,
-        well_identification_plate_attached,
       } = this.form
       
       const mandatoryLicensingDate = new Date('2024-01-01');
@@ -640,23 +662,7 @@ export default {
       if (workStartDate < mandatoryLicensingDate) return;
       if (workEndDate < mandatoryLicensingDate) return;
 
-      let isWellIdentificationPlateToBeVerified = false;
-      const validateWellIdentificationPlate = (errors) => {
-        if (!identification_plate_number) {
-          errors.identification_plate_number = ['Identification Plate Number Required.'];
-        }
-        if (!well_identification_plate_attached) {
-          errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
-        }
-      }
-      
-      // If Class of Wells is Dewatering/Drainage (and well subclass is permanent) or Water supply: Well Identification Plate Number, Where Identification Plate Attached
-      if (well_class === WELL_CLASS.DEWATERING_DRAINAGE && well_subclass === WELL_SUBCLASS.PERMANENT) { isWellIdentificationPlateToBeVerified = true; }
-      if (well_class === WELL_CLASS.WATER_SUPPLY) { isWellIdentificationPlateToBeVerified = true; }
-      if (well_class === WELL_CLASS.INJECTION) { isWellIdentificationPlateToBeVerified = true; }
-      if (well_class === WELL_CLASS.RECHARGE) { isWellIdentificationPlateToBeVerified = true; }
-
-      if (isWellIdentificationPlateToBeVerified) { validateWellIdentificationPlate(errors); } 
+      validateWellIdentificationPlate(errors);
 
       // Start Date of Work, End Date of Work
       if (!work_start_date) {
