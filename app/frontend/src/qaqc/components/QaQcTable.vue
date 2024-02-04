@@ -104,7 +104,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <a @click="openInNewTab(`/gwells/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
+                <a href="javascript:void(0);" @click="openInNewTab(`/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
@@ -180,7 +180,7 @@ export default {
         'workStartDateNull': 'Work Start Date in the Well Activity Table on the Well Summary page',
         'workEndDateNull': 'Work End Date in the Well Activity Table on the Well Summary page',
         'createDate': 'When the well record was entered/created',
-        'geocodeDistance': 'The distance from well to location determined by the BC Address Geocoder API (value 99999 indicates no result). Wells with Geocode distance of 400 m or greater are displayed in this table.',
+        'geocodeDistance': 'The distance from well to location determined by the BC Address Geocoder API (value 99999 indicates no result). Wells with Geocode distance of 400 m or greater are displayed in bold in this table.',
         'distanceToPid': 'The distance from well to BC Parcel Fabric Polygon with matching Parcel Identifier (PID). A higher value indicates higher probability of a location error. NULL indicates no matching PID found. Wells with Distance to matching PID of 25 m or greater are displayed in this table.',
         'scoreAddress': 'Token Set Ratio score for matching wells address to reverse geocoded address (street number/name/direction). A lower score indicates a higher probability of a location error. Wells with Address Scores less than 80 are displayed in this table.',
         'scoreCity': 'Token Set Ratio score for matching wells city to reverse geocoded locality. A lower score indicates a higher probability of a location error. This table is not filtered by City Score.'

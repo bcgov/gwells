@@ -592,7 +592,8 @@ class MislocatedWellsListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellQaQcFilterBackend, filters.SearchFilter)
+    filter_backends = (WellQaQcFilterBackend, WellListOrderingFilter, 
+                       filters.SearchFilter)
 
     ordering = ('well_tag_number',)
 
@@ -615,7 +616,8 @@ class RecordComplianceListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellQaQcFilterBackend, filters.SearchFilter)
+    filter_backends = (WellQaQcFilterBackend, WellListOrderingFilter,
+                       filters.SearchFilter)
     ordering = ('well_tag_number',)
 
     def get_queryset(self):
@@ -633,7 +635,8 @@ class CrossReferencingListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellQaQcFilterBackend, filters.SearchFilter)
+    filter_backends = (WellQaQcFilterBackend, WellListOrderingFilter,
+                       filters.SearchFilter)
     ordering = ('well_tag_number',)
 
     def get_queryset(self):
