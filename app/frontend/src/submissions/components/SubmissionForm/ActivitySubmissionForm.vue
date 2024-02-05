@@ -119,6 +119,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"
+      v-on:myEvent="handleThis"
     />
 
       <!-- Type of well -->
@@ -221,6 +222,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <method-of-drilling class="my-5"
         v-if="showSection('method')"
         id="method"
+        :drillingMethods="handleThis()"
         :groundElevation.sync="form.ground_elevation"
         :groundElevationMethod.sync="form.ground_elevation_method"
         :drillingMethod.sync="form.drilling_methods"
@@ -829,7 +831,13 @@ export default {
     },
     editWater (coords) {
       this.$emit('editWater', coords)
-    }
+    },
+    handleThis (isNewWellConstruction) {
+      if (isNewWellConstruction) {
+        console.log("it should update")
+        return "Drilling Method(s) *";
+      }
+    },
   },
   created () {
     // When the form is saved, reset the formValueChanged variable.

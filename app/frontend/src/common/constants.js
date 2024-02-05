@@ -71,3 +71,16 @@ export const WELL_CLASS = {
 export const WELL_SUBCLASS = {
   PERMANENT: "46300f40-fc6b-4c77-a58e-74472cd69f5d",
 }
+
+export const WELL_SUBMISSION_STRINGS = {
+  START_DATE_OF_WORK: "Start Date of Work",
+  START_DATE_OF_WORK_MANDATORY: "Start Date of Work *",
+  END_DATE_OF_WORK: "End Date of Work",
+  END_DATE_OF_WORK_MANDATORY: "End Date of Work *",
+  WELL_IDENTIFICATION_PLATE_NUMBER: "Well Identification Plate Number",
+  WELL_IDENTIFICATION_PLATE_NUMBER_MANDATORY: "Well Identification Plate Number *",
+  WELL_IDENTIFICATION_PLATE_ATTACHED: "Where Identification Plate Attached",
+  WELL_IDENTIFICATION_PLATE_ATTACHED_NMANDATORY: "Where Identification Plate Attached *",
+}
+
+export const NEW_WELL_CONSTRUCTION_VALIDATION_DATE = '2024-01-01T00:00:00';

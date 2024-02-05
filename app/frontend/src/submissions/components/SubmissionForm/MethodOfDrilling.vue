@@ -55,7 +55,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="6">
           <form-input
               id="drillingMethod"
-              label="Drilling Method(s)"
+              :label="drillingMethods"
               select
               :options="codes.drilling_methods"
               value-field="drilling_method_code"
@@ -105,6 +105,7 @@ export default {
     drillingMethod: Array,
     otherDrillingMethod: String,
     wellOrientationStatus: null,
+    drillingMethods: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -128,6 +129,7 @@ export default {
   },
   data () {
     return {
+      drillingMethods: "tests",
       options: [
       ]
     }
@@ -142,6 +144,11 @@ export default {
         })
         return this.codes.ground_elevation_methods
       }
+    }
+  },
+  watch: {
+    drillingMethods(newValue) {
+      this.drillingMethods = newValue;
     }
   },
   computed: {

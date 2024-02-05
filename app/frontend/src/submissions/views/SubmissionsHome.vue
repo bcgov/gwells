@@ -131,7 +131,7 @@ import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/Acti
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 
-import { WELL_CLASS, WELL_SUBCLASS } from '@/common/constants.js'
+import { WELL_CLASS, WELL_SUBCLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
 
 export default {
   name: 'SubmissionsHome',
@@ -645,8 +645,7 @@ export default {
         work_end_date,
       } = this.form
       
-      const mandatoryLicensingDate = new Date('2024-01-01');
-      mandatoryLicensingDate.setHours(0, 0 , 0 , 0);
+      const mandatoryLicensingDate = new Date(NEW_WELL_CONSTRUCTION_VALIDATION_DATE);
 
       if (work_start_date !== '') return;
 
