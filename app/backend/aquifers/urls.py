@@ -154,4 +154,8 @@ urlpatterns = [
     # GeoJSON aquifers endpoint for DataBC.
     url(r'api/v2/gis/aquifers$',
         views_v2.aquifer_geojson_v2, name='aquifer-geojson-v2'),
+
+    # 'Pumping Test and Aquifer Parameters' endpoint for DataBC
+    url(r'api/v2/gis/aquifers-pt$',
+        views_v2.aquifer_pump_params, name='aquifers-pt')
 ]
