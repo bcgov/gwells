@@ -298,11 +298,14 @@ export function wellsBaseAndArtesianLayer (options = {}) {
 export function wellsAquiferParameters (options = {}) {
   const layerId = options.id || WELLS_AQUIFER_PARAMETER_LAYER_ID
   const styles = defaultsDeep(options.styles, {
-    'circle-radius': 8,
+    'circle-color' : [
+      'case',
+      ['boolean', ['get', 'has_aquifer_parameters']], '#007bff',
+      'transparent'
+    ],
     'circle-stroke-color': [
       'case',
       ['boolean', ['get', 'has_aquifer_parameters']], '#5dfc00',
-      ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
     'circle-stroke-width': 2.5
