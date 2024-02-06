@@ -46,8 +46,15 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import (WELLS_SQL_V1, LITHOLOGY_SQL, GeoJSONIterator,
-                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE, PUMPING_TEST_AQUIFER_PARAMETER_SQL, PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE)
+from gwells.management.commands.export_databc import (
+    GeoJSONIterator,
+    LITHOLOGY_CHUNK_SIZE,
+    LITHOLOGY_SQL,
+    WELL_CHUNK_SIZE,
+    PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE,
+    PUMPING_TEST_AQUIFER_PARAMETER_SQL,
+    WELLS_SQL_V1,
+)
 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
