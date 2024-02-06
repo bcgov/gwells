@@ -481,15 +481,15 @@ LEFT JOIN (
     GROUP BY well_tag_number
 ) AS licence_q ON well.well_tag_number = licence_q.well_tag_number
 LEFT JOIN aquifer_subtype_code ON
-    aquifer_subtype_code.aquifer_subtype_code = aq.aquifer_subtype_code;
+    aquifer_subtype_code.aquifer_subtype_code = aq.aquifer_subtype_code
 WHERE
-    well.geom is not null AND
-    well.effective_date <= NOW() AND aquifer.expiry_date >= NOW() AND
-    well.retire_date >= NOW()
-    order by well.well_tag_number
+    (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null) AND
+    ap.well_tag_number is not null AND
+    well.geom is not null
+ORDER BY well.well_tag_number;
 """)
 
-PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE = 1000
+PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE = 10000
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
 # property names have to stay the same! This endpoint is consumed by DataBC and must remain
 # stable!
