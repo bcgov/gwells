@@ -284,7 +284,6 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-radius': 3,
     'circle-stroke-color': [
       'case',
-      ['boolean', ['get', 'has_hydraulic_info']], '#5dfa66',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
@@ -303,6 +302,7 @@ export function wellsAquiferParameters (options = {}) {
       ['boolean', ['get', 'has_aquifer_parameters']], '#007bff',
       'transparent'
     ],
+    'circle-radius' : 3,
     'circle-stroke-color': [
       'case',
       ['boolean', ['get', 'has_aquifer_parameters']], '#5dfc00',
@@ -327,9 +327,6 @@ export function searchedWellsLayer (options = {}) {
     'circle-radius': 5,
     'circle-stroke-color': [
       'case',
-      ['to-boolean', ['get', 'storativity']], '#5dfa57',
-      ['to-boolean', ['get', 'transmissivity']], '#5dfa57',
-      ['to-boolean', ['get', 'hydraulic_conductivity']], '#5dfa57',
       ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],

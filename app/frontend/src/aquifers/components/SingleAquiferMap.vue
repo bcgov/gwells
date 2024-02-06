@@ -139,11 +139,6 @@ export default {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
             }
-            ,
-            {
-              imageSrc: wellsAllLegendSrc,
-              label: 'aquifer parameters'
-            }
           ]
         },
         {
