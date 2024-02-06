@@ -445,7 +445,7 @@ SELECT
         THEN 'Licensed'
         ELSE 'Unlicensed'
     END AS licence_status,
-    CONCAT('https://apps.nrs.gov.bc.ca/gwells/aquifers/', aq.aquifer_id) AS detail,
+    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) AS detail,
     well.finished_well_depth AS finished_well_depth,
     well.bedrock_depth AS bedrock_depth,
     ap.start_date_pumping_test AS start_date_pumping_test,
