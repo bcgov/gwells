@@ -53,7 +53,9 @@ import {
   WELLS_SOURCE,
   AQUIFERS_SOURCE,
   observationWellsLayer,
-  WELLS_OBSERVATION_LAYER_ID
+  WELLS_OBSERVATION_LAYER_ID,
+  WELLS_AQUIFER_PARAMETER_LAYER_ID,
+  wellsAquiferParameters,
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -152,6 +154,12 @@ export default {
               label: 'aquifer parameters'
             }
           ]
+        },
+        {
+          show: true,
+          id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
+          label: 'Wells - aquifer parameters', 
+          imageSrc: wellsHydraulicLegendSrc
         },
         {
           show: false,
@@ -349,7 +357,8 @@ export default {
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
-          observationWellsLayer({ layout: { visibility: 'none' } })
+          observationWellsLayer({ layout: { visibility: 'none' } }),
+          wellsAquiferParameters()
         ]
       }
     },

@@ -58,7 +58,9 @@ import {
   WELLS_SOURCE,
   AQUIFERS_SOURCE,
   observationWellsLayer,
-  WELLS_OBSERVATION_LAYER_ID
+  WELLS_OBSERVATION_LAYER_ID,
+  
+
 } from '../../common/mapbox/layers'
 import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
 import { LayersControl, LegendControl } from '../../common/mapbox/controls'
@@ -147,13 +149,8 @@ export default {
         {
           show: true,
           id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
-          label: 'Aquifer Parameters',
-          legend: [ 
-            {
-              imageSrc: wellsHydraulicLegendSrc,
-              label: 'aquifer parameters'
-            }
-          ]
+          label: 'Wells - aquifer parameters', 
+          imageSrc: wellsHydraulicLegendSrc
         },
         {
           show: false,
