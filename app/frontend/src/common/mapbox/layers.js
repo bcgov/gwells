@@ -301,7 +301,7 @@ export function wellsAquiferParameters (options = {}) {
     'circle-radius': 8,
     'circle-stroke-color': [
       'case',
-      ['boolean', ['get', 'has_hydraulic_info']], '#5dfa57',
+      ['boolean', ['get', 'has_aquifer_parameters']], '#5dfc00',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
