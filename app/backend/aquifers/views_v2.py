@@ -37,10 +37,7 @@ from gwells.settings.base import get_env_variable
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.management.commands.export_databc import (
     AQUIFERS_SQL_V2,
-    GeoJSONIterator,
     AQUIFER_CHUNK_SIZE,
-    PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE,
-    PUMPING_TEST_AQUIFER_PARAMETER_SQL,
 )
 from gwells.roles import AQUIFERS_EDIT_ROLE
 from aquifers import serializers, serializers_v2
@@ -306,38 +303,6 @@ def aquifer_geojson_v2(request, **kwargs):
             get_env_variable('S3_WELL_EXPORT_BUCKET'),
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
-
-
-@api_view(['GET'])
-def aquifer_pump_params(request, **kwargs):
-    realtime = request.GET.get('realtime') in ('True', 'true')
-    if realtime:
-        sw_long = request.query_params.get('sw_long')
-        sw_lat = request.query_params.get('sw_lat')
-        ne_long = request.query_params.get('ne_long')
-        ne_lat = request.query_params.get('ne_lat')
-        bounds = None
-        bounds_sql = ''
-
-        if sw_long and sw_lat and ne_long and ne_lat:
-            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
-            bounds = (sw_long, sw_lat, ne_long, ne_lat)
-
-        iterator = GeoJSONIterator(
-            PUMPING_TEST_AQUIFER_PARAMETER_SQL.format(bounds=bounds_sql), PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE, connection.cursor(), bounds)
-        response = StreamingHttpResponse((item for item in iterator),
-                                         content_type='application/json')
-        response['Content-Disposition'] = 'attachment; filename="pumpingTestAquiferParameters.json"'
-        return response
-    else:
-        # Generating spatial data realtime is much too slow,
-        # so we have to redirect to a pre-generated instance.
-        url = 'https://{}/{}/{}'.format(
-            get_env_variable('S3_HOST'),
-            get_env_variable('S3_WELL_EXPORT_BUCKET'),
-            'api/v1/gis/pumpingTestAquiferParameters.json')
-        return HttpResponseRedirect(url)
-
 
 AQUIFER_EXPORT_FIELDS_V2 = [
     'aquifer_id',
