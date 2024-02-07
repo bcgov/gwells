@@ -298,21 +298,15 @@ export function wellsBaseAndArtesianLayer (options = {}) {
 export function wellsAquiferParameters (options = {}) {
   const layerId = options.id || WELLS_AQUIFER_PARAMETER_LAYER_ID
   const styles = defaultsDeep(options.styles, {
-    'circle-color' : [
-      'case',
-      ['boolean', ['get', 'has_aquifer_parameters']], '#0162FE',
-      'transparent'
-    ],
+    'circle-color' : '#0162FE',
     'circle-radius' : 3,
-    'circle-stroke-color': [
-      'case',
-      ['boolean', ['get', 'has_aquifer_parameters']], '#5dfc00',
-      'transparent'
-    ],
+    'circle-stroke-color': '#5dfc00',
     'circle-stroke-width': 2.5
   })
 
-  const filter = options.filter || wellLayerFilter(false)
+  const filter = [
+    'to-boolean', ['get', 'has_aquifer_parameters']
+  ]
 
   return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }

@@ -320,7 +320,7 @@ export default {
           },
           [WELLS_AQUIFER_PARAMETER_LAYER_ID]: {
             snapToCenter: true,
-            createTooltipContent: this.createWellAquiferParametersPopupElement
+            createTooltipContent: this.createWellPopupElement
           }
         }
 
@@ -478,7 +478,7 @@ export default {
     createWellPopupElement (features, { canInteract }) {
       return createWellPopupElement(features, this.map, this.$router, {
         canInteract,
-        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID ]
+        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID, WELLS_AQUIFER_PARAMETER_LAYER_ID ]
       })
     },
     createWellAquiferParametersPopupElement (features, { canInteract }) {
