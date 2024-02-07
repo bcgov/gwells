@@ -369,7 +369,7 @@ export default {
         // only if the current value of intended water use code is 'NA'
         this.intendedWaterUseInput = null
       }
-    }
+    },
   }
 }
 </script>

@@ -872,6 +872,7 @@ export default {
         this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
         this.finishedWellDepthLabel = WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
         this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
+        return;
       } 
       this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK_MANDATORY;
       this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK_MANDATORY;
