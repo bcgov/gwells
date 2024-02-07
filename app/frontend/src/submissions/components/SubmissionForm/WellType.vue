@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :options="intendedWaterUseOptions"
             value-field="intended_water_use_code"
             text-field="description"
-            label="Intended Water Use"
+            label="Intended Water Use *"
             placeholder="Select intended use"
             :errors="errors['intended_water_use']"
             :loaded="fieldsLoaded['intended_water_use']"
@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="idPlateNumber"
-              :label="wellIdentificationPlateAttachedLabel"
+              :label="wellIdentificationPlateNumberLabel"
               type="number"
               v-model="idPlateNumberInput"
               :errors="errors['identification_plate_number']"

@@ -74,19 +74,26 @@ export const WELL_SUBCLASS = {
 
 export const WELL_SUBMISSION_STRINGS = {
   START_DATE_OF_WORK: "Start Date of Work",
-  START_DATE_OF_WORK_MANDATORY: "Start Date of Work *",
   END_DATE_OF_WORK: "End Date of Work",
-  END_DATE_OF_WORK_MANDATORY: "End Date of Work *",
   WELL_IDENTIFICATION_PLATE_NUMBER: "Well Identification Plate Number",
-  WELL_IDENTIFICATION_PLATE_NUMBER_MANDATORY: "Well Identification Plate Number *",
-  WELL_IDENTIFICATION_PLATE_ATTACHED: "Where Identification Plate Attached",
-  WELL_IDENTIFICATION_PLATE_ATTACHED_NMANDATORY: "Where Identification Plate Attached *",
+  WELL_IDENTIFICATION_PLATE_ATTACHED: "Well Identification Plate Attached",
   TOTAL_DEPTH_DRILLED: "Total Depth Drilled",
-  TOTAL_DEPTH_DRILLED_MANDATORY: "Total Depth Drilled *",
   FINISHED_WELL_DEPTH: "Finished Well Depth",
-  FINISHED_WELL_DEPTH_MANDATORY: "Finished Well Depth *",
   DRILLING_METHODS: "Drilling Method(s)",
-  DRILLING_METHODS_MANDATORY: "Drilling Method(s) *",
 }
 
-export const NEW_WELL_CONSTRUCTION_VALIDATION_DATE = '2024-01-01T00:00:00';
+export const MANDATORY_WELL_SUBMISSION_STRINGS = {
+  START_DATE_OF_WORK: "Start Date of Work *",
+  END_DATE_OF_WORK: "End Date of Work *",
+  WELL_IDENTIFICATION_PLATE_NUMBER: "Well Identification Plate Number *",
+  WELL_IDENTIFICATION_PLATE_ATTACHED: "Well Identification Plate Attached *",
+  TOTAL_DEPTH_DRILLED: "Total Depth Drilled *",
+  FINISHED_WELL_DEPTH: "Finished Well Depth *",
+  DRILLING_METHODS: "Drilling Method(s) *",
+}
+
+export const NEW_WELL_CONSTRUCTION_VALIDATION_DATE = {
+  YEAR: 2024,
+  MONTH: 1,
+  DAY: 1,
+}

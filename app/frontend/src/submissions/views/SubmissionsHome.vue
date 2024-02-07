@@ -582,7 +582,6 @@ export default {
       this.componentUpdateTrigger = Date.now()
     },
     groundwaterProtectionRegulationValidation(errors) {
-
       const {
         owner_full_name, 
         owner_mailing_address,
@@ -608,7 +607,15 @@ export default {
         errors.owner_postal_code = ['Owners Postal Code Required.'];
       }
     },
-    validateWellIdentificationPlate(errors) {
+    getUTCDate(dateString) {
+      const splitDateString = dateString.split('-');
+      const parsedDateString = splitDateString.map(dateValue => parseInt(dateValue));
+      const year = parsedDateString[0];
+      const month = parsedDateString[1];
+      const day = parsedDateString[2];
+      return new Date(Date.UTC(year, month, day)).getTime();
+    },
+    validateWellIdentificationPlateFields(errors) {
       const { 
         well_class,
         well_subclass,
@@ -634,34 +641,14 @@ export default {
         errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
       }
     },
-    newlyConstructedWellValidation(errors) {
-
+    validateWellFields(errors) {
       const { 
-        drilling_methods,
-        total_depth_drilled,
-        finished_well_depth,
-        final_casing_stick_up,
-        work_start_date,
-        work_end_date,
-      } = this.form
-      
-      const mandatoryLicensingDate = new Date(NEW_WELL_CONSTRUCTION_VALIDATION_DATE);
-
-      if (work_start_date !== '') return;
-
-      const workStartDate = new Date(`${work_start_date}`);
-      const workEndDate = new Date(`${work_end_date}`);
-
-      if (this.activityType !== 'CON') return;
-
-      // TODO: confirm with s.o. that we can validate dates this way:
-      if (isNaN(workStartDate)) return errors.work_start_date = ['Invalid work start date.'];
-      if (isNaN(workEndDate)) return errors.work_end_date = ['Invalid work start date.'];
-
-      if (workStartDate < mandatoryLicensingDate) return;
-      if (workEndDate < mandatoryLicensingDate) return;
-
-      validateWellIdentificationPlate(errors);
+        work_start_date, 
+        work_end_date, 
+        drilling_methods, 
+        total_depth_drilled, 
+        finished_well_depth
+      } = this.form;
 
       // Start Date of Work, End Date of Work
       if (!work_start_date) {
@@ -672,14 +659,52 @@ export default {
       }
 
       // Drilling Method(s)
-      if (!drilling_methods) {
+      if (drilling_methods.length === 0) {
         errors.drilling_methods = ['Drilling Methods Required.'];
       }
 
       // Total Depth Drilled(?), Finished Well Depth, Final Casing Stick Up
       if (!total_depth_drilled) { errors.total_depth_drilled = ['Total Depth Drilled Required.']; }
       if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.']; }
-      if (!final_casing_stick_up) { errors.final_casing_stick_up = ['Final Casing Stick Up']; }
+    },
+    newlyConstructedWellValidation(errors) {
+
+      const { 
+        drilling_methods,
+        total_depth_drilled,
+        finished_well_depth,
+        work_start_date,
+        work_end_date,
+      } = this.form
+      
+      const mandatoryLicensingDate = new Date(Date.UTC(
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+        )).getTime();
+
+      const workStartDate = this.getUTCDate(work_start_date);
+      const workEndDate = this.getUTCDate(work_end_date);
+
+      if (this.activityType !== 'CON') return;
+
+      if ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate) {
+        errors.work_start_date = ['Invalid Start Date comes after End Date.'];
+        errors.work_end_date = ['Invalid End Date comes before Start Date.'];
+      }
+
+      if (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate) {
+        this.validateWellIdentificationPlateFields(errors);
+        this.validateWellFields(errors);
+        return
+      }
+
+      if (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate) {
+        this.validateWellIdentificationPlateFields(errors);
+        this.validateWellFields(errors);
+        return
+      }
+
 
     },
     isFormValid () {

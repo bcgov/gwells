@@ -578,7 +578,7 @@ import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import AquiferParameters from './AquiferParameters.vue'
 
-import { WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+import { WELL_SUBMISSION_STRINGS, MANDATORY_WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
 
 export default {
   name: 'SubmissionsForm',
@@ -717,8 +717,10 @@ export default {
       },
       initLong: null,
       initLat: null,
-      startDateOfWorkLabel: WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
-      endDateOfWorkLabel: WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK,
+      // Labelling "Start Date of Work" and "End Date of Work" as mandatory.
+      // To push users to input dates but to allow for empty dates.
+      startDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
+      endDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK,
       wellIdentificationPlateNumberLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER,
       wellIdentificationPlateAttachedLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
       totalDepthDrilledLabel:WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED,
@@ -847,26 +849,34 @@ export default {
     editWater (coords) {
       this.$emit('editWater', coords)
     },
+    getUTCDate(dateString) {
+      const splitDateString = dateString.split('-');
+      const parsedDateString = splitDateString.map(dateValue => parseInt(dateValue));
+      const year = parsedDateString[0];
+      const month = parsedDateString[1];
+      const day = parsedDateString[2];
+      return new Date(Date.UTC(year, month, day)).getTime();
+    },
     checkNewWellConstructionDates(dateString) {
-      const newWellConstructionDateString = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
       // if (dateString !== '') return false;
+      
+      const dateUTC = this.getUTCDate(dateString);
+      const newWellConstructionDateUTC = new Date(Date.UTC(
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+        )).getTime();
 
-      const date = new Date(`${dateString}`);
-      const newWellConstructionDate = new Date(`${newWellConstructionDateString}`);
+      if (isNaN(dateUTC)) return false;
+      if (isNaN(newWellConstructionDateUTC)) return false;
 
-      // TODO: handle this case?
-      if (isNaN(date)) return false;
-      if (isNaN(newWellConstructionDate)) return false;
-
-      if (date < newWellConstructionDate) return false;
+      if (dateUTC < newWellConstructionDateUTC) return false;
 
       return true;
     },
     handleNewWellConstruction (isNewWellConstruction) {
       if (isNewWellConstruction === undefined) return;
       if (isNewWellConstruction === false) {
-        this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK;
-        this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK;
         this.wellIdentificationPlateNumberLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
         this.wellIdentificationPlateAttachedLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
         this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
@@ -874,18 +884,15 @@ export default {
         this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
         return;
       } 
-      this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK_MANDATORY;
-      this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK_MANDATORY;
-      this.wellIdentificationPlateNumberLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER_MANDATORY;
-      this.wellIdentificationPlateAttachedLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED_NMANDATORY;
-      this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED_MANDATORY;
-      this.finishedWellDepthLabel = WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH_MANDATORY;
-      this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS_MANDATORY;
+      this.wellIdentificationPlateNumberLabel = MANDATORY_WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
+      this.wellIdentificationPlateAttachedLabel = MANDATORY_WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
+      this.totalDepthDrilledLabel = MANDATORY_WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
+      this.finishedWellDepthLabel = MANDATORY_WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
+      this.drillingMethodsLabel = MANDATORY_WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
     },
     handleDateInput(event) {
       const dateString = event;
       const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
-      console.log("This is the handleDateInput event :", event);
       this.handleNewWellConstruction(isNewWellConstruction)
     },
 
