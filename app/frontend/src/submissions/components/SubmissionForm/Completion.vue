@@ -236,8 +236,6 @@ export default {
   },
   data () {
     return {
-      // totalDepthDrilledLabel: WELL_SUBMISSION_STRINGS.totalDepthDrilledLabel,
-      // finishedWellDepthLabel: WELL_SUBMISSION_STRINGS.finishedWellDepthLabel,
       artesianPressure: {
         head: null,
         psi: null
