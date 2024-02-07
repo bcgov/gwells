@@ -670,9 +670,6 @@ export default {
     newlyConstructedWellValidation(errors) {
 
       const { 
-        drilling_methods,
-        total_depth_drilled,
-        finished_well_depth,
         work_start_date,
         work_end_date,
       } = this.form
