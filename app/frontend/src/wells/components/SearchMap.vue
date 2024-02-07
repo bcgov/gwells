@@ -41,7 +41,8 @@ import {
   FOCUSED_WELL_ARTESIAN_IMAGE_ID,
   wellLayerFilter,
   SEARCHED_WELLS_LAYER_ID,
-  WELLS_SOURCE
+  WELLS_SOURCE,
+wellsAquiferParameters
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { createWellPopupElement } from '../popup'
@@ -245,7 +246,8 @@ export default {
           DATABC_CADASTREL_LAYER,
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
-          focusedWellsLayer()
+          focusedWellsLayer(),
+          wellsAquiferParameters()
         ]
       }
     },
