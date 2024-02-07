@@ -152,7 +152,7 @@ export default {
           ]
         },
         {
-          show: true,
+          show: false,
           id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
           label: 'Wells - aquifer parameters', 
           imageSrc: wellsHydraulicLegendSrc
