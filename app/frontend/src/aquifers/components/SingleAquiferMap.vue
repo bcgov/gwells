@@ -280,6 +280,10 @@ export default {
           [WELLS_UNCORRELATED_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_AQUIFER_PARAMETER_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
           }
         }
         setupFeatureTooltips(this.map, tooltipLayers)

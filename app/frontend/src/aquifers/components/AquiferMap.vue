@@ -316,6 +316,10 @@ export default {
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_AQUIFER_PARAMETER_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
           }
         }
 
@@ -354,7 +358,7 @@ export default {
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
           observationWellsLayer({ layout: { visibility: 'none' } }),
-          wellsAquiferParameters()
+          wellsAquiferParameters({ layout: { visibility: 'none' } })
         ]
       }
     },

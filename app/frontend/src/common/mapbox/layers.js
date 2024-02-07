@@ -294,12 +294,13 @@ export function wellsBaseAndArtesianLayer (options = {}) {
 
   return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
+// Builds MapBox layer config object for wells with aquifer parameters with a green outline
 export function wellsAquiferParameters (options = {}) {
   const layerId = options.id || WELLS_AQUIFER_PARAMETER_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color' : [
       'case',
-      ['boolean', ['get', 'has_aquifer_parameters']], '#007bff',
+      ['boolean', ['get', 'has_aquifer_parameters']], '#0162FE',
       'transparent'
     ],
     'circle-radius' : 3,
