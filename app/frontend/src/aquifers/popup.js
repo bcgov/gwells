@@ -6,7 +6,8 @@ import {
   AQUIFERS_FILL_LAYER_ID,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_GROUND_WATER_LICENCES_LAYER_ID,
-  DATABC_SURFACE_WATER_LICENCES_LAYER_ID
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
+  WELLS_AQUIFER_PARAMETER_LAYER_ID
 } from '../common/mapbox/layers'
 import { popupItems, popupItem } from '../common/mapbox/popup'
 
@@ -15,6 +16,74 @@ export function createWellPopupElement (features, map, $router, options = {}) {
   const currentAquiferId = options.currentAquiferId || null
   const canInteract = Boolean(options.canInteract)
   const wellLayerIds = options.wellLayerIds || [ WELLS_BASE_AND_ARTESIAN_LAYER_ID ]
+
+  // Filter the features to only the well layers we care about
+  const feature = features.filter((feature) => wellLayerIds.indexOf(feature.layer.id) !== -1)[0]
+
+  const {
+    well_tag_number: wellTagNumber,
+    identification_plate_number: identificationPlateNumber,
+    street_address: streetAddress,
+    aquifer_id: aquiferId,
+    ems,
+    observation_well_number: observationWellNumber,
+    observation_well_status_code: observationWellStatusCode,
+    is_published: isPublished
+  } = feature.properties
+
+  let correlatedAquiferItem = 'Uncorrelated well'
+  if (aquiferId) {
+    // Only link to the correlated aquifer if the user can interact with this popup content. Or if
+    // the optional `currentAquiferId` is not the same as this aquiferId
+    if (canInteract && aquiferId !== currentAquiferId) {
+      correlatedAquiferItem = {
+        prefix: 'Correlated to ',
+        route: { name: 'aquifers-view', params: { id: aquiferId } },
+        text: `aquifer ${aquiferId}`
+      }
+    } else {
+      correlatedAquiferItem = `Correlated to aquifer ${aquiferId}`
+    }
+  }
+
+  const observationWellUrl = `https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${observationWellNumber}`
+  const items = [
+    {
+      prefix: 'Well Tag Number: ',
+      route: { name: 'wells-detail', params: { id: wellTagNumber } },
+      text: wellTagNumber
+    },
+    {
+      prefix: 'Identification Plate Number: ',
+      text: identificationPlateNumber || '—'
+    },
+    {
+      prefix: 'Address: ',
+      text: streetAddress || '—'
+    },
+    ems ? {
+      prefix: 'EMS ID: ',
+      text: ems
+    } : null,
+    observationWellNumber ? {
+      prefix: `${observationWellStatusCode} observation well number: `,
+      url: observationWellUrl,
+      text: observationWellNumber
+    } : null,
+    correlatedAquiferItem,
+    {
+      className: isPublished === false ? 'unpublished' : '',
+      text: isPublished === false ? 'unpublished' : null
+    }
+  ]
+
+  return popupItems(items, $router, { className: 'mapbox-popup-well', canInteract })
+}
+
+export function createWellAquiferParametersPopupElement (features, map, $router, options = {}) {
+  const currentAquiferId = options.currentAquiferId || null
+  const canInteract = Boolean(options.canInteract)
+  const wellLayerIds = options.wellLayerIds || [ WELLS_AQUIFER_PARAMETER_LAYER_ID ]
 
   // Filter the features to only the well layers we care about
   const feature = features.filter((feature) => wellLayerIds.indexOf(feature.layer.id) !== -1)[0]
