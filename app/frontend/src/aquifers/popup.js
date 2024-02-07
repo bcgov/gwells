@@ -80,6 +80,59 @@ export function createWellPopupElement (features, map, $router, options = {}) {
   return popupItems(items, $router, { className: 'mapbox-popup-well', canInteract })
 }
 
+// Creates a <div> for the aquifer's popup content
+export function createAquiferPopupElement (features, map, $router, options = {}) {
+  const currentAquiferId = options.currentAquiferId || null
+  const canInteract = Boolean(options.canInteract)
+  const aquiferLayerIds = options.aquiferLayerIds || [ AQUIFERS_FILL_LAYER_ID ]
+
+  const container = document.createElement('div')
+  container.className = 'mapbox-popup-aquifer'
+  const ul = document.createElement('ul')
+  ul.className = `m-0 p-0 text-center mapbox-${canInteract ? 'popup' : 'tooltip'}`
+  ul.style.listStyle = 'none'
+  container.appendChild(ul)
+
+  // Filter the features to only the aquifer layers we care about
+  const onlyAquiferFeatures = features.filter((feature) => aquiferLayerIds.indexOf(feature.layer.id) !== -1)
+
+  uniqBy(onlyAquiferFeatures, 'id').map((feature) => {
+    const {
+      aquifer_id: aquiferId,
+      is_retired: isRetired,
+      is_published: isPublished,
+      material_type: materialType,
+      subtype: subType
+    } = feature.properties
+    const linkToAquifer = canInteract && currentAquiferId !== aquiferId
+
+    const item = {
+      className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
+      route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
+      text: `Aquifer ${aquiferId} (${materialType}, ${subType})`,
+      suffix: [
+        isRetired ? 'retired' : null,
+        !isPublished ? 'unpublished' : null
+      ].filter(Boolean).join(' – ')
+    }
+
+    const li = popupItem(item, $router, { canInteract })
+
+    if (canInteract) {
+      // highlight this aquifer on mouseover of the aquifer ID in the popup
+      li.onmouseenter = () => {
+        toggleAquiferHover(map, aquiferId, true)
+      }
+      li.onmouseleave = () => {
+        toggleAquiferHover(map, aquiferId, false)
+      }
+    }
+
+    ul.appendChild(li)
+  })
+
+  return container
+}
 // Creates a <div> for the ecocat's popup content
 export function createEcocatPopupElement (features, map, options = {}) {
   const canInteract = Boolean(options.canInteract)
