@@ -130,8 +130,8 @@ import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
-
 import { WELL_CLASS, WELL_SUBCLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+import { getUTCDate } from '@/common/helpers/getUTCDate.js';
 
 export default {
   name: 'SubmissionsHome',
@@ -607,14 +607,6 @@ export default {
         errors.owner_postal_code = ['Owners Postal Code Required.'];
       }
     },
-    getUTCDate(dateString) {
-      const splitDateString = dateString.split('-');
-      const parsedDateString = splitDateString.map(dateValue => parseInt(dateValue));
-      const year = parsedDateString[0];
-      const month = parsedDateString[1];
-      const day = parsedDateString[2];
-      return new Date(Date.UTC(year, month, day)).getTime();
-    },
     validateWellIdentificationPlateFields(errors) {
       const { 
         well_class,
@@ -675,8 +667,8 @@ export default {
         NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
         )).getTime();
 
-      const workStartDate = this.getUTCDate(work_start_date);
-      const workEndDate = this.getUTCDate(work_end_date);
+      const workStartDate = getUTCDate(work_start_date);
+      const workEndDate = getUTCDate(work_end_date);
 
       if (this.activityType !== 'CON') return;
 

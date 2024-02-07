@@ -577,8 +577,8 @@ import EditHistory from './EditHistory.vue'
 import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import AquiferParameters from './AquiferParameters.vue'
-
 import { WELL_SUBMISSION_STRINGS, MANDATORY_WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+import { getUTCDate } from '@/common/helpers/getUTCDate.js';
 
 export default {
   name: 'SubmissionsForm',
@@ -849,18 +849,10 @@ export default {
     editWater (coords) {
       this.$emit('editWater', coords)
     },
-    getUTCDate(dateString) {
-      const splitDateString = dateString.split('-');
-      const parsedDateString = splitDateString.map(dateValue => parseInt(dateValue));
-      const year = parsedDateString[0];
-      const month = parsedDateString[1];
-      const day = parsedDateString[2];
-      return new Date(Date.UTC(year, month, day)).getTime();
-    },
     checkNewWellConstructionDates(dateString) {
       // if (dateString !== '') return false;
       
-      const dateUTC = this.getUTCDate(dateString);
+      const dateUTC = getUTCDate(dateString);
       const newWellConstructionDateUTC = new Date(Date.UTC(
         NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
         NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
