@@ -100,6 +100,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <well-type class="my-5"
       v-if="showSection('wellType')"
       id="wellType"
+      :startDateOfWorkLabel.sync="this.startDateOfWorkLabel"
+      :endDateOfWorkLabel.sync="this.endDateOfWorkLabel"
+      :wellIdentificationPlateNumberLabel.sync="this.wellIdentificationPlateNumberLabel"
+      :wellIdentificationPlateAttachedLabel.sync="this.wellIdentificationPlateAttachedLabel"
       :wellTagNumber.sync="form.well"
       :wellStatusCode.sync="form.well_status"
       :wellActivityType.sync="activityType"
@@ -119,7 +123,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"
-      v-on:myEvent="handleThis"
+      :handleDateInput="handleDateInput"
     />
 
       <!-- Type of well -->
@@ -222,7 +226,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <method-of-drilling class="my-5"
         v-if="showSection('method')"
         id="method"
-        :drillingMethods="handleThis()"
+        :drillingMethodsLabel.sync="this.drillingMethodsLabel"
         :groundElevation.sync="form.ground_elevation"
         :groundElevationMethod.sync="form.ground_elevation_method"
         :drillingMethod.sync="form.drilling_methods"
@@ -377,6 +381,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-if="showSection('wellCompletion')"
         id="wellCompletion"
         :totalDepthDrilled.sync="form.total_depth_drilled"
+        :totalDepthDrilledLabel.sync="this.totalDepthDrilledLabel"
+        :finishedWellDepthLabel.sync="this.finishedWellDepthLabel"
         :finishedWellDepth.sync="form.finished_well_depth"
         :finalCasingStickUp.sync="form.final_casing_stick_up"
         :bedrockDepth.sync="form.bedrock_depth"
@@ -572,6 +578,8 @@ import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import AquiferParameters from './AquiferParameters.vue'
 
+import { WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+
 export default {
   name: 'SubmissionsForm',
   mixins: [inputBindingsMixin],
@@ -709,6 +717,13 @@ export default {
       },
       initLong: null,
       initLat: null,
+      startDateOfWorkLabel: WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
+      endDateOfWorkLabel: WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK,
+      wellIdentificationPlateNumberLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER,
+      wellIdentificationPlateAttachedLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
+      totalDepthDrilledLabel:WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED,
+      finishedWellDepthLabel: WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH,
+      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS,
     }
   },
   watch: {
@@ -832,11 +847,49 @@ export default {
     editWater (coords) {
       this.$emit('editWater', coords)
     },
-    handleThis (isNewWellConstruction) {
-      if (isNewWellConstruction) {
-        console.log("it should update")
-        return "Drilling Method(s) *";
-      }
+    checkNewWellConstructionDates(dateString) {
+      const newWellConstructionDateString = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
+      // if (dateString !== '') return false;
+
+      const date = new Date(`${dateString}`);
+      const newWellConstructionDate = new Date(`${newWellConstructionDateString}`);
+
+      // TODO: handle this case?
+      if (isNaN(date)) return false;
+      if (isNaN(newWellConstructionDate)) return false;
+
+      if (date < newWellConstructionDate) return false;
+
+      return true;
+    },
+    handleNewWellConstruction (isNewWellConstruction) {
+      if (isNewWellConstruction === undefined) return;
+      if (isNewWellConstruction === false) {
+        this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK;
+        this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK;
+        this.wellIdentificationPlateNumberLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
+        this.wellIdentificationPlateAttachedLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
+        this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
+        this.finishedWellDepthLabel = WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
+        this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
+      } 
+      this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK_MANDATORY;
+      this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK_MANDATORY;
+      this.wellIdentificationPlateNumberLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER_MANDATORY;
+      this.wellIdentificationPlateAttachedLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED_NMANDATORY;
+      this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED_MANDATORY;
+      this.finishedWellDepthLabel = WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH_MANDATORY;
+      this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS_MANDATORY;
+    },
+    handleDateInput(event) {
+      const dateString = event;
+      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
+      console.log("This is the handleDateInput event :", event);
+      this.handleNewWellConstruction(isNewWellConstruction)
+    },
+
+    handleCompletionLabelUpdates() {
+      console.log("We need to update these values")
     },
   },
   created () {

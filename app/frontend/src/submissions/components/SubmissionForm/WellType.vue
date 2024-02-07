@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="idPlateNumber"
-              :label="wellIdentificationPlateAttached"
+              :label="wellIdentificationPlateAttachedLabel"
               type="number"
               v-model="idPlateNumberInput"
               :errors="errors['identification_plate_number']"
@@ -155,7 +155,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="wellPlateAttached"
-              :label="wellIdentificationPlateAttached"
+              :label="wellIdentificationPlateAttachedLabel"
               type="text"
               v-model="wellPlateAttachedInput"
               :errors="errors['well_identification_plate_attached']"
@@ -205,7 +205,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
               :loaded="fieldsLoaded['work_start_date']"
-              @input="handleInput">
+              @input="handleDateInput"
+              >
           </form-input>
         </b-col>
         <b-col cols="12" md="6">
@@ -217,7 +218,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
               :loaded="fieldsLoaded['work_end_date']"
-              @input="handleInput">
+              @input="handleDateInput">
           </form-input>
         </b-col>
       </b-row>
@@ -230,8 +231,6 @@ import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
-import {WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE} from '@/common/constants.js'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -256,6 +255,11 @@ export default {
     drillerSameAsPersonResponsible: Boolean,
     waterSupplySystem: String,
     waterSupplyWell: String,
+    handleDateInput: Function,
+    startDateOfWorkLabel: String,
+    endDateOfWorkLabel: String,
+    wellIdentificationPlateNumberLabel: String,
+    wellIdentificationPlateAttachedLabel: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -281,10 +285,6 @@ export default {
     return {
       wellTagOptions: [],
       MAX_RESULTS: 50,
-      startDateOfWorkLabel: WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
-      endDateOfWorkLabel:WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK,
-      wellIdentificationPlateNumber: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER,
-      wellIdentificationPlateAttached: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
     }
   },
   computed: {
@@ -346,38 +346,6 @@ export default {
           this.wellTagNumberInput = target.well_tag_number
         }
       }
-    },
-    checkNewWellConstructionDates(dateString) {
-      const newWellConstructionDateString = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
-      // if (dateString !== '') return false;
-
-      const date = new Date(`${dateString}`);
-      const newWellConstructionDate = new Date(`${newWellConstructionDateString}`);
-
-      // TODO: handle this case?
-      if (isNaN(date)) return false;
-      if (isNaN(newWellConstructionDate)) return false;
-
-      if (date < newWellConstructionDate) return false;
-
-      return true;
-    },
-    handleInput(event) {
-      const dateString = event;
-      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
-      // this.$emit('myEvent', isNewWellConstruction);
-      if (isNewWellConstruction) {
-        this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK_MANDATORY;
-        this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK_MANDATORY;
-        this.wellIdentificationPlateNumber = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER_MANDATORY;
-        this.wellIdentificationPlateAttached = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED_NMANDATORY;
-        return;
-      } 
-      this.startDateOfWorkLabel = WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK;
-      this.endDateOfWorkLabel = WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK;
-      this.wellIdentificationPlateNumber = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
-      this.wellIdentificationPlateAttached = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
-
     },
   },
   watch: {
