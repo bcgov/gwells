@@ -130,18 +130,7 @@ Visit the following links to browse the API and frontend applications:
 
 ### Running tests:
 
-Django unit tests:
-```sh
-cd app/backend
-docker-compose exec backend python manage.py test
-```
-
-Vue unit tests:
-```sh
-cd app/frontend
-docker-compose exec frontend npm run test:unit
-```
-
+For comprehensive testing information visit the [Wiki](https://github.com/bcgov/gwells/wiki/Testing)
 Postman API tests:
 Import the json test collections in the `api-tests/` folder into [Postman](https://www.getpostman.com/).
 
