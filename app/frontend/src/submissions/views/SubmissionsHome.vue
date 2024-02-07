@@ -590,7 +590,6 @@ export default {
         owner_postal_code,
       } = this.form
 
-
       if (!owner_full_name) {
         errors.owner_full_name = ['Owners Full Name Required.'];
       }
@@ -655,7 +654,6 @@ export default {
       if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.']; }
     },
     newlyConstructedWellValidation(errors) {
-
       const { 
         work_start_date,
         work_end_date,
@@ -688,8 +686,6 @@ export default {
         this.validateWellFields(errors);
         return
       }
-
-
     },
     isFormValid () {
       const errors = {}

@@ -850,8 +850,6 @@ export default {
       this.$emit('editWater', coords)
     },
     checkNewWellConstructionDates(dateString) {
-      // if (dateString !== '') return false;
-      
       const dateUTC = getUTCDate(dateString);
       const newWellConstructionDateUTC = new Date(Date.UTC(
         NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
