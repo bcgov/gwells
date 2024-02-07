@@ -625,13 +625,11 @@ export default {
 
       let isWellIdentificationPlateToBeVerified = false;
 
-      // If Class of Wells is Dewatering/Drainage (and well subclass is permanent) or Water supply: Well Identification Plate Number, Where Identification Plate Attached
       if (well_class === WELL_CLASS.DEWATERING_DRAINAGE && well_subclass === WELL_SUBCLASS.PERMANENT) { isWellIdentificationPlateToBeVerified = true; }
       if (well_class === WELL_CLASS.WATER_SUPPLY) { isWellIdentificationPlateToBeVerified = true; }
       if (well_class === WELL_CLASS.INJECTION) { isWellIdentificationPlateToBeVerified = true; }
       if (well_class === WELL_CLASS.RECHARGE) { isWellIdentificationPlateToBeVerified = true; }
       
-      console.log("What are we doing: ", isWellIdentificationPlateToBeVerified);
       if (isWellIdentificationPlateToBeVerified == false) return;
 
       if (!identification_plate_number) {
@@ -650,7 +648,6 @@ export default {
         finished_well_depth
       } = this.form;
 
-      // Start Date of Work, End Date of Work
       if (!work_start_date) {
         errors.work_start_date = ['Start Date of Work Required.'];
       }
@@ -658,12 +655,10 @@ export default {
         errors.work_end_date = ['End Date of Work Required.'];
       }
 
-      // Drilling Method(s)
       if (drilling_methods.length === 0) {
         errors.drilling_methods = ['Drilling Methods Required.'];
       }
 
-      // Total Depth Drilled(?), Finished Well Depth, Final Casing Stick Up
       if (!total_depth_drilled) { errors.total_depth_drilled = ['Total Depth Drilled Required.']; }
       if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.']; }
     },
@@ -782,10 +777,10 @@ export default {
       })
     },
     handlePreviewButton () {
-      // if (!this.formChanges()) {
-      //   this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
-      //   return
-      // }
+      if (!this.formChanges()) {
+        this.$noty.info('<div class="errorTitle">Please add some data to your submission.</div>', { killer: true })
+        return
+      }
 
       if (!this.isFormValid()) {
         this.showErrorMessages()
