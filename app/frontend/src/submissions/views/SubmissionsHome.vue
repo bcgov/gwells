@@ -668,24 +668,20 @@ export default {
 
       const workStartDate = getUTCDate(work_start_date);
       const workEndDate = getUTCDate(work_end_date);
+      const workStartDatePastWorkEndDate = ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate);
+      const workEndDatePastMandatoryLicensingDate = (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate);
+      const workStartDatePastMandatoryLicensingDate = (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate);
 
       if (this.activityType !== TYPE_OF_WORK.CON) { return; }
 
-      if ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate) {
+      if (workStartDatePastWorkEndDate) {
         errors.work_start_date = ['Invalid Start Date comes after End Date.'];
         errors.work_end_date = ['Invalid End Date comes before Start Date.'];
       }
 
-      if (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate) {
+      if (workStartDatePastMandatoryLicensingDate || workEndDatePastMandatoryLicensingDate) {
         this.validateWellIdentificationPlateFields(errors);
         this.validateWellFields(errors);
-        return
-      }
-
-      if (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate) {
-        this.validateWellIdentificationPlateFields(errors);
-        this.validateWellFields(errors);
-        return
       }
     },
     isFormValid () {
