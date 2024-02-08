@@ -609,14 +609,12 @@ export default {
     validateWellIdentificationPlateFields(errors) {
       const { 
         well_class,
-        well_subclass,
         identification_plate_number,
         well_identification_plate_attached,
       } = this.form
 
       let isWellIdentificationPlateToBeVerified = false;
 
-      if (well_class === WELL_CLASS.DEWATERING_DRAINAGE && well_subclass === WELL_SUBCLASS.PERMANENT) { isWellIdentificationPlateToBeVerified = true; }
       if (well_class === WELL_CLASS.WATER_SUPPLY) { isWellIdentificationPlateToBeVerified = true; }
       if (well_class === WELL_CLASS.INJECTION) { isWellIdentificationPlateToBeVerified = true; }
       if (well_class === WELL_CLASS.RECHARGE) { isWellIdentificationPlateToBeVerified = true; }
