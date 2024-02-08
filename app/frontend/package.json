@@ -10,6 +10,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
+    "coverage:test": "vue-cli-service test:unit --coverage",
     "test:unit:update": "vue-cli-service test:unit -u"
   },
   "dependencies": {
