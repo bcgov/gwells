@@ -103,6 +103,35 @@ cd gwells
 docker-compose up
 ```
 
+### Running GWELLS in Debug Mode
+
+Ensure you have a `launch.json` file in the `.vscode` directory.
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Remote Django App",
+        "type": "python",
+        "request": "attach",
+        "pathMappings": [
+            {
+                "localRoot": "${workspaceFolder}/app/backend",
+                "remoteRoot": "/app/backend"
+            }
+        ],
+        "port": 3000,
+        "host": "localhost"
+    }
+    ]
+  }
+```
+
+In VS Code, press `F5` or go to **Run > Start Debugging** to run in debug mode.
+
+You can now add breakpoints within GWELLS - [more information about debugging in VS Code here.](https://code.visualstudio.com/docs/editor/debugging)
+
 ### Connecting to PGAdmin
 
 > Information in this section reflects docker-compose as of `Nov 8th, 2023`
