@@ -620,7 +620,7 @@ export default {
       const validateWellClasses = [WELL_CLASS.WATER_SUPPLY, WELL_CLASS.INJECTION, WELL_CLASS.RECHARGE]
       const isWellIdentificationPlateToBeVerified = validateWellClasses.includes(well_class)
       
-      if (isWellIdentificationPlateToBeVerified == false) return;
+      if (isWellIdentificationPlateToBeVerified == false) { return; }
 
       if (!identification_plate_number) {
         errors.identification_plate_number = ['Identification Plate Number Required.'];
@@ -669,7 +669,7 @@ export default {
       const workStartDate = getUTCDate(work_start_date);
       const workEndDate = getUTCDate(work_end_date);
 
-      if (this.activityType !== TYPE_OF_WORK.CON) return;
+      if (this.activityType !== TYPE_OF_WORK.CON) { return; }
 
       if ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate) {
         errors.work_start_date = ['Invalid Start Date comes after End Date.'];
