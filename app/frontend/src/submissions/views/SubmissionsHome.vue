@@ -666,11 +666,12 @@ export default {
         NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
         )).getTime();
 
-      const workStartDate = getUTCDate(work_start_date);
-      const workEndDate = getUTCDate(work_end_date);
-      const workStartDatePastWorkEndDate = ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate);
-      const workEndDatePastMandatoryLicensingDate = (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate);
-      const workStartDatePastMandatoryLicensingDate = (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate);
+      // const workStartDate = getUTCDate(work_start_date);
+      // const workEndDate = getUTCDate(work_end_date);
+
+      const workStartDatePastWorkEndDate = ((!isNaN(work_start_date) && !isNaN(workEndDate)) && work_start_date > work_end_date);
+      const workEndDatePastMandatoryLicensingDate = (!isNaN(work_end_date) && work_end_date >= mandatoryLicensingDate);
+      const workStartDatePastMandatoryLicensingDate = (!isNaN(work_start_date) && work_start_date >= mandatoryLicensingDate);
 
       if (this.activityType !== TYPE_OF_WORK.CON) { return; }
 
@@ -687,8 +688,8 @@ export default {
     isFormValid () {
       const errors = {}
 
-      this.groundwaterProtectionRegulationValidation(errors)
-      this.newlyConstructedWellValidation(errors)
+      this.groundwaterProtectionRegulationValidation(errors);
+      this.newlyConstructedWellValidation(errors);
 
       let validateWellClassAndIntendedWaterUse = true
       if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {

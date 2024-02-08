@@ -137,6 +137,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
        :decommissionStartDate.sync="form.decommission_start_date"
        :decommissionEndDate.sync="form.decommission_end_date"
        :workStartDate.sync="form.work_start_date"
+       :workEndDate.sync="form.work_end_date"
        :errors="errors"
        :fieldsLoaded="fieldsLoaded"
        :isStaffEdit="isStaffEdit"
