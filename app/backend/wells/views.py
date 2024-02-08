@@ -46,8 +46,15 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import (WELLS_SQL_V1, LITHOLOGY_SQL, GeoJSONIterator,
-                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
+from gwells.management.commands.export_databc import (
+    GeoJSONIterator,
+    LITHOLOGY_CHUNK_SIZE,
+    LITHOLOGY_SQL,
+    WELL_CHUNK_SIZE,
+    PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE,
+    PUMPING_TEST_AQUIFER_PARAMETER_SQL,
+    WELLS_SQL_V1,
+)
 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
@@ -905,3 +912,35 @@ class AddressGeocoder(APIView):
         else:
         # If the request was not successful, return an appropriate HTTP response
             return JsonResponse({'error': f"Error: {response.status_code} - {response.text}"}, status=500)
+
+@api_view(['GET'])
+def aquifer_pump_params(request, **kwargs):
+    realtime = request.GET.get('realtime') in ('True', 'true')
+    if realtime:
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+        bounds = None
+        bounds_sql = ''
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+
+        iterator = GeoJSONIterator(
+                        PUMPING_TEST_AQUIFER_PARAMETER_SQL.format(bounds=bounds_sql), PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE,
+                        connection.cursor(),
+                        bounds)
+        response = StreamingHttpResponse((item for item in iterator),
+                                         content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="pumpingTestAquiferParameters.json"'
+        return response
+    else:
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v2/gis/pumpingTestAquiferParameters.json')
+        return HttpResponseRedirect(url)

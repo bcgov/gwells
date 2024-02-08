@@ -37,7 +37,6 @@ from gwells.settings.base import get_env_variable
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.management.commands.export_databc import (
     AQUIFERS_SQL_V2,
-    GeoJSONIterator,
     AQUIFER_CHUNK_SIZE,
 )
 from gwells.roles import AQUIFERS_EDIT_ROLE
@@ -305,7 +304,6 @@ def aquifer_geojson_v2(request, **kwargs):
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
 
-
 AQUIFER_EXPORT_FIELDS_V2 = [
     'aquifer_id',
     'aquifer_name',
@@ -319,7 +317,6 @@ AQUIFER_EXPORT_FIELDS_V2 = [
     'demand',
     'mapping_year'
 ]
-
 
 def csv_export_v2(request, **kwargs):
     """

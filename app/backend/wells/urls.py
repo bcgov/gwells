@@ -112,6 +112,10 @@ urlpatterns = [
     url(api_path_prefix() + r'/gis/lithology$',
         views.lithology_geojson, name='well-lithology-geojson'),
 
+    # 'Pumping Test and Aquifer Parameters' endpoint for DataBC
+    url(r'api/v2/gis/aquifer-parameters$',
+        views.aquifer_pump_params, name='aquifers-parameters'),
+    
     # Well Licensing status endpoint from e-Licensing.
     url(api_path_prefix() + r'/wells/licensing$',
         views.well_licensing, name='well-licensing'),
