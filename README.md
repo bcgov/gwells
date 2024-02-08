@@ -17,23 +17,24 @@ The application is being developed as an open source solution.
 1. [Using the GWELLS API](#Using-the-gwells-api)
 1. [DataBC Export](#databc-export)
 1. [Developing GWELLS](#Developing-gwells)
-    * [Setup Prerequisites](#setup-prerequisites)
-    * [Running the GWELLS application locally](#Running-the-GWELLS-application-locally)
-    * [Authentication](#Authentication)
-    * [Running tests](#Running-tests)
-    * [Making pull requests](#Making-pull-requests)
+   - [Setup Prerequisites](#setup-prerequisites)
+   - [Running the GWELLS application locally](#Running-the-GWELLS-application-locally)
+   - [Authentication](#Authentication)
+   - [Running tests](#Running-tests)
+   - [Making pull requests](#Making-pull-requests)
 1. [Architecture](#Architecture)
 1. [Contributing](#contributing)
-    * [Code With Us](#code-with-us)
+   - [Code With Us](#code-with-us)
 1. [License](#license)
 
 ## Using the GWELLS API
 
 GWELLS maintains a REST API where public data relating to wells is made available for other applications and services.
 
-Our Swagger documentation is available at https://apps.nrs.gov.bc.ca/gwells/api/.  Some examples of GWELLS endpoints:
+Our Swagger documentation is available at https://apps.nrs.gov.bc.ca/gwells/api/. Some examples of GWELLS endpoints:
 
 Wells:
+
 ```sh
 # all wells (paginated)
 curl https://apps.nrs.gov.bc.ca/gwells/api/v1/wells
@@ -43,6 +44,7 @@ curl https://apps.nrs.gov.bc.ca/gwells/api/v1/wells?sw_lat=51.599253&sw_long=-12
 ```
 
 Aquifers:
+
 ```sh
 # all aquifers
 curl https://apps.nrs.gov.bc.ca/gwells/api/v1/aquifers
@@ -63,8 +65,9 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
 ### Setup Prerequisites
 
 **Software Requirements**
-* Docker Desktop
-* Node
+
+- Docker Desktop
+- Node
 
 **Actions to take**:
 
@@ -85,23 +88,54 @@ For gwells to interact with your local instance of Min.IO add the appropriate se
 
 Some GWELLS pages (submitting new well reports, adding or editing aquifers, or adding or editing qualified well drillers to the registry) require authentication. Authentication uses the Province's Single Sign-On system. A GWELLS team member can request access for collaborators if needed.
 
-
 ### Running the GWELLS application locally
 
 - [Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
 - From the gwells folder run `docker-compose up -d`
 
 Login to Artifactory for pulling the backend base image:
+
 ```sh
 docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
 ```
+
 Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets)
 
 Then, run the application with Docker:
+
 ```sh
 cd gwells
 docker-compose up
 ```
+
+### Running GWELLS in Debug Mode
+
+Ensure you have a `launch.json` file in the `.vscode` directory.
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Remote Django App",
+      "type": "python",
+      "request": "attach",
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/app/backend",
+          "remoteRoot": "/app/backend"
+        }
+      ],
+      "port": 3000,
+      "host": "localhost"
+    }
+  ]
+}
+```
+
+In VS Code, press `F5` or go to **Run > Start Debugging** to run in debug mode.
+
+You can now add breakpoints within GWELLS - [more information about debugging in VS Code here.](https://code.visualstudio.com/docs/editor/debugging)
 
 ### Connecting to PGAdmin
 
@@ -110,6 +144,7 @@ docker-compose up
 PG Admin is setup in the `docker-compose up` and requires no additional installations
 
 Steps:
+
 1. Connect to Pgadmin through [localhost](http://localhost:5050)
 1. Login using username: `admin@gwells.com`, password: `admin`
 1. Right click `Server` -> `Register` -> `Server`
@@ -117,7 +152,7 @@ Steps:
 1. Under the `Connection` tab supply the following values
 
 | Field               | Value    |
-|   ---               | ---      |
+| ------------------- | -------- |
 | Host name / address | `db`     |
 | Port                | `5432`   |
 | Username            | `gwells` |
@@ -125,8 +160,8 @@ Steps:
 
 Visit the following links to browse the API and frontend applications:
 
-* Django REST API development server: http://localhost:8000/gwells/api/
-* Vue frontend development server: http://localhost:8080/
+- Django REST API development server: http://localhost:8000/gwells/api/
+- Vue frontend development server: http://localhost:8080/
 
 ### Running tests:
 
@@ -161,7 +196,7 @@ docker-compose exec backend python manage.py import_licences
 
 ### Making pull requests
 
-Pull requests made from branches in the bcgov/gwells repo will kick off a dev pipeline, which runs tests and deploys a preview environment containing your changes.  The pull request page will update when the environment is deployed and mandatory checks (unit tests, etc.) pass or fail.
+Pull requests made from branches in the bcgov/gwells repo will kick off a dev pipeline, which runs tests and deploys a preview environment containing your changes. The pull request page will update when the environment is deployed and mandatory checks (unit tests, etc.) pass or fail.
 
 ## Architecture
 
@@ -186,7 +221,9 @@ Many of our features have been developed by members of the community. Check the 
 Code released under the [Apache License, Version 2.0](https://github.com/bcgov/gwells/blob/master/LICENSE).
 
 ## Additional Documentation
+
 More documentation for the repository can be found in the following places
+
 - [Frontend](/app/frontend/README.md)
 - [OpenShift](/openshift/README.md)
-- [Tests](/tests/api-tests/README.md) 
+- [Tests](/tests/api-tests/README.md)
