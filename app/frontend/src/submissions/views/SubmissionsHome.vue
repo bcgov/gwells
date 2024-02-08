@@ -130,8 +130,9 @@ import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
-import { WELL_CLASS, WELL_SUBCLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+import { TYPE_OF_WORK, WELL_CLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
 import { getUTCDate } from '@/common/helpers/getUTCDate.js';
+import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js';
 
 export default {
   name: 'SubmissionsHome',
@@ -576,7 +577,7 @@ export default {
 
         // non-form fields that should be saved with form
         meta: {
-          drillerSameAsPersonResponsible: false 
+          drillerSameAsPersonResponsible: false
         }
       }
       this.componentUpdateTrigger = Date.now()
@@ -605,6 +606,9 @@ export default {
       if (!owner_postal_code) {
         errors.owner_postal_code = ['Owners Postal Code Required.'];
       }
+      if (owner_postal_code && !isValidPostalCodeOrZipCode(owner_postal_code)) {
+        errors.owner_postal_code = ['Invalid Postal Code or ZIP Code.'];
+      }
     },
     validateWellIdentificationPlateFields(errors) {
       const { 
@@ -613,11 +617,8 @@ export default {
         well_identification_plate_attached,
       } = this.form
 
-      let isWellIdentificationPlateToBeVerified = false;
-
-      if (well_class === WELL_CLASS.WATER_SUPPLY) { isWellIdentificationPlateToBeVerified = true; }
-      if (well_class === WELL_CLASS.INJECTION) { isWellIdentificationPlateToBeVerified = true; }
-      if (well_class === WELL_CLASS.RECHARGE) { isWellIdentificationPlateToBeVerified = true; }
+      const validateWellClasses = [WELL_CLASS.WATER_SUPPLY, WELL_CLASS.INJECTION, WELL_CLASS.RECHARGE]
+      const isWellIdentificationPlateToBeVerified = validateWellClasses.includes(well_class)
       
       if (isWellIdentificationPlateToBeVerified == false) return;
 
@@ -643,13 +644,15 @@ export default {
       if (!work_end_date) {
         errors.work_end_date = ['End Date of Work Required.'];
       }
-
       if (drilling_methods.length === 0) {
         errors.drilling_methods = ['Drilling Methods Required.'];
       }
-
-      if (!total_depth_drilled) { errors.total_depth_drilled = ['Total Depth Drilled Required.']; }
-      if (!finished_well_depth) { errors.finished_well_depth = ['Finished Well Depth Required.']; }
+      if (!total_depth_drilled) { 
+        errors.total_depth_drilled = ['Total Depth Drilled Required.']; 
+      }
+      if (!finished_well_depth) { 
+        errors.finished_well_depth = ['Finished Well Depth Required.']; 
+      }
     },
     newlyConstructedWellValidation(errors) {
       const { 
@@ -666,7 +669,7 @@ export default {
       const workStartDate = getUTCDate(work_start_date);
       const workEndDate = getUTCDate(work_end_date);
 
-      if (this.activityType !== 'CON') return;
+      if (this.activityType !== TYPE_OF_WORK.CON) return;
 
       if ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate) {
         errors.work_start_date = ['Invalid Start Date comes after End Date.'];

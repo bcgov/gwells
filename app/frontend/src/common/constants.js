@@ -60,6 +60,11 @@ export const TOOLTIP_TEXT = {
   },
 }
 
+export const TYPE_OF_WORK = {
+  CON: "CON",
+  ALT: "ALT",
+  DEC: "DEC",
+}
 
 export const WELL_CLASS = {
   DEWATERING_DRAINAGE: "DEW_DRA",

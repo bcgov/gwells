@@ -885,10 +885,6 @@ export default {
       const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
       this.handleNewWellConstruction(isNewWellConstruction)
     },
-
-    handleCompletionLabelUpdates() {
-      console.log("We need to update these values")
-    },
   },
   created () {
     // When the form is saved, reset the formValueChanged variable.
