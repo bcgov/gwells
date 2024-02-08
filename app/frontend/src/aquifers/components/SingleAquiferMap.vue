@@ -35,6 +35,7 @@ import {
   wellsEmsLayer,
   wellsUncorrelatedLayer,
   wellsBaseAndArtesianLayer,
+  wellsAquiferParameters,
   aquifersLineLayer,
   aquifersFillLayer,
   setupAquiferHover,
@@ -44,6 +45,7 @@ import {
   DATABC_ECOCAT_SOURCE_ID,
   AQUIFERS_FILL_LAYER_ID,
   WELLS_BASE_AND_ARTESIAN_LAYER_ID,
+  WELLS_AQUIFER_PARAMETER_LAYER_ID,
   WELLS_EMS_LAYER_ID,
   WELLS_UNCORRELATED_LAYER_ID,
   aquiferLayerFilter,
@@ -56,7 +58,9 @@ import {
   WELLS_SOURCE,
   AQUIFERS_SOURCE,
   observationWellsLayer,
-  WELLS_OBSERVATION_LAYER_ID
+  WELLS_OBSERVATION_LAYER_ID,
+  
+
 } from '../../common/mapbox/layers'
 import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
 import { LayersControl, LegendControl } from '../../common/mapbox/controls'
@@ -134,12 +138,14 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
-            },
-            {
-              imageSrc: wellsHydraulicLegendSrc,
-              label: 'aquifer parameters'
             }
           ]
+        },
+        {
+          show: true,
+          id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
+          label: 'Wells - aquifer parameters', 
+          imageSrc: wellsHydraulicLegendSrc
         },
         {
           show: false,
@@ -274,6 +280,10 @@ export default {
           [WELLS_UNCORRELATED_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_AQUIFER_PARAMETER_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
           }
         }
         setupFeatureTooltips(this.map, tooltipLayers)
@@ -317,6 +327,7 @@ export default {
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer(),
+          wellsAquiferParameters(),
           observationWellsLayer({ layout: { visibility: 'none' } }),
           wellsEmsLayer({ layout: { visibility: 'none' } }),
           wellsUncorrelatedLayer({ layout: { visibility: 'none' } })
@@ -425,7 +436,8 @@ export default {
           WELLS_BASE_AND_ARTESIAN_LAYER_ID,
           WELLS_OBSERVATION_LAYER_ID,
           WELLS_UNCORRELATED_LAYER_ID,
-          WELLS_EMS_LAYER_ID
+          WELLS_EMS_LAYER_ID,
+          WELLS_AQUIFER_PARAMETER_LAYER_ID
         ]
       })
     },

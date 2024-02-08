@@ -6,7 +6,7 @@ import {
   AQUIFERS_FILL_LAYER_ID,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_GROUND_WATER_LICENCES_LAYER_ID,
-  DATABC_SURFACE_WATER_LICENCES_LAYER_ID
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
 } from '../common/mapbox/layers'
 import { popupItems, popupItem } from '../common/mapbox/popup'
 
@@ -132,7 +132,6 @@ export function createAquiferPopupElement (features, map, $router, options = {})
 
   return container
 }
-
 // Creates a <div> for the ecocat's popup content
 export function createEcocatPopupElement (features, map, options = {}) {
   const canInteract = Boolean(options.canInteract)

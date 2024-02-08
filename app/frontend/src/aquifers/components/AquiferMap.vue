@@ -53,7 +53,9 @@ import {
   WELLS_SOURCE,
   AQUIFERS_SOURCE,
   observationWellsLayer,
-  WELLS_OBSERVATION_LAYER_ID
+  WELLS_OBSERVATION_LAYER_ID,
+  WELLS_AQUIFER_PARAMETER_LAYER_ID,
+  wellsAquiferParameters,
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -68,7 +70,8 @@ import {
   createAquiferPopupElement,
   createWellPopupElement,
   createEcocatPopupElement,
-  createWaterLicencePopupElement
+  createWaterLicencePopupElement,
+  createWellAquiferParametersPopupElement
 } from '../popup'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
@@ -146,12 +149,14 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
-            },
-            {
-              imageSrc: wellsHydraulicLegendSrc,
-              label: 'aquifer parameters'
             }
           ]
+        },
+        {
+          show: false,
+          id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
+          label: 'Wells - aquifer parameters', 
+          imageSrc: wellsHydraulicLegendSrc
         },
         {
           show: false,
@@ -312,6 +317,10 @@ export default {
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_AQUIFER_PARAMETER_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
           }
         }
 
@@ -349,7 +358,8 @@ export default {
           surfaceWaterLicencesLayer({ layout: { visibility: 'none' } }),
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
-          observationWellsLayer({ layout: { visibility: 'none' } })
+          observationWellsLayer({ layout: { visibility: 'none' } }),
+          wellsAquiferParameters({ layout: { visibility: 'none' } })
         ]
       }
     },
@@ -468,7 +478,13 @@ export default {
     createWellPopupElement (features, { canInteract }) {
       return createWellPopupElement(features, this.map, this.$router, {
         canInteract,
-        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID ]
+        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID, WELLS_AQUIFER_PARAMETER_LAYER_ID ]
+      })
+    },
+    createWellAquiferParametersPopupElement (features, { canInteract }) {
+      return createWellAquiferParametersPopupElement(features, this.map, this.$router, {
+        canInteract,
+        wellLayerIds: [ WELLS_AQUIFER_PARAMETER_LAYER_ID]
       })
     },
     createEcocatPopupElement (features, { canInteract }) {
