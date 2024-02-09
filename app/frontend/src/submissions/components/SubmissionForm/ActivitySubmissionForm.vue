@@ -578,7 +578,7 @@ import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import AquiferParameters from './AquiferParameters.vue'
 import { WELL_SUBMISSION_STRINGS, MANDATORY_WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
-// import { getUTCDate } from '@/common/helpers/getUTCDate.js';
+import { getUTCDate } from '@/common/helpers/getUTCDate.js';
 
 export default {
   name: 'SubmissionsForm',
@@ -883,9 +883,9 @@ export default {
       this.drillingMethodsLabel = MANDATORY_WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
     },
     handleDateInput(event) {
-      // const dateString = event;
-      // const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
-      // this.handleNewWellConstruction(isNewWellConstruction)
+      const dateString = event;
+      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
+      this.handleNewWellConstruction(isNewWellConstruction)
     },
   },
   created () {
