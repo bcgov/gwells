@@ -204,7 +204,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               placeholder="YYYY-MM-DD"
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
-              :loaded="fieldsLoaded['work_start_date']">
+              :loaded="fieldsLoaded['work_start_date']"
+              @input="handleDateInput"
+              >
           </form-input>
         </b-col>
         <b-col cols="12" md="6">
@@ -215,7 +217,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               placeholder="YYYY-MM-DD"
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
-              :loaded="fieldsLoaded['work_end_date']">
+              :loaded="fieldsLoaded['work_end_date']"
+              @input="handleDateInput"
+              >
           </form-input>
         </b-col>
       </b-row>
@@ -252,6 +256,8 @@ export default {
     drillerSameAsPersonResponsible: Boolean,
     waterSupplySystem: String,
     waterSupplyWell: String,
+    startDateOfWorkLabel: String,
+    endDateOfWorkLabel: String,
     errors: {
       type: Object,
       default: () => ({})
