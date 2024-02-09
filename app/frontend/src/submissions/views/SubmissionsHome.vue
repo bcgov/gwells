@@ -130,8 +130,9 @@ import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
-import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js';
-import { getUTCDate } from '@/common/helpers/getUTCDate.js';
+import { TYPE_OF_WORK, WELL_CLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js'
+import { getUTCDate } from '@/common/helpers/getUTCDate.js'
 
 export default {
   name: 'SubmissionsHome',

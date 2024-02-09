@@ -55,7 +55,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="6">
           <form-input
               id="drillingMethod"
-              label="Drilling Method(s)"
+              :label="drillingMethodsLabel"
               select
               :options="codes.drilling_methods"
               value-field="drilling_method_code"
@@ -105,6 +105,7 @@ export default {
     drillingMethod: Array,
     otherDrillingMethod: String,
     wellOrientationStatus: null,
+    drillingMethodsLabel: String,
     errors: {
       type: Object,
       default: () => ({})
