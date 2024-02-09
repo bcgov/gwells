@@ -131,7 +131,7 @@ import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/Acti
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { TYPE_OF_WORK, WELL_CLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
-import { getUTCDate } from '@/common/helpers/getUTCDate.js';
+// import { getUTCDate } from '@/common/helpers/getUTCDate.js';
 import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js';
 
 export default {
@@ -660,18 +660,23 @@ export default {
         work_end_date,
       } = this.form
       
-      const mandatoryLicensingDate = new Date(Date.UTC(
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
-        )).getTime();
+      const mandatoryLicensingDate = '2024-01-01T00:00:00Z';
+      
+      // new Date(Date.UTC(
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+      //   )).getTime();
 
       // const workStartDate = getUTCDate(work_start_date);
       // const workEndDate = getUTCDate(work_end_date);
 
-      const workStartDatePastWorkEndDate = ((!isNaN(work_start_date) && !isNaN(workEndDate)) && work_start_date > work_end_date);
-      const workEndDatePastMandatoryLicensingDate = (!isNaN(work_end_date) && work_end_date >= mandatoryLicensingDate);
-      const workStartDatePastMandatoryLicensingDate = (!isNaN(work_start_date) && work_start_date >= mandatoryLicensingDate);
+      const workStartDate = new Date(`${work_start_date}T00:00:00Z`);
+      const workEndDate = new Date(`${work_end_date}T00:00:00Z`);
+
+      const workStartDatePastWorkEndDate = ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate);
+      const workEndDatePastMandatoryLicensingDate = (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate);
+      const workStartDatePastMandatoryLicensingDate = (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate);
 
       if (this.activityType !== TYPE_OF_WORK.CON) { return; }
 
