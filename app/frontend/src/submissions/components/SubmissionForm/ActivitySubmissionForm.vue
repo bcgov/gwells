@@ -99,6 +99,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <well-type class="my-5"
       v-if="showSection('wellType')"
       id="wellType"
+      :startDateOfWorkLabel.sync="this.startDateOfWorkLabel"
+      :endDateOfWorkLabel.sync="this.endDateOfWorkLabel"
+      :wellIdentificationPlateNumberLabel.sync="this.wellIdentificationPlateNumberLabel"
+      :wellIdentificationPlateAttachedLabel.sync="this.wellIdentificationPlateAttachedLabel"
       :wellTagNumber.sync="form.well"
       :wellStatusCode.sync="form.well_status"
       :wellActivityType.sync="activityType"
@@ -220,6 +224,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <method-of-drilling class="my-5"
         v-if="showSection('method')"
         id="method"
+        :drillingMethodsLabel.sync="this.drillingMethodsLabel"
         :groundElevation.sync="form.ground_elevation"
         :groundElevationMethod.sync="form.ground_elevation_method"
         :drillingMethod.sync="form.drilling_methods"
@@ -373,6 +378,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <completion class="my-5"
         v-if="showSection('wellCompletion')"
         id="wellCompletion"
+        :totalDepthDrilledLabel.sync="this.totalDepthDrilledLabel"
+        :finishedWellDepthLabel.sync="this.finishedWellDepthLabel"
         :totalDepthDrilled.sync="form.total_depth_drilled"
         :finishedWellDepth.sync="form.finished_well_depth"
         :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -568,6 +575,7 @@ import EditHistory from './EditHistory.vue'
 import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import AquiferParameters from './AquiferParameters.vue'
+import { WELL_SUBMISSION_STRINGS, MANDATORY_WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
 
 export default {
   name: 'SubmissionsForm',
@@ -706,6 +714,15 @@ export default {
       },
       initLong: null,
       initLat: null,
+      // Labelling "Start Date of Work" and "End Date of Work" as mandatory.
+      // To push users to input dates but to allow for empty dates.
+      startDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
+      endDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK,
+      wellIdentificationPlateNumberLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER,
+      wellIdentificationPlateAttachedLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
+      totalDepthDrilledLabel:WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED,
+      finishedWellDepthLabel: WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH,
+      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS,
     }
   },
   watch: {
