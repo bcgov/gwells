@@ -691,6 +691,9 @@ export default {
     isFormValid () {
       const errors = {}
 
+      this.groundwaterProtectionRegulationValidation(errors);
+      this.newlyConstructedWellValidation(errors);
+
       let validateWellClassAndIntendedWaterUse = true
       if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {
         validateWellClassAndIntendedWaterUse = false
