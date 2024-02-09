@@ -122,6 +122,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"
+      :handleDateInput="handleDateInput"
     />
 
       <!-- Type of well -->
