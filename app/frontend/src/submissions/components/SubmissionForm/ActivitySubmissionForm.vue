@@ -883,9 +883,9 @@ export default {
       this.drillingMethodsLabel = MANDATORY_WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
     },
     handleDateInput(event) {
-      const dateString = event;
-      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
-      this.handleNewWellConstruction(isNewWellConstruction)
+      // const dateString = event;
+      // const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
+      // this.handleNewWellConstruction(isNewWellConstruction)
     },
   },
   created () {
