@@ -828,7 +828,45 @@ export default {
     },
     editWater (coords) {
       this.$emit('editWater', coords)
-    }
+    },
+    checkNewWellConstructionDates(dateString) {
+      const dateUTC = new Date(`${dateString}T00:00:00Z`);
+      const newWellConstructionDateUTC = '2024-01-01T00:00:00Z';
+      
+      // new Date(Date.UTC(
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+      //   )).getTime();
+
+      if (isNaN(dateUTC)) return false;
+      if (isNaN(newWellConstructionDateUTC)) return false;
+
+      if (dateUTC < newWellConstructionDateUTC) return false;
+
+      return true;
+    },
+    handleNewWellConstruction (isNewWellConstruction) {
+      if (isNewWellConstruction === undefined) return;
+      if (isNewWellConstruction === false) {
+        this.wellIdentificationPlateNumberLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
+        this.wellIdentificationPlateAttachedLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
+        this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
+        this.finishedWellDepthLabel = WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
+        this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
+        return;
+      } 
+      this.wellIdentificationPlateNumberLabel = MANDATORY_WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
+      this.wellIdentificationPlateAttachedLabel = MANDATORY_WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
+      this.totalDepthDrilledLabel = MANDATORY_WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
+      this.finishedWellDepthLabel = MANDATORY_WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
+      this.drillingMethodsLabel = MANDATORY_WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
+    },
+    handleDateInput(event) {
+      const dateString = event;
+      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
+      this.handleNewWellConstruction(isNewWellConstruction)
+    },
   },
   created () {
     // When the form is saved, reset the formValueChanged variable.
