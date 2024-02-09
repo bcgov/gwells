@@ -660,19 +660,14 @@ export default {
         work_end_date,
       } = this.form
       
-      const mandatoryLicensingDate = '2024-01-01T00:00:00Z';
-      
-      // new Date(Date.UTC(
-      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
-      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
-      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
-      //   )).getTime();
+      const mandatoryLicensingDate = new Date(Date.UTC(
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+        )).getTime();
 
-      // const workStartDate = getUTCDate(work_start_date);
-      // const workEndDate = getUTCDate(work_end_date);
-
-      const workStartDate = new Date(`${work_start_date}T00:00:00Z`);
-      const workEndDate = new Date(`${work_end_date}T00:00:00Z`);
+      const workStartDate = getUTCDate(work_start_date);
+      const workEndDate = getUTCDate(work_end_date);
 
       const workStartDatePastWorkEndDate = ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate);
       const workEndDatePastMandatoryLicensingDate = (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate);

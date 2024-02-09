@@ -51,7 +51,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
       <p>All form fields marked with a trailing asterisk are mandatory fields.</p>
-      
+
       <!-- Form load/save -->
       <b-row v-if="!isStaffEdit">
         <b-col class="text-right">
@@ -850,14 +850,12 @@ export default {
       this.$emit('editWater', coords)
     },
     checkNewWellConstructionDates(dateString) {
-      const dateUTC = new Date(`${dateString}T00:00:00Z`);
-      const newWellConstructionDateUTC = '2024-01-01T00:00:00Z';
-      
-      // new Date(Date.UTC(
-      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
-      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
-      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
-      //   )).getTime();
+      const dateUTC = getUTCDate(dateString);
+      const newWellConstructionDateUTC = new Date(Date.UTC(
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+        )).getTime();
 
       if (isNaN(dateUTC)) return false;
       if (isNaN(newWellConstructionDateUTC)) return false;
