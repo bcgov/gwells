@@ -38,6 +38,7 @@ from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.management.commands.export_databc import (
     AQUIFERS_SQL_V2,
     AQUIFER_CHUNK_SIZE,
+    GeoJSONIterator
 )
 from gwells.roles import AQUIFERS_EDIT_ROLE
 from aquifers import serializers, serializers_v2
