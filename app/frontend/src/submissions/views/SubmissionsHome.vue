@@ -131,6 +131,7 @@ import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/Acti
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js';
+import { getUTCDate } from '@/common/helpers/getUTCDate.js';
 
 export default {
   name: 'SubmissionsHome',

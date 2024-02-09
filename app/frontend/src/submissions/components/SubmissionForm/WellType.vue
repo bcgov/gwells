@@ -200,7 +200,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               id="workStartDateInput"
               type="date"
-              label="Start Date of Work *"
+              :label="startDateOfWorkLabel"
               placeholder="YYYY-MM-DD"
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
@@ -213,7 +213,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               id="workEndDateInput"
               type="date"
-              label="End Date of Work *"
+              :label="endDateOfWorkLabel"
               placeholder="YYYY-MM-DD"
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
