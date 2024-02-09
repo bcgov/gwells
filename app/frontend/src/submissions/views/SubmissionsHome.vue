@@ -130,6 +130,7 @@ import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
+import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js';
 
 export default {
   name: 'SubmissionsHome',
@@ -578,6 +579,114 @@ export default {
         }
       }
       this.componentUpdateTrigger = Date.now()
+    },
+    groundwaterProtectionRegulationValidation(errors) {
+      const {
+        owner_full_name, 
+        owner_mailing_address,
+        owner_city,
+        owner_province_state,
+        owner_postal_code,
+      } = this.form
+
+      if (!owner_full_name) {
+        errors.owner_full_name = ['Owners Full Name Required.'];
+      }
+      if (!owner_mailing_address) {
+        errors.owner_mailing_address = ['Owners Mailing Address Required.'];
+      }
+      if (!owner_city) {
+        errors.owner_city = ['Owners City Required.'];
+      }
+      if (!owner_province_state) {
+        errors.owner_province_state = ['Owners Province or State Required.'];
+      }
+      if (!owner_postal_code) {
+        errors.owner_postal_code = ['Owners Postal Code Required.'];
+      }
+      if (owner_postal_code && !isValidPostalCodeOrZipCode(owner_postal_code)) {
+        errors.owner_postal_code = ['Invalid Postal Code or ZIP Code.'];
+      }
+    },
+    validateWellIdentificationPlateFields(errors) {
+      const { 
+        well_class,
+        identification_plate_number,
+        well_identification_plate_attached,
+      } = this.form
+
+      const validateWellClasses = [WELL_CLASS.WATER_SUPPLY, WELL_CLASS.INJECTION, WELL_CLASS.RECHARGE]
+      const isWellIdentificationPlateToBeVerified = validateWellClasses.includes(well_class)
+      
+      if (isWellIdentificationPlateToBeVerified == false) { return; }
+
+      if (!identification_plate_number) {
+        errors.identification_plate_number = ['Identification Plate Number Required.'];
+      }
+      if (!well_identification_plate_attached) {
+        errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
+      }
+    },
+    validateWellFields(errors) {
+      const { 
+        work_start_date, 
+        work_end_date, 
+        drilling_methods, 
+        total_depth_drilled, 
+        finished_well_depth
+      } = this.form;
+
+      if (!work_start_date) {
+        errors.work_start_date = ['Start Date of Work Required.'];
+      }
+      if (!work_end_date) {
+        errors.work_end_date = ['End Date of Work Required.'];
+      }
+      if (drilling_methods.length === 0) {
+        errors.drilling_methods = ['Drilling Methods Required.'];
+      }
+      if (!total_depth_drilled) { 
+        errors.total_depth_drilled = ['Total Depth Drilled Required.']; 
+      }
+      if (!finished_well_depth) { 
+        errors.finished_well_depth = ['Finished Well Depth Required.']; 
+      }
+    },
+    newlyConstructedWellValidation(errors) {
+      const { 
+        work_start_date,
+        work_end_date,
+      } = this.form
+      
+      const mandatoryLicensingDate = '2024-01-01T00:00:00Z';
+      
+      // new Date(Date.UTC(
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
+      //   NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
+      //   )).getTime();
+
+      // const workStartDate = getUTCDate(work_start_date);
+      // const workEndDate = getUTCDate(work_end_date);
+
+      const workStartDate = new Date(`${work_start_date}T00:00:00Z`);
+      const workEndDate = new Date(`${work_end_date}T00:00:00Z`);
+
+      const workStartDatePastWorkEndDate = ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate);
+      const workEndDatePastMandatoryLicensingDate = (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate);
+      const workStartDatePastMandatoryLicensingDate = (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate);
+
+      if (this.activityType !== TYPE_OF_WORK.CON) { return; }
+
+      if (workStartDatePastWorkEndDate) {
+        errors.work_start_date = ['Invalid Start Date comes after End Date.'];
+        errors.work_end_date = ['Invalid End Date comes before Start Date.'];
+      }
+
+      if (workStartDatePastMandatoryLicensingDate || workEndDatePastMandatoryLicensingDate) {
+        this.validateWellIdentificationPlateFields(errors);
+        this.validateWellFields(errors);
+      }
     },
     isFormValid () {
       const errors = {}
