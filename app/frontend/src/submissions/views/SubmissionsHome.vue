@@ -290,7 +290,11 @@ export default {
           data[key] = this.filterBlankRows(data[key])
         }
       })
-
+      data.aquifer_parameters_set = data.aquifer_parameters_set.map((item, index) => {
+    // Create a copy of the object without the "testing_number" and "well" property
+    const { testing_number,well, ...newItem } = item;
+    return newItem;
+});
       // Check to see if we are currently saving this form. If so - don't try to POST again
       if (this.formSubmitLoading) { return }
 
