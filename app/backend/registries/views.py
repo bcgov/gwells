@@ -205,7 +205,11 @@ class PersonOptionsView(APIView):
         result['regional_areas'] = \
             list(map(lambda item: RegionalAreaSerializer(item).data,
                      RegionalArea.objects.all().order_by('name')))
-
+        substring = "Regional District of"
+        for item in result['regional_areas']:
+            if substring in item['name']:
+                item['name'] = item['name'].replace(substring + " ", "") + ", " + substring
+        result['regional_areas'].sort(key=lambda item: item['name'])
         return Response(result)
 
 
