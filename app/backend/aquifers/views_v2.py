@@ -181,21 +181,17 @@ def _aquifer_qs(request):
     # if Aquifer parameters flag is set, obtain list of wells with aquifer parameters set and compare its aquifer id against the original query set
     # remove aquifers that doesn't have a match from the original query set
     if (aquifer_parameters):
-        # wqs = Well.objects.filter(Q(transmissivity__isnull=False) | Q(storativity__isnull=False) | (Q(hydraulic_conductivity__isnull=False) & ~Q(hydraulic_conductivity__exact='')), aquifer_id__isnull=False)
         # Get wells that are associated with an aquifer
-        wqs = Well.objects.filter(aquifer_id__isnull=False)
+        well_qs = Well.objects.filter(aquifer_id__isnull=False)
         # Get AquiferParameter records with a non null well_tag_number
-        apqs = AquiferParameters.objects.filter(Q(well__isnull=False)).values()
-        print(apqs[0])
+        aquifer_parameter_qs = AquiferParameters.objects.filter(Q(well__isnull=False)).values()
         # Make an array with just well_tag_number and strip out everything else
-        aquiferparameter_well_tag_array = [aquiferparameter['well_id'] for aquiferparameter in apqs]
+        aquiferparameter_well_tag_array = [aquiferparameter['well_id'] for aquiferparameter in aquifer_parameter_qs]
         # Filter wells queryset to get only the wells with aquifer parameters
-        wells_with_ap_qs = wqs.filter(well_tag_number__in = aquiferparameter_well_tag_array)
+        wells_with_ap_qs = well_qs.filter(well_tag_number__in = aquiferparameter_well_tag_array)
         # Make an array with just aquifer_id and strip out everything else
         well_aquifer_id_array = [well.aquifer_id for well in wells_with_ap_qs]
-
-        #well_aquifer_id_array = [well.aquifer_id for well in wqs]
-        
+        # Filter Aquifer queryset to get only aquifers that have a well with aquifer parameters
         qs = qs.filter(aquifer_id__in = well_aquifer_id_array)
 
     return qs
