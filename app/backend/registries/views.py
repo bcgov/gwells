@@ -13,8 +13,9 @@
 """
 
 import reversion
+import re
 from collections import OrderedDict
-
+import re
 from django.db.models import Q, Prefetch, Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
@@ -159,7 +160,22 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
 
 
 class PersonOptionsView(APIView):
-
+    
+    def filterRegionalAreas(self, result):
+        """
+        Modify substrings shown in the registries search to move 'Regional District of' to the back
+        The search uses a uuid and not the name key, so this operation is safe
+        Args:
+            result (List): List of regions from the serializer
+        """
+        substring = '^Regional Districts? of'
+        for item in result:
+            match = re.match(substring, item['name'])
+            if match:
+                district = match.group(0)
+                item['name'] = item['name'].replace(match.group(0) + " ", "") + ", " + district
+        result.sort(key=lambda item: item['name'])
+        
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, format=None, **kwargs):
         result = {}
@@ -205,11 +221,8 @@ class PersonOptionsView(APIView):
         result['regional_areas'] = \
             list(map(lambda item: RegionalAreaSerializer(item).data,
                      RegionalArea.objects.all().order_by('name')))
-        substring = "Regional District of"
-        for item in result['regional_areas']:
-            if substring in item['name']:
-                item['name'] = item['name'].replace(substring + " ", "") + ", " + substring
-        result['regional_areas'].sort(key=lambda item: item['name'])
+        self.filterRegionalAreas(result['regional_areas'])
+        
         return Response(result)
 
 
