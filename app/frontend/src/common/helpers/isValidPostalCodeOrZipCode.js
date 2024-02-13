@@ -10,7 +10,5 @@ export function isValidPostalCodeOrZipCode(code) {
     const isZip = US_ZIP_REGEX.test(code);
     const isPostalCode = CANADA_POSTAL_CODE_REGEX.test(code);
 
-    if (isZip) return isZip;
-
-    return isPostalCode;
+    return isPostalCode || isZip;
 }
