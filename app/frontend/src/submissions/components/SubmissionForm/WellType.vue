@@ -205,7 +205,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
               :loaded="fieldsLoaded['work_start_date']"
-              @input="handleDateInput"
+              @input="handleDateInput($event, 'workStartDate')"
               >
           </form-input>
         </b-col>
@@ -218,7 +218,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
               :loaded="fieldsLoaded['work_end_date']"
-              @input="handleDateInput"
+              @input="handleDateInput($event, 'workEndDate')"
               >
           </form-input>
         </b-col>

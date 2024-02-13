@@ -132,7 +132,6 @@ import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { TYPE_OF_WORK, WELL_CLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
 import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js'
-import { getUTCDate } from '@/common/helpers/getUTCDate.js'
 
 export default {
   name: 'SubmissionsHome',
@@ -660,18 +659,11 @@ export default {
         work_end_date,
       } = this.form
       
-      const mandatoryLicensingDate = new Date(Date.UTC(
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
-        )).getTime();
+      const mandatoryLicensingDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
 
-      const workStartDate = getUTCDate(work_start_date);
-      const workEndDate = getUTCDate(work_end_date);
-
-      const workStartDatePastWorkEndDate = ((!isNaN(workStartDate) && !isNaN(workEndDate)) && workStartDate > workEndDate);
-      const workEndDatePastMandatoryLicensingDate = (!isNaN(workEndDate) && workEndDate >= mandatoryLicensingDate);
-      const workStartDatePastMandatoryLicensingDate = (!isNaN(workStartDate) && workStartDate >= mandatoryLicensingDate);
+      const workStartDatePastWorkEndDate = ((work_start_date !== '' && work_end_date !== '') && work_start_date > work_end_date);
+      const workEndDatePastMandatoryLicensingDate = (work_end_date !== '' && work_end_date >= mandatoryLicensingDate);
+      const workStartDatePastMandatoryLicensingDate = (work_start_date !== '' && work_start_date >= mandatoryLicensingDate);
 
       if (this.activityType !== TYPE_OF_WORK.CON) { return; }
 
@@ -688,8 +680,11 @@ export default {
     isFormValid () {
       const errors = {}
 
-      this.groundwaterProtectionRegulationValidation(errors);
-      this.newlyConstructedWellValidation(errors);
+      // We don't want to validate on edits of older wells
+      if (this.activityType !== 'STAFF_EDIT') {
+        this.groundwaterProtectionRegulationValidation(errors);
+        this.newlyConstructedWellValidation(errors);
+      }
 
       let validateWellClassAndIntendedWaterUse = true
       if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {

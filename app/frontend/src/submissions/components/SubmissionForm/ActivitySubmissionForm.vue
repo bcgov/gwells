@@ -577,8 +577,12 @@ import EditHistory from './EditHistory.vue'
 import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import AquiferParameters from './AquiferParameters.vue'
-import { WELL_SUBMISSION_STRINGS, MANDATORY_WELL_SUBMISSION_STRINGS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
-import { getUTCDate } from '@/common/helpers/getUTCDate.js';
+import { 
+  WELL_SUBMISSION_STRINGS, 
+  MANDATORY_WELL_SUBMISSION_STRINGS, 
+  DATE_INPUT_TYPE,
+  NEW_WELL_CONSTRUCTION_VALIDATION_DATE
+ } from '@/common/constants.js'
 
 export default {
   name: 'SubmissionsForm',
@@ -717,6 +721,8 @@ export default {
       },
       initLong: null,
       initLat: null,
+      workStartDate: '',
+      workEndDate: '',
       // Labelling "Start Date of Work" and "End Date of Work" as mandatory.
       // To push users to input dates but to allow for empty dates.
       startDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
@@ -849,19 +855,22 @@ export default {
     editWater (coords) {
       this.$emit('editWater', coords)
     },
-    checkNewWellConstructionDates(dateString) {
-      const dateUTC = getUTCDate(dateString);
-      const newWellConstructionDateUTC = new Date(Date.UTC(
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.YEAR,
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.MONTH,
-        NEW_WELL_CONSTRUCTION_VALIDATION_DATE.DAY
-        )).getTime();
+    checkNewWellConstructionDates(dateString, dateInputType) {
+      const newWellConstructionDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
 
-      if (isNaN(dateUTC)) return false;
-      if (isNaN(newWellConstructionDateUTC)) return false;
-
-      if (dateUTC < newWellConstructionDateUTC) return false;
-
+      if (dateString === '' && dateInputType === DATE_INPUT_TYPE.START_DATE) {
+        if (this.workEndDate > newWellConstructionDate) {
+          return true
+        }
+      }
+      if (dateString === '' && dateInputType === DATE_INPUT_TYPE.END_DATE) {
+        if (this.workStartDate > newWellConstructionDate) {
+          return true
+        }
+      }
+      if (dateString < newWellConstructionDate && ((this.workStartDate < newWellConstructionDate) && this.workEndDate < newWellConstructionDate)) {
+        return false
+      }
       return true;
     },
     handleNewWellConstruction (isNewWellConstruction) {
@@ -880,9 +889,17 @@ export default {
       this.finishedWellDepthLabel = MANDATORY_WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
       this.drillingMethodsLabel = MANDATORY_WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
     },
-    handleDateInput(event) {
+    handleDateInput(event, dateInputType) {
+      if (dateInputType === DATE_INPUT_TYPE.START_DATE) {
+        this.workStartDate = event;
+      }
+
+      if (dateInputType === DATE_INPUT_TYPE.END_DATE) {
+        this.workEndDate = event;
+      }
+
       const dateString = event;
-      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString)
+      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString, dateInputType)
       this.handleNewWellConstruction(isNewWellConstruction)
     },
   },

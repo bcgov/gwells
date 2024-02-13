@@ -97,8 +97,10 @@ export const MANDATORY_WELL_SUBMISSION_STRINGS = {
   DRILLING_METHODS: "Drilling Method(s) *",
 }
 
-export const NEW_WELL_CONSTRUCTION_VALIDATION_DATE = {
-  YEAR: 2024,
-  MONTH: 1,
-  DAY: 1,
+export const NEW_WELL_CONSTRUCTION_VALIDATION_DATE = '2024-01-01'
+
+export const DATE_INPUT_TYPE = {
+  START_DATE: 'workStartDate',
+  END_DATE: 'workEndDate'
 }
+

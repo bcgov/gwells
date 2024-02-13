@@ -1,4 +1,4 @@
-const CANADA_POSTAL_CODE_REGEX = /^[A-Za-z]\d[A-Za-z] \d[A-Za-z]\d$/;
+const CANADA_POSTAL_CODE_REGEX = /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/;
 const US_ZIP_REGEX = /^\d{5}(-\d{4})?$/;
 
 /**
