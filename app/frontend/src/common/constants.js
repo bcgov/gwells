@@ -59,3 +59,48 @@ export const TOOLTIP_TEXT = {
     analysis_method: 'Mathematical solutions (Theis, Cooper-Jacob, Neuman, etc.) where response data (discharge, drawdown/time) from pumping tests are used to estimate the hydraulic properties of aquifers.',
   },
 }
+
+export const TYPE_OF_WORK = {
+  CON: "CON",
+  ALT: "ALT",
+  DEC: "DEC",
+}
+
+export const WELL_CLASS = {
+  DEWATERING_DRAINAGE: "DEW_DRA",
+  WATER_SUPPLY: "WATR_SPPLY",
+  INJECTION: "INJECTION",
+  RECHARGE: "RECHARGE",
+}
+
+export const WELL_SUBCLASS = {
+  PERMANENT: "46300f40-fc6b-4c77-a58e-74472cd69f5d",
+}
+
+export const WELL_SUBMISSION_STRINGS = {
+  START_DATE_OF_WORK: "Start Date of Work",
+  END_DATE_OF_WORK: "End Date of Work",
+  WELL_IDENTIFICATION_PLATE_NUMBER: "Well Identification Plate Number",
+  WELL_IDENTIFICATION_PLATE_ATTACHED: "Well Identification Plate Attached",
+  TOTAL_DEPTH_DRILLED: "Total Depth Drilled",
+  FINISHED_WELL_DEPTH: "Finished Well Depth",
+  DRILLING_METHODS: "Drilling Method(s)",
+}
+
+export const MANDATORY_WELL_SUBMISSION_STRINGS = {
+  START_DATE_OF_WORK: "Start Date of Work *",
+  END_DATE_OF_WORK: "End Date of Work *",
+  WELL_IDENTIFICATION_PLATE_NUMBER: "Well Identification Plate Number *",
+  WELL_IDENTIFICATION_PLATE_ATTACHED: "Well Identification Plate Attached *",
+  TOTAL_DEPTH_DRILLED: "Total Depth Drilled *",
+  FINISHED_WELL_DEPTH: "Finished Well Depth *",
+  DRILLING_METHODS: "Drilling Method(s) *",
+}
+
+export const NEW_WELL_CONSTRUCTION_VALIDATION_DATE = '2024-01-01'
+
+export const DATE_INPUT_TYPE = {
+  START_DATE: 'workStartDate',
+  END_DATE: 'workEndDate'
+}
+

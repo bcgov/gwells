@@ -52,7 +52,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <b-form-group
               id="wellClass"
-              label="Class of Well"
+              label="Class of Well *"
               aria-describedby="wellClassInvalidFeedback">
             <b-form-select
                 v-model="wellClassInput"
@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :options="intendedWaterUseOptions"
             value-field="intended_water_use_code"
             text-field="description"
-            label="Intended Water Use"
+            label="Intended Water Use *"
             placeholder="Select intended use"
             :errors="errors['intended_water_use']"
             :loaded="fieldsLoaded['intended_water_use']"
@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="idPlateNumber"
-              label="Well Identification Plate Number"
+              :label="wellIdentificationPlateNumberLabel"
               type="number"
               v-model="idPlateNumberInput"
               :errors="errors['identification_plate_number']"
@@ -155,7 +155,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="wellPlateAttached"
-              label="Where Identification Plate Attached"
+              :label="wellIdentificationPlateAttachedLabel"
               type="text"
               v-model="wellPlateAttachedInput"
               :errors="errors['well_identification_plate_attached']"
@@ -200,22 +200,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               id="workStartDateInput"
               type="date"
-              label="Start Date of Work *"
+              :label="startDateOfWorkLabel"
               placeholder="YYYY-MM-DD"
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
-              :loaded="fieldsLoaded['work_start_date']">
+              :loaded="fieldsLoaded['work_start_date']"
+              @input="handleDateInput($event, 'workStartDate')"
+              >
           </form-input>
         </b-col>
         <b-col cols="12" md="6">
           <form-input
               id="workEndDateInput"
               type="date"
-              label="End Date of Work *"
+              :label="endDateOfWorkLabel"
               placeholder="YYYY-MM-DD"
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
-              :loaded="fieldsLoaded['work_end_date']">
+              :loaded="fieldsLoaded['work_end_date']"
+              @input="handleDateInput($event, 'workEndDate')"
+              >
           </form-input>
         </b-col>
       </b-row>
@@ -252,6 +256,11 @@ export default {
     drillerSameAsPersonResponsible: Boolean,
     waterSupplySystem: String,
     waterSupplyWell: String,
+    handleDateInput: Function,
+    startDateOfWorkLabel: String,
+    endDateOfWorkLabel: String,
+    wellIdentificationPlateNumberLabel: String,
+    wellIdentificationPlateAttachedLabel: String,
     errors: {
       type: Object,
       default: () => ({})
