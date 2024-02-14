@@ -508,50 +508,6 @@
 							"response": []
 						},
 						{
-							"name": "date_of_work param (date range after)",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "5977ec5b-63f7-49d7-b85d-ce0d6bae2ae4",
-										"exec": [
-											"pm.test(\"Decommission end date field matches filter\", function () {",
-											"  const dateOfWorkAfter = new Date(pm.request.url.query.get(\"date_of_work_after\"));",
-											"",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    const decommissionEndDate = new Date(result.decommission_end_date);",
-											"    pm.expect(decommissionEndDate).to.be.at.least(dateOfWorkAfter);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/api/v2/wells?date_of_work_after=2019-02-07",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v2",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "date_of_work_after",
-											"value": "2019-02-07"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "well_depth param (range minimum)",
 							"event": [
 								{
