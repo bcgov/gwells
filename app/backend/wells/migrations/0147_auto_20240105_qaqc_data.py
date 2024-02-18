@@ -54,6 +54,9 @@ def update_well_attributes(well, row):
                 float(row[field]) if row[field] else None)
 
     well.cross_referenced = row['xref_ind'] == 'True'
+    if well.cross_referenced:
+        well.cross_referenced_date = well.update_date
+        well.cross_referenced_by = well.update_user
     well.natural_resource_region = row['nr_region_name'] if row['nr_region_name'] else None
 
 class Migration(migrations.Migration):

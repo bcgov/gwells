@@ -143,7 +143,10 @@ export default {
       if (this.options === undefined) {
         return []
       }
-      return [{ [this.textField]: 'Filter...', [this.valueField]: null }, ...this.options]
+      return [
+        { [this.textField]: 'Filter...', [this.valueField]: null },
+        { [this.textField]: 'Null', [this.valueField]: null },
+        ...this.options]
     }
   },
   methods: {

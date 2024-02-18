@@ -104,7 +104,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <a href="javascript:void(0);" @click="openInNewTab(`/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
+                <a :href="`/well/${row.well_tag_number}`" @click.prevent="openInNewTab(`/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
@@ -174,12 +174,12 @@ export default {
       ],
       // Object mapping column IDs to tooltip content
       tooltipContent: {
-        'diameterNull': 'Diameter in the first line/last line of the Casing Details table on the Well Summary page. It is used to check if the casing information is missing',
-        'aquiferLithologyNull': 'Raw Data in the first line/last line of the Lithology table on the Well Summary page; It is used to check if lithology information is missing',
-        'wellStatusNull': 'Activity in the Well Activity table on the Well Summary page',
+        'diameterNull': 'Diameter in the last line of the Casing Details table on the Well Summary page. It is used to check if the casing information is missing',
+        'aquiferLithologyNull': 'Raw Data in the last line of the Lithology table on the Well Summary page; It is used to check if lithology information is missing',
+        'wellStatus': 'Activity in the Well Activity table on the Well Summary page',
         'workStartDateNull': 'Work Start Date in the Well Activity Table on the Well Summary page',
         'workEndDateNull': 'Work End Date in the Well Activity Table on the Well Summary page',
-        'createDate': 'When the well record was entered/created',
+        'createDate': 'When the well record was entered/created in UTC time',
         'geocodeDistance': 'The distance from well to location determined by the BC Address Geocoder API (value 99999 indicates no result). Wells with Geocode distance of 400 m or greater are displayed in bold in this table.',
         'distanceToPid': 'The distance from well to BC Parcel Fabric Polygon with matching Parcel Identifier (PID). A higher value indicates higher probability of a location error. NULL indicates no matching PID found. Wells with Distance to matching PID of 25 m or greater are displayed in this table.',
         'scoreAddress': 'Token Set Ratio score for matching wells address to reverse geocoded address (street number/name/direction). A lower score indicates a higher probability of a location error. Wells with Address Scores less than 80 are displayed in this table.',
@@ -260,7 +260,7 @@ export default {
         'wellTagNumber': 'WTN',
         'identificationPlateNumber': 'WIDP',
         'wellClass': 'Class of well',
-        'intendedWaterUse': 'Intended Water Use',
+        'intendedWaterUse': 'Well subclass',
         'latitudeNull': 'Lat',
         'longitudeNull': 'Lon',
         'finishedWellDepthNull': 'Finished well depth (feet)',
@@ -268,12 +268,12 @@ export default {
         'surfaceSealDepthNull': 'Seal Depth (feet)',
         'surfaceSealThicknessNull': 'Seal Thickness (inches)',
         'aquiferLithologyNull': 'Lithology',
-        'wellStatusNull': 'Work/Report Type',
+        'wellStatus': 'Work/Report Type',
         'workStartDateNull': 'Work Start Date',
         'workEndDateNull': 'Work End Date',
-        'personResponsibleNull': 'Person Responsible',
-        'orgResponsibleNull': 'Company that did the work',
-        'naturalResourceRegionNull': 'Natural Resource Region',
+        'personResponsible': 'Person Responsible',
+        'orgResponsible': 'Company that did the work',
+        'naturalResourceRegion': 'Natural Resource Region',
         'createDate': 'Created Date',
         'createUser': 'Created By',
         'updateDate': 'Updated Date',
@@ -429,11 +429,20 @@ export default {
   }
 }
 
+/* Sticky first column for headers and cells */
+#qaqcTable th:first-child, #qaqcTable td:first-child {
+  position: sticky;
+  left: 0;
+  background-color: white; /* Ensure this matches your table's row color */
+  z-index: 2; /* Higher than the z-index for the sticky headers */
+}
+
+/* Sticky headers */
 #qaqcTable thead {
   position: sticky;
   top: 0;
-  background-color: white; /* or any color that matches your design */
-  z-index: 1; /* This ensures the header stays on top of other content */
+  background-color: white; /* Match your design */
+  z-index: 3; /* Ensures the header is above tbody content */
 }
 
 .table-responsive {

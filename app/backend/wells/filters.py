@@ -859,13 +859,19 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
 
                 for field, value in group_params.items():
                     if field == 'well_tag_number':
-                        queryset = queryset.filter(well_tag_number__icontains=value)
+                        q_objects &= Q(well_tag_number__icontains=value)
                     
-                    if field == 'create_user':
-                        queryset = queryset.filter(create_user__icontains=value)
+                    elif field == 'well_class':
+                        q_objects &= Q(well_class__well_class_code=value)
+
+                    elif field == 'create_user':
+                        q_objects &= Q(create_user__icontains=value)
 
                     elif field == 'identification_plate_number':
-                        queryset = queryset.filter(identification_plate_number__icontains=value)
+                        q_objects &= Q(identification_plate_number__icontains=value)
+                    
+                    elif field == 'internal_comments':
+                        q_objects &= Q(internal_comments__icontains=value)
 
                     elif field == 'create_date_after':
                         create_date_gte = value  # Store the value to use later in the date range filter
@@ -873,14 +879,34 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     elif field == 'create_date_before':
                         create_date_lte = value  # Store the value to use later in the date range filter
 
+                    elif field == 'person_responsible_name' and value != 'null':
+                        q_objects &= (
+                            Q(person_responsible__first_name__icontains=value) |
+                            Q(person_responsible__surname__icontains=value)
+                        )
+
                     elif field == 'person_responsible_name' and value == 'null':
-                        q_objects |= (Q(person_responsible__isnull=True) | Q(person_responsible__first_name__isnull=True) |
+                        q_objects &= (Q(person_responsible__isnull=True) | Q(person_responsible__first_name__isnull=True) |
                                       Q(person_responsible__first_name='') | Q(person_responsible__first_name=' '))
 
+                    elif field == 'company_of_person_responsible_name' and value != 'null':
+                        q_objects &= (
+                            Q(company_of_person_responsible__name__icontains=value)
+                        )
+
                     elif field == 'company_of_person_responsible_name' and value == 'null':
-                        q_objects |= (Q(company_of_person_responsible__isnull=True) |
+                        q_objects &= (Q(company_of_person_responsible__isnull=True) |
                                       Q(company_of_person_responsible__name__isnull=True) |
                                       Q(company_of_person_responsible__name='') | Q(company_of_person_responsible__name=' '))
+                    
+                    elif field == 'natural_resource_region' and value != 'null':
+                        q_objects &= (
+                            Q(natural_resource_region__icontains=value)
+                        )
+
+                    elif field == 'natural_resource_region' and value == 'null':
+                        q_objects &= (Q(natural_resource_region__isnull=True) |
+                                      Q(natural_resource_region='') | Q(natural_resource_region=' '))
                     
                     # Directly handle special cases for fields like latitude and longitude
                     elif field in ['latitude', 'longitude']:
@@ -897,8 +923,9 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         queryset = queryset.annotate(
                             last_lithology_raw_data=last_lithology_raw_data
-                        ).filter(
-                            Q(last_lithology_raw_data__isnull=True) | 
+                        )
+                        q_objects &= (
+                            Q(last_lithology_raw_data__isnull=True) |
                             Q(last_lithology_raw_data='') |
                             Q(last_lithology_raw_data=' ')
                         )
@@ -913,9 +940,8 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         queryset = queryset.annotate(
                             last_casing_diameter=last_casing_diameter
-                        ).filter(
-                            Q(last_casing_diameter__isnull=True)
                         )
+                        q_objects &= Q(last_casing_diameter__isnull=True)
 
                     elif field == 'well_status' and value == 'null':
                         last_activity_type = Subquery(
@@ -925,9 +951,8 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         queryset = queryset.annotate(
                             last_well_status=last_activity_type
-                        ).filter(
-                            Q(last_well_status__isnull=True) | Q(last_well_status='')
                         )
+                        q_objects &= (Q(last_well_status__isnull=True) | Q(last_well_status=''))
 
                     elif field == 'work_start_date' and value == 'null':
                         last_activity_start_date = Subquery(
@@ -937,9 +962,8 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         queryset = queryset.annotate(
                             last_work_start_date=last_activity_start_date
-                        ).filter(
-                            Q(last_work_start_date__isnull=True)
                         )
+                        q_objects &= Q(last_work_start_date__isnull=True)
 
                     elif field == 'work_end_date' and value == 'null':
                         last_activity_end_date = Subquery(
@@ -949,9 +973,8 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         queryset = queryset.annotate(
                             last_work_end_date=last_activity_end_date
-                        ).filter(
-                            Q(last_work_end_date__isnull=True)
                         )
+                        q_objects &= Q(last_work_end_date__isnull=True)
   
                     elif value == 'null':
                         # Check if the field exists in the model
@@ -969,11 +992,11 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
 
                 # After processing all fields, apply the date range filter if both values are provided
                 if create_date_gte and create_date_lte:
-                    q_objects |= Q(create_date__range=(create_date_gte, create_date_lte))
+                    q_objects &= Q(create_date__range=(create_date_gte, create_date_lte))
                 elif create_date_gte:  # Only 'after' date is provided
-                    q_objects |= Q(create_date__gte=create_date_gte)
+                    q_objects &= Q(create_date__gte=create_date_gte)
                 elif create_date_lte:  # Only 'before' date is provided
-                    q_objects |= Q(create_date__lte=create_date_lte)
+                    q_objects &= Q(create_date__lte=create_date_lte)
 
                 # Apply the combined Q object filters to the queryset
                 queryset = queryset.filter(q_objects)

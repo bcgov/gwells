@@ -515,8 +515,11 @@ class CrossReferencingSerializer(ActivitySubmissionMixin, serializers.ModelSeria
             'update_date',
             'update_user',
             'natural_resource_region',
+            'comments',
             'internal_comments',
-            'cross_referenced'
+            'cross_referenced',
+            'cross_referenced_date',
+            'cross_referenced_by'
         ]
 
 

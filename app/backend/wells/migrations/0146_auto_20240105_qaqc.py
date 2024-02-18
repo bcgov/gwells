@@ -40,6 +40,16 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='well',
+            name='cross_referenced_date',
+            field=models.DateTimeField(null=True, default=None),
+        ),
+        migrations.AddField(
+            model_name='well',
+            name='cross_referenced_by',
+            field=models.CharField(null=True, blank=True, max_length=100),
+        ),
+        migrations.AddField(
+            model_name='well',
             name='natural_resource_region',
             field=models.CharField(null=True, blank=True, max_length=200),
         ),

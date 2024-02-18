@@ -1,4 +1,5 @@
 import math
+from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
@@ -41,6 +42,14 @@ def update_well(sender, instance, **kwargs):
         """
         return geom and hasattr(geom, 'x') and hasattr(geom, 'y')
 
+    def contains_cross_reference_comment(comments):
+        """
+        Helper function to check if comments contain any of the specified search terms
+        indicating a cross-reference.
+        """
+        search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
+        return any(term in comments.lower() for term in search_terms)
+
     try:
         if instance._state.adding and not instance.pk:
             # Handling new instance creation
@@ -49,11 +58,18 @@ def update_well(sender, instance, **kwargs):
         else:
             # Handling updates to existing instances
             original_instance = sender.objects.get(pk=instance.pk)
-            if original_instance.geom != instance.geom \
-              or original_instance.street_address != instance.street_address \
-              or original_instance.city != instance.city \
-              and is_valid_geom(instance.geom):
+            geom_changed = original_instance.geom != instance.geom
+            address_changed = original_instance.street_address != instance.street_address
+            city_changed = original_instance.city != instance.city
+
+            if (geom_changed or address_changed or city_changed) and is_valid_geom(instance.geom):
                 set_well_attributes(instance)
+
+            # Check for cross-reference comments update
+            if instance.internal_comments and contains_cross_reference_comment(instance.internal_comments):
+                instance.cross_referenced = True
+                instance.cross_referenced_date = timezone.now()
+                # instance.cross_referenced_by = 
     except Exception as e:
         print(f"Error in update_well for Well ID {instance.pk}: {str(e)}")
 

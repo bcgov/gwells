@@ -952,11 +952,6 @@ const SEARCH_FIELDS = {
     label: 'Lithology',
     type: 'nullcheck'
   },
-  wellStatusNull: {
-    param: 'well_status',
-    label: 'Work Type',
-    type: 'nullcheck'
-  },
   workStartDateNull: {
     param: 'work_start_date',
     label: 'Work Start Date',
@@ -966,22 +961,7 @@ const SEARCH_FIELDS = {
     param: 'work_end_date',
     label: 'Work End Date',
     type: 'nullcheck'
-  },
-  personResponsibleNull: {
-    param: 'person_responsible_name',
-    label: 'Person Responsible',
-    type: 'nullcheck'
-  },
-  orgResponsibleNull: {
-    param: 'company_of_person_responsible_name',
-    label: 'Company that did the work',
-    type: 'nullcheck'
-  },
-  naturalResourceRegionNull: {
-    param: 'natural_resource_region',
-    label: 'Natural Resource Region',
-    type: 'nullcheck'
-  },
+  }
 }
 
 export default {
