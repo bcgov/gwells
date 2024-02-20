@@ -399,10 +399,6 @@ p, #legalPID__BV_label_ {
   -webkit-font-smoothing: antialiased;
 }
 
-/** Specifying Section 3 of Well Location to be bolded, since it is part of a label */
-#legalPID__BV_label_ {
-  font-weight: bold;
-}
 .address-suggestions {
     list-style-type: none;
     position: absolute;

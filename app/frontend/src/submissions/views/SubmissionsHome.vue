@@ -710,7 +710,7 @@ export default {
     },
     isFormValid () {
       const errors = {}
-      
+
       // We don't want to validate on edits of older wells
       if (this.activityType !== 'STAFF_EDIT') {
         this.groundwaterProtectionRegulationValidation(errors);
