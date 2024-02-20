@@ -145,7 +145,7 @@ export default {
       }
       return [
         { [this.textField]: 'Filter...', [this.valueField]: null },
-        { [this.textField]: 'Null', [this.valueField]: null },
+        { [this.textField]: 'Null', [this.valueField]: 'null' },
         ...this.options]
     }
   },

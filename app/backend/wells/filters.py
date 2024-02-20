@@ -839,26 +839,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
     Custom well list filtering logic for the QaQc Dashboard.
     allows additional 'filter_group' params.
     """
-    @staticmethod
-    def apply_date_filter(q_objects, field_name, gte_value, lte_value):
-        if gte_value and lte_value:
-            q_objects &= Q(**{f'{field_name}__range': (gte_value, lte_value)})
-        elif gte_value:
-            q_objects &= Q(**{f'{field_name}__gte': gte_value})
-        elif lte_value:
-            q_objects &= Q(**{f'{field_name}__lte': lte_value})
-        return q_objects
-
-    @staticmethod
-    def apply_range_filter(q_objects, field_name, min_value, max_value):
-        if min_value and max_value:
-            q_objects &= Q(**{f'{field_name}__range': (min_value, max_value)})
-        elif min_value:
-            q_objects &= Q(**{f'{field_name}__gte': min_value})
-        elif max_value:
-            q_objects &= Q(**{f'{field_name}__lte': max_value})
-        return q_objects
-
     def filter_queryset(self, request, queryset, view):
         try:
             filter_groups = request.query_params.getlist('filter_group', [])
@@ -874,57 +854,46 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     continue
                 
                 q_objects = Q()
-                create_date_gte = None
-                create_date_lte = None
-                update_date_gte = None
-                update_date_lte = None
-                cross_referenced_date_gte = None
-                cross_referenced_date_lte = None
+                q_fields = [
+                    'well_tag_number', 'identification_plate_number', 'natural_resource_region',
+                    'cross_referenced_by', 'create_user', 'update_user', 'internal_comments', 
+                    'comments'
+                ]
 
                 for field, value in group_params.items():
-                    if field == 'well_tag_number':
-                        q_objects &= Q(well_tag_number__icontains=value)
+                    if field in q_fields and value != 'null':
+                        q_objects &= Q(**{f'{field}__icontains': value})
+
+                    # Set filter date fields
+                    elif field in ['create_date', 'update_date', 'cross_referenced_date']:
+                        suffix = field.split('_')[-1]  # after or before
+                        date_field = '_'.join(field.split('_')[:-1])  # remove _after or _before
+                        print(date_field)
+                        if suffix == 'after':
+                            q_objects &= Q(**{f'{date_field}__gte': value})
+                        elif suffix == 'before':
+                            q_objects &= Q(**{f'{date_field}__lte': value})
                     
+                    # Apply range filters
+                    elif field.endswith('min') or field.endswith('max'):
+                        range_field = '_'.join(field.split('_')[:-1])  # remove _min or _max
+                        suffix = field.split('_')[-1]  # min or max
+                        if suffix == 'min':
+                            q_objects &= Q(**{f'{range_field}__gte': value})
+                        elif suffix == 'max':
+                            q_objects &= Q(**{f'{range_field}__lte': value})
+
+                    # Directly handle special cases for fields like latitude and longitude
+                    elif field in ['latitude', 'longitude'] and value == 'null':
+                        q_objects &= Q(**{'geom__isnull': True})
+
                     elif field == 'well_class':
                         q_objects &= Q(well_class__well_class_code=value)
-
-                    elif field == 'create_user':
-                        q_objects &= Q(create_user__icontains=value)
-
-                    elif field == 'identification_plate_number':
-                        q_objects &= Q(identification_plate_number__icontains=value)
                     
-                    elif field == 'internal_comments':
-                        q_objects &= Q(internal_comments__icontains=value)
+                    elif field == 'intended_water_use':
+                        q_objects &= Q(intended_water_use__intended_water_use_code=value)
 
-                    elif field == 'comments':
-                        q_objects &= Q(comments__icontains=value)
-
-                    # Store these date values to use later in the date range filters
-                    elif field == 'create_date_after':
-                        create_date_gte = value  
-
-                    elif field == 'create_date_before':
-                        create_date_lte = value  
-
-                    elif field == 'update_date_after':
-                        update_date_gte = value  
-
-                    elif field == 'update_date_before':
-                        update_date_lte = value  
-
-                    elif field == 'cross_referenced_date_after':
-                        cross_referenced_date_gte = value  
-
-                    elif field == 'cross_referenced_date_before':
-                        cross_referenced_date_lte = value  
-
-                    elif field == 'create_user':
-                        q_objects &= Q(create_user__icontains=value)
-
-                    elif field == 'update_user':
-                        q_objects &= Q(update_user__icontains=value)
-
+                    # Person responsible checks
                     elif field == 'person_responsible_name' and value != 'null':
                         q_objects &= (
                             Q(person_responsible__first_name__icontains=value) |
@@ -936,38 +905,13 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                                       Q(person_responsible__first_name='') | Q(person_responsible__first_name=' '))
 
                     elif field == 'company_of_person_responsible_name' and value != 'null':
-                        q_objects &= (
-                            Q(company_of_person_responsible__name__icontains=value)
-                        )
+                        q_objects &= Q(company_of_person_responsible__name__icontains=value)
 
                     elif field == 'company_of_person_responsible_name' and value == 'null':
                         q_objects &= (Q(company_of_person_responsible__isnull=True) |
                                       Q(company_of_person_responsible__name__isnull=True) |
                                       Q(company_of_person_responsible__name='') | Q(company_of_person_responsible__name=' '))
                     
-                    elif field == 'natural_resource_region' and value != 'null':
-                        q_objects &= (
-                            Q(natural_resource_region__icontains=value)
-                        )
-
-                    elif field == 'natural_resource_region' and value == 'null':
-                        q_objects &= (Q(natural_resource_region__isnull=True) |
-                                      Q(natural_resource_region='') | Q(natural_resource_region=' '))
-                    
-                    elif field == 'cross_referenced_by' and value != 'null':
-                        q_objects &= (
-                            Q(cross_referenced_by__icontains=value)
-                        )
-
-                    elif field == 'cross_referenced_by' and value == 'null':
-                        q_objects &= (Q(cross_referenced_by__isnull=True) |
-                                      Q(cross_referenced_by='') | Q(cross_referenced_by=' '))
-                    
-                    # Directly handle special cases for fields like latitude and longitude
-                    elif field in ['latitude', 'longitude']:
-                        if value == 'null':
-                            q_objects &= Q(**{'geom__isnull': True})
-
                     # Check for null or empty 'aquifer_lithology'
                     elif field == 'aquifer_lithology' and value == 'null':
                         # Subquery to get the last lithology description's raw data for each well
@@ -984,7 +928,7 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                             Q(last_lithology_raw_data='') |
                             Q(last_lithology_raw_data=' ')
                         )
-                    
+
                     # Check for null or empty 'casing_diameter' using the subquery
                     elif field == 'diameter' and value == 'null':
                         # Subquery to get the last casing's diameter for each well
@@ -998,18 +942,29 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         q_objects &= Q(last_casing_diameter__isnull=True)
 
-                    elif field == 'well_status' and value == 'null':
-                        last_activity_type = Subquery(
+                    elif field == 'well_activity_type':
+                        # Subquery to get the well_activity_type__code of the latest ActivitySubmission
+                        # for each well, excluding 'STAFF_EDIT'
+                        latest_well_activity_type_code = Subquery(
                             ActivitySubmission.objects.filter(
-                                well=OuterRef('pk')
+                                well=OuterRef('pk')  # Reference the outer Well's primary key
                             ).exclude(
                                 well_activity_type__code="STAFF_EDIT"
-                            ).order_by('-work_end_date').values('well_activity_type__description')[:1]
+                            ).order_by(
+                                '-work_end_date'  # Ensure the latest activity comes first
+                            ).values(
+                                'well_activity_type__code'  # Select the well_activity_type__code field
+                            )[:1]  # Limit to the first (latest) entry
                         )
+                        # Annotate the queryset with the result of the subquery
                         queryset = queryset.annotate(
-                            last_well_status=last_activity_type
+                            latest_well_activity_type_code=latest_well_activity_type_code
                         )
-                        q_objects &= (Q(last_well_status__isnull=True) | Q(last_well_status=''))
+                        # Apply filters based on the annotated 'latest_well_activity_type_code'
+                        if value == 'null':
+                            q_objects &= Q(latest_well_activity_type_code__isnull=True)
+                        else:
+                            q_objects &= Q(latest_well_activity_type_code=value)
 
                     elif field == 'work_start_date' and value == 'null':
                         last_activity_start_date = Subquery(
@@ -1037,26 +992,7 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         )
                         q_objects &= Q(last_work_end_date__isnull=True)
 
-                    elif field in ['geocode_distance_min', 'geocode_distance_max']:
-                        geocode_distance_min = group_params.get('geocode_distance_min', None)
-                        geocode_distance_max = group_params.get('geocode_distance_max', None)
-                        q_objects = self.apply_range_filter(q_objects, 'geocode_distance', geocode_distance_min, geocode_distance_max)
-
-                    elif field in ['distance_to_pid_min', 'distance_to_pid_max']:
-                        distance_to_pid_min = group_params.get('distance_to_pid_min', None)
-                        distance_to_pid_max = group_params.get('distance_to_pid_max', None)
-                        q_objects = self.apply_range_filter(q_objects, 'distance_to_pid', distance_to_pid_min, distance_to_pid_max)
-
-                    elif field in ['score_address_min', 'score_address_max']:
-                        score_address_min = group_params.get('score_address_min', None)
-                        score_address_max = group_params.get('score_address_max', None)
-                        q_objects = self.apply_range_filter(q_objects, 'score_address', score_address_min, score_address_max)
-
-                    elif field in ['score_city_min', 'score_city_max']:
-                        score_city_min = group_params.get('score_city_min', None)
-                        score_city_max = group_params.get('score_city_max', None)
-                        q_objects = self.apply_range_filter(q_objects, 'score_city', score_city_min, score_city_max)
-
+                    # This acts as a catch all for all null field checks
                     elif value == 'null':
                         # Check if the field exists in the model
                         try:
@@ -1070,11 +1006,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         else:
                             # For other field types, just check for null
                             q_objects &= Q(**{f'{field}__isnull': True})
-
-                # After processing all fields, apply the date range filter if both values are provided
-                q_objects = self.apply_date_filter(q_objects, 'create_date', create_date_gte, create_date_lte)
-                q_objects = self.apply_date_filter(q_objects, 'update_date', update_date_gte, update_date_lte)
-                q_objects = self.apply_date_filter(q_objects, 'cross_referenced_date', cross_referenced_date_gte, cross_referenced_date_lte)
 
                 # Apply the combined Q object filters to the queryset
                 queryset = queryset.filter(q_objects)

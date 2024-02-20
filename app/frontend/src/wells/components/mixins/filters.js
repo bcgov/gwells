@@ -145,6 +145,14 @@ const SEARCH_FIELDS = {
     type: 'number',
     sortable: true,
   },
+  wellActivityType: {
+    param: 'well_activity_type',
+    label: 'Well Activity Type',
+    type: 'select',
+    textField: 'description',
+    valueField: 'code',
+    sortable: true,
+  },
   wellClass: {
     param: 'well_class',
     label: 'Class of well',
@@ -1062,6 +1070,7 @@ export default {
         surfaceSealMethod: this.codes.surface_seal_methods || [],
         waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
         waterQualityColour: this.codes.water_quality_colours || [],
+        wellActivityType: this.codes.activity_types || [],
         wellClass: this.codes.well_classes || [],
         wellDisinfectedStatus: this.codes.well_disinfected_codes || [],
         wellStatus: this.codes.well_status_codes || [],

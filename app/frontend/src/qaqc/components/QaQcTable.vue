@@ -179,7 +179,7 @@ export default {
       tooltipContent: {
         'diameterNull': 'Diameter in the last line of the Casing Details table on the Well Summary page. It is used to check if the casing information is missing',
         'aquiferLithologyNull': 'Raw Data in the last line of the Lithology table on the Well Summary page; It is used to check if lithology information is missing',
-        'wellStatus': 'Activity in the Well Activity table on the Well Summary page',
+        'wellActivityType': 'Activity in the Well Activity table on the Well Summary page',
         'workStartDateNull': 'Work Start Date in the Well Activity Table on the Well Summary page',
         'workEndDateNull': 'Work End Date in the Well Activity Table on the Well Summary page',
         'createDate': 'When the well record was entered/created in UTC time',
@@ -271,7 +271,7 @@ export default {
         'surfaceSealDepthNull': 'Seal Depth (feet)',
         'surfaceSealThicknessNull': 'Seal Thickness (inches)',
         'aquiferLithologyNull': 'Lithology',
-        'wellStatus': 'Work/Report Type',
+        'wellActivityType': 'Work/Report Type',
         'workStartDateNull': 'Work Start Date',
         'workEndDateNull': 'Work End Date',
         'personResponsible': 'Person Responsible',

@@ -471,7 +471,7 @@ class ActivitySubmissionMixin:
             ).order_by('-work_end_date').first()
         return obj._last_activity
 
-    def get_well_status(self, obj):
+    def get_well_activity_type(self, obj):
         last_activity = self.get_last_activity(obj)
         return last_activity.well_activity_type.description if last_activity else None
 
@@ -485,7 +485,7 @@ class ActivitySubmissionMixin:
 
 
 class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
-    well_status = serializers.SerializerMethodField()
+    well_activity_type = serializers.SerializerMethodField()
     work_start_date = serializers.SerializerMethodField()
     work_end_date = serializers.SerializerMethodField()
 
@@ -497,7 +497,7 @@ class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerial
             'distance_to_pid',
             'score_address',
             'score_city',
-            'well_status',
+            'well_activity_type',
             'work_start_date',
             'work_end_date',
             'company_of_person_responsible',
@@ -509,7 +509,7 @@ class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerial
 
 
 class CrossReferencingSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
-    well_status = serializers.SerializerMethodField()
+    well_activity_type = serializers.SerializerMethodField()
     work_start_date = serializers.SerializerMethodField()
     work_end_date = serializers.SerializerMethodField()
 
@@ -517,7 +517,7 @@ class CrossReferencingSerializer(ActivitySubmissionMixin, serializers.ModelSeria
         model = Well
         fields = [
             'well_tag_number',
-            'well_status',
+            'well_activity_type',
             'work_start_date',
             'work_end_date',
             'create_user',
@@ -539,7 +539,7 @@ class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSeria
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
 
     # Serializer methods for the last ActivitySubmission's work types
-    well_status = serializers.SerializerMethodField()
+    well_activity_type = serializers.SerializerMethodField()
     work_start_date = serializers.SerializerMethodField()
     work_end_date = serializers.SerializerMethodField()
 
@@ -574,7 +574,7 @@ class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSeria
           'surface_seal_depth',
           'surface_seal_thickness',
           'aquifer_lithology',
-          'well_status',
+          'well_activity_type',
           'work_start_date',
           'work_end_date',
           'person_responsible_name',
