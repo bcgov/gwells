@@ -2,6 +2,7 @@
 import time
 from random import randint
 import logging
+import threading
 
 from django.http import HttpResponseBadRequest
 from django.utils.deprecation import MiddlewareMixin
@@ -10,11 +11,25 @@ from markupsafe import Markup
 
 from gwells.settings.base import get_env_variable
 
+_thread_local = threading.local()
 
 logger = logging.getLogger(__name__)
 
+def get_current_user():
+    return getattr(_thread_local, 'user', None)
 
 class GWellsRequestParsingMiddleware(MiddlewareMixin):
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.user.is_authenticated:
+            _thread_local.user = request.user
+        else:
+            _thread_local.user = None
+        response = self.get_response(request)
+        return response
 
     def get(self, request, **kwargs):
         pass

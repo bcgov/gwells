@@ -106,6 +106,8 @@ export const CROSS_REFERENCING_COLUMNS = [
   'createDate',
   'updateUser',
   'updateDate',
+  'crossReferencedDate',
+  'crossReferencedBy',
   'comments',
   'internalComments'
 ]

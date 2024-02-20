@@ -961,6 +961,18 @@ const SEARCH_FIELDS = {
     param: 'work_end_date',
     label: 'Work End Date',
     type: 'nullcheck'
+  },
+  crossReferencedBy: {
+    param: 'cross_referenced_by',
+    label: 'Cross Referenced By',
+    type: 'text',
+    sortable: true
+  },
+  crossReferencedDate: {
+    param: 'cross_referenced_date',
+    label: 'Cross Referenced Date',
+    type: 'range',
+    sortable: true
   }
 }
 

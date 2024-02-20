@@ -106,6 +106,9 @@
               <template v-if="column.param === 'well_tag_number'">
                 <a :href="`/well/${row.well_tag_number}`" @click.prevent="openInNewTab(`/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
               </template>
+              <template v-else-if="column.param === 'natural_resource_region'">
+                {{ removeRegionSuffix(row[column.param]) }}
+              </template>
               <template v-else-if="column.param === 'street_address'">
                 {{ row | streetAddressFormat }}
               </template>
@@ -278,8 +281,11 @@ export default {
         'createUser': 'Created By',
         'updateDate': 'Updated Date',
         'updateUser': 'Updated By',
+        'crossReferencedBy': 'X-ref\' By',
+        'crossReferencedDate': 'X-ref\' Date',
         'internalOfficeComments': 'Internal Office Comments',
         'internalComments': 'Internal Comments',
+        'comments': 'Comments',
         'geocodeDistance': 'Geocode Distance',
         'distanceToPid': 'Distance to Matching PID',
         'scoreAddress': 'Score Address',
@@ -341,6 +347,12 @@ export default {
     openInNewTab(path) {
       const { href } = this.$router.resolve(path);
       window.open(href, '_blank');
+    },
+    removeRegionSuffix(value) {
+      if (!value || typeof value !== 'string') return '';
+      // This regex matches ' Region', ' region', ' Natural Resource Region'
+      // at the end of the string, case-insensitively.
+      return value.replace(/\s*(Natural Resource )?Region$/i, '');
     }
   },
   filters: {
@@ -433,7 +445,7 @@ export default {
 #qaqcTable th:first-child, #qaqcTable td:first-child {
   position: sticky;
   left: 0;
-  background-color: white; /* Ensure this matches your table's row color */
+  background-color: white;
   z-index: 2; /* Higher than the z-index for the sticky headers */
 }
 
@@ -441,14 +453,22 @@ export default {
 #qaqcTable thead {
   position: sticky;
   top: 0;
-  background-color: white; /* Match your design */
+  background-color: white;
   z-index: 3; /* Ensures the header is above tbody content */
 }
 
 .table-responsive {
   /* Ensure the container allows the sticky positioning to work */
   overflow-y: auto;
-  height: 400px; /* Adjust the height as needed */
+  height: 400px;
+}
+
+td.data {
+  max-width: 200px;
+  max-height: 100px;
+  overflow: auto; // Introduces a scrollbar when the content overflows
+  word-wrap: break-word; // Ensures that long words can break and wrap to the next line
+  white-space: normal; // Overrides the existing nowrap to allow text wrapping
 }
 
 /* Spinner styles — these can be removed when moving to bootstrap 4.3 */

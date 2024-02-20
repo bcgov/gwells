@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
+from gwells.middleware import get_current_user
 from wells.models import Well
 from wells.utils import calculate_geocode_distance, calculate_pid_distance_for_well, \
   calculate_score_address, calculate_score_city, calculate_natural_resource_region_for_well, \
@@ -65,13 +66,27 @@ def update_well(sender, instance, **kwargs):
             if (geom_changed or address_changed or city_changed) and is_valid_geom(instance.geom):
                 set_well_attributes(instance)
 
-            # Check for cross-reference comments update
-            if instance.internal_comments and contains_cross_reference_comment(instance.internal_comments):
-                instance.cross_referenced = True
-                instance.cross_referenced_date = timezone.now()
-                # instance.cross_referenced_by = 
+        # If comments indicate a cross-reference, set cross-reference attributes
+        if instance.internal_comments and contains_cross_reference_comment(instance.internal_comments):
+            set_cross_reference_attributes(instance)
+
     except Exception as e:
         print(f"Error in update_well for Well ID {instance.pk}: {str(e)}")
+
+
+def set_cross_reference_attributes(instance):
+    """
+    Sets cross-reference attributes for a Well instance when an
+    internal user has set the internal comment to include one of 
+    the cross referenced values.
+    """
+    if not instance.cross_referenced: # Only update if not already set
+        instance.cross_referenced = True
+        instance.cross_referenced_date = timezone.now()
+        current_user = get_current_user()
+        if current_user:
+            username = current_user.username
+            instance.cross_referenced_by = username
 
 
 def set_well_attributes(instance):

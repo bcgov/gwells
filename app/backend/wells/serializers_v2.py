@@ -461,18 +461,28 @@ class WellDetailSerializer(WellDetailSerializerV1):
 
 
 class ActivitySubmissionMixin:
+    def get_last_activity(self, obj):
+        # Cache the last activity in the instance to avoid repeated queries.
+        if not hasattr(obj, '_last_activity'):
+            obj._last_activity = ActivitySubmission.objects.filter(
+                well=obj
+            ).exclude(
+                well_activity_type__code="STAFF_EDIT"
+            ).order_by('-work_end_date').first()
+        return obj._last_activity
+
     def get_well_status(self, obj):
-        last_activity = ActivitySubmission.objects.filter(well=obj).order_by('-work_end_date').first()
+        last_activity = self.get_last_activity(obj)
         return last_activity.well_activity_type.description if last_activity else None
 
     def get_work_start_date(self, obj):
-        last_activity = ActivitySubmission.objects.filter(well=obj).order_by('-work_end_date').first()
+        last_activity = self.get_last_activity(obj)
         return last_activity.work_start_date if last_activity else None
 
     def get_work_end_date(self, obj):
-        last_activity = ActivitySubmission.objects.filter(well=obj).order_by('-work_end_date').first()
+        last_activity = self.get_last_activity(obj)
         return last_activity.work_end_date if last_activity else None
-    
+
 
 class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
     well_status = serializers.SerializerMethodField()

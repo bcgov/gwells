@@ -124,33 +124,37 @@ def reverse_geocode(
     A dict with 'distance' = 99999 is returned if no result is found.
 
     """
-    result = False
-    distance = distance_start
-    # expand the search distance until we get a result or hit the max distance
-    while result is False and distance <= distance_max:
-        params = {
-            "point": str(x) + "," + str(y),
-            "apikey": 'fake_api_key', # api key not required to be valid
-            "outputFormat": "json",
-            "maxDistance": distance,
-        }
-        r = requests.get(GEOCODER_ENDPOINT, params=params)
+    try:
+        result = False
+        distance = distance_start
+        # expand the search distance until we get a result or hit the max distance
+        while result is False and distance <= distance_max:
+            params = {
+                "point": str(x) + "," + str(y),
+                "apikey": 'fake_api_key', # api key not required to be valid
+                "outputFormat": "json",
+                "maxDistance": distance,
+            }
+            r = requests.get(GEOCODER_ENDPOINT, params=params)
 
-        # pause for 2s per request if near limit of 1000 requests/min
-        if int(r.headers["RateLimit-Remaining"]) < 30:
-            sleep(2)
+            # pause for 2s per request if near limit of 1000 requests/min
+            if int(r.headers["RateLimit-Remaining"]) < 30:
+                sleep(2)
+            if r.status_code == 200:
+                result = True
+            else:
+                distance = distance + distance_increment
         if r.status_code == 200:
-            result = True
-        else:
-            distance = distance + distance_increment
-    if r.status_code == 200:
-        address = r.json()["properties"]
-        address["distance"] = distance
-        return address
-    else:
+            address = r.json().get("properties", {})
+            if address:  # Check if address is not empty
+                address["distance"] = distance
+                return address
+        # If no address return we default to an empty result
         empty_result = dict([(k, "") for k in ADDRESS_COLUMNS])
         empty_result["distance"] = 99999
         return empty_result
+    except Exception as e:
+        print("geocode error:", e)
 
 
 def calculate_geocode_distance(geocoded_address):

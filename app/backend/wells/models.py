@@ -1163,7 +1163,7 @@ class Well(AuditModelStructure):
     cross_referenced = models.BooleanField(
         default=False, verbose_name='Cross Referenced',
         db_comment='Indicates if the record has been cross-referenced by an internal team member.')
-    cross_referenced_date = models.DateField(
+    cross_referenced_date = models.DateTimeField(
         null=True, verbose_name='Cross Referenced Date',
         db_comment='The date when a well was cross referenced by an internal team member.')
     cross_referenced_by = models.CharField(

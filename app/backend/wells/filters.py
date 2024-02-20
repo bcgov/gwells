@@ -839,6 +839,26 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
     Custom well list filtering logic for the QaQc Dashboard.
     allows additional 'filter_group' params.
     """
+    @staticmethod
+    def apply_date_filter(q_objects, field_name, gte_value, lte_value):
+        if gte_value and lte_value:
+            q_objects &= Q(**{f'{field_name}__range': (gte_value, lte_value)})
+        elif gte_value:
+            q_objects &= Q(**{f'{field_name}__gte': gte_value})
+        elif lte_value:
+            q_objects &= Q(**{f'{field_name}__lte': lte_value})
+        return q_objects
+
+    @staticmethod
+    def apply_range_filter(q_objects, field_name, min_value, max_value):
+        if min_value and max_value:
+            q_objects &= Q(**{f'{field_name}__range': (min_value, max_value)})
+        elif min_value:
+            q_objects &= Q(**{f'{field_name}__gte': min_value})
+        elif max_value:
+            q_objects &= Q(**{f'{field_name}__lte': max_value})
+        return q_objects
+
     def filter_queryset(self, request, queryset, view):
         try:
             filter_groups = request.query_params.getlist('filter_group', [])
@@ -856,6 +876,10 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                 q_objects = Q()
                 create_date_gte = None
                 create_date_lte = None
+                update_date_gte = None
+                update_date_lte = None
+                cross_referenced_date_gte = None
+                cross_referenced_date_lte = None
 
                 for field, value in group_params.items():
                     if field == 'well_tag_number':
@@ -873,11 +897,33 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     elif field == 'internal_comments':
                         q_objects &= Q(internal_comments__icontains=value)
 
+                    elif field == 'comments':
+                        q_objects &= Q(comments__icontains=value)
+
+                    # Store these date values to use later in the date range filters
                     elif field == 'create_date_after':
-                        create_date_gte = value  # Store the value to use later in the date range filter
+                        create_date_gte = value  
 
                     elif field == 'create_date_before':
-                        create_date_lte = value  # Store the value to use later in the date range filter
+                        create_date_lte = value  
+
+                    elif field == 'update_date_after':
+                        update_date_gte = value  
+
+                    elif field == 'update_date_before':
+                        update_date_lte = value  
+
+                    elif field == 'cross_referenced_date_after':
+                        cross_referenced_date_gte = value  
+
+                    elif field == 'cross_referenced_date_before':
+                        cross_referenced_date_lte = value  
+
+                    elif field == 'create_user':
+                        q_objects &= Q(create_user__icontains=value)
+
+                    elif field == 'update_user':
+                        q_objects &= Q(update_user__icontains=value)
 
                     elif field == 'person_responsible_name' and value != 'null':
                         q_objects &= (
@@ -907,6 +953,15 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     elif field == 'natural_resource_region' and value == 'null':
                         q_objects &= (Q(natural_resource_region__isnull=True) |
                                       Q(natural_resource_region='') | Q(natural_resource_region=' '))
+                    
+                    elif field == 'cross_referenced_by' and value != 'null':
+                        q_objects &= (
+                            Q(cross_referenced_by__icontains=value)
+                        )
+
+                    elif field == 'cross_referenced_by' and value == 'null':
+                        q_objects &= (Q(cross_referenced_by__isnull=True) |
+                                      Q(cross_referenced_by='') | Q(cross_referenced_by=' '))
                     
                     # Directly handle special cases for fields like latitude and longitude
                     elif field in ['latitude', 'longitude']:
@@ -947,6 +1002,8 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         last_activity_type = Subquery(
                             ActivitySubmission.objects.filter(
                                 well=OuterRef('pk')
+                            ).exclude(
+                                well_activity_type__code="STAFF_EDIT"
                             ).order_by('-work_end_date').values('well_activity_type__description')[:1]
                         )
                         queryset = queryset.annotate(
@@ -958,6 +1015,8 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         last_activity_start_date = Subquery(
                             ActivitySubmission.objects.filter(
                                 well=OuterRef('pk')
+                            ).exclude(
+                                well_activity_type__code="STAFF_EDIT"
                             ).order_by('-work_end_date').values('work_start_date')[:1]
                         )
                         queryset = queryset.annotate(
@@ -969,13 +1028,35 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         last_activity_end_date = Subquery(
                             ActivitySubmission.objects.filter(
                                 well=OuterRef('pk')
+                            ).exclude(
+                                well_activity_type__code="STAFF_EDIT"
                             ).order_by('-work_end_date').values('work_end_date')[:1]
                         )
                         queryset = queryset.annotate(
                             last_work_end_date=last_activity_end_date
                         )
                         q_objects &= Q(last_work_end_date__isnull=True)
-  
+
+                    elif field in ['geocode_distance_min', 'geocode_distance_max']:
+                        geocode_distance_min = group_params.get('geocode_distance_min', None)
+                        geocode_distance_max = group_params.get('geocode_distance_max', None)
+                        q_objects = self.apply_range_filter(q_objects, 'geocode_distance', geocode_distance_min, geocode_distance_max)
+
+                    elif field in ['distance_to_pid_min', 'distance_to_pid_max']:
+                        distance_to_pid_min = group_params.get('distance_to_pid_min', None)
+                        distance_to_pid_max = group_params.get('distance_to_pid_max', None)
+                        q_objects = self.apply_range_filter(q_objects, 'distance_to_pid', distance_to_pid_min, distance_to_pid_max)
+
+                    elif field in ['score_address_min', 'score_address_max']:
+                        score_address_min = group_params.get('score_address_min', None)
+                        score_address_max = group_params.get('score_address_max', None)
+                        q_objects = self.apply_range_filter(q_objects, 'score_address', score_address_min, score_address_max)
+
+                    elif field in ['score_city_min', 'score_city_max']:
+                        score_city_min = group_params.get('score_city_min', None)
+                        score_city_max = group_params.get('score_city_max', None)
+                        q_objects = self.apply_range_filter(q_objects, 'score_city', score_city_min, score_city_max)
+
                     elif value == 'null':
                         # Check if the field exists in the model
                         try:
@@ -991,12 +1072,9 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                             q_objects &= Q(**{f'{field}__isnull': True})
 
                 # After processing all fields, apply the date range filter if both values are provided
-                if create_date_gte and create_date_lte:
-                    q_objects &= Q(create_date__range=(create_date_gte, create_date_lte))
-                elif create_date_gte:  # Only 'after' date is provided
-                    q_objects &= Q(create_date__gte=create_date_gte)
-                elif create_date_lte:  # Only 'before' date is provided
-                    q_objects &= Q(create_date__lte=create_date_lte)
+                q_objects = self.apply_date_filter(q_objects, 'create_date', create_date_gte, create_date_lte)
+                q_objects = self.apply_date_filter(q_objects, 'update_date', update_date_gte, update_date_lte)
+                q_objects = self.apply_date_filter(q_objects, 'cross_referenced_date', cross_referenced_date_gte, cross_referenced_date_lte)
 
                 # Apply the combined Q object filters to the queryset
                 queryset = queryset.filter(q_objects)
