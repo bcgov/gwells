@@ -6,7 +6,7 @@ import os
 def import_well_data(apps, schema_editor):
     Well = apps.get_model('wells', 'Well')
     well_count = Well.objects.count()
-    dev_threshold = 100
+    dev_threshold = 500
     
     if well_count < dev_threshold:
         print("Skipping qaqc data migration as it seems to be a non-production environment.")
@@ -62,7 +62,7 @@ def update_well_attributes(well, row):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0146_add_aquifer_parameters_to_wells_view'),
+        ('wells', '0147_auto_20240105_qaqc'),
     ]
 
     operations = [
