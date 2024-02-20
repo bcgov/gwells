@@ -629,7 +629,7 @@ export default {
         errors.identification_plate_number = ['Identification Plate Number Required.'];
       }
       if (!well_identification_plate_attached) {
-        errors.well_identification_plate_attached = ['Well Identification Plate Attached Required.'];
+        errors.well_identification_plate_attached = ['Where Identification Plate Attached Required.'];
       }
     },
     validateWellFields(errors) {
