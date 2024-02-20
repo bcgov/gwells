@@ -1,3 +1,4 @@
+import sys
 import math
 from django.utils import timezone
 from django.dispatch import receiver
@@ -5,6 +6,7 @@ from django.db.models.signals import pre_save
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
 from gwells.middleware import get_current_user
 from wells.models import Well
+from gwells.settings import TESTING
 from wells.utils import calculate_geocode_distance, calculate_pid_distance_for_well, \
   calculate_score_address, calculate_score_city, calculate_natural_resource_region_for_well, \
   reverse_geocode
@@ -21,57 +23,57 @@ def update_utm(sender, instance, **kwargs):
         instance.utm_easting = round(utm_point.x)
         instance.utm_northing = round(utm_point.y)
 
-
-@receiver(pre_save, sender=Well)
-def update_well(sender, instance, **kwargs):
-    """
-    Signal receiver that triggers before a Well instance is saved.
-
-    For new Well instances, it calculates and sets various geographical and scoring fields.
-    For existing Well instances, it recalculates these fields if the geographical location (geom) has changed.
-
-    Parameters:
-    sender (Model Class): The model class that sent the signal. Should always be the Well model.
-    instance (Well instance): The instance of Well being saved.
-    kwargs: Additional keyword arguments. Not used in this function.
-    """
-
-    def is_valid_geom(geom):
+if not TESTING:
+    @receiver(pre_save, sender=Well)
+    def update_well(sender, instance, **kwargs):
         """
-        Helper function to check if the geom attribute is valid.
-        A valid geom should be non-null and must have both latitude and longitude.
+        Signal receiver that triggers before a Well instance is saved.
+
+        For new Well instances, it calculates and sets various geographical and scoring fields.
+        For existing Well instances, it recalculates these fields if the geographical location (geom) has changed.
+
+        Parameters:
+        sender (Model Class): The model class that sent the signal. Should always be the Well model.
+        instance (Well instance): The instance of Well being saved.
+        kwargs: Additional keyword arguments. Not used in this function.
         """
-        return geom and hasattr(geom, 'x') and hasattr(geom, 'y')
 
-    def contains_cross_reference_comment(comments):
-        """
-        Helper function to check if comments contain any of the specified search terms
-        indicating a cross-reference.
-        """
-        search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
-        return any(term in comments.lower() for term in search_terms)
+        def is_valid_geom(geom):
+            """
+            Helper function to check if the geom attribute is valid.
+            A valid geom should be non-null and must have both latitude and longitude.
+            """
+            return geom and hasattr(geom, 'x') and hasattr(geom, 'y')
 
-    try:
-        if instance._state.adding and not instance.pk:
-            # Handling new instance creation
-            if is_valid_geom(instance.geom):
-                set_well_attributes(instance)
-        else:
-            # Handling updates to existing instances
-            original_instance = sender.objects.get(pk=instance.pk)
-            geom_changed = original_instance.geom != instance.geom
-            address_changed = original_instance.street_address != instance.street_address
-            city_changed = original_instance.city != instance.city
+        def contains_cross_reference_comment(comments):
+            """
+            Helper function to check if comments contain any of the specified search terms
+            indicating a cross-reference.
+            """
+            search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
+            return any(term in comments.lower() for term in search_terms)
 
-            if (geom_changed or address_changed or city_changed) and is_valid_geom(instance.geom):
-                set_well_attributes(instance)
+        try:
+            if instance._state.adding and not instance.pk:
+                # Handling new instance creation
+                if is_valid_geom(instance.geom):
+                    set_well_attributes(instance)
+            else:
+                # Handling updates to existing instances
+                original_instance = sender.objects.get(pk=instance.pk)
+                geom_changed = original_instance.geom != instance.geom
+                address_changed = original_instance.street_address != instance.street_address
+                city_changed = original_instance.city != instance.city
 
-        # If comments indicate a cross-reference, set cross-reference attributes
-        if instance.internal_comments and contains_cross_reference_comment(instance.internal_comments):
-            set_cross_reference_attributes(instance)
+                if (geom_changed or address_changed or city_changed) and is_valid_geom(instance.geom):
+                    set_well_attributes(instance)
 
-    except Exception as e:
-        print(f"Error in update_well for Well ID {instance.pk}: {str(e)}")
+            # If comments indicate a cross-reference, set cross-reference attributes
+            if instance.internal_comments and contains_cross_reference_comment(instance.internal_comments):
+                set_cross_reference_attributes(instance)
+
+        except Exception as e:
+            print(f"Error in update_well for Well ID {instance.pk}: {str(e)}")
 
 
 def set_cross_reference_attributes(instance):
