@@ -593,7 +593,7 @@ export default {
         owner_province_state,
         owner_postal_code,
       } = this.form
-
+      this.isWellLocationFilled(errors);
       if (!owner_full_name) {
         errors.owner_full_name = ['Owners Full Name Required.'];
       }
@@ -681,9 +681,36 @@ export default {
         this.validateWellFields(errors);
       }
     },
+    /**
+     * @desc Users must fill in one of three "Well Location" fields (well location address, legal description, parcel identifier),
+     * To count as correct, one of these three sections has to be filled in.
+     * @summary validates Well Location section of form 
+     * @returns {Boolean} a valid section has been filled out
+     */
+    isWellLocationFilled(errors){
+      const {
+        legal_lot, legal_plan, legal_district_lot,
+        legal_block, legal_section, legal_township,
+        legal_range, land_district, legal_pid,
+        street_address, city,
+      } = this.form;
+
+      const legalDescriptionFields = [
+        legal_lot, legal_plan, legal_district_lot,
+        legal_block, legal_section, legal_township,
+        legal_range, land_district
+      ];
+      const locationAddressValidate = !!street_address && !!city;
+      // for legalDescription a user is only required to fill in a minimum one field
+      const legalDescriptionValidate = legalDescriptionFields.some((item) => !!item);
+      const pidAddressValidate = legal_pid > 0;
+
+      if(locationAddressValidate || legalDescriptionValidate || pidAddressValidate) { return; }
+      errors.well_location_section = ['Well location not filled out'];
+    },
     isFormValid () {
       const errors = {}
-
+      
       // We don't want to validate on edits of older wells
       if (this.activityType !== 'STAFF_EDIT') {
         this.groundwaterProtectionRegulationValidation(errors);
