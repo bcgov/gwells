@@ -43,7 +43,7 @@ def process_response(response):
         if not features:
             raise ValueError("Unable to geocode address")
         return features[0]
-    except AttributeError as e:
+    except AttributeError:
         raise ValueError("Unable to geocode address")
 
 def geocode_bc_location(options={}):
@@ -61,7 +61,7 @@ def geocode_bc_location(options={}):
 
     try:
         point = GEOSGeometry(json.dumps(first_feature.get("geometry", {})))
-    except TypeError as e:
+    except TypeError:
         raise ValueError("Unable to geocode address")
     
     return point

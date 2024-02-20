@@ -4,15 +4,15 @@ import zipfile
 import os
 
 def import_well_data(apps, schema_editor):
-    WellModel = apps.get_model('wells', 'Well')
-    well_count = WellModel.objects.count()
+    Well = apps.get_model('wells', 'Well')
+    well_count = Well.objects.count()
     dev_threshold = 100
     
     if well_count < dev_threshold:
         print("Skipping qaqc data migration as it seems to be a non-production environment.")
         return
 
-    process_wells(WellModel, get_well_data())
+    process_wells(Well, get_well_data())
 
 def get_well_data():
     migration_dir = os.path.dirname(__file__)
@@ -21,31 +21,31 @@ def get_well_data():
         with zip_file.open(csv_filename, 'r') as csvfile:
             return csv.DictReader(csvfile.read().decode('utf-8').splitlines())
 
-def process_wells(WellModel, reader):
+def process_wells(Well, reader):
     batch_size = 1000  # Adjust batch size if there are memory issues
     wells_to_update = []
     count = 0
 
     for row in reader:
         try:
-            well_instance = WellModel.objects.get(well_tag_number=row['well_tag_number'])
+            well_instance = Well.objects.get(well_tag_number=row['well_tag_number'])
             update_well_attributes(well_instance, row)
             wells_to_update.append(well_instance)
             count += 1
 
             # Process in batches of batch_size
             if count % batch_size == 0:
-                WellModel.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 'score_city', 'cross_referenced', 'natural_resource_region'])
+                Well.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 'score_city', 'cross_referenced', 'natural_resource_region'])
                 wells_to_update = []  # Reset the list after updating
 
-        except WellModel.DoesNotExist:
+        except Well.DoesNotExist:
             print(f"Well with tag number {row['well_tag_number']} not found.")
         except ValueError as e:
             print(f"Error processing well {row['well_tag_number']}: {e}")
 
     # Update any remaining wells in the list
     if wells_to_update:
-        WellModel.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 'score_city', 'cross_referenced', 'natural_resource_region'])
+        Well.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 'score_city', 'cross_referenced', 'natural_resource_region'])
 
 def update_well_attributes(well, row):
     fields_to_update = ['distance_geocode', 'distance_to_matching_pid', 'score_address', 'score_city']
@@ -62,7 +62,7 @@ def update_well_attributes(well, row):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0146_auto_20240105_qaqc'),
+        ('wells', '0146_add_aquifer_parameters_to_wells_view'),
     ]
 
     operations = [
