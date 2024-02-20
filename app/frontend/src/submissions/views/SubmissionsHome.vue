@@ -684,8 +684,7 @@ export default {
     /**
      * @desc Users must fill in one of three "Well Location" fields (well location address, legal description, parcel identifier),
      * To count as correct, one of these three sections has to be filled in.
-     * @summary validates Well Location section of form 
-     * @returns {Boolean} a valid section has been filled out
+     * @summary validates Well Location section of form
      */
     isWellLocationFilled(errors){
       const {
