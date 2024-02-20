@@ -58,6 +58,9 @@ export const TOOLTIP_TEXT = {
     specific_capacity: 'The specific capacity of a well is simply the pumping rate (yield) divided by the drawdown.',
     analysis_method: 'Mathematical solutions (Theis, Cooper-Jacob, Neuman, etc.) where response data (discharge, drawdown/time) from pumping tests are used to estimate the hydraulic properties of aquifers.',
   },
+  location_vue: {
+    legal_description_fields: 'Enter as many fields as possible. Additional information that does not fit should go in "Description of Well Location."',
+  }
 }
 
 export const TYPE_OF_WORK = {
@@ -103,4 +106,3 @@ export const DATE_INPUT_TYPE = {
   START_DATE: 'workStartDate',
   END_DATE: 'workEndDate'
 }
-

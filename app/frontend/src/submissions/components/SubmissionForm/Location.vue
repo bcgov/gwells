@@ -26,8 +26,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
       <b-row>
         <b-col>
-          <p>Please provide as much information as possible. A minimum of one type of well location information is required below:</p>
-          <p class="d-inline">1) Well location address</p>
+          <p>Please provide as much information as possible.</p> <p class="bg-warning p-2">A minimum of one type of well location information is required below:</p>
+          <p class="d-inline font-weight-bold">1) Well Location Address</p>
           <div class="d-inline pl-2"><b-form-checkbox v-model="sameAsOwnerAddress">Same as owner address</b-form-checkbox></div>
         </b-col>
       </b-row>
@@ -74,7 +74,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-row>
         <b-col>
           <p class="mb-1">OR</p>
-          <p>2) Legal Description</p>
+          <p class="font-weight-bold">
+            2) Legal Description
+            <i id="legal_description_fields" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+            <b-popover
+              target="legal_description_fields"
+              triggers="hover focus"
+              :content="TOOLTIP_TEXT.location_vue.legal_description_fields"
+            />
+          </p>
         </b-col>
       </b-row>
 
@@ -180,9 +188,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
       <b-row>
         <b-col cols="12" md="6" lg="3">
+          <p class="font-weight-bold">3) Parcel Identifier (PID)</p>
           <form-input
               id="legalPID"
-              label="3) Parcel Identifier"
               type="number"
               hint="*Input a 9 digit number (including leading zeroes, if necessary)"
               v-model="legalPIDInput"
@@ -207,7 +215,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
 
       <!-- Error message when location not given -->
-      <b-alert class="mt-3" variant="danger" :show="errorWellLocationNotProvided">
+      <b-alert class="mt-3" variant="danger" :show="errors.well_location_section && errors.well_location_section.length > 0">
         Must provide well location as either an address, legal description, or parcel identifier.
       </b-alert>
 
@@ -218,6 +226,7 @@ import { mapGetters } from 'vuex'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import ApiService from '../../../common/services/ApiService'
+import { TOOLTIP_TEXT } from '@/common/constants'
 
 export default {
   name: 'Location',
@@ -269,7 +278,8 @@ export default {
       wellAddressHints: [],
       sameAsOwnerAddress: false,
       addressSuggestions: [],
-      isLoadingSuggestions: false
+      isLoadingSuggestions: false,
+      TOOLTIP_TEXT: TOOLTIP_TEXT,
     }
   },
   computed: {
@@ -301,7 +311,7 @@ export default {
     }
   },
   methods: {
-      /**
+    /**
      * @desc Asynchronously fetches address suggestions based on the owner's address input.
      * If no input is provided, it clears the current suggestions.
      * On success, it maps the received data to full addresses and updates the addressSuggestions state.
@@ -366,7 +376,6 @@ export default {
     clearAddressSuggestions () {
       this.addressSuggestions = [];
     },
-    
     /**
      * @desc Shows or hides the address suggestions list in the UI.
      * @param {boolean} show - a boolean which indicates whether to show or hide the element
@@ -384,6 +393,12 @@ export default {
 .dropdown-error-border {
   border-radius: 5px;
 }
+
+/** Corrects how bold font doesn't render in chrome */
+p, #legalPID__BV_label_ {
+  -webkit-font-smoothing: antialiased;
+}
+
 .address-suggestions {
     list-style-type: none;
     position: absolute;
