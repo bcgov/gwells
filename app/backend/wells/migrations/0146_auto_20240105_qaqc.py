@@ -9,7 +9,7 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0145_auto_20231127_2105'),
+        ('wells', '0146_add_aquifer_parameters_to_wells_view'),
     ]
 
     operations = [
