@@ -104,7 +104,7 @@
           <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
-                <a :href="`/well/${row.well_tag_number}`" @click.prevent="openInNewTab(`/well/${row.well_tag_number}`)">{{ row.well_tag_number }}</a>
+                <a :href="safeUrl(row.well_tag_number)" @click.prevent="openInNewTab(row.well_tag_number)">{{ row.well_tag_number }}</a>
               </template>
               <template v-else-if="column.param === 'natural_resource_region'">
                 {{ removeRegionSuffix(row[column.param]) }}
@@ -161,6 +161,7 @@ import { FILTER_TRIGGER } from '@/qaqc/store/triggers.types.js'
 import QaQcFilters from '@/qaqc/components/QaQcFilters.vue'
 import QaQcExports from '@/qaqc/components/QaQcExports.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
+import { sanitizeUrl } from '@braintree/sanitize-url'
 
 export default {
   mixins: [filterMixin],
@@ -204,16 +205,17 @@ export default {
       results: 'qaqcResults'
       // selectedWells: 'selectedWells'
     }),
-    columns () {
-      return this.getFilterFields(this.resultColumns)
-    },
     currentPage () {
       return Math.ceil(this.offset / this.limit) + 1
     },
-    // currentRecordsCountStart is the starting record number in the table of wells
-    // (e.g. the 1 in 'showing 1 to 10 of 25 records')
-    currentRecordsCountStart () {
-      return (this.currentPage - 1) * this.limit + 1
+    dateColumn () {
+      return this.columns.find(column => column.param === 'create_date')
+    },
+    columns () {
+      return this.getFilterFields(this.resultColumns)
+    },
+    excludedFilterColumns () {
+      return ['latitude', 'longitude']
     },
     // currentRecordsCountEnd is the last visible record number in the table of wells
     // (e.g. the 10 in 'showing 1 to 10 of 25 records')
@@ -223,39 +225,10 @@ export default {
       }
       return (this.currentPage - 1) * this.limit + this.results.length
     },
-    orderingParam () {
-      if (this.orderingDesc) {
-        return this.ordering.substr(1)
-      } else {
-        return this.ordering
-      }
-    },
-    orderingDesc () {
-      return this.ordering.startsWith('-')
-    },
-    columnCount () {
-      return this.resultColumns.length
-    },
-    resultErrors () {
-      return this.errors.filter_group || {}
-    },
-    hasResultErrors () {
-      return Object.entries(this.resultErrors).length > 0
-    },
-    isBusy () {
-      return (this.pending !== null)
-    },
-    isEmpty () {
-      return (!this.isBusy && this.results !== null && this.resultCount === 0)
-    },
-    isReset () {
-      return (!this.isBusy && this.results === null)
-    },
-    dateColumn () {
-      return this.columns.find(column => column.param === 'create_date')
-    },
-    excludedFilterColumns () {
-      return ['latitude', 'longitude']
+    // currentRecordsCountStart is the starting record number in the table of wells
+    // (e.g. the 1 in 'showing 1 to 10 of 25 records')
+    currentRecordsCountStart () {
+      return (this.currentPage - 1) * this.limit + 1
     },
     columnLabels () {
       // Define a mapping for updated labels
@@ -291,8 +264,35 @@ export default {
         'scoreAddress': 'Score Address',
         'scoreCity': 'Score City'
       }
-
       return (columnId) => labelMapping[columnId] || columnId
+    },
+    orderingParam () {
+      if (this.orderingDesc) {
+        return this.ordering.substr(1)
+      } else {
+        return this.ordering
+      }
+    },
+    columnCount () {
+      return this.resultColumns.length
+    },
+    orderingDesc () {
+      return this.ordering.startsWith('-')
+    },
+    hasResultErrors () {
+      return Object.entries(this.resultErrors).length > 0
+    },
+    resultErrors () {
+      return this.errors.filter_group || {}
+    },
+    isReset () {
+      return (!this.isBusy && this.results === null)
+    },
+    isEmpty () {
+      return (!this.isBusy && this.results !== null && this.resultCount === 0)
+    },
+    isBusy () {
+      return (this.pending !== null)
     }
   },
   methods: {
@@ -344,25 +344,31 @@ export default {
       // Return the tooltip content if it exists, or null if it doesn't
       return this.tooltipContent[columnId] || null;
     },
-    openInNewTab(path) {
+    removeRegionSuffix(value) {
+      if (!value || typeof value !== 'string') return '';
+      // Define the suffixes to check for and remove
+      const suffixes = [' Region', ' region', ' Natural Resource Region'];
+      // Check each suffix to see if the value ends with it
+      for (const suffix of suffixes) {
+        if (value.endsWith(suffix)) {
+          // If value ends with suffix, remove it and return
+          return value.substring(0, value.length - suffix.length);
+        }
+      }
+      // If no suffix matches, return the original value
+      return value;
+    },
+    openInNewTab(wellTagNumber) {
+      const path = sanitizeUrl(`/well/${wellTagNumber}`)
       const { href } = this.$router.resolve(path);
       window.open(href, '_blank');
     },
-    removeRegionSuffix(value) {
-      if (!value || typeof value !== 'string') return '';
-      // This regex matches ' Region', ' region', ' Natural Resource Region'
-      // at the end of the string, case-insensitively.
-      return value.replace(/\s*(Natural Resource )?Region$/i, '');
+    safeUrl(wellTagNumber) {
+      const url = sanitizeUrl(`/gwells/well/${wellTagNumber}`)
+      return encodeURI(url)
     }
   },
   filters: {
-    streetAddressFormat (row) {
-      if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
-        return `${row.street_address}, ${row.city}`
-      } else {
-        return row.street_address
-      }
-    },
     selectOptionFormat (value, column, options = null) {
       if (value === undefined || value === null || value === '') {
         return ''
@@ -383,9 +389,22 @@ export default {
         return ''
       }
       return value
+    },
+    streetAddressFormat (row) {
+      if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
+        return `${row.street_address}, ${row.city}`
+      } else {
+        return row.street_address
+      }
     }
   },
   watch: {
+    resultFilters (newFilters) {
+      // on reset (empty filters), clear state
+      if (Object.entries(newFilters).length === 0 && newFilters.constructor === Object) {
+        this.clearFilterParams()
+      }
+    },
     resultColumns (newColumns, oldColumns) {
       const removedColumnIds = oldColumns.filter(colId => !newColumns.includes(colId))
       const removedWithFilters = removedColumnIds.filter(columnId => {
@@ -400,12 +419,6 @@ export default {
         const lastFilterRemoved = removedWithFilters.slice(-1)[0]
         // Call applyFilter to trigger reload
         this.applyFilter({ id: lastFilterRemoved }, {})
-      }
-    },
-    resultFilters (newFilters) {
-      // on reset (empty filters), clear state
-      if (Object.entries(newFilters).length === 0 && newFilters.constructor === Object) {
-        this.clearFilterParams()
       }
     }
   },

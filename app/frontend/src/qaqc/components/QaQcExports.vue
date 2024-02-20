@@ -46,9 +46,6 @@ export default {
       resultCount: 'qaqcResultCount',
       resultColumns: 'qaqcResultColumns'
     }),
-    exportFields () {
-      return this.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
-    },
     fullQueryString () {
       const queryParams = {
         ...this.params,
@@ -61,11 +58,14 @@ export default {
 
       return querystring.stringify(queryParams)
     },
-    excelExportUrl () {
-      return this.getExportUrl('xlsx')
+    exportFields () {
+      return this.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
     },
     csvExportUrl () {
       return this.getExportUrl('csv')
+    },
+    excelExportUrl () {
+      return this.getExportUrl('xlsx')
     }
   },
   methods: {

@@ -103,24 +103,24 @@ export default {
       required: true,
       type: String
     },
-    paramNames: {
-      required: true,
-      type: Array
-    },
     errors: null, // pass any "field errors" returned by the API into the "errors" prop
     value: Object, // internal (holds the values for the field)
     type: { // the type of filter (e.g. text, range, dateRange)
       type: String,
       default: 'text'
     },
-    options: Array,
-    valueField: {
-      type: String,
-      default: 'value'
+    paramNames: {
+      required: true,
+      type: Array
     },
+    options: Array,
     textField: {
       type: String,
       default: 'text'
+    },
+    valueField: {
+      type: String,
+      default: 'value'
     },
     placeholder: String
   },
@@ -130,14 +130,11 @@ export default {
     }
   },
   computed: {
-    isActive () {
-      return (this.value !== undefined && this.paramNames.some(param => this.value[param]))
-    },
     hasLocalValue () {
       return this.paramNames.some(param => this.localValue[param])
     },
-    validation () {
-      return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? false : null
+    isActive () {
+      return (this.value !== undefined && this.paramNames.some(param => this.value[param]))
     },
     selectOptions () {
       if (this.options === undefined) {
@@ -147,6 +144,9 @@ export default {
         { [this.textField]: 'Filter...', [this.valueField]: null },
         { [this.textField]: 'Null', [this.valueField]: 'null' },
         ...this.options]
+    },
+    validation () {
+      return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? false : null
     }
   },
   methods: {
