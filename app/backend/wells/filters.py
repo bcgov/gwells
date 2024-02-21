@@ -722,8 +722,8 @@ class WellListFilterBackend(filters.DjangoFilterBackend):
         for group in filter_groups:
             try:
                 group_params = json.loads(group)
-                if 'legal_id' in group_params.keys():
-                    group_params['legal_id'] = group_params['legal_id'].replace("-", "")
+                if 'legal_pid' in group_params.keys():
+                    group_params['legal_pid'] = group_params['legal_pid'].replace("-", "")
             except ValueError as exc:
                 raise ValidationError({
                     'filter_group': 'Error parsing JSON data: {}'.format(exc),
