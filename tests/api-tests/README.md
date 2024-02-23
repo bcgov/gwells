@@ -37,8 +37,9 @@ Add this section of script to the top of your new bash script. It will check if 
 
 ```bash
 # Load ENVs to environment if not already present
-if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./envrc"]; then
-  ./envrc
+if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./.envrc" ]; then
+  source ./.envrc
+  set -e
 fi
 ```
 
