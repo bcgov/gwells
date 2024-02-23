@@ -9,8 +9,9 @@
 #     ./local_wells_search.sh
 
 # Load ENVs to environment if not already present
-if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./envrc"]; then
-  ./envrc
+if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./.envrc" ]; then
+  source ./.envrc
+  set -e
 fi
 
 ENV_VARS=(
