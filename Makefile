@@ -52,3 +52,6 @@ backend:
 
 psql:
 	docker-compose exec db /bin/bash -c "psql -U gwells -d gwells"
+
+api-tests-local:
+	newman run tests/api-tests/*.json --global-var base_url="localhost:8000/gwells"
