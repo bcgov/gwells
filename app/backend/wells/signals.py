@@ -4,12 +4,15 @@ from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
+from shapely.geometry import Point
+from pyproj import Proj, transform
+from shapely import wkt
 from gwells.middleware import get_current_user
 from wells.models import Well
 from gwells.settings import TESTING
 from wells.utils import calculate_geocode_distance, calculate_pid_distance_for_well, \
   calculate_score_address, calculate_score_city, calculate_natural_resource_region_for_well, \
-  reverse_geocode
+  reverse_geocode, geocode
 
 @receiver(pre_save, sender=Well)
 def update_utm(sender, instance, **kwargs):
@@ -64,8 +67,9 @@ if not TESTING:
                 geom_changed = original_instance.geom != instance.geom
                 address_changed = original_instance.street_address != instance.street_address
                 city_changed = original_instance.city != instance.city
+                pid_changed = original_instance.legal_pid != instance.legal_pid
 
-                if (geom_changed or address_changed or city_changed) and is_valid_geom(instance.geom):
+                if (geom_changed or address_changed or city_changed or pid_changed) and is_valid_geom(instance.geom):
                     set_well_attributes(instance)
 
             # If comments indicate a cross-reference, set cross-reference attributes
@@ -98,9 +102,16 @@ def set_well_attributes(instance):
     Parameters:
     instance (Well instance): The instance of Well being processed.
     """
-    geocoded_address = reverse_geocode(instance.longitude, instance.latitude)
-    instance.geocode_distance = calculate_geocode_distance(geocoded_address)
+    # Calculate distance scores
+    instance.geocode_distance = calculate_geocode_distance(instance)
     instance.distance_to_pid = calculate_pid_distance_for_well(instance)
+
+    # Geocode point to address
+    geocoded_address = reverse_geocode(instance.longitude, instance.latitude)
+
+    # Calculate address scores
     instance.score_address = calculate_score_address(instance, geocoded_address)
     instance.score_city = calculate_score_city(instance, geocoded_address)
+
+    # Calculate natural resource region of well
     instance.natural_resource_region = calculate_natural_resource_region_for_well(instance)

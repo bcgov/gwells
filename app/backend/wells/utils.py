@@ -1,7 +1,9 @@
+import json
 import requests
 import geopandas as gpd
 from time import sleep
 from shapely.geometry import Point
+from django.contrib.gis.geos import GEOSGeometry
 from wells.constants import ADDRESS_COLUMNS, GEOCODER_ENDPOINT
 from thefuzz import fuzz
 from django.db.models import Case, When, Value, DateField, F
@@ -16,15 +18,17 @@ def calculate_pid_distance_for_well(well):
     """
     Calculate the distance from a single well to the nearest parcel using a WFS query.
     :param well: A well instance with latitude, longitude attributes
-    :return: Distance to the nearest parcel
+    :return: Distance to the nearest parcel in meters
     """
+    # Define projections
     proj_4326 = Proj(init='epsg:4326')  # WGS 84
-    proj_3005 = Proj(init='epsg:3005')  # NAD83 / BC Albers
+    proj_3005 = Proj(init='epsg:3005')  # NAD83 / BC Albers, uses meters
 
-    # Transform the point
+    # Transform the well's point to NAD83 / BC Albers
     x_3005, y_3005 = transform(proj_4326, proj_3005, well.longitude, well.latitude)
+    well_point_3005 = Point(x_3005, y_3005)
 
-    # Base URL for the WFS request
+    # Define base URL and parameters for the WFS request
     base_url = "https://openmaps.gov.bc.ca/geo/pub/wfs"
     params = {
         "service": "WFS",
@@ -32,32 +36,30 @@ def calculate_pid_distance_for_well(well):
         "request": "GetFeature",
         "typeName": "WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW",
         "outputFormat": "json",
-        "srsName": "EPSG:4326",
-        "CQL_FILTER": f"DWITHIN(SHAPE, POINT({x_3005} {y_3005}), 0.1, meters)"
+        "srsName": "EPSG:3005",  # Ensure the response is in the same projection as the well point
+        "CQL_FILTER": f"PID_NUMBER={well.legal_pid}"
     }
 
-    # Construct the request URL
-    request_url = f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}"
-
-    # Make the request
-    response = requests.get(request_url)
+    # Construct and make the request
+    response = requests.get(f"{base_url}?{'&'.join([f'{k}={v}' for k, v in params.items()])}")
     if response.status_code != 200:
         print("Error making request to WFS service.")
         return None
 
-    # Load response into GeoDataFrame
+    # Load response into GeoDataFrame, already in EPSG:3005
     data = response.json()
-    parcels_gdf = gpd.GeoDataFrame.from_features(data["features"])
+    parcels_gdf = gpd.GeoDataFrame.from_features(data["features"], crs="EPSG:3005")
 
     if parcels_gdf.empty:
-        print("No parcels found near well location.")
+        print("No parcels found for the specified PID.")
         return None
 
-    # Calculate the distance from the well to the nearest parcel
-    well_point = Point(well.longitude, well.latitude)
-    parcels_gdf["distance"] = parcels_gdf.distance(well_point)
+    # Calculate distances in meters from the well to each parcel
+    parcels_gdf["distance"] = parcels_gdf.geometry.distance(well_point_3005)
 
-    return parcels_gdf["distance"].min()
+    # Return the minimum distance
+    min_distance = parcels_gdf["distance"].min()
+    return min_distance
 
 
 def calculate_natural_resource_region_for_well(well):
@@ -105,6 +107,42 @@ def calculate_natural_resource_region_for_well(well):
 
     # Assuming the well can only be in one region, return the name of the first region found
     return regions_gdf.iloc[0]['ORG_UNIT_NAME']
+
+
+def geocode(options={}):
+    """
+    Performs an HTTP request to the BC Physical Address Geocoder API, 
+    returning a django.contrib.gis.geos.Point for the first result. Supports query 
+    string parameters via the 'options' argument. Raises HTTPError for 
+    communication issues and ValueError if no matching coordinate is found.
+    Example 'options': {"addressString": "101 main st.", "localityName": "Kelowna"}.
+    """
+    url = "https://geocoder.api.gov.bc.ca/addresses.json"
+    try:
+        response = requests.get(url, params=options)
+        
+        # Check if response status is ok
+        if response.status_code == 200:
+            data = response.json()
+            first_feature = data.get("features", [])[0] if data.get("features") else None
+
+            if first_feature:
+                geometry = first_feature.get("geometry", {})
+                # Directly extract coordinates to create a shapely Point
+                coordinates = geometry.get("coordinates", [])
+                if coordinates:
+                    # Note the order: GeoJSON specifies coordinates as [longitude, latitude]
+                    shapely_point = Point(coordinates[0], coordinates[1])
+                    return shapely_point
+                else:
+                    raise ValueError("Geometry coordinates not found.")
+            else:
+                raise ValueError("No matching coordinate found for the given address.")
+        else:
+            response.raise_for_status()  # This will raise an HTTPError if the response was an error
+    except Exception as e:
+        print(f"Error during geocoding: {e}")
+        return None
 
 
 def reverse_geocode(
@@ -157,10 +195,23 @@ def reverse_geocode(
         print("geocode error:", e)
 
 
-def calculate_geocode_distance(geocoded_address):
-    if not geocoded_address:
-        return None
-    return geocoded_address.get('distance', None)
+def calculate_geocode_distance(well):
+    # geocode address to point
+    options = { "addressString": well.street_address, "localityName": well.city }
+
+    geocoded_point = geocode(options)  # Assuming this returns a WKT string
+    well_point = Point(well.longitude, well.latitude)
+
+    # Calculate geocode distance
+    proj_wgs84 = Proj(init='epsg:4326')
+    proj_utm = Proj(init='epsg:32610')
+    # Transform points to UTM
+    x1, y1 = transform(proj_wgs84, proj_utm, geocoded_point.x, geocoded_point.y)
+    x2, y2 = transform(proj_wgs84, proj_utm, well_point.x, well_point.y)
+    # Calculate distance in meters in the UTM projection
+    distance_meters = Point(x1, y1).distance(Point(x2, y2))
+
+    return distance_meters
 
 
 def calculate_score_address(well, geocoded_address):
