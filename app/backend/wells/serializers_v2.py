@@ -565,7 +565,7 @@ class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSeria
         fields = [
           'well_tag_number',
           'identification_plate_number',
-          'intended_water_use',
+          'well_subclass',
           'well_class',
           'latitude',
           'longitude',

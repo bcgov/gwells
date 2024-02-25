@@ -46,12 +46,17 @@
               scope="col">
               {{ columnLabels(column.id) }}
               <b-button
+                v-if="column.sortParam !== 'latitude' && column.sortParam !== 'longitude'"
                 class="sort-button px-0"
                 :class="{active: column.sortParam === orderingParam}"
                 variant="link"
                 @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
                 {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
               </b-button>
+              <div 
+                v-if="column.sortParam === 'latitude' || column.sortParam === 'longitude'"
+                class="py-1 px-0"
+              ></div>
               <!-- Only show the badge and popover if there is tooltip content -->
               <template v-if="getTooltipContent(column.id)">
                 <b-badge pill variant="primary" :id="`${column.id}-tooltip`" tabindex="0" class="ml-1">
@@ -236,7 +241,7 @@ export default {
         'wellTagNumber': 'WTN',
         'identificationPlateNumber': 'WIDP',
         'wellClass': 'Class of well',
-        'intendedWaterUse': 'Well subclass',
+        'wellSubclass': 'Well subclass',
         'latitudeNull': 'Lat',
         'longitudeNull': 'Lon',
         'finishedWellDepthNull': 'Finished well depth (feet)',
@@ -346,8 +351,8 @@ export default {
     },
     removeRegionSuffix(value) {
       if (!value || typeof value !== 'string') return '';
-      // Define the suffixes to check for and remove
-      const suffixes = [' Region', ' region', ' Natural Resource Region'];
+      // Define the suffixes to check for and remove, ordered by specificity and length
+      const suffixes = [' Natural Resource Region', ' Region', ' region'];
       // Check each suffix to see if the value ends with it
       for (const suffix of suffixes) {
         if (value.endsWith(suffix)) {

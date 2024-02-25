@@ -842,6 +842,7 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
     def filter_queryset(self, request, queryset, view):
         try:
             filter_groups = request.query_params.getlist('filter_group', [])
+            # ordering = request.query_params.get('ordering', 'well_tag_number')
             for group in filter_groups:
                 try:
                     group_params = json.loads(group)
@@ -859,13 +860,18 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     'cross_referenced_by', 'create_user', 'update_user', 'internal_comments', 
                     'comments'
                 ]
+                date_fields = [
+                    'create_date_before', 'create_date_after', 
+                    'update_date_before', 'update_date_after',
+                    'cross_referenced_date_before', 'cross_referenced_date_after'
+                ]
 
                 for field, value in group_params.items():
                     if field in q_fields and value != 'null':
                         q_objects &= Q(**{f'{field}__icontains': value})
 
                     # Set filter date fields
-                    elif field in ['create_date', 'update_date', 'cross_referenced_date']:
+                    elif field in date_fields:
                         suffix = field.split('_')[-1]  # after or before
                         date_field = '_'.join(field.split('_')[:-1])  # remove _after or _before
                         print(date_field)
@@ -890,6 +896,9 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     elif field == 'well_class':
                         q_objects &= Q(well_class__well_class_code=value)
                     
+                    elif field == 'well_subclass':
+                        q_objects &= Q(well_subclass__well_subclass_guid=value)
+                        
                     elif field == 'intended_water_use':
                         q_objects &= Q(intended_water_use__intended_water_use_code=value)
 

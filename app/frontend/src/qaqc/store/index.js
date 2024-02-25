@@ -64,7 +64,7 @@ export const RECORD_COMPLIANCE_COLUMNS = [
   'wellTagNumber',
   'identificationPlateNumber',
   'wellClass',
-  'intendedWaterUse',
+  'wellSubclass',
   'latitudeNull',
   'longitudeNull',
   'finishedWellDepthNull',

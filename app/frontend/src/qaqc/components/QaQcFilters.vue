@@ -140,10 +140,12 @@ export default {
       if (this.options === undefined) {
         return []
       }
+      // Filter out options where the textField equals "Staff edit"
+      const filteredOptions = this.options.filter(option => option[this.textField] !== 'Staff edit')
       return [
         { [this.textField]: 'Filter...', [this.valueField]: null },
         { [this.textField]: 'Null', [this.valueField]: 'null' },
-        ...this.options]
+        ...filteredOptions]
     },
     validation () {
       return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? false : null

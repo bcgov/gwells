@@ -73,7 +73,7 @@ if not TESTING:
                     set_well_attributes(instance)
 
             # If comments indicate a cross-reference, set cross-reference attributes
-            if instance.internal_comments and contains_cross_reference_comment(instance.internal_comments):
+            if instance.comments and contains_cross_reference_comment(instance.comments):
                 set_cross_reference_attributes(instance)
 
         except Exception as e:

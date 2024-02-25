@@ -912,7 +912,7 @@ const SEARCH_FIELDS = {
   naturalResourceRegion: {
     param: 'natural_resource_region',
     label: 'Natural Resource Region',
-    type: 'text',
+    type: 'select',
     sortable: true,
   },
   finishedWellDepthNull: {
@@ -1075,7 +1075,9 @@ export default {
         wellDisinfectedStatus: this.codes.well_disinfected_codes || [],
         wellStatus: this.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
-        yieldEstimationMethod: this.codes.yield_estimation_methods || []
+        yieldEstimationMethod: this.codes.yield_estimation_methods || [],
+        naturalResourceRegion: ['Northeast', 'West Coast', 'South Coast', 'Omineca',
+          'Skeena', 'Thompson-Okanagan', 'Cariboo', 'Kootenay-Boundary']
       }
 
       Object.keys(options).forEach(optionId => {
