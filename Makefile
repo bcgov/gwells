@@ -52,3 +52,9 @@ backend:
 
 psql:
 	docker-compose exec db /bin/bash -c "psql -U gwells -d gwells"
+
+DEFAULT_API_TEST := 'local_run_all.sh'
+TEST_FILE?="$(DEFAULT_API_TEST)"
+
+api-tests-local:
+	cd tests/api-tests && "./$(TEST_FILE)"

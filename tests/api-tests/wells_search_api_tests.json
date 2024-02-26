@@ -2245,9 +2245,9 @@
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address\").toLowerCase();",
-											"",
+											"const decodedStreetAddress = decodeURIComponent(streetAddress)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.street_address.toLowerCase()).to.include(streetAddress);",
+											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
 											"  });",
 											"});"
 										],

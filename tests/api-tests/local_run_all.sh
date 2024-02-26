@@ -1,11 +1,23 @@
 #!/bin/sh
 #
-# Run all api (newman/postman) tests locally.
-
 set -e
 
-./local_aquifers.sh
-./local_registries.sh
-./local_submissions.sh
-./local_wells_search.sh
-./local_wells.sh
+currentFile=$(basename "$0")
+
+if [ -f "./.envrc" ]; then
+  source ./.envrc
+fi
+
+for file in local_*.sh; do
+  if [ "$file" == "$currentFile" ]; then
+    continue
+  elif [ -x "$file" ]; then
+    "./$file"
+  else
+    echo "$file can't be executed, check your file permissions 'ls -al'"
+    echo "Abandoning Tests"
+    exit
+  fi
+done
+
+echo "Environment variables (including your password) will not persist after this terminal is closed"

@@ -8,10 +8,25 @@
 # - Run script:
 #     ./local_wells_search.sh
 
-if [ -z $GWELLS_API_BASE_URL ]; then
-    echo "GWELLS_API_BASE_URL is unset"
-    exit
+# Load ENVs to environment if not already present
+if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./.envrc" ]; then
+  source ./.envrc
+  set -e
 fi
+
+ENV_VARS=(
+    "GWELLS_API_BASE_URL"
+)
+
+echo "Running local_wells.sh"
+
+for env_var in ${ENV_VARS[@]}
+do
+    if [ -z ${!env_var+x} ]; then
+        echo "$env_var is unset"
+        exit
+    fi
+done
 
 echo "Remember to install newman (npm install -g newman) and set GWELLS_API_BASE_URL."
 newman run ./wells_search_api_tests.json --global-var base_url=$GWELLS_API_BASE_URL

@@ -143,8 +143,9 @@
 								"exec": [
 									"pm.test(\"Street address matches filter\", function () {",
 									"  const streetAddress = pm.request.url.query.get(\"search\").toLowerCase();",
+									" const decodedAddress = decodeURIComponent(streetAddress);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.street_address.toLowerCase()).to.include(streetAddress);",
+									"    pm.expect(result.street_address.toLowerCase()).to.include(decodedAddress);",
 									"  });",
 									"});"
 								],
@@ -185,8 +186,9 @@
 								"exec": [
 									"pm.test(\"City matches filter\", function () {",
 									"  const city = pm.request.url.query.get(\"search\").toLowerCase();",
+									"  const decodedCity = decodeURIComponent(city);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.city.toLowerCase()).to.include(city);",
+									"    pm.expect(result.city.toLowerCase()).to.include(decodedCity);",
 									"  });",
 									"});"
 								],
@@ -227,8 +229,9 @@
 								"exec": [
 									"pm.test(\"Owner matches filter\", function () {",
 									"  const ownerFullName = pm.request.url.query.get(\"search\").toLowerCase();",
+									"  const decodedOwnerName = decodeURIComponent(ownerFullName);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.owner_full_name.toLowerCase()).to.include(ownerFullName);",
+									"    pm.expect(result.owner_full_name.toLowerCase()).to.include(decodedOwnerName);",
 									"  });",
 									"});"
 								],
@@ -389,8 +392,9 @@
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
+											"  const decodedStreetAddress = decodeURIComponent(streetAddress)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.street_address.toLowerCase()).to.include(streetAddress);",
+											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
 											"  });",
 											"});"
 										],
@@ -431,8 +435,9 @@
 										"exec": [
 											"pm.test(\"City matches filter\", function () {",
 											"  const city = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
+											"  const decodedCity = decodeURIComponent(city)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.city.toLowerCase()).to.include(city);",
+											"    pm.expect(result.city.toLowerCase()).to.include(decodedCity);",
 											"  });",
 											"});"
 										],
@@ -2287,9 +2292,10 @@
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address\").toLowerCase();",
+											"  const decodedStreetAddress = decodeURIComponent(streetAddress)",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.street_address.toLowerCase()).to.include(streetAddress);",
+											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
 											"  });",
 											"});"
 										],
@@ -2330,8 +2336,9 @@
 										"exec": [
 											"pm.test(\"Owner matches filter\", function () {",
 											"  const ownerFullName = pm.request.url.query.get(\"owner_full_name\").toLowerCase();",
+											"  const decodedOwnerName = decodeURIComponent(ownerFullName)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.owner_full_name.toLowerCase()).to.include(ownerFullName);",
+											"    pm.expect(result.owner_full_name.toLowerCase()).to.include(decodedOwnerName);",
 											"  });",
 											"});"
 										],
@@ -2372,8 +2379,9 @@
 										"exec": [
 											"pm.test(\"Company name matches filter\", function () {",
 											"  const companyNameQuery = pm.request.url.query.get(\"company_of_person_responsible_name\").toLowerCase();",
+											"  const decodedCompanyNameQuery = decodeURIComponent(companyNameQuery)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.company_of_person_responsible_name.toLowerCase()).to.include(companyNameQuery);",
+											"    pm.expect(result.company_of_person_responsible_name.toLowerCase()).to.include(decodedCompanyNameQuery);",
 											"  });",
 											"});"
 										],
@@ -2414,8 +2422,9 @@
 										"exec": [
 											"pm.test(\"Company name matches filter\", function () {",
 											"  const personNameQuery = pm.request.url.query.get(\"person_responsible_name\").toLowerCase();",
+											"  const decodedPersonNameQuery = decodeURIComponent(personNameQuery);",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.person_responsible_name.toLowerCase()).to.include(personNameQuery);",
+											"    pm.expect(result.person_responsible_name.toLowerCase()).to.include(decodedPersonNameQuery);",
 											"  });",
 											"});"
 										],
@@ -2456,8 +2465,9 @@
 										"exec": [
 											"pm.test(\"Well location description matches filter\", function () {",
 											"  const wellLocationDesc = pm.request.url.query.get(\"well_location_description\");",
+											"  const decodedWellLocationDesc = decodeURIComponent(wellLocationDesc)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.well_location_description.toLowerCase()).to.include(wellLocationDesc);",
+											"    pm.expect(result.well_location_description.toLowerCase()).to.include(decodedWellLocationDesc);",
 											"  });",
 											"});"
 										],
@@ -2710,9 +2720,10 @@
 										"exec": [
 											"pm.test(\"Drilling method matches filter\", function () {",
 											"  const drillingMethod = pm.request.url.query.get(\"drilling_methods\");",
+											"  const decodedDrillingMethod = decodeURIComponent(drillingMethod)",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.drilling_methods).to.include(drillingMethod);",
+											"    pm.expect(result.drilling_methods).to.include(decodedDrillingMethod);",
 											"  });",
 											"});"
 										],
@@ -3160,7 +3171,7 @@
 					"response": []
 				},
 				{
-					"name": "ordering param (on consturction start date ascending)",
+					"name": "ordering param (on construction start date ascending)",
 					"event": [
 						{
 							"listen": "test",
