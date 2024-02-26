@@ -1077,7 +1077,7 @@ export default {
         wellSubclass: this.wellSubclassOptions,
         yieldEstimationMethod: this.codes.yield_estimation_methods || [],
         naturalResourceRegion: ['Northeast', 'West Coast', 'South Coast', 'Omineca',
-          'Skeena', 'Thompson-Okanagan', 'Cariboo', 'Kootenay-Boundary']
+          'Skeena', 'Thompson-Okanagan', 'Cariboo', 'Kootenay']
       }
 
       Object.keys(options).forEach(optionId => {

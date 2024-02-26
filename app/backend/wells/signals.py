@@ -1,18 +1,13 @@
-import sys
 import math
 from django.utils import timezone
 from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from django.contrib.gis.gdal import SpatialReference, CoordTransform
-from shapely.geometry import Point
-from pyproj import Proj, transform
-from shapely import wkt
-from gwells.middleware import get_current_user
 from wells.models import Well
 from gwells.settings import TESTING
 from wells.utils import calculate_geocode_distance, calculate_pid_distance_for_well, \
   calculate_score_address, calculate_score_city, calculate_natural_resource_region_for_well, \
-  reverse_geocode, geocode
+  reverse_geocode
 
 @receiver(pre_save, sender=Well)
 def update_utm(sender, instance, **kwargs):
@@ -82,17 +77,14 @@ if not TESTING:
 
 def set_cross_reference_attributes(instance):
     """
-    Sets cross-reference attributes for a Well instance when an
-    internal user has set the internal comment to include one of 
+    Sets cross-reference attributes for a Well instance 
+    when a user has set the comment to include one of 
     the cross referenced values.
     """
     if not instance.cross_referenced: # Only update if not already set
         instance.cross_referenced = True
         instance.cross_referenced_date = timezone.now()
-        current_user = get_current_user()
-        if current_user:
-            username = current_user.username
-            instance.cross_referenced_by = username
+        instance.cross_referenced_by = instance.update_user
 
 
 def set_well_attributes(instance):

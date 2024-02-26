@@ -842,7 +842,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
     def filter_queryset(self, request, queryset, view):
         try:
             filter_groups = request.query_params.getlist('filter_group', [])
-            # ordering = request.query_params.get('ordering', 'well_tag_number')
             for group in filter_groups:
                 try:
                     group_params = json.loads(group)
@@ -1015,10 +1014,99 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         else:
                             # For other field types, just check for null
                             q_objects &= Q(**{f'{field}__isnull': True})
-
+                
                 # Apply the combined Q object filters to the queryset
                 queryset = queryset.filter(q_objects)
 
+            # Apply any custom sorting
+            queryset = self.sort_ordering(request, queryset)
+
         except Exception as e:
             print(e)
+        return queryset
+
+    def sort_ordering(self, request, queryset):
+        # Apply custom ordering on the calculated annotation fields
+        # If not a custom field set here, ordering will fall back 
+        # to WellListOrderingFilter class, set in serializer
+
+        # Get ordering params
+        order_value = request.query_params.get('ordering', 'well_tag_number')
+        order_field = order_value.lstrip('-')
+        if order_field not in ['aquifer_lithology', 'diameter', 'well_activity_type', 
+                               'work_start_date', 'work_end_date']:
+            return queryset
+
+        # Mapping of fields to their related order fields
+        related_order_mapping = {
+            'aquifer_lithology': 'last_lithology_raw_data',
+            'diameter': 'last_casing_diameter',
+            'well_activity_type': 'latest_well_activity_type_code',
+            'work_start_date': 'last_activity_start_date',
+            'work_end_date': 'last_activity_end_date'
+        }
+
+        # Get mapped annoation name
+        related_order = related_order_mapping.get(order_field, '')
+
+        # if we're descending, then add the negative sign prefix
+        if order_value.startswith('-'):
+            related_order = f'-{related_order}'
+
+        # print(f"ORDER VALUES: {order_value}, Descending: {order_value.startswith('-')}, Field: {order_field}")
+        
+        # Apply sorting field annotations
+        queryset = self.annotate_custom_fields(queryset, order_field)
+
+        # Return ordered queryset
+        return queryset.order_by(related_order)
+    
+
+    def annotate_custom_fields(self, queryset, field_name):
+        # Apply annotations for calculated fields if they are not already annotated
+        if field_name == 'aquifer_lithology' and not queryset.query.annotations.get('last_lithology_raw_data'):
+            queryset = queryset.annotate(last_lithology_raw_data=Subquery(
+                LithologyDescription.objects.filter(
+                    well=OuterRef('pk')
+                ).order_by('-lithology_sequence_number').values('lithology_raw_data')[:1]
+            ))
+
+        if field_name == 'diameter' and not queryset.query.annotations.get('last_casing_diameter'):
+            queryset = queryset.annotate(last_casing_diameter=Subquery(
+                Casing.objects.filter(
+                    well=OuterRef('pk')
+                ).order_by('-end').values('diameter')[:1]
+            ))
+
+        if field_name == 'well_activity_type' and not queryset.query.annotations.get('latest_well_activity_type_code'):
+            queryset = queryset.annotate(latest_well_activity_type_code=Subquery(
+                ActivitySubmission.objects.filter(
+                    well=OuterRef('pk')
+                ).exclude(
+                    well_activity_type__code="STAFF_EDIT"
+                ).order_by(
+                    '-work_end_date'
+                ).values(
+                    'well_activity_type__code'
+                )[:1]
+            ))
+
+        if field_name == 'work_start_date' and not queryset.query.annotations.get('last_activity_start_date'):
+            queryset = queryset.annotate(last_activity_start_date=Subquery(
+                ActivitySubmission.objects.filter(
+                    well=OuterRef('pk')
+                ).exclude(
+                    well_activity_type__code="STAFF_EDIT"
+                ).order_by('-work_start_date').values('work_start_date')[:1]
+            ))
+        
+        if field_name == 'work_end_date' and not queryset.query.annotations.get('last_activity_end_date'):
+            queryset = queryset.annotate(last_activity_end_date=Subquery(
+                ActivitySubmission.objects.filter(
+                    well=OuterRef('pk')
+                ).exclude(
+                    well_activity_type__code="STAFF_EDIT"
+                ).order_by('-work_end_date').values('work_end_date')[:1]
+            ))
+
         return queryset

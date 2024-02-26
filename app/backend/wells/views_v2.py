@@ -592,7 +592,7 @@ class MislocatedWellsListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellQaQcFilterBackend, WellListOrderingFilter, 
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend,
                        filters.SearchFilter)
 
     ordering = ('well_tag_number',)
@@ -616,7 +616,7 @@ class RecordComplianceListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellQaQcFilterBackend, WellListOrderingFilter,
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, 
                        filters.SearchFilter)
     ordering = ('well_tag_number',)
 
@@ -635,7 +635,7 @@ class CrossReferencingListView(ListAPIView):
     pagination_class = APILimitOffsetPagination
 
     # Allow searching on name fields, names of related companies, etc.
-    filter_backends = (WellQaQcFilterBackend, WellListOrderingFilter,
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend,
                        filters.SearchFilter)
     ordering = ('well_tag_number',)
 
@@ -644,19 +644,6 @@ class CrossReferencingListView(ListAPIView):
         Optionally restricts the returned wells to those that have certain keywords like 'x-ref'd' or 'cross-ref'
         in their internal_comments.
         """
-        queryset = Well.objects.all()
-
-        search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
-
-        # Annotate the queryset to add a lowercase version of internal_comments
-        queryset = Well.objects.annotate(lower_internal_comments=Lower('internal_comments'))
-
-        # Build a Q object for the search terms, against the lowercase internal_comments
-        comments_query = Q()
-        for term in search_terms:
-            comments_query |= Q(lower_internal_comments__icontains=term)
-
-        # Filter the queryset based on the search terms
-        queryset = queryset.filter(comments_query)
+        queryset = Well.objects.filter(cross_referenced=True)
 
         return queryset
