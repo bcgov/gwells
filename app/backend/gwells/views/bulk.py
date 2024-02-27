@@ -97,29 +97,51 @@ class BulkWellAquiferCorrelation(APIView):
                     # If the correlation is changing — check if the well is inside the aquifer
                     self.check_well_in_aquifer(well, aquifer)
 
-                if existing_aquifer_id == aquifer_id: # this well correlation is unchanged
+                #NOTE: This represents the intended behavior but it is temporarilly blocking a fix
+                # if existing_aquifer_id == aquifer_id: # this well correlation is unchanged
+                #     change = {
+                #         'action': 'same'
+                #     }
+                # else:
+                #     if existing_aquifer_id is None:
+                #         # No existing aquifer for this well? Must be a new correlation
+                #         self.append_to_change_log(well_tag_number, aquifer_id, None)
+                #         change = {
+                #             'action': 'new',
+                #             'aquiferId': aquifer_id
+                #         }
+                #         wells_to_update.append(well)
+                #         self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                #     elif existing_aquifer_id != aquifer_id: # existing ids don't match - must be a change
+                #         self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
+                #         change = {
+                #             'action': 'update',
+                #             'existingAquiferId': existing_aquifer_id,
+                #             'newAquiferId': aquifer_id
+                #         }
+                #         self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                #         wells_to_update.append(well)
+
+                #START: Temporary fix for aquifer reversion from bulk updates
+                if existing_aquifer_id is None:
+                    # No existing aquifer for this well? Must be a new correlation
+                    self.append_to_change_log(well_tag_number, aquifer_id, None)
                     change = {
-                        'action': 'same'
+                        'action': 'new',
+                        'aquiferId': aquifer_id
                     }
-                else:
-                    if existing_aquifer_id is None:
-                        # No existing aquifer for this well? Must be a new correlation
-                        self.append_to_change_log(well_tag_number, aquifer_id, None)
-                        change = {
-                            'action': 'new',
-                            'aquiferId': aquifer_id
-                        }
-                        wells_to_update.append(well)
-                        self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
-                    elif existing_aquifer_id != aquifer_id: # existing ids don't match - must be a change
-                        self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
-                        change = {
-                            'action': 'update',
-                            'existingAquiferId': existing_aquifer_id,
-                            'newAquiferId': aquifer_id
-                        }
-                        self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
-                        wells_to_update.append(well)
+                    wells_to_update.append(well)
+                    self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                else: 
+                    self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
+                    change = {
+                        'action': 'update',
+                        'existingAquiferId': existing_aquifer_id,
+                        'newAquiferId': aquifer_id
+                    }
+                    self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                    wells_to_update.append(well)
+                #END: Temporary fix
 
                 if change:
                     changes[well_tag_number] = change
