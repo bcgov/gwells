@@ -29,6 +29,7 @@ from wells.serializers import (
 )
 
 from aquifers.serializers import HYDRAULIC_SUBTYPES
+COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD = 'company_of_person_responsible.name'
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +149,7 @@ class WellListSerializerV2(serializers.ModelSerializer):
     company_of_person_responsible = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
     company_of_person_responsible_name = serializers.ReadOnlyField(
-        source='company_of_person_responsible.name')
+        source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
     person_responsible = serializers.ReadOnlyField(
         source='person_responsible.person_guid')
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
@@ -318,7 +319,7 @@ class WellExportSerializerV2(WellListSerializerV2):
     licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
     drilling_company = serializers.CharField(read_only=True,
-                                             source='company_of_person_responsible.name')
+                                             source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
     ground_elevation_method = serializers.SlugRelatedField(read_only=True,
                                                            slug_field='description')
     surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -486,7 +487,7 @@ class ActivitySubmissionMixin:
 
 class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
     company_of_person_responsible_name = serializers.ReadOnlyField(
-        source='company_of_person_responsible.name')
+        source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
     
     well_activity_type = serializers.SerializerMethodField()
     work_start_date = serializers.SerializerMethodField()
@@ -538,7 +539,7 @@ class CrossReferencingSerializer(ActivitySubmissionMixin, serializers.ModelSeria
 
 class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
     company_of_person_responsible_name = serializers.ReadOnlyField(
-        source='company_of_person_responsible.name')
+        source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
 
     # Serializer methods for the last ActivitySubmission's work types

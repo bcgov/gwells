@@ -118,11 +118,11 @@ def get_compressed_file_wrapper(path):
         archive_format = ARCHIVE_FORMAT_TAR_BZ2
     else:
         try:
-            with ZipFile(path, "r") as f:
+            with ZipFile(path, "r"):
                 archive_format = ARCHIVE_FORMAT_ZIP
         except BadZipFile:
             try:
-                with tarfile.TarFile.open(path, "r") as f:
+                with tarfile.TarFile.open(path, "r"):
                     archive_format = ARCHIVE_FORMAT_TAR
             except tarfile.TarError:
                 pass

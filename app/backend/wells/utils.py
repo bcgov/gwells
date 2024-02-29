@@ -13,6 +13,8 @@ from pyproj import Proj, transform
 WELL_STATUS_CODE_CONSTRUCTION = 'CONSTRUCTION'
 WELL_STATUS_CODE_ALTERATION = 'ALTERATION'
 WELL_STATUS_CODE_DECOMMISSION = 'DECOMMISSION'
+EPSG_4326 = 'epsg:4326'
+EPSG_3005 = 'epsg:3005'
 
 def calculate_pid_distance_for_well(well):
     """
@@ -21,8 +23,8 @@ def calculate_pid_distance_for_well(well):
     :return: Distance to the nearest parcel in meters
     """
     # Define projections
-    proj_4326 = Proj(init='epsg:4326')  # WGS 84
-    proj_3005 = Proj(init='epsg:3005')  # NAD83 / BC Albers, uses meters
+    proj_4326 = Proj(init=EPSG_4326)  # WGS 84
+    proj_3005 = Proj(init=EPSG_3005)  # NAD83 / BC Albers, uses meters
 
     # Transform the well's point to NAD83 / BC Albers
     x_3005, y_3005 = transform(proj_4326, proj_3005, well.longitude, well.latitude)
@@ -70,8 +72,8 @@ def calculate_natural_resource_region_for_well(well):
     :return: Natural Resource Region name
     """
     # convert between projections
-    proj_4326 = Proj(init='epsg:4326')  # WGS 84
-    proj_3005 = Proj(init='epsg:3005')  # NAD83 / BC Albers
+    proj_4326 = Proj(init=EPSG_4326)  # WGS 84
+    proj_3005 = Proj(init=EPSG_3005)  # NAD83 / BC Albers
 
     # Transform the point
     x_3005, y_3005 = transform(proj_4326, proj_3005, well.longitude, well.latitude)
@@ -204,7 +206,7 @@ def calculate_geocode_distance(well):
     well_point = Point(well.longitude, well.latitude)
 
     # Calculate geocode distance
-    proj_wgs84 = Proj(init='epsg:4326')
+    proj_wgs84 = Proj(init=EPSG_4326)
     proj_utm = Proj(init='epsg:32610')
     # Transform points to UTM
     x1, y1 = transform(proj_wgs84, proj_utm, geocoded_point.x, geocoded_point.y)
