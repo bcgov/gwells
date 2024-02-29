@@ -33,7 +33,6 @@ export default {
   },
   data () {
     return {
-      exportBaseUrl: `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export`,
       maxExportSize: MAX_API_RESULT_AND_EXPORT_COUNT
     }
   },
@@ -44,7 +43,8 @@ export default {
       ordering: 'qaqcOrdering',
       resultFilters: 'qaqcResultFilters',
       resultCount: 'qaqcResultCount',
-      resultColumns: 'qaqcResultColumns'
+      resultColumns: 'qaqcResultColumns',
+      selectedTab: 'qaqcSelectedTab'
     }),
     fullQueryString () {
       const queryParams = {
@@ -66,7 +66,20 @@ export default {
     },
     excelExportUrl () {
       return this.getExportUrl('xlsx')
-    }
+    },
+    exportBaseUrl() {
+      // Dynamically set the base URL based on the activeTable prop
+      switch (this.selectedTab) {
+        case 0: // record compliance
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/recordcompliance/download`;
+        case 1: // mislocated wells
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/mislocatedwells/download`;
+        case 2: // cross referencing
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/crossreferencing/download`;
+        default:
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export`; // Default or fallback URL
+      }
+  },
   },
   methods: {
     getExportUrl(format) {

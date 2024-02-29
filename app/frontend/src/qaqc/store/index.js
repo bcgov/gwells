@@ -320,6 +320,9 @@ const wellsStore = {
     },
     searchQueryParams (state) {
       return buildSearchParams(state)
+    },
+    qaqcSelectedTab (state) {
+      return state.selectedTab
     }
   }
 }

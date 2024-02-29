@@ -579,6 +579,7 @@ class WellDetail(WellDetailV1):
     """
     serializer_class = WellDetailSerializer
 
+# QaQc Views
 
 class MislocatedWellsListView(ListAPIView):
     """
@@ -647,3 +648,35 @@ class CrossReferencingListView(ListAPIView):
         queryset = Well.objects.filter(cross_referenced=True)
 
         return queryset
+
+# Download Views for QaQc
+
+class MislocatedWellsDownloadView(WellExportListAPIViewV2):
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
+
+    def get_queryset(self):
+        return Well.objects.all()
+
+    def get_serializer_class(self):
+        return MislocatedWellsSerializer
+    
+
+class RecordComplianceDownloadView(WellExportListAPIViewV2):
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
+
+    def get_queryset(self):
+        return Well.objects.all()
+
+    def get_serializer_class(self):
+        return RecordComplianceSerializer
+    
+
+class CrossReferencingDownloadView(WellExportListAPIViewV2):
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
+
+    def get_queryset(self):
+        # Return wells that have been cross-referenced
+        return Well.objects.filter(cross_referenced=True)
+
+    def get_serializer_class(self):
+        return CrossReferencingSerializer

@@ -550,6 +550,12 @@ class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSeria
     aquifer_lithology = serializers.SerializerMethodField()
     # Serializer method field for the last casing's diameter
     diameter = serializers.SerializerMethodField()
+    # Expose well_subclass uuid to convert to string
+    well_subclass = serializers.SerializerMethodField()
+
+    def get_well_subclass(self, obj):
+        # This method will convert the UUID to a string
+        return str(obj.well_subclass) if obj.well_subclass else None
 
     def get_aquifer_lithology(self, obj):
       # Fetch the last LithologyDescription based on the sequence number

@@ -133,4 +133,14 @@ urlpatterns = [
 
     url(api_path_prefix() + r'/qaqc/recordcompliance$',
         never_cache(views_v2.RecordComplianceListView.as_view()), name='qaqc-record-compliance'),
+
+    # Download URLs for QA/QC Endpoints
+    url(api_path_prefix() + r'/qaqc/crossreferencing/download$',
+        never_cache(views_v2.CrossReferencingDownloadView.as_view()), name='qaqc-cross-referencing-download'),
+
+    url(api_path_prefix() + r'/qaqc/mislocatedwells/download$',
+        never_cache(views_v2.MislocatedWellsDownloadView.as_view()), name='qaqc-mislocated-wells-download'),
+
+    url(api_path_prefix() + r'/qaqc/recordcompliance/download$',
+        never_cache(views_v2.RecordComplianceDownloadView.as_view()), name='qaqc-record-compliance-download'),
 ]
