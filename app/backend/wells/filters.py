@@ -14,6 +14,7 @@
 import json
 import logging
 from collections import OrderedDict
+from datetime import datetime, timedelta
 
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
@@ -839,6 +840,15 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
     Custom well list filtering logic for the QaQc Dashboard.
     allows additional 'filter_group' params.
     """
+    def parse_datetime_with_fallback(self, date_str):
+        try:
+            # First, try to parse with full datetime format
+            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            # If it fails, parse with date-only format and assume midnight
+            return datetime.strptime(date_str, "%Y-%m-%d")
+    
+
     def filter_queryset(self, request, queryset, view):
         try:
             filter_groups = request.query_params.getlist('filter_group', [])
@@ -873,12 +883,23 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     elif field in date_fields:
                         suffix = field.split('_')[-1]  # after or before
                         date_field = '_'.join(field.split('_')[:-1])  # remove _after or _before
-                        print(date_field)
+                        # Use the new parsing function with fallback
+                        date_value = self.parse_datetime_with_fallback(value)
                         if suffix == 'after':
-                            q_objects &= Q(**{f'{date_field}__gte': value})
+                            # Set to the start of the day if only a date is provided
+                            if len(value) <= 10:  # YYYY-MM-DD is 10 characters
+                                start_of_day = date_value
+                            else:
+                                start_of_day = date_value
+                            q_objects &= Q(**{f'{date_field}__gte': start_of_day})
                         elif suffix == 'before':
-                            q_objects &= Q(**{f'{date_field}__lte': value})
-                    
+                            # Set to the end of the day if only a date is provided
+                            if len(value) <= 10:  # YYYY-MM-DD is 10 characters
+                                end_of_day = datetime.combine(date_value, datetime.max.time())
+                            else:
+                                end_of_day = date_value
+                            q_objects &= Q(**{f'{date_field}__lte': end_of_day})
+
                     # Apply range filters
                     elif field.endswith('min') or field.endswith('max'):
                         range_field = '_'.join(field.split('_')[:-1])  # remove _min or _max
@@ -926,7 +947,7 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         last_lithology_raw_data = Subquery(
                             LithologyDescription.objects.filter(
                                 well=OuterRef('pk')
-                            ).order_by('-lithology_sequence_number').values('lithology_raw_data')[:1]
+                            ).order_by('-end').values('lithology_raw_data')[:1]
                         )
                         queryset = queryset.annotate(
                             last_lithology_raw_data=last_lithology_raw_data
@@ -1068,7 +1089,7 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
             queryset = queryset.annotate(last_lithology_raw_data=Subquery(
                 LithologyDescription.objects.filter(
                     well=OuterRef('pk')
-                ).order_by('-lithology_sequence_number').values('lithology_raw_data')[:1]
+                ).order_by('-end').values('lithology_raw_data')[:1]
             ))
 
         if field_name == 'diameter' and not queryset.query.annotations.get('last_casing_diameter'):

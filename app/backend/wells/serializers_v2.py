@@ -485,6 +485,9 @@ class ActivitySubmissionMixin:
 
 
 class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
+    company_of_person_responsible_name = serializers.ReadOnlyField(
+        source='company_of_person_responsible.name')
+    
     well_activity_type = serializers.SerializerMethodField()
     work_start_date = serializers.SerializerMethodField()
     work_end_date = serializers.SerializerMethodField()
@@ -500,7 +503,7 @@ class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerial
             'well_activity_type',
             'work_start_date',
             'work_end_date',
-            'company_of_person_responsible',
+            'company_of_person_responsible_name',
             'natural_resource_region',
             'create_date',
             'create_user',
@@ -550,7 +553,7 @@ class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSeria
 
     def get_aquifer_lithology(self, obj):
       # Fetch the last LithologyDescription based on the sequence number
-      last_lithology = obj.lithologydescription_set.order_by('-lithology_sequence_number').first()
+      last_lithology = obj.lithologydescription_set.order_by('-end').first()
       # Return the raw data if it exists, otherwise return None
       return last_lithology.lithology_raw_data if last_lithology else None
     

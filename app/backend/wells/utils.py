@@ -59,7 +59,8 @@ def calculate_pid_distance_for_well(well):
 
     # Return the minimum distance
     min_distance = parcels_gdf["distance"].min()
-    return min_distance
+
+    return round(min_distance)
 
 
 def calculate_natural_resource_region_for_well(well):
@@ -211,7 +212,7 @@ def calculate_geocode_distance(well):
     # Calculate distance in meters in the UTM projection
     distance_meters = Point(x1, y1).distance(Point(x2, y2))
 
-    return distance_meters
+    return round(distance_meters)
 
 
 def calculate_score_address(well, geocoded_address):

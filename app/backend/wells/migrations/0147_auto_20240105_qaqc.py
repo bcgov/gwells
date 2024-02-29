@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='well',
             name='distance_to_pid',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, verbose_name='Distance to PID'),
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True, verbose_name='Distance to PID'),
         ),
         migrations.AddField(
             model_name='well',
             name='geocode_distance',
-            field=models.DecimalField(blank=True, decimal_places=2, max_digits=7, null=True, verbose_name='Geocode Distance'),
+            field=models.DecimalField(blank=True, decimal_places=2, max_digits=14, null=True, verbose_name='Geocode Distance'),
         ),
         migrations.AddField(
             model_name='well',

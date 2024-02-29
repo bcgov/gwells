@@ -1149,10 +1149,10 @@ class Well(AuditModelStructure):
                                                 validators=[MinValueValidator(Decimal('0.00'))])
     # QaQc Fields for internal use
     geocode_distance = models.DecimalField(
-        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Geocode Distance',
+        null=True, blank=True, max_digits=12, decimal_places=2, verbose_name='Geocode Distance',
         db_comment='Distance calculated during geocoding process.')
     distance_to_pid = models.DecimalField(
-        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Distance to PID',
+        null=True, blank=True, max_digits=12, decimal_places=2, verbose_name='Distance to PID',
         db_comment='Distance to the Property Identification Description.')
     score_address = models.DecimalField(
         null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for Address',
