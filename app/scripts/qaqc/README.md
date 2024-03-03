@@ -95,7 +95,7 @@ The additional columns added to the output file for QAQC purposes are as follows
 | isStreetDirectionPrefix      | Geocoder result |
 | streetQualifier              | Geocoder result |
 | localityName                 | Geocoder result |
-| distance_geocode             | Distance from well to result of geocode (value 99999 indicates no result) |
+| distance_geocode             | Distance from well to result of geocode |
 | distance_to_matching_pid     | Distance from well to BC Parcel Fabric polygon with matching PID |
 | score_address                | Token Set Ratio score for matching well's address to reverse geocoded address |
 | score_location_description   | Token Set Ratio score for matching well's location description to reverse geocoded full address |

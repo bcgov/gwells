@@ -141,7 +141,18 @@ export default {
         return []
       }
       // Filter out options where the textField equals "Staff edit"
-      const filteredOptions = this.options.filter(option => option[this.textField] !== 'Staff edit')
+      let filteredOptions = this.options.filter(option => option[this.textField] !== 'Staff edit')
+      // Check if textField is 'wellSubclass' and modify the display accordingly
+      if (this.paramNames[0] === 'well_subclass') {
+        filteredOptions = filteredOptions.map(option => {
+          // Split the option value by '-' and trim whitespace from the resulting strings
+          const parts = option[this.textField].split('-').map(part => part.trim())
+          // If there's a part after the '-', use it; otherwise, use the full option value
+          const newValue = parts.length > 1 ? parts.slice(1).join('-').trim() : option[this.textField]
+          // Return a new option object with the modified value
+          return { ...option, [this.textField]: newValue }
+        })
+      }
       return [
         { [this.textField]: 'Filter...', [this.valueField]: null },
         { [this.textField]: 'Null', [this.valueField]: 'null' },

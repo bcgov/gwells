@@ -1050,10 +1050,26 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
         # Apply custom ordering on the calculated annotation fields
         # If not a custom field set here, ordering will fall back 
         # to WellListOrderingFilter class, set in serializer
-
         # Get ordering params
         order_value = request.query_params.get('ordering', 'well_tag_number')
         order_field = order_value.lstrip('-')
+
+        # Handle custom ordering for well_subclass
+        if order_field == 'well_subclass':
+            # Annotate queryset with the description of the well subclass for ordering
+            queryset = queryset.annotate(
+                well_subclass_description=models.F('well_subclass__description')
+            )
+            
+            # Determine if we are ordering in descending order
+            if order_value.startswith('-'):
+                order_value = '-well_subclass_description'
+            else:
+                order_value = 'well_subclass_description'
+            
+            # Return the queryset ordered by the annotated well subclass description
+            return queryset.order_by(order_value)
+
         if order_field not in ['aquifer_lithology', 'diameter', 'well_activity_type', 
                                'work_start_date', 'work_end_date']:
             return queryset

@@ -979,7 +979,7 @@ const SEARCH_FIELDS = {
   crossReferencedDate: {
     param: 'cross_referenced_date',
     label: 'Cross Referenced Date',
-    type: 'range',
+    type: 'dateRange',
     sortable: true
   }
 }

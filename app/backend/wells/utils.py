@@ -199,31 +199,69 @@ def reverse_geocode(
 
 
 def calculate_geocode_distance(well):
-    # geocode address to point
-    options = { "addressString": well.street_address, "localityName": well.city }
+    """
+    Calculates the geodesic distance between a well's location and its geocoded address.
 
-    geocoded_point = geocode(options)  # Assuming this returns a WKT string
+    :param well: An object that contains the well's address, city, longitude, and latitude.
+    :return: The distance in meters between the well's actual location and its geocoded address.
+    """
+    # Prepare the geocode request options with the well's street address and city
+    options = {"addressString": well.street_address or '', "localityName": well.city or ''}
+
+    # Check if both addressString and localityName are empty, return None if true
+    if not options["addressString"].strip() and not options["localityName"].strip():
+        print("Both addressString and localityName are empty. Skipping geocode.")
+        return None
+
+    # Geocode the address to get a point representation (assuming WKT format)
+    geocoded_point = geocode(options)
     well_point = Point(well.longitude, well.latitude)
 
-    # Calculate geocode distance
-    proj_wgs84 = Proj(init=EPSG_4326)
+    # Initialize projections for WGS84 and UTM Zone 10N (example)
+    proj_wgs84 = Proj(init='EPSG:4326')
     proj_utm = Proj(init='epsg:32610')
-    # Transform points to UTM
+    # Transform the geocoded point and the well's location from WGS84 to UTM coordinates
     x1, y1 = transform(proj_wgs84, proj_utm, geocoded_point.x, geocoded_point.y)
     x2, y2 = transform(proj_wgs84, proj_utm, well_point.x, well_point.y)
-    # Calculate distance in meters in the UTM projection
+    # Calculate the distance between the points in meters within the UTM projection
     distance_meters = Point(x1, y1).distance(Point(x2, y2))
 
     return round(distance_meters)
 
 
 def calculate_score_address(well, geocoded_address):
+    """
+    Calculates the similarity score between the well's address and the geocoded address.
+
+    :param well: An object that contains the well's street address.
+    :param geocoded_address: A dictionary containing the full address as geocoded.
+    :return: A similarity score or None if geocoded_address is not provided.
+    """
     if not geocoded_address:
+        # Return None if there's no geocoded address to compare with
         return None
-    return fuzz.token_set_ratio(well.street_address.lower(), geocoded_address.get('fullAddress', '').lower())
+    # Ensure the well's address is lowercased, using an empty string if address is None
+    street_address_lower = well.street_address.lower() if well.street_address is not None else ''
+    # Safely get the lowercased full address from geocoded_address, default to an empty string
+    geocoded_address_lower = geocoded_address.get('fullAddress', '').lower()
+    # Calculate and return the fuzzy similarity score between the two addresses
+    return fuzz.token_set_ratio(street_address_lower, geocoded_address_lower)
 
 
 def calculate_score_city(well, geocoded_address):
+    """
+    Calculates the similarity score between the well's city and the geocoded city.
+
+    :param well: An object that contains the well's city.
+    :param geocoded_address: A dictionary containing the city name as 'localityName'.
+    :return: A similarity score or None if geocoded_address is not provided.
+    """
     if not geocoded_address:
+        # Return None if there's no geocoded address to compare with
         return None
-    return fuzz.token_set_ratio(well.city.lower(), geocoded_address.get('localityName', '').lower())
+    # Ensure the well's city is lowercased, using an empty string if city is None
+    city_lower = well.city.lower() if well.city is not None else ''
+    # Safely get the lowercased locality name from geocoded_address, default to an empty string
+    locality_name_lower = geocoded_address.get('localityName', '').lower()
+    # Calculate and return the fuzzy similarity score between the two city names
+    return fuzz.token_set_ratio(city_lower, locality_name_lower)
