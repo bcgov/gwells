@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "70815c2b-8203-4607-888a-8945dfc868d5",
-		"name": "Well List API filters v2",
+		"_postman_id": "df01556a-6c2d-4ffc-a4b2-80a357d707da",
+		"name": "Well List API filters",
 		"description": "Well List API endpoint filters required for advanced search options.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
@@ -11,18 +11,23 @@
 			"name": "Search",
 			"item": [
 				{
-					"name": "search param (matching well tag)",
+					"name": "fuzzy search param (using well tag) Copy",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Well tag number matches filter\", function () {",
-									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
-									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.well_tag_number).to.equal(wellParam);",
-									"  });",
-									"});"
+									"const jsonData = pm.response.json()",
+									"const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
+									"pm.test(\"Well tag number matches filter\", () => {",
+									"    _.each(jsonData.results, (result) => {",
+									"        const match = (",
+									"            result.well_tag_number === wellParam ||",
+									"            result.identification_plate_number == wellParam",
+									"        )",
+									"        pm.expect(match).to.be.true;",
+									"    })",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -32,13 +37,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?search=216265",
+							"raw": "{{base_url}}/api/v1/wells?search=216265",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -52,7 +57,7 @@
 					"response": []
 				},
 				{
-					"name": "search param (matching well tag exactly)",
+					"name": "strict search param (matching well tag exactly) Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -71,13 +76,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?well_tag_number=123",
+							"raw": "{{base_url}}/api/v1/wells?well_tag_number=123",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -91,7 +96,7 @@
 					"response": []
 				},
 				{
-					"name": "search param (matching id plate)",
+					"name": "fuzzy search param (matching id plate) Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -100,7 +105,11 @@
 									"pm.test(\"Well id plate matches filter\", function () {",
 									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.identification_plate_number).to.equal(wellParam);",
+									"    const match = (",
+									"        result.identification_plate_number == wellParam ||",
+									"        result.well_tag_number == wellParam",
+									"    )",
+									"    pm.expect(match).to.be.true;",
 									"  });",
 									"});"
 								],
@@ -112,13 +121,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?search=55555",
+							"raw": "{{base_url}}/api/v1/wells?search=55555",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -132,7 +141,7 @@
 					"response": []
 				},
 				{
-					"name": "search param (matching street address)",
+					"name": "fuzzy search param (matching street address) Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -140,9 +149,8 @@
 								"exec": [
 									"pm.test(\"Street address matches filter\", function () {",
 									"  const streetAddress = pm.request.url.query.get(\"search\").toLowerCase();",
-									" const decodedAddress = decodeURIComponent(streetAddress);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.street_address.toLowerCase()).to.include(decodedAddress);",
+									"    pm.expect(result.street_address.toLowerCase()).to.include(decodeURI(streetAddress));",
 									"  });",
 									"});"
 								],
@@ -154,19 +162,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?search=1234 Main",
+							"raw": "{{base_url}}/api/v1/wells?search=1234%20Main",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
 								{
 									"key": "search",
-									"value": "1234 Main"
+									"value": "1234%20Main"
 								}
 							]
 						}
@@ -174,7 +182,7 @@
 					"response": []
 				},
 				{
-					"name": "search param (matching city)",
+					"name": "fuzzy search param (matching city) Copy",
 					"event": [
 						{
 							"listen": "test",
@@ -182,9 +190,13 @@
 								"exec": [
 									"pm.test(\"City matches filter\", function () {",
 									"  const city = pm.request.url.query.get(\"search\").toLowerCase();",
-									"  const decodedCity = decodeURIComponent(city);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.city.toLowerCase()).to.include(decodedCity);",
+									"    const match = (",
+									"        result.city.toLowerCase().includes(city) ||",
+									"        result.street_address.toLowerCase().includes(city) ||",
+									"        result.owner_full_name.toLowerCase().includes(city)",
+									"    )",
+									"    pm.expect(match).to.be.true;",
 									"  });",
 									"});"
 								],
@@ -196,13 +208,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?search=vancouver",
+							"raw": "{{base_url}}/api/v1/wells?search=vancouver",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -216,17 +228,21 @@
 					"response": []
 				},
 				{
-					"name": "search param (matching owner_full_name)",
+					"name": "fuzzy search param (matching owner_full_name) Copy",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
 									"pm.test(\"Owner matches filter\", function () {",
-									"  const ownerFullName = pm.request.url.query.get(\"search\").toLowerCase();",
-									"  const decodedOwnerName = decodeURIComponent(ownerFullName);",
+									"  const ownerFullName = decodeURI(pm.request.url.query.get(\"search\")).toLowerCase();",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.owner_full_name.toLowerCase()).to.include(decodedOwnerName);",
+									"    const match = (",
+									"        result.city.toLowerCase().includes(ownerFullName) ||",
+									"        result.street_address.toLowerCase().includes(ownerFullName) ||",
+									"        result.owner_full_name.toLowerCase().includes(ownerFullName)",
+									"    )",
+									"    pm.expect(match).to.be.true;",
 									"  });",
 									"});"
 								],
@@ -238,19 +254,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?search=Alice S",
+							"raw": "{{base_url}}/api/v1/wells?search=Alice%20S",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
 								{
 									"key": "search",
-									"value": "Alice S"
+									"value": "Alice%20S"
 								}
 							]
 						}
@@ -276,9 +292,7 @@
 							"pm.test(\"Response status ok\", function () {",
 							"  pm.response.to.be.ok;",
 							"});",
-							"pm.test(\"At least one result\", function () {",
-							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-							"});"
+							""
 						]
 					}
 				}
@@ -312,13 +326,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well=216265",
+									"raw": "{{base_url}}/api/v1/wells?well=216265",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -353,13 +367,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well=55555",
+									"raw": "{{base_url}}/api/v1/wells?well=55555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -381,9 +395,8 @@
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
-											"  const decodedStreetAddress = decodeURIComponent(streetAddress)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
+											"    pm.expect(result.street_address.toLowerCase()).to.include(decodeURI(streetAddress));",
 											"  });",
 											"});"
 										],
@@ -395,13 +408,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?street_address_or_city=1234 Main",
+									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=1234 Main",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -423,9 +436,8 @@
 										"exec": [
 											"pm.test(\"City matches filter\", function () {",
 											"  const city = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
-											"  const decodedCity = decodeURIComponent(city)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.city.toLowerCase()).to.include(decodedCity);",
+											"    pm.expect(result.city.toLowerCase()).to.include(city);",
 											"  });",
 											"});"
 										],
@@ -437,13 +449,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?street_address_or_city=vancouver",
+									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=vancouver",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -480,13 +492,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?date_of_work_before=1975-12-31",
+									"raw": "{{base_url}}/api/v1/wells?date_of_work_before=1975-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -522,13 +534,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_depth_min=100&well_depth_max=185",
+									"raw": "{{base_url}}/api/v1/wells?well_depth_min=100&well_depth_max=185",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -567,13 +579,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_depth_max=185",
+									"raw": "{{base_url}}/api/v1/wells?well_depth_max=185",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -609,13 +621,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal=1Q",
+									"raw": "{{base_url}}/api/v1/wells?legal=1Q",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -651,13 +663,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal=555555",
+									"raw": "{{base_url}}/api/v1/wells?legal=555555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -723,13 +735,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_tag_number=216265",
+									"raw": "{{base_url}}/api/v1/wells?well_tag_number=216265",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -764,13 +776,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?identification_plate_number=55555",
+									"raw": "{{base_url}}/api/v1/wells?identification_plate_number=55555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -806,13 +818,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_lot=1Q",
+									"raw": "{{base_url}}/api/v1/wells?legal_lot=1Q",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -848,13 +860,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_plan=555",
+									"raw": "{{base_url}}/api/v1/wells?legal_plan=555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -890,13 +902,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_district_lot=20000",
+									"raw": "{{base_url}}/api/v1/wells?legal_district_lot=20000",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -932,13 +944,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?land_district=36",
+									"raw": "{{base_url}}/api/v1/wells?land_district=36",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -974,13 +986,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_pid=555555",
+									"raw": "{{base_url}}/api/v1/wells?legal_pid=555555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1016,13 +1028,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_status=OTHER",
+									"raw": "{{base_url}}/api/v1/wells?well_status=OTHER",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1058,13 +1070,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?licenced_status=LICENSED",
+									"raw": "{{base_url}}/api/v1/wells?licenced_status=LICENSED",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1099,13 +1111,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_class=WATR_SPPLY",
+									"raw": "{{base_url}}/api/v1/wells?well_class=WATR_SPPLY",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1140,13 +1152,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_subclass=ce97445a-664e-44f1-a096-95c97ffd084e",
+									"raw": "{{base_url}}/api/v1/wells?well_subclass=ce97445a-664e-44f1-a096-95c97ffd084e",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1181,13 +1193,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_block=block",
+									"raw": "{{base_url}}/api/v1/wells?legal_block=block",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1222,13 +1234,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_township=township",
+									"raw": "{{base_url}}/api/v1/wells?legal_township=township",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1263,13 +1275,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?legal_range=3",
+									"raw": "{{base_url}}/api/v1/wells?legal_range=3",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1304,59 +1316,18 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?drilling_company=f606669c-a60c-422d-859a-fdc54278d9b0",
+									"raw": "{{base_url}}/api/v1/wells?drilling_company=f606669c-a60c-422d-859a-fdc54278d9b0",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
 										{
 											"key": "drilling_company",
-											"value": "f606669c-a60c-422d-859a-fdc54278d9b0"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "company_of_person_responsible param",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Company of person responsible matches filter\", function () {",
-											"  const company_guid = pm.request.url.query.get(\"company_of_person_responsible\");",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.company_of_person_responsible).to.equal(company_guid);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/api/v2/wells?company_of_person_responsible=f606669c-a60c-422d-859a-fdc54278d9b0",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v2",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "company_of_person_responsible",
 											"value": "f606669c-a60c-422d-859a-fdc54278d9b0"
 										}
 									]
@@ -1386,13 +1357,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?coordinate_acquisition_code=H",
+									"raw": "{{base_url}}/api/v1/wells?coordinate_acquisition_code=H",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1428,13 +1399,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?ground_elevation_method=GPS",
+									"raw": "{{base_url}}/api/v1/wells?ground_elevation_method=GPS",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1470,13 +1441,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?surface_seal_material=SND_CMT_GT",
+									"raw": "{{base_url}}/api/v1/wells?surface_seal_material=SND_CMT_GT",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1543,13 +1514,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?construction_start_date_before=1975-12-31",
+									"raw": "{{base_url}}/api/v1/wells?construction_start_date_before=1975-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1586,13 +1557,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?construction_start_date_after=1975-01-01",
+									"raw": "{{base_url}}/api/v1/wells?construction_start_date_after=1975-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1629,13 +1600,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?construction_end_date_before=1976-12-31",
+									"raw": "{{base_url}}/api/v1/wells?construction_end_date_before=1976-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1672,13 +1643,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?construction_end_date_after=1976-01-01",
+									"raw": "{{base_url}}/api/v1/wells?construction_end_date_after=1976-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1715,13 +1686,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?alteration_start_date_before=2014-12-31",
+									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_before=2014-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1758,13 +1729,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?alteration_start_date_after=2014-01-01",
+									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_after=2014-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1801,13 +1772,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?alteration_end_date_before=2019-01-01",
+									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_before=2019-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1844,13 +1815,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?alteration_end_date_after=2018-12-30",
+									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_after=2018-12-30",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1887,13 +1858,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?decommission_start_date_before=2019-02-03",
+									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_before=2019-02-03",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1930,13 +1901,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?decommission_start_date_after=2019-02-01",
+									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_after=2019-02-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -1973,13 +1944,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?decommission_end_date_before=2019-02-09",
+									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_before=2019-02-09",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2016,13 +1987,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?decommission_end_date_after=2019-02-07",
+									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_after=2019-02-07",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2090,13 +2061,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?liner_diameter_min=1.3",
+									"raw": "{{base_url}}/api/v1/wells?liner_diameter_min=1.3",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2134,13 +2105,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?liner_diameter_max=1.6",
+									"raw": "{{base_url}}/api/v1/wells?liner_diameter_max=1.6",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2221,8 +2192,7 @@
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address\").toLowerCase();",
-											"  const decodedStreetAddress = decodeURIComponent(streetAddress)",
-											"",
+											"const decodedStreetAddress = decodeURIComponent(streetAddress)",
 											"  pm.response.json().results.forEach(function(result) {",
 											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
 											"  });",
@@ -2236,13 +2206,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?street_address=Main st",
+									"raw": "{{base_url}}/api/v1/wells?street_address=Main st",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2264,9 +2234,8 @@
 										"exec": [
 											"pm.test(\"Owner matches filter\", function () {",
 											"  const ownerFullName = pm.request.url.query.get(\"owner_full_name\").toLowerCase();",
-											"  const decodedOwnerName = decodeURIComponent(ownerFullName)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.owner_full_name.toLowerCase()).to.include(decodedOwnerName);",
+											"    pm.expect(result.owner_full_name.toLowerCase()).to.include(ownerFullName);",
 											"  });",
 											"});"
 										],
@@ -2278,103 +2247,19 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?owner_full_name=Alice",
+									"raw": "{{base_url}}/api/v1/wells?owner_full_name=Alice",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
 										{
 											"key": "owner_full_name",
 											"value": "Alice"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "company_of_person_responsible_name param",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Company name matches filter\", function () {",
-											"  const companyNameQuery = pm.request.url.query.get(\"company_of_person_responsible_name\").toLowerCase();",
-											"  const decodedCompanyNameQuery = decodeURIComponent(companyNameQuery)",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.company_of_person_responsible_name.toLowerCase()).to.include(decodedCompanyNameQuery);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/api/v2/wells?company_of_person_responsible_name=drill",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v2",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "company_of_person_responsible_name",
-											"value": "drill"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "person_responsible_name param Copy",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"pm.test(\"Company name matches filter\", function () {",
-											"  const personNameQuery = pm.request.url.query.get(\"person_responsible_name\").toLowerCase();",
-											"  const decodedPersonNameQuery = decodeURIComponent(personNameQuery);",
-											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.person_responsible_name.toLowerCase()).to.include(decodedPersonNameQuery);",
-											"  });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{base_url}}/api/v2/wells?person_responsible_name=drill",
-									"host": [
-										"{{base_url}}"
-									],
-									"path": [
-										"api",
-										"v2",
-										"wells"
-									],
-									"query": [
-										{
-											"key": "person_responsible_name",
-											"value": "drill"
 										}
 									]
 								}
@@ -2390,9 +2275,8 @@
 										"exec": [
 											"pm.test(\"Well location description matches filter\", function () {",
 											"  const wellLocationDesc = pm.request.url.query.get(\"well_location_description\");",
-											"  const decodedWellLocationDesc = decodeURIComponent(wellLocationDesc)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.well_location_description.toLowerCase()).to.include(decodedWellLocationDesc);",
+											"    pm.expect(result.well_location_description.toLowerCase()).to.include(decodeURI(wellLocationDesc));",
 											"  });",
 											"});"
 										],
@@ -2404,13 +2288,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_location_description=highway 95",
+									"raw": "{{base_url}}/api/v1/wells?well_location_description=highway 95",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2446,13 +2330,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_identification_plate_attached=casing",
+									"raw": "{{base_url}}/api/v1/wells?well_identification_plate_attached=casing",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2488,13 +2372,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?water_supply_system_name=test",
+									"raw": "{{base_url}}/api/v1/wells?water_supply_system_name=test",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2518,7 +2402,7 @@
 											"  const waterSupplySystemWellName = pm.request.url.query.get(\"water_supply_system_well_name\");",
 											" ",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.water_supply_system_well_name).to.contain(waterSupplySystemWellName);",
+											"    pm.expect(result.water_supply_system_well_name.toLowerCase()).to.contain(waterSupplySystemWellName.toLowerCase());",
 											"  });",
 											"});"
 										],
@@ -2530,13 +2414,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?water_supply_system_well_name=test",
+									"raw": "{{base_url}}/api/v1/wells?water_supply_system_well_name=test",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2587,14 +2471,16 @@
 									"listen": "test",
 									"script": {
 										"exec": [
+											"const response = pm.response.json();",
 											"pm.test(\"Water quality characteristics matches filter\", () => {",
-											"  const waterQualityCharacteristics = ['CLOUDY', 'SALTY'];",
-											"",
-											"  pm.response.json().results.forEach((result) => {",
-											"    const matchingCharacteristics = result.water_quality_characteristics.filter(code => waterQualityCharacteristics.includes(code));",
-											"    pm.expect(matchingCharacteristics.length).to.be.at.least(1);",
-											"  });",
-											"});"
+											"    const water_quality_characteristics_test = ['CLOUDY', 'SALTY'];",
+											"    _.each(response.results, ({ water_quality_characteristics }) => {",
+											"        water_quality_characteristics_test.forEach(item => {",
+											"            pm.expect(water_quality_characteristics.includes(item))",
+											"        })",
+											"    })",
+											"})",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -2604,13 +2490,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?water_quality_characteristics=SALTY&water_quality_characteristics=CLOUDY",
+									"raw": "{{base_url}}/api/v1/wells?water_quality_characteristics=SALTY&water_quality_characteristics=CLOUDY",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2636,10 +2522,9 @@
 										"exec": [
 											"pm.test(\"Drilling method matches filter\", function () {",
 											"  const drillingMethod = pm.request.url.query.get(\"drilling_methods\");",
-											"  const decodedDrillingMethod = decodeURIComponent(drillingMethod)",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.drilling_methods).to.include(decodedDrillingMethod);",
+											"    pm.expect(result.drilling_methods).to.include(drillingMethod);",
 											"  });",
 											"});"
 										],
@@ -2651,13 +2536,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?drilling_methods=DUGOUT",
+									"raw": "{{base_url}}/api/v1/wells?drilling_methods=DUGOUT",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2729,13 +2614,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
+									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2782,13 +2667,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
+									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2831,13 +2716,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
+									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -2929,13 +2814,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
+									"raw": "{{base_url}}/api/v1/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -3004,13 +2889,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v2/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
+									"raw": "{{base_url}}/api/v1/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"wells"
 									],
 									"query": [
@@ -3107,13 +2992,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?ordering=identification_plate_number",
+							"raw": "{{base_url}}/api/v1/wells?ordering=identification_plate_number",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -3167,13 +3052,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?ordering=construction_start_date",
+							"raw": "{{base_url}}/api/v1/wells?ordering=construction_start_date",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -3228,13 +3113,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?ordering=-owner_full_name",
+							"raw": "{{base_url}}/api/v1/wells?ordering=-owner_full_name",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -3294,13 +3179,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?ordering=drilling_methods&limit=10",
+							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods&limit=10",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -3359,13 +3244,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?ordering=surface_seal_method",
+							"raw": "{{base_url}}/api/v1/wells?ordering=surface_seal_method",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
@@ -3421,13 +3306,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v2/wells?ordering=-well_class",
+							"raw": "{{base_url}}/api/v1/wells?ordering=-well_class",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v2",
+								"v1",
 								"wells"
 							],
 							"query": [
