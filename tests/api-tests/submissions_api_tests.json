@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "5989c999-00d6-411c-84b7-84cc4ea1fa61",
+		"_postman_id": "bb412a60-d5a7-4758-9518-320628ebac6e",
 		"name": "GWELLS Submissions API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
 	},
 	"item": [
 		{
@@ -14,7 +15,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
@@ -77,13 +77,11 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Wells",
-			"item": [],
-			"protocolProfileBehavior": {}
+			"item": []
 		},
 		{
 			"name": "Activity Submissions",
@@ -97,12 +95,19 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
 										"exec": [
 											"var jsonData = pm.response.json()",
 											"",
 											"pm.test(\"Status code is 200\", function () {",
 											"    pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"Validate response keys hold arrays\", () => {",
+											"    _.each(jsonData, (items) => {",
+											"        pm.expect(items).to.be.an('array')",
+											"        pm.expect(items.length > 0)",
+											"    });",
+											"    pm.expect(Object.keys(jsonData).length >= 44); // 44 entries existed at time of writing this test",
 											"})",
 											""
 										],
@@ -146,14 +151,26 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
 										"exec": [
 											"var jsonData = pm.response.json()",
 											"",
 											"pm.test(\"Status code is 200\", function () {",
 											"    pm.expect(pm.response.code).to.equal(200);",
 											"})",
-											""
+											"",
+											"pm.test(\"Response schema matches\", () => {",
+											"    const schema = {",
+											"        \"type\": \"object\",",
+											"        \"properties\": {",
+											"            \"count\": {\"type\": \"number\"},",
+											"            \"next\": {\"type\": [\"string\", \"null\"]},",
+											"            \"previous\": {\"type\": [\"string\", \"null\"]},",
+											"            \"offset\": {\"type\": \"number\"},",
+											"            \"results\": {\"type\": \"array\"}",
+											"        }",
+											"    }",
+											"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -194,39 +211,35 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "05a0005d-cae7-447a-b666-63de221afd22",
 										"exec": [
-											"( function() {",
-											"    pm.test(\"Successful POST request\", function () {",
-											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
-											"    });",
-											"    ",
-											"    var jsonData = pm.response.json()",
-											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
-											"    pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
-											"    ",
-											"    pm.test(\"The record's identifier is in UUID format\", function () {",
-											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
-											"        var match = uuid_re.exec(jsonData.person_guid);",
-											"        pm.expect(match).to.be.ok;",
-											"        pm.expect(match.length).to.be.ok;",
-											"        pm.expect(match[0]).to.eql(jsonData.person_guid);",
-											"    });",
-											"    ",
-											"    pm.test(\"Person first name equals name supplied in request\", function () {",
-											"        pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
-											"    });",
-											"    ",
-											"    pm.test(\"Last name equals value supplied in request\", function () {",
-											"        pm.expect(jsonData.surname).to.eql(\"Driller\");",
-											"    });",
-											"    ",
-											"    pm.test(\"Audit fields (create_user, create_date) were filled in by backend\", function () {",
-											"        pm.expect(jsonData.create_user.length).to.be.ok;",
-											"        pm.expect(jsonData.create_date.length).to.be.ok;",
-											"    });",
-											"})();",
-											""
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"});",
+											"",
+											"var jsonData = pm.response.json()",
+											"pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
+											"pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
+											"",
+											"pm.test(\"The record's identifier is in UUID format\", function () {",
+											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"    var match = uuid_re.exec(jsonData.person_guid);",
+											"    pm.expect(match).to.be.ok;",
+											"    pm.expect(match.length).to.be.ok;",
+											"    pm.expect(match[0]).to.eql(jsonData.person_guid);",
+											"});",
+											"",
+											"pm.test(\"Person first name equals name supplied in request\", function () {",
+											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
+											"});",
+											"",
+											"pm.test(\"Last name equals value supplied in request\", function () {",
+											"    pm.expect(jsonData.surname).to.eql(\"Driller\");",
+											"});",
+											"",
+											"pm.test(\"Audit fields (create_user, create_date) were filled in by backend\", function () {",
+											"    pm.expect(jsonData.create_user.length).to.be.ok;",
+											"    pm.expect(jsonData.create_date.length).to.be.ok;",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -279,9 +292,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "Construction",
@@ -292,7 +303,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "4c4a1015-b29c-4fc3-8579-29b9e8dac3c8",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -375,7 +385,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "7eb46403-4d9e-40c9-b32c-bde682037045",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"var created_driller_guid = pm.environment.get('created_driller_guid')",
@@ -452,7 +461,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8cda82f1-4f66-419a-9d79-636186a44b6c",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -510,7 +518,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "c6ccd3af-884d-45fb-93f4-21294aa25b3a",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -574,7 +581,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "bf57abbb-38dd-41f5-a5bc-b8b85d729ade",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -631,7 +637,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "31a610c9-915e-4873-931a-613c8b1cfde4",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -690,7 +695,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "eaf2d1fa-c857-4c87-b7a5-bab319649826",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -748,7 +752,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "78582a37-9917-4d5c-a736-a0db198978ef",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -804,7 +807,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "8d6d5f99-b61a-48a5-b3e3-c793a81a5622",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -863,7 +865,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -922,7 +923,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "3737032f-d35f-4597-a306-133d74120ae4",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -979,7 +979,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1038,7 +1037,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1097,7 +1095,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1153,7 +1150,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1162,7 +1158,15 @@
 											"pm.test(\"Status code is 201\", function () {",
 											"   pm.expect(pm.response.code).to.equal(201);",
 											"})",
-											""
+											"pm.test(\"Lithology updated correctly\", () => {",
+											"    pm.expect(jsonData.lithologydescription_set.length > 0)",
+											"    const lithologyEntry = jsonData.lithologydescription_set[0]",
+											"    pm.expect(lithologyEntry.lithology_observation, \"observation did not update to 'hard to drill through'\").to.equal(\"hard to drill through\")",
+											"    pm.expect(parseFloat(lithologyEntry.lithology_colour), \"Colour did not update to 13\").to.equal(13)",
+											"    pm.expect(parseFloat(lithologyEntry.start), \"Start did not update to 0.00\").to.equal(0.00)",
+											"    pm.expect(parseFloat(lithologyEntry.end), \"End did not update to 10.00\").to.equal(10.00)",
+											"    pm.expect(lithologyEntry.lithology_hardness, \"Hardness did not update to Dense\").to.equal(\"DENSE\")",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -1212,14 +1216,15 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "af2703e6-b88c-41e0-a74f-14fdd2b1f927",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
 											"pm.test(\"Status code is 201\", function () {",
 											"   pm.expect(pm.response.code).to.equal(201);",
 											"})",
-											""
+											"pm.test(\"Lithology description has no entries\", () => {",
+											"    pm.expect(jsonData.lithologydescription_set.length === 0, \"There are still entries\");",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -1269,14 +1274,12 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "77ba3bf1-a4ad-476e-bd9a-c67bf0e7a34c",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
 											"pm.test(\"Status code is 200\", function () {",
 											"   pm.expect(pm.response.code).to.equal(200);",
 											"})",
-											"",
 											"",
 											"pm.test(\"Expect lithology to have one value\", function() {",
 											"    pm.expect(jsonData.lithologydescription_set.length).to.equal(1);",
@@ -1345,7 +1348,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
 										"exec": [
 											"pm.test(\"Status code is 204\", function () {",
 											"    pm.response.to.have.status(204);",
@@ -1390,9 +1392,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "Alteration",
@@ -1403,7 +1403,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5cb93a2d-3c82-4504-9f6f-c68857e2f8d4",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1464,7 +1463,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "758668aa-93ed-4341-9c01-1eb1c25985dd",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1516,7 +1514,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "758668aa-93ed-4341-9c01-1eb1c25985dd",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1567,16 +1564,13 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "bd75139a-e3d4-4e57-9eca-568872d2b9dc",
 										"exec": [
-											"( function() {",
-											"    pm.test(\"Successful POST request\", function () {",
-											"        pm.expect(pm.response.code).to.be.oneOf([201,202]);",
-											"    });",
-											"    ",
-											"    var jsonData = pm.response.json()",
-											"    pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
-											"})();",
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
+											"});",
+											"",
+											"var jsonData = pm.response.json()",
+											"pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
 											""
 										],
 										"type": "text/javascript"
@@ -1636,16 +1630,20 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "2ce89229-b4af-45c3-8645-ef507a84011c",
 										"exec": [
-											"( function() {",
-											"    pm.test(\"Successful POST request\", function () {",
-											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
-											"    });",
-											"    ",
-											"    var jsonData = pm.response.json()",
-											"    pm.environment.set(\"company_guid\", jsonData.org_guid);",
-											"})();",
+											"var jsonData = pm.response.json();",
+											"pm.test(\"Successful POST request\", function () {",
+											"    pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
+											"});",
+											"",
+											"pm.test(\"Expect name to match\", () => {",
+											"    pm.expect(jsonData.name).to.equal(\"Steve's Drilling Inc.\")",
+											"})",
+											"pm.test(\"Expect address to match\", () => {",
+											"    pm.expect(jsonData.street_address).to.equal(\"1012 Douglas\")",
+											"})",
+											"",
+											"pm.environment.set(\"company_guid\", jsonData.org_guid);",
 											""
 										],
 										"type": "text/javascript"
@@ -1739,9 +1737,9 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "0b7855ea-c33f-45a0-912c-9a02fc8077d2",
 										"exec": [
 											"var jsonData = pm.response.json();",
+											"pm.environment.set('filing_number', jsonData.filing_number)",
 											"var created_driller_guid = pm.environment.get('created_driller_guid');",
 											"var company_guid = pm.environment.get('company_guid');",
 											"var fields = {",
@@ -1751,8 +1749,6 @@
 											"\t\"person_responsible\": created_driller_guid,",
 											"\t\"company_of_person_responsible\": company_guid",
 											"}",
-											"",
-											"pm.environment.set('filing_number', jsonData.filing_number)",
 											"",
 											"pm.test(\"Status code is 201\", function () {",
 											"   pm.expect(pm.response.code).to.equal(201);",
@@ -1766,10 +1762,6 @@
 											"        pm.expect(jsonData[key]).to.equal(fields[key]);",
 											"    })",
 											"})",
-											"",
-											"",
-											"",
-											"",
 											""
 										],
 										"type": "text/javascript"
@@ -1814,7 +1806,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "027d3bd1-6dcc-4552-99da-324c714df9d0",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"var created_driller_guid = pm.environment.get('created_driller_guid');",
@@ -1879,9 +1870,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "Decommission",
@@ -1892,7 +1881,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "b89b1daf-40de-46c1-9567-608d995d0702",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -1952,7 +1940,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "6071dbc1-9a9a-4806-b276-9ea94186a23c",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2007,7 +1994,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "c0ec586c-6de3-424e-b7cc-67f2b63a32c0",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -2056,9 +2042,7 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				},
 				{
 					"name": "Staff Edit",
@@ -2072,7 +2056,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -2182,10 +2165,8 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 												"exec": [
 													"var jsonData = pm.response.json();",
-													"",
 													"",
 													"pm.test(\"Status code is 201\", function () {",
 													"   pm.expect(pm.response.code).to.equal(201);",
@@ -2245,7 +2226,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
 												"exec": [
 													"var jsonData = pm.response.json()",
 													"",
@@ -2304,9 +2284,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "Well Coordinates",
@@ -2317,7 +2295,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -2380,7 +2357,6 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
 												"exec": [
 													"var jsonData = pm.response.json()",
 													"",
@@ -2430,9 +2406,7 @@
 									},
 									"response": []
 								}
-							],
-							"protocolProfileBehavior": {},
-							"_postman_isSubFolder": true
+							]
 						},
 						{
 							"name": "Construction Submission",
@@ -2440,7 +2414,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2550,7 +2523,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2613,7 +2585,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "a7b16fb6-1b37-44b8-96b7-118759edb19b",
 										"exec": [
 											"var jsonData = pm.response.json()",
 											"",
@@ -2696,7 +2667,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "74cf621d-6689-43e8-be83-f6b1cb4d5d0a",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2709,6 +2679,20 @@
 											"",
 											"pm.test(\"Expect well record to be created\", function() {",
 											"    pm.expect(jsonData.well).to.be.ok;",
+											"})",
+											"",
+											"const bodyVals = {",
+											"    \"well_activity_type\": \"CON\",",
+											"\t\"owner_full_name\": \"Bob\",",
+											"\t\"owner_mailing_address\": \"123 Place\",",
+											"\t\"owner_city\": \"Victoria\",",
+											"\t\"owner_province_state\": \"BC\",",
+											"\t\"liner_material\": \"PVC\",",
+											"}",
+											"pm.test(\"Test body of post matches response values\", () => {",
+											"    for (const key of Object.keys(bodyVals)){",
+											"        pm.expect(jsonData[key]).to.equal(bodyVals[key])",
+											"    }",
 											"})",
 											""
 										],
@@ -2762,7 +2746,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2837,7 +2820,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "6e74f248-5709-45ca-9105-1294977c9001",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2957,7 +2939,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -3022,7 +3003,6 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "d810c676-8904-437e-8c93-3ea1d36e1bd1",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -3081,12 +3061,9 @@
 							},
 							"response": []
 						}
-					],
-					"protocolProfileBehavior": {},
-					"_postman_isSubFolder": true
+					]
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Stacking",
@@ -3097,7 +3074,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f43f719e-73c7-4508-a64a-5caeb226bfd5",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3107,8 +3083,20 @@
 									"   pm.expect(pm.response.code).to.equal(201);",
 									"})",
 									"",
-									"",
-									""
+									"const bodyVals = {",
+									"    \"well_class\": \"GEOTECH\",",
+									"\t\"driller_name\": \"Bob\",",
+									"\t\"consultant_name\": \"Lois\",",
+									"\t\"consultant_company\": \"Lois Consulting\",",
+									"\t\"work_start_date\": \"2018-01-01\",",
+									"\t\"work_end_date\": \"2018-01-01\",",
+									"\t\"legal_pid\": 123132,",
+									"}",
+									"pm.test(\"Test body of post matches response values\", () => {",
+									"    for (const key of Object.keys(bodyVals)){",
+									"        pm.expect(jsonData[key]).to.equal(bodyVals[key])",
+									"    }",
+									"})"
 								],
 								"type": "text/javascript"
 							}
@@ -3158,7 +3146,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6956eea7-3dca-43a2-9357-0a7198a62da4",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3220,7 +3207,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2f7c420c-60ea-4dc8-bb99-4fa4bd6b59b1",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3283,7 +3269,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6956eea7-3dca-43a2-9357-0a7198a62da4",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3345,7 +3330,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f7640140-774f-4486-ac95-94a38719dd4d",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3404,7 +3388,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "b89b1daf-40de-46c1-9567-608d995d0702",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
@@ -3464,7 +3447,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f060585e-3c9b-48b2-88cd-33b26d54703b",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -3526,8 +3508,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Clean up",
@@ -3538,7 +3519,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a743a15a-6712-486a-9310-5d1261bb03c1",
 								"exec": [
 									"pm.test(\"Status code is 204\", function () {",
 									"    pm.response.to.have.status(204);",
@@ -3583,9 +3563,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
