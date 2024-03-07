@@ -4,6 +4,13 @@ The API tests use [Newman](https://www.npmjs.com/package/newman) to run the test
 
 You can install Newman as a global dependency with `npm i -g newman@4.6.1` (This is the version currently used by Jenkins.)
 
+## Jenkings Dev vs Staging tests
+
+There is a soft difference regarding what test suites get run and where 
+The tests defined [wells_search_api_tests.json](./wells_search_api_tests.json) and [wells_search_api_tests.json](wells_search_api_tests.json) are scoped to only be running in the `dev` namespace. 
+
+It's worth noting that when exporting from Jenkins, the filenames are named after the collection and not as the file you imported. Due to the difference in data sets between environments, these tests will fail in staging if named incorrectly.
+
 ## Running your tests locally
 Running the tests through the following methods will load all the necessary environment variables locally into your terminal shell. These values don't persist outside of your shell. These commands will run **all** tests.
 
@@ -16,7 +23,7 @@ Running the tests through the following methods will load all the necessary envi
     - From **root**: `make api-tests-local`
         - add the argument `TEST_FILE="your filename"` to run only one test suite
 
-> <span style="color: red"> Do not commit these secrets (even accidentally!).</span> 
+> <span style="color: red">Do not commit these secrets (even accidentally!).</span> 
 
 ## Creating New Tests
 
