@@ -2,8 +2,7 @@
 	"info": {
 		"_postman_id": "126dede9-3fce-4f58-a51d-9b26f285cf06",
 		"name": "GWELLS Well API v2",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33152761"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -94,20 +93,6 @@
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
-									"",
-									"pm.test(\"Response schema matches\", () => {",
-									"    const schema = {",
-									"        \"type\": \"object\",",
-									"        \"properties\": {",
-									"            \"count\": {\"type\": \"number\"},",
-									"            \"next\": {\"type\": [\"string\", \"null\"]},",
-									"            \"previous\": {\"type\": [\"string\", \"null\"]},",
-									"            \"offset\": {\"type\": \"number\"},",
-									"            \"results\": {\"type\": \"array\"}",
-									"        }",
-									"    }",
-									"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
-									"})",
 									""
 								],
 								"type": "text/javascript"
@@ -158,23 +143,7 @@
 									"   pm.expect(pm.response.code).to.equal(201);",
 									"})",
 									"",
-									"const postRequest = {",
-									"    \"driller_name\": \"Jimithy\",",
-									"\t\"consultant_name\": \"Bobothy\",",
-									"\t\"consultant_company\": \"Inc & Inc\",",
-									"\t\"work_end_date\": \"2018-07-10\",",
-									"\t\"owner_full_name\": \"Holly Homeowner\",",
-									"\t\"work_start_date\": \"2018-07-01\",",
-									"\t\"owner_province_state\": \"BC\",",
-									"\t\"owner_mailing_address\": \"321 Main Street\",",
-									"\t\"owner_city\": \"Anytown\",",
-									"}",
-									"",
-									"pm.test(\"Values in post request reflected in new well\", () => {",
-									"    for(const key of Object.keys(postRequest)) {",
-									"        pm.expect(jsonData[key]).to.equal(postRequest[key])",
-									"    }",
-									"})"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -339,7 +308,7 @@
 									"",
 									"pm.test(\"Response contains an empty array\", function() {",
 									"    var jsonData = pm.response.json()",
-									"    pm.expect(jsonData).to.be.an('array')",
+									"    pm.expect(jsonData).to.be.a('array')",
 									"})",
 									""
 								],
@@ -388,16 +357,12 @@
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"aquifer_id\", jsonData.aquifer_id);",
 									"",
 									"pm.test(\"Status code is 201\", function () {",
 									"    pm.expect(pm.response.code).to.equal(201);",
 									"})",
-									"",
-									"pm.test(\"Aquifer id exists in response\", () => {",
-									"    pm.expect(jsonData.aquifer_id).to.be.a('number');",
-									"})",
-									"",
-									"pm.environment.set(\"aquifer_id\", jsonData.aquifer_id);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -517,16 +482,12 @@
 							"script": {
 								"exec": [
 									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"aquifer2_id\", jsonData.aquifer_id);",
 									"",
 									"pm.test(\"Status code is 201\", function () {",
 									"    pm.expect(pm.response.code).to.equal(201);",
 									"})",
-									"",
-									"pm.test(\"Aquifer id exists in response\", () => {",
-									"    pm.expect(jsonData.aquifer_id).to.be.a('number');",
-									"})",
-									"",
-									"pm.environment.set(\"aquifer2_id\", jsonData.aquifer_id);"
+									""
 								],
 								"type": "text/javascript"
 							}

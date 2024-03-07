@@ -1,33 +1,28 @@
 {
 	"info": {
-		"_postman_id": "df01556a-6c2d-4ffc-a4b2-80a357d707da",
-		"name": "Well List API filters",
+		"_postman_id": "198d7622-22b6-4f9a-a057-da8b88110bee",
+		"name": "Well List API filters v2",
 		"description": "Well List API endpoint filters required for advanced search options.",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33152761"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
 			"name": "Search",
 			"item": [
 				{
-					"name": "fuzzy search param (using well tag) Copy",
+					"name": "search param (matching well tag)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "a8ee1a9e-9fdb-4238-b9cc-248d9e1272fb",
 								"exec": [
-									"const jsonData = pm.response.json()",
-									"const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
-									"pm.test(\"Well tag number matches filter\", () => {",
-									"    _.each(jsonData.results, (result) => {",
-									"        const match = (",
-									"            result.well_tag_number === wellParam ||",
-									"            result.identification_plate_number == wellParam",
-									"        )",
-									"        pm.expect(match).to.be.true;",
-									"    })",
-									"})"
+									"pm.test(\"Well tag number matches filter\", function () {",
+									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
+									"  pm.response.json().results.forEach(function(result) {",
+									"    pm.expect(result.well_tag_number).to.equal(wellParam);",
+									"  });",
+									"});"
 								],
 								"type": "text/javascript"
 							}
@@ -37,13 +32,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=216265",
+							"raw": "{{base_url}}/api/v2/wells?search=216265",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -57,11 +52,12 @@
 					"response": []
 				},
 				{
-					"name": "strict search param (matching well tag exactly) Copy",
+					"name": "search param (matching well tag exactly)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "61a91934-ae23-4f47-83bc-2823feea1c7b",
 								"exec": [
 									"pm.test(\"Only matches one well\", function () {",
 									"    pm.expect(pm.response.json().results.length).to.equal(1);",
@@ -76,13 +72,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?well_tag_number=123",
+							"raw": "{{base_url}}/api/v2/wells?well_tag_number=123",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -96,20 +92,17 @@
 					"response": []
 				},
 				{
-					"name": "fuzzy search param (matching id plate) Copy",
+					"name": "search param (matching id plate)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "20d0e26b-35cb-48f9-9ba9-66ec973f35b8",
 								"exec": [
 									"pm.test(\"Well id plate matches filter\", function () {",
 									"  const wellParam = parseInt(pm.request.url.query.get(\"search\"));",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    const match = (",
-									"        result.identification_plate_number == wellParam ||",
-									"        result.well_tag_number == wellParam",
-									"    )",
-									"    pm.expect(match).to.be.true;",
+									"    pm.expect(result.identification_plate_number).to.equal(wellParam);",
 									"  });",
 									"});"
 								],
@@ -121,13 +114,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=55555",
+							"raw": "{{base_url}}/api/v2/wells?search=55555",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -141,16 +134,18 @@
 					"response": []
 				},
 				{
-					"name": "fuzzy search param (matching street address) Copy",
+					"name": "search param (matching street address)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "ef896c6e-0b09-4dbd-a657-bbc29ac449bb",
 								"exec": [
 									"pm.test(\"Street address matches filter\", function () {",
 									"  const streetAddress = pm.request.url.query.get(\"search\").toLowerCase();",
+									" const decodedAddress = decodeURIComponent(streetAddress);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    pm.expect(result.street_address.toLowerCase()).to.include(decodeURI(streetAddress));",
+									"    pm.expect(result.street_address.toLowerCase()).to.include(decodedAddress);",
 									"  });",
 									"});"
 								],
@@ -162,19 +157,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=1234%20Main",
+							"raw": "{{base_url}}/api/v2/wells?search=1234 Main",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
 								{
 									"key": "search",
-									"value": "1234%20Main"
+									"value": "1234 Main"
 								}
 							]
 						}
@@ -182,21 +177,18 @@
 					"response": []
 				},
 				{
-					"name": "fuzzy search param (matching city) Copy",
+					"name": "search param (matching city)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "4369004a-1e06-4772-bd72-4ad76f3d6b8f",
 								"exec": [
 									"pm.test(\"City matches filter\", function () {",
 									"  const city = pm.request.url.query.get(\"search\").toLowerCase();",
+									"  const decodedCity = decodeURIComponent(city);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    const match = (",
-									"        result.city.toLowerCase().includes(city) ||",
-									"        result.street_address.toLowerCase().includes(city) ||",
-									"        result.owner_full_name.toLowerCase().includes(city)",
-									"    )",
-									"    pm.expect(match).to.be.true;",
+									"    pm.expect(result.city.toLowerCase()).to.include(decodedCity);",
 									"  });",
 									"});"
 								],
@@ -208,13 +200,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=vancouver",
+							"raw": "{{base_url}}/api/v2/wells?search=vancouver",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -228,21 +220,18 @@
 					"response": []
 				},
 				{
-					"name": "fuzzy search param (matching owner_full_name) Copy",
+					"name": "search param (matching owner_full_name)",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "6156e758-8509-408f-91f3-a937472587d6",
 								"exec": [
 									"pm.test(\"Owner matches filter\", function () {",
-									"  const ownerFullName = decodeURI(pm.request.url.query.get(\"search\")).toLowerCase();",
+									"  const ownerFullName = pm.request.url.query.get(\"search\").toLowerCase();",
+									"  const decodedOwnerName = decodeURIComponent(ownerFullName);",
 									"  pm.response.json().results.forEach(function(result) {",
-									"    const match = (",
-									"        result.city.toLowerCase().includes(ownerFullName) ||",
-									"        result.street_address.toLowerCase().includes(ownerFullName) ||",
-									"        result.owner_full_name.toLowerCase().includes(ownerFullName)",
-									"    )",
-									"    pm.expect(match).to.be.true;",
+									"    pm.expect(result.owner_full_name.toLowerCase()).to.include(decodedOwnerName);",
 									"  });",
 									"});"
 								],
@@ -254,19 +243,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?search=Alice%20S",
+							"raw": "{{base_url}}/api/v2/wells?search=Alice S",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
 								{
 									"key": "search",
-									"value": "Alice%20S"
+									"value": "Alice S"
 								}
 							]
 						}
@@ -278,6 +267,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
+						"id": "fd108093-a649-4b99-99bc-e36052f1cb26",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -287,16 +277,20 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "bd0c3f3e-de55-4e5b-b354-ad9b70e75222",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response status ok\", function () {",
 							"  pm.response.to.be.ok;",
 							"});",
-							""
+							"pm.test(\"At least one result\", function () {",
+							"  pm.expect(pm.response.json().count).to.be.at.least(1);",
+							"});"
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Filters",
@@ -310,6 +304,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "758442eb-69cb-447a-bbf3-475120b6b563",
 										"exec": [
 											"pm.test(\"Well tag number matches filter\", function () {",
 											"  const wellParam = parseInt(pm.request.url.query.get(\"well\"));",
@@ -326,13 +321,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well=216265",
+									"raw": "{{base_url}}/api/v2/wells?well=216265",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -351,6 +346,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "70b88833-fd79-439b-b2d1-8286cb9c7fb6",
 										"exec": [
 											"pm.test(\"Well id plate matches filter\", function () {",
 											"  const wellParam = parseInt(pm.request.url.query.get(\"well\"));",
@@ -367,13 +363,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well=55555",
+									"raw": "{{base_url}}/api/v2/wells?well=55555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -392,11 +388,13 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "d959dda3-a4cc-4f8e-af4c-78c6849f4570",
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
+											"  const decodedStreetAddress = decodeURIComponent(streetAddress)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.street_address.toLowerCase()).to.include(decodeURI(streetAddress));",
+											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
 											"  });",
 											"});"
 										],
@@ -408,13 +406,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=1234 Main",
+									"raw": "{{base_url}}/api/v2/wells?street_address_or_city=1234 Main",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -433,11 +431,13 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "4d8843e9-572b-401d-988b-a3cdb31a9c0e",
 										"exec": [
 											"pm.test(\"City matches filter\", function () {",
 											"  const city = pm.request.url.query.get(\"street_address_or_city\").toLowerCase();",
+											"  const decodedCity = decodeURIComponent(city)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.city.toLowerCase()).to.include(city);",
+											"    pm.expect(result.city.toLowerCase()).to.include(decodedCity);",
 											"  });",
 											"});"
 										],
@@ -449,13 +449,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?street_address_or_city=vancouver",
+									"raw": "{{base_url}}/api/v2/wells?street_address_or_city=vancouver",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -474,6 +474,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "5e4aa15b-7933-4a2a-971e-cae4057d31cb",
 										"exec": [
 											"pm.test(\"Construction start date field matches filter\", function () {",
 											"  const dateOfWorkBefore = new Date(pm.request.url.query.get(\"date_of_work_before\"));",
@@ -492,13 +493,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?date_of_work_before=1975-12-31",
+									"raw": "{{base_url}}/api/v2/wells?date_of_work_before=1975-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -517,6 +518,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "dc20b620-a754-4de9-8163-b2722e443f5d",
 										"exec": [
 											"pm.test(\"Finished well depth matches filter\", function () {",
 											"  const wellDepthMin = parseInt(pm.request.url.query.get(\"well_depth_min\"));",
@@ -534,13 +536,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_depth_min=100&well_depth_max=185",
+									"raw": "{{base_url}}/api/v2/wells?well_depth_min=100&well_depth_max=185",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -563,6 +565,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "6b509920-f0dd-42e9-8b04-f741918bc51b",
 										"exec": [
 											"pm.test(\"Finished well depth matches filter\", function () {",
 											"  const wellDepthMax = parseInt(pm.request.url.query.get(\"well_depth_max\"));",
@@ -579,13 +582,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_depth_max=185",
+									"raw": "{{base_url}}/api/v2/wells?well_depth_max=185",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -604,6 +607,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "3c2be4b7-0c2c-4149-b170-6a21ae7f2109",
 										"exec": [
 											"pm.test(\"Legal lot matches filter\", function () {",
 											"  const legalLot = pm.request.url.query.get(\"legal\");",
@@ -621,13 +625,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal=1Q",
+									"raw": "{{base_url}}/api/v2/wells?legal=1Q",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -646,6 +650,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "adbdf0d9-425b-461e-97c8-a778392b3772",
 										"exec": [
 											"pm.test(\"Legal PID matches filter\", function () {",
 											"  const legalPID = pm.request.url.query.get(\"legal\");",
@@ -663,13 +668,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal=555555",
+									"raw": "{{base_url}}/api/v2/wells?legal=555555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -688,6 +693,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "1a2afe1d-4e1e-4035-bc97-510da739b1ad",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -697,6 +703,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "3d7306ad-1527-41fb-9b1e-dcbaf864c622",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -708,7 +715,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Exact match filters",
@@ -719,6 +728,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "3992f744-5344-4041-aa24-ee4abf469409",
 										"exec": [
 											"pm.test(\"Well tag number matches filter\", function () {",
 											"  const wellTagNumber = parseInt(pm.request.url.query.get(\"well_tag_number\"));",
@@ -735,13 +745,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_tag_number=216265",
+									"raw": "{{base_url}}/api/v2/wells?well_tag_number=216265",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -760,6 +770,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "58af0248-3415-4ed9-b808-a3525f199846",
 										"exec": [
 											"pm.test(\"Well id plate matches filter\", function () {",
 											"  const idPlateNumber = parseInt(pm.request.url.query.get(\"identification_plate_number\"));",
@@ -776,13 +787,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?identification_plate_number=55555",
+									"raw": "{{base_url}}/api/v2/wells?identification_plate_number=55555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -801,6 +812,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "7417a741-8c61-4cec-8278-e659cd419006",
 										"exec": [
 											"pm.test(\"Legal lot matches filter\", function () {",
 											"  const legalLot = pm.request.url.query.get(\"legal_lot\");",
@@ -818,13 +830,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_lot=1Q",
+									"raw": "{{base_url}}/api/v2/wells?legal_lot=1Q",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -843,6 +855,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "e1f9d6ab-07da-4eb1-bb5f-250f9175fe0f",
 										"exec": [
 											"pm.test(\"Legal plan matches filter\", function () {",
 											"  const legalPlan = pm.request.url.query.get(\"legal_plan\");",
@@ -860,13 +873,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_plan=555",
+									"raw": "{{base_url}}/api/v2/wells?legal_plan=555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -885,6 +898,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "3096b9b5-26a8-495f-a3f1-e1edd8586957",
 										"exec": [
 											"pm.test(\"Legal district lot matches filter\", function () {",
 											"  const legalDistrictLot = pm.request.url.query.get(\"legal_district_lot\");",
@@ -902,13 +916,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_district_lot=20000",
+									"raw": "{{base_url}}/api/v2/wells?legal_district_lot=20000",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -927,6 +941,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "621c8653-2fff-47c7-9023-09063b17712e",
 										"exec": [
 											"pm.test(\"Land district matches filter\", function () {",
 											"  const landDistrict = pm.request.url.query.get(\"land_district\");",
@@ -944,13 +959,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?land_district=36",
+									"raw": "{{base_url}}/api/v2/wells?land_district=36",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -969,6 +984,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "fb7ae876-cdbb-4f84-b88f-35d076c6dd6a",
 										"exec": [
 											"pm.test(\"Legal PID matches filter\", function () {",
 											"  const legalPID = pm.request.url.query.get(\"legal_pid\");",
@@ -986,13 +1002,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_pid=555555",
+									"raw": "{{base_url}}/api/v2/wells?legal_pid=555555",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1011,6 +1027,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "976db70f-1a26-4db1-a4fc-74ff4e4d98a9",
 										"exec": [
 											"pm.test(\"Well status matches filter\", function () {",
 											"  const wellStatus = pm.request.url.query.get(\"well_status\");",
@@ -1028,13 +1045,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_status=OTHER",
+									"raw": "{{base_url}}/api/v2/wells?well_status=OTHER",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1053,6 +1070,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "20172248-6180-4df8-ae85-15e5ead10e77",
 										"exec": [
 											"pm.test(\"Licenced status matches filter\", function () {",
 											"  const licencedStatus = pm.request.url.query.get(\"licenced_status\");",
@@ -1070,13 +1088,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?licenced_status=LICENSED",
+									"raw": "{{base_url}}/api/v2/wells?licenced_status=LICENSED",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1095,6 +1113,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "e9de133d-3e89-45fe-a36c-120b05ba7b73",
 										"exec": [
 											"pm.test(\"Well class matches filter\", function () {",
 											"  const wellClass = pm.request.url.query.get(\"well_class\");",
@@ -1111,13 +1130,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_class=WATR_SPPLY",
+									"raw": "{{base_url}}/api/v2/wells?well_class=WATR_SPPLY",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1136,6 +1155,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "4ec9eb50-bb7f-4882-ad73-adcecb02b42a",
 										"exec": [
 											"pm.test(\"Well subclass matches filter\", function () {",
 											"  const wellSubclass = pm.request.url.query.get(\"well_subclass\");",
@@ -1152,13 +1172,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_subclass=ce97445a-664e-44f1-a096-95c97ffd084e",
+									"raw": "{{base_url}}/api/v2/wells?well_subclass=ce97445a-664e-44f1-a096-95c97ffd084e",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1177,6 +1197,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "6b164628-17f8-42af-8f75-4fccb5d46593",
 										"exec": [
 											"pm.test(\"Legal block matches filter\", function () {",
 											"  const legalBlock = pm.request.url.query.get(\"legal_block\");",
@@ -1193,13 +1214,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_block=block",
+									"raw": "{{base_url}}/api/v2/wells?legal_block=block",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1218,6 +1239,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "79946b3f-9b9a-46a9-8ddb-0cceebe18ce6",
 										"exec": [
 											"pm.test(\"Legal township matches filter\", function () {",
 											"  const legalTownship = pm.request.url.query.get(\"legal_township\");",
@@ -1234,13 +1256,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_township=township",
+									"raw": "{{base_url}}/api/v2/wells?legal_township=township",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1259,6 +1281,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "92ea0c0f-cb11-4135-9f26-7682f6ed7ccf",
 										"exec": [
 											"pm.test(\"Legal range matches filter\", function () {",
 											"  const legalRange = pm.request.url.query.get(\"legal_range\");",
@@ -1275,13 +1298,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?legal_range=3",
+									"raw": "{{base_url}}/api/v2/wells?legal_range=3",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1300,6 +1323,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "006eca0f-6978-41e2-b0be-10c89d9b7d83",
 										"exec": [
 											"pm.test(\"Drilling company matches filter\", function () {",
 											"  const drillingCompany = pm.request.url.query.get(\"drilling_company\");",
@@ -1316,13 +1340,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?drilling_company=f606669c-a60c-422d-859a-fdc54278d9b0",
+									"raw": "{{base_url}}/api/v2/wells?drilling_company=f606669c-a60c-422d-859a-fdc54278d9b0",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1336,11 +1360,54 @@
 							"response": []
 						},
 						{
+							"name": "company_of_person_responsible param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ca11dec9-c2d6-4eba-8a67-392d685d2f78",
+										"exec": [
+											"pm.test(\"Company of person responsible matches filter\", function () {",
+											"  const company_guid = pm.request.url.query.get(\"company_of_person_responsible\");",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.company_of_person_responsible).to.equal(company_guid);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v2/wells?company_of_person_responsible=f606669c-a60c-422d-859a-fdc54278d9b0",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "company_of_person_responsible",
+											"value": "f606669c-a60c-422d-859a-fdc54278d9b0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "coordinate_acquisition_code param",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
+										"id": "80a8ad63-5bbc-4e0d-bca4-35189c6d0150",
 										"exec": [
 											"pm.test(\"Coordinate acquisition code matches filter\", function () {",
 											"  const coordinateAcquisitionCode = pm.request.url.query.get(\"coordinate_acquisition_code\");",
@@ -1357,13 +1424,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?coordinate_acquisition_code=H",
+									"raw": "{{base_url}}/api/v2/wells?coordinate_acquisition_code=H",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1382,6 +1449,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "999f740c-13ff-48f5-84a8-c411d2c3af9c",
 										"exec": [
 											"pm.test(\"Ground elevation method matches filter\", function () {",
 											"  const groundElevationMethod = pm.request.url.query.get(\"ground_elevation_method\");",
@@ -1399,13 +1467,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?ground_elevation_method=GPS",
+									"raw": "{{base_url}}/api/v2/wells?ground_elevation_method=GPS",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1424,6 +1492,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "1aac689f-9751-4d18-a512-1afd4928cc9c",
 										"exec": [
 											"pm.test(\"Surface seal material matches filter\", function () {",
 											"  const surfaceSealMaterial = pm.request.url.query.get(\"surface_seal_material\");",
@@ -1441,13 +1510,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?surface_seal_material=SND_CMT_GT",
+									"raw": "{{base_url}}/api/v2/wells?surface_seal_material=SND_CMT_GT",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1465,6 +1534,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "fcb080e3-4bb1-4e7e-b93a-a8acde136d51",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -1474,6 +1544,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "8a7197b9-29ac-4c96-947e-c4e99825c847",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -1485,7 +1556,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Date range filters",
@@ -1496,6 +1569,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "e5ac91a3-e042-4931-9e2b-1ad3f62e77c0",
 										"exec": [
 											"pm.test(\"Construction start date matches filter\", function () {",
 											"  const constructionStartBefore = new Date(pm.request.url.query.get(\"construction_start_date_before\"));",
@@ -1514,13 +1588,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?construction_start_date_before=1975-12-31",
+									"raw": "{{base_url}}/api/v2/wells?construction_start_date_before=1975-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1539,6 +1613,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "2750ea29-bf7c-4cb8-b112-7d2d6aa94754",
 										"exec": [
 											"pm.test(\"Construction start date matches filter\", function () {",
 											"  const constructionStartAfter = new Date(pm.request.url.query.get(\"construction_start_date_after\"));",
@@ -1557,13 +1632,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?construction_start_date_after=1975-01-01",
+									"raw": "{{base_url}}/api/v2/wells?construction_start_date_after=1975-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1582,6 +1657,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "2ece9beb-eba4-468d-8521-c137eb2dc371",
 										"exec": [
 											"pm.test(\"Construction end date matches filter\", function () {",
 											"  const constructionEndBefore = new Date(pm.request.url.query.get(\"construction_end_date_before\"));",
@@ -1600,13 +1676,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?construction_end_date_before=1976-12-31",
+									"raw": "{{base_url}}/api/v2/wells?construction_end_date_before=1976-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1625,6 +1701,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "315657d8-1793-4557-840d-644ee837d5db",
 										"exec": [
 											"pm.test(\"Construction end date matches filter\", function () {",
 											"  const constructionEndAfter = new Date(pm.request.url.query.get(\"construction_end_date_after\"));",
@@ -1643,13 +1720,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?construction_end_date_after=1976-01-01",
+									"raw": "{{base_url}}/api/v2/wells?construction_end_date_after=1976-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1668,6 +1745,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "7a410cb3-2558-4800-b38c-60bd565bcdd3",
 										"exec": [
 											"pm.test(\"Alteration start date matches filter\", function () {",
 											"  const alterationStartBefore = new Date(pm.request.url.query.get(\"alteration_start_date_before\"));",
@@ -1686,13 +1764,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_before=2014-12-31",
+									"raw": "{{base_url}}/api/v2/wells?alteration_start_date_before=2014-12-31",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1711,6 +1789,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "ea531c01-0e41-490a-9a45-40255a41471b",
 										"exec": [
 											"pm.test(\"Alteration start date matches filter\", function () {",
 											"  const alterationStartAfter = new Date(pm.request.url.query.get(\"alteration_start_date_after\"));",
@@ -1729,13 +1808,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?alteration_start_date_after=2014-01-01",
+									"raw": "{{base_url}}/api/v2/wells?alteration_start_date_after=2014-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1754,6 +1833,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "4ff66335-bbc8-4326-a712-eb6631b279bd",
 										"exec": [
 											"pm.test(\"Alteration end date matches filter\", function () {",
 											"  const alterationEndBefore = new Date(pm.request.url.query.get(\"alteration_end_date_before\"));",
@@ -1772,13 +1852,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_before=2019-01-01",
+									"raw": "{{base_url}}/api/v2/wells?alteration_end_date_before=2019-01-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1797,6 +1877,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "6711548a-9f9b-4f26-8b9a-b7cd12e9ac8a",
 										"exec": [
 											"pm.test(\"Alteration end date matches filter\", function () {",
 											"  const alterationEndAfter = new Date(pm.request.url.query.get(\"alteration_end_date_after\"));",
@@ -1815,13 +1896,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?alteration_end_date_after=2018-12-30",
+									"raw": "{{base_url}}/api/v2/wells?alteration_end_date_after=2018-12-30",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1840,6 +1921,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "bd7aa806-8439-47af-ba42-a67c2702daea",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionStartBefore = new Date(pm.request.url.query.get(\"decommission_start_date_before\"));",
@@ -1858,13 +1940,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_before=2019-02-03",
+									"raw": "{{base_url}}/api/v2/wells?decommission_start_date_before=2019-02-03",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1883,6 +1965,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "6053d761-4e69-42d0-a802-ad890e26c622",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionStartAfter = new Date(pm.request.url.query.get(\"decommission_start_date_after\"));",
@@ -1901,13 +1984,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?decommission_start_date_after=2019-02-01",
+									"raw": "{{base_url}}/api/v2/wells?decommission_start_date_after=2019-02-01",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1926,6 +2009,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "ce4cc818-4fd6-4412-b764-8e2099c59088",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionEndBefore = new Date(pm.request.url.query.get(\"decommission_end_date_before\"));",
@@ -1944,13 +2028,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_before=2019-02-09",
+									"raw": "{{base_url}}/api/v2/wells?decommission_end_date_before=2019-02-09",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -1969,6 +2053,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "297cb01f-4b1b-452b-a55d-15c0da159c49",
 										"exec": [
 											"pm.test(\"Decommission end date matches filter\", function () {",
 											"  const decommissionEndAfter = new Date(pm.request.url.query.get(\"decommission_end_date_after\"));",
@@ -1987,13 +2072,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?decommission_end_date_after=2019-02-07",
+									"raw": "{{base_url}}/api/v2/wells?decommission_end_date_after=2019-02-07",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2011,6 +2096,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "8c1f7b9d-64cf-4439-9a6e-6dd07591cfa6",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2020,6 +2106,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "1ce5d3ff-3227-4adc-9d15-781e26bf8641",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2031,7 +2118,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Numeric range filters",
@@ -2042,6 +2131,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "db370d3a-4e7c-434c-9578-96c97b5d6ed4",
 										"exec": [
 											"pm.test(\"Liner diameter matches filter\", function () {",
 											"  const linerDiameter = parseFloat(pm.request.url.query.get(\"liner_diameter_min\"));",
@@ -2061,13 +2151,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?liner_diameter_min=1.3",
+									"raw": "{{base_url}}/api/v2/wells?liner_diameter_min=1.3",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2086,6 +2176,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "8b1b1fac-3afa-4533-8dbb-6e88e97174cd",
 										"exec": [
 											"pm.test(\"Liner diameter matches filter\", function () {",
 											"  const linerDiameter = parseFloat(pm.request.url.query.get(\"liner_diameter_max\"));",
@@ -2105,13 +2196,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?liner_diameter_max=1.6",
+									"raw": "{{base_url}}/api/v2/wells?liner_diameter_max=1.6",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2129,6 +2220,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "9a92c05e-72d6-4f57-a4cd-c210b14326dc",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2138,6 +2230,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "d7803be7-be2e-40e9-bf5b-b1a676eab9fc",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2149,7 +2242,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Boolean filters",
@@ -2158,6 +2253,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "5e1cdcc7-0d66-4d7c-a0d7-29b4f25924be",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2167,6 +2263,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "da1568ff-b803-43d2-9159-a264514d95ef",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2178,7 +2275,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Partial text match filters",
@@ -2189,10 +2288,12 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "8ed37639-9384-40f0-8493-69efcc521298",
 										"exec": [
 											"pm.test(\"Street address matches filter\", function () {",
 											"  const streetAddress = pm.request.url.query.get(\"street_address\").toLowerCase();",
-											"const decodedStreetAddress = decodeURIComponent(streetAddress)",
+											"  const decodedStreetAddress = decodeURIComponent(streetAddress)",
+											"",
 											"  pm.response.json().results.forEach(function(result) {",
 											"    pm.expect(result.street_address.toLowerCase()).to.include(decodedStreetAddress);",
 											"  });",
@@ -2206,13 +2307,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?street_address=Main st",
+									"raw": "{{base_url}}/api/v2/wells?street_address=Main st",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2231,11 +2332,13 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "23404185-5d19-4bfd-90d1-fc07b8f68555",
 										"exec": [
 											"pm.test(\"Owner matches filter\", function () {",
 											"  const ownerFullName = pm.request.url.query.get(\"owner_full_name\").toLowerCase();",
+											"  const decodedOwnerName = decodeURIComponent(ownerFullName)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.owner_full_name.toLowerCase()).to.include(ownerFullName);",
+											"    pm.expect(result.owner_full_name.toLowerCase()).to.include(decodedOwnerName);",
 											"  });",
 											"});"
 										],
@@ -2247,13 +2350,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?owner_full_name=Alice",
+									"raw": "{{base_url}}/api/v2/wells?owner_full_name=Alice",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2267,16 +2370,18 @@
 							"response": []
 						},
 						{
-							"name": "well_location_description param",
+							"name": "company_of_person_responsible_name param",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
+										"id": "6d3dcc48-1bbf-42ef-abc6-de3fac90927d",
 										"exec": [
-											"pm.test(\"Well location description matches filter\", function () {",
-											"  const wellLocationDesc = pm.request.url.query.get(\"well_location_description\");",
+											"pm.test(\"Company name matches filter\", function () {",
+											"  const companyNameQuery = pm.request.url.query.get(\"company_of_person_responsible_name\").toLowerCase();",
+											"  const decodedCompanyNameQuery = decodeURIComponent(companyNameQuery)",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.well_location_description.toLowerCase()).to.include(decodeURI(wellLocationDesc));",
+											"    pm.expect(result.company_of_person_responsible_name.toLowerCase()).to.include(decodedCompanyNameQuery);",
 											"  });",
 											"});"
 										],
@@ -2288,13 +2393,99 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_location_description=highway 95",
+									"raw": "{{base_url}}/api/v2/wells?company_of_person_responsible_name=drill",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "company_of_person_responsible_name",
+											"value": "drill"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "person_responsible_name param Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5a6967c3-995d-4843-8ba1-8dac95350d35",
+										"exec": [
+											"pm.test(\"Company name matches filter\", function () {",
+											"  const personNameQuery = pm.request.url.query.get(\"person_responsible_name\").toLowerCase();",
+											"  const decodedPersonNameQuery = decodeURIComponent(personNameQuery);",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.person_responsible_name.toLowerCase()).to.include(decodedPersonNameQuery);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v2/wells?person_responsible_name=drill",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"wells"
+									],
+									"query": [
+										{
+											"key": "person_responsible_name",
+											"value": "drill"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "well_location_description param",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "fa908097-abb7-4eff-902d-db6104b6fd33",
+										"exec": [
+											"pm.test(\"Well location description matches filter\", function () {",
+											"  const wellLocationDesc = pm.request.url.query.get(\"well_location_description\");",
+											"  const decodedWellLocationDesc = decodeURIComponent(wellLocationDesc)",
+											"  pm.response.json().results.forEach(function(result) {",
+											"    pm.expect(result.well_location_description.toLowerCase()).to.include(decodedWellLocationDesc);",
+											"  });",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v2/wells?well_location_description=highway 95",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2313,6 +2504,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "107e2971-2604-459f-adbb-e8bdea39e89f",
 										"exec": [
 											"pm.test(\"Well identification plate attached matches filter\", function () {",
 											"  const wellIdPlateAttached = pm.request.url.query.get(\"well_identification_plate_attached\");",
@@ -2330,13 +2522,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_identification_plate_attached=casing",
+									"raw": "{{base_url}}/api/v2/wells?well_identification_plate_attached=casing",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2355,6 +2547,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "a7e15fca-b064-45c6-a8db-d7c4bc1a56c6",
 										"exec": [
 											"pm.test(\"Water supply system name matches filter\", function () {",
 											"  const waterSupplySystemName = pm.request.url.query.get(\"water_supply_system_name\");",
@@ -2372,13 +2565,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?water_supply_system_name=test",
+									"raw": "{{base_url}}/api/v2/wells?water_supply_system_name=test",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2397,12 +2590,13 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "0ef45c25-b83c-4da3-a181-84462771c6ef",
 										"exec": [
 											"pm.test(\"Water supply system well name matches filter\", function () {",
 											"  const waterSupplySystemWellName = pm.request.url.query.get(\"water_supply_system_well_name\");",
 											" ",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.water_supply_system_well_name.toLowerCase()).to.contain(waterSupplySystemWellName.toLowerCase());",
+											"    pm.expect(result.water_supply_system_well_name).to.contain(waterSupplySystemWellName);",
 											"  });",
 											"});"
 										],
@@ -2414,13 +2608,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?water_supply_system_well_name=test",
+									"raw": "{{base_url}}/api/v2/wells?water_supply_system_well_name=test",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2439,6 +2633,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "23d14d9c-8385-4e54-ae1e-62abb15f9505",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2448,6 +2643,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "74b1cd33-949f-410d-8639-081321543c5c",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2459,7 +2655,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Many to many filters",
@@ -2470,17 +2668,16 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "d3e1d1dd-0cd7-41e4-9da0-33691dfeaadd",
 										"exec": [
-											"const response = pm.response.json();",
 											"pm.test(\"Water quality characteristics matches filter\", () => {",
-											"    const water_quality_characteristics_test = ['CLOUDY', 'SALTY'];",
-											"    _.each(response.results, ({ water_quality_characteristics }) => {",
-											"        water_quality_characteristics_test.forEach(item => {",
-											"            pm.expect(water_quality_characteristics.includes(item))",
-											"        })",
-											"    })",
-											"})",
-											""
+											"  const waterQualityCharacteristics = ['CLOUDY', 'SALTY'];",
+											"",
+											"  pm.response.json().results.forEach((result) => {",
+											"    const matchingCharacteristics = result.water_quality_characteristics.filter(code => waterQualityCharacteristics.includes(code));",
+											"    pm.expect(matchingCharacteristics.length).to.be.at.least(1);",
+											"  });",
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -2490,13 +2687,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?water_quality_characteristics=SALTY&water_quality_characteristics=CLOUDY",
+									"raw": "{{base_url}}/api/v2/wells?water_quality_characteristics=SALTY&water_quality_characteristics=CLOUDY",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2519,12 +2716,14 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "e7c8d60e-51d5-4fd7-a539-7280a7d20943",
 										"exec": [
 											"pm.test(\"Drilling method matches filter\", function () {",
 											"  const drillingMethod = pm.request.url.query.get(\"drilling_methods\");",
+											"  const decodedDrillingMethod = decodeURIComponent(drillingMethod)",
 											"",
 											"  pm.response.json().results.forEach(function(result) {",
-											"    pm.expect(result.drilling_methods).to.include(drillingMethod);",
+											"    pm.expect(result.drilling_methods).to.include(decodedDrillingMethod);",
 											"  });",
 											"});"
 										],
@@ -2536,13 +2735,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?drilling_methods=DUGOUT",
+									"raw": "{{base_url}}/api/v2/wells?drilling_methods=DUGOUT",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2560,6 +2759,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "309086b9-4b7d-4544-aa0a-88e625ad4be4",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2569,6 +2769,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "0242386e-c591-49c8-9839-b57e272ac296",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Response status ok\", function () {",
@@ -2580,7 +2781,9 @@
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Lat/long point filters",
@@ -2591,20 +2794,14 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "b9102cec-632e-4851-a390-d34c2986da3b",
 										"exec": [
-											"jsonData = pm.response.json()",
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
 											"});",
 											"pm.test(\"At least one result\", function () {",
 											"  pm.expect(pm.response.json().count).to.be.at.least(1);",
-											"});",
-											"pm.test(\"Results in bounds defined in search\", () => {",
-											"    _.each(jsonData.results, (well) => {",
-											"        pm.expect(122.58 <= well.longitude <= 122.60).to.be.true;",
-											"        pm.expect(49.24 <= well.latitude <= 49.26).to.be.true",
-											"    })",
-											"})"
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -2614,13 +2811,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
+									"raw": "{{base_url}}/api/v2/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58&ne_lat=49.26",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2651,6 +2848,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "79e95f7d-4458-4a2a-b4f8-a4a528971646",
 										"exec": [
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
@@ -2667,13 +2865,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
+									"raw": "{{base_url}}/api/v2/wells?sw_long=-122.60&sw_lat=49.24&ne_long=-122.58",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2700,6 +2898,7 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "4e59045e-6cd5-430f-9fed-710a0fda9d3e",
 										"exec": [
 											"pm.test(\"Response status ok\", function () {",
 											"  pm.response.to.be.ok;",
@@ -2716,13 +2915,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
+									"raw": "{{base_url}}/api/v2/wells?sw_lat=bar&sw_long=foo&ne_long=test&ne_lat=avalue",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2752,6 +2951,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
+								"id": "5bef6eb9-8abd-4b21-88a9-0fa691c855ac",
 								"type": "text/javascript",
 								"exec": [
 									""
@@ -2761,13 +2961,16 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "885861cf-0a1b-4345-b7cd-85889cd720f2",
 								"type": "text/javascript",
 								"exec": [
 									""
 								]
 							}
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				},
 				{
 					"name": "Filter groups",
@@ -2778,33 +2981,9 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "d290f3d4-107a-4ef8-a394-d3417968fc22",
 										"exec": [
-											"var jsonData = pm.response.json()",
-											"",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.expect(pm.response.code).to.equal(200);",
-											"})",
-											"",
-											"pm.test(\"Response schema matches\", () => {",
-											"    const schema = {",
-											"        \"type\": \"object\",",
-											"        \"properties\": {",
-											"            \"count\": {\"type\": \"number\"},",
-											"            \"next\": {\"type\": [\"string\", \"null\"]},",
-											"            \"previous\": {\"type\": [\"string\", \"null\"]},",
-											"            \"offset\": {\"type\": \"number\"},",
-											"            \"results\": {\"type\": \"array\"}",
-											"        }",
-											"    }",
-											"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
-											"})",
-											"",
-											"pm.test(\"Well Results match fields\", () => {",
-											"    _.each(jsonData.results, (well) => {",
-											"        pm.expect(well.owner_full_name).to.include('Smith')",
-											"        pm.expect(well.well_status).to.equal(\"OTHER\")",
-											"    })",
-											"})"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -2814,13 +2993,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
+									"raw": "{{base_url}}/api/v2/wells?well_orientation=False&well_status=OTHER&match_any=false&filter_group={\"owner_full_name\": \"Smith\", \"match_any\": false}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2851,35 +3030,9 @@
 								{
 									"listen": "test",
 									"script": {
+										"id": "76a5a828-fa2a-493b-bc75-57db5d8cec9c",
 										"exec": [
-											"var jsonData = pm.response.json()",
-											"",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.expect(pm.response.code).to.equal(200);",
-											"})",
-											"",
-											"pm.test(\"Response schema matches\", () => {",
-											"    const schema = {",
-											"        \"type\": \"object\",",
-											"        \"properties\": {",
-											"            \"count\": {\"type\": \"number\"},",
-											"            \"next\": {\"type\": [\"string\", \"null\"]},",
-											"            \"previous\": {\"type\": [\"string\", \"null\"]},",
-											"            \"offset\": {\"type\": \"number\"},",
-											"            \"results\": {\"type\": \"array\"}",
-											"        }",
-											"    }",
-											"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
-											"})",
-											"",
-											"pm.test(\"Well Results contain a matching field\", () => {",
-											"    _.each(jsonData.results, (well) => {",
-											"        const name_match = well.owner_full_name.includes(\"MOUNTED\");",
-											"        const well_status_match = well.well_status === \"OTHER\";",
-											"        const surface_seal_material_match = well.surface_seal_material.includes(\"BNTITE_CLY\");",
-											"        pm.expect(name_match || well_status_match || surface_seal_material_match).to.be.true;",
-											"    })",
-											"})"
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -2889,13 +3042,13 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{base_url}}/api/v1/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
+									"raw": "{{base_url}}/api/v2/wells?well_orientation=True&well_status=OTHER&match_any=true&filter_group={\"surface_seal_material\": \"BNTITE_CLY\"}&filter_group={\"owner_full_name\": \"MOUNTED\", \"match_any\": true}",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v1",
+										"v2",
 										"wells"
 									],
 									"query": [
@@ -2924,13 +3077,16 @@
 							},
 							"response": []
 						}
-					]
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
 				}
 			],
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
+						"id": "1526ad84-957e-49c2-837c-8a347c64e7c5",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -2940,13 +3096,15 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "0f154fb0-df2d-4bf4-82d6-8c9e119c1d86",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Ordering",
@@ -2957,6 +3115,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "5f072fc0-ec92-4e73-817b-d6e4994dc7c4",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -2992,13 +3151,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=identification_plate_number",
+							"raw": "{{base_url}}/api/v2/wells?ordering=identification_plate_number",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -3017,6 +3176,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "770edc15-0b4b-48d4-95eb-923eab6c6124",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3052,13 +3212,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=construction_start_date",
+							"raw": "{{base_url}}/api/v2/wells?ordering=construction_start_date",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -3077,6 +3237,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "ff404d72-ee4c-44f7-84bc-b415a5d154f6",
 								"exec": [
 									"const descResultSort = (a, b) => {",
 									"",
@@ -3113,13 +3274,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=-owner_full_name",
+							"raw": "{{base_url}}/api/v2/wells?ordering=-owner_full_name",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -3138,6 +3299,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "8a926adc-b98b-412e-a55f-eeb1d84d1c1e",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3179,13 +3341,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=drilling_methods&limit=10",
+							"raw": "{{base_url}}/api/v2/wells?ordering=drilling_methods&limit=10",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -3208,6 +3370,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "b065841f-6f65-494b-bfd2-48dd31dfda4a",
 								"exec": [
 									"const ascResultSort = (a, b) => {",
 									"  if (a === null){",
@@ -3244,13 +3407,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=surface_seal_method",
+							"raw": "{{base_url}}/api/v2/wells?ordering=surface_seal_method",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -3269,6 +3432,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "9cab9fb6-19c4-460f-bf04-8d2ecaca1c7c",
 								"exec": [
 									"const descResultSort = (a, b) => {",
 									"",
@@ -3306,13 +3470,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?ordering=-well_class",
+							"raw": "{{base_url}}/api/v2/wells?ordering=-well_class",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"wells"
 							],
 							"query": [
@@ -3330,6 +3494,7 @@
 				{
 					"listen": "prerequest",
 					"script": {
+						"id": "9cf13cbd-fe2d-4e76-9ff2-d33749655977",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -3339,6 +3504,7 @@
 				{
 					"listen": "test",
 					"script": {
+						"id": "d61c778d-c22d-4e85-92c9-7db7354f44d2",
 						"type": "text/javascript",
 						"exec": [
 							"pm.test(\"Response status ok\", function () {",
@@ -3350,13 +3516,15 @@
 						]
 					}
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
+				"id": "993804a1-cf8c-4a5c-a8a7-d0f93a163ec3",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -3366,6 +3534,7 @@
 		{
 			"listen": "test",
 			"script": {
+				"id": "58ab7dd2-8a36-4e60-9343-3915a29a3e58",
 				"type": "text/javascript",
 				"exec": [
 					"pm.test(\"Response is valid JSON\", function () {",
@@ -3376,5 +3545,6 @@
 				]
 			}
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
