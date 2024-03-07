@@ -912,12 +912,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                     # Directly handle special cases for fields like latitude and longitude
                     elif field in ['latitude', 'longitude'] and value == 'null':
                         q_objects &= Q(**{'geom__isnull': True})
-
-                    elif field == 'well_class':
-                        q_objects &= Q(well_class__well_class_code=value)
-                    
-                    elif field == 'well_subclass':
-                        q_objects &= Q(well_subclass__well_subclass_guid=value)
                         
                     elif field == 'intended_water_use':
                         q_objects &= Q(intended_water_use__intended_water_use_code=value)
@@ -940,7 +934,17 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         q_objects &= (Q(company_of_person_responsible__isnull=True) |
                                       Q(company_of_person_responsible__name__isnull=True) |
                                       Q(company_of_person_responsible__name='') | Q(company_of_person_responsible__name=' '))
-                    
+
+                    elif field == 'well_class':
+                        q_objects &= Q(well_class__well_class_code=value)
+
+                    elif field == 'well_subclass' and value != '00000000-0000-0000-0000-000000000000':
+                        q_objects &= Q(well_subclass__well_subclass_guid=value)
+
+                    # Check for null 'well_subclass'
+                    elif field == 'well_subclass' and value == '00000000-0000-0000-0000-000000000000':
+                        q_objects &= Q(well_subclass__well_subclass_guid__isnull=True)
+
                     # Check for null or empty 'aquifer_lithology'
                     elif field == 'aquifer_lithology' and value == 'null':
                         # Subquery to get the last lithology description's raw data for each well
@@ -999,8 +1003,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         last_activity_start_date = Subquery(
                             ActivitySubmission.objects.filter(
                                 well=OuterRef('pk')
-                            ).exclude(
-                                well_activity_type__code="STAFF_EDIT"
                             ).order_by('-work_end_date').values('work_start_date')[:1]
                         )
                         queryset = queryset.annotate(
@@ -1012,8 +1014,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                         last_activity_end_date = Subquery(
                             ActivitySubmission.objects.filter(
                                 well=OuterRef('pk')
-                            ).exclude(
-                                well_activity_type__code="STAFF_EDIT"
                             ).order_by('-work_end_date').values('work_end_date')[:1]
                         )
                         queryset = queryset.annotate(
@@ -1132,8 +1132,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
             queryset = queryset.annotate(last_activity_start_date=Subquery(
                 ActivitySubmission.objects.filter(
                     well=OuterRef('pk')
-                ).exclude(
-                    well_activity_type__code="STAFF_EDIT"
                 ).order_by('-work_start_date').values('work_start_date')[:1]
             ))
         
@@ -1141,8 +1139,6 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
             queryset = queryset.annotate(last_activity_end_date=Subquery(
                 ActivitySubmission.objects.filter(
                     well=OuterRef('pk')
-                ).exclude(
-                    well_activity_type__code="STAFF_EDIT"
                 ).order_by('-work_end_date').values('work_end_date')[:1]
             ))
 

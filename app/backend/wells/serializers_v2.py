@@ -461,6 +461,11 @@ class WellDetailSerializer(WellDetailSerializerV1):
         ref_name = "well_detail_v2"
 
 
+WELL_ACTIVITY_CODE_CONSTRUCTION = 'CON'
+WELL_ACTIVITY_CODE_DECOMMISSION = 'DEC'
+WELL_ACTIVITY_CODE_ALTERATION = 'ALT'
+WELL_ACTIVITY_CODE_STAFF_EDIT = 'STAFF_EDIT'
+
 class ActivitySubmissionMixin:
     def get_last_activity(self, obj):
         # Cache the last activity in the instance to avoid repeated queries.
@@ -468,21 +473,49 @@ class ActivitySubmissionMixin:
             obj._last_activity = ActivitySubmission.objects.filter(
                 well=obj
             ).exclude(
-                well_activity_type__code="STAFF_EDIT"
+                well_activity_type__code=WELL_ACTIVITY_CODE_STAFF_EDIT
             ).order_by('-work_end_date').first()
         return obj._last_activity
 
     def get_well_activity_type(self, obj):
         last_activity = self.get_last_activity(obj)
-        return last_activity.well_activity_type.description if last_activity else None
+        return last_activity.well_activity_type.code if last_activity else None
 
     def get_work_start_date(self, obj):
-        last_activity = self.get_last_activity(obj)
-        return last_activity.work_start_date if last_activity else None
+        activity_type = self.get_well_activity_type(obj)
+        if activity_type == WELL_ACTIVITY_CODE_CONSTRUCTION:
+            order_field = '-construction_start_date'
+        elif activity_type == WELL_ACTIVITY_CODE_ALTERATION:
+            order_field = '-alteration_start_date'
+        elif activity_type == WELL_ACTIVITY_CODE_DECOMMISSION:
+            order_field = '-decommission_start_date'
+        else:
+            order_field = '-work_start_date' # Default order field if none of the conditions are met
+
+        filter_field = order_field.strip('-')
+        last_activity = ActivitySubmission.objects.filter(
+            well=obj,
+            **{f'{filter_field}__isnull': False}
+        ).order_by(order_field).first()
+        return getattr(last_activity, order_field.strip('-'), None) if last_activity else None
 
     def get_work_end_date(self, obj):
-        last_activity = self.get_last_activity(obj)
-        return last_activity.work_end_date if last_activity else None
+        activity_type = self.get_well_activity_type(obj)
+        if activity_type == WELL_ACTIVITY_CODE_CONSTRUCTION:
+            order_field = '-construction_end_date'
+        elif activity_type == WELL_ACTIVITY_CODE_ALTERATION:
+            order_field = '-alteration_end_date'
+        elif activity_type == WELL_ACTIVITY_CODE_DECOMMISSION:
+            order_field = '-decommission_end_date'
+        else:
+            order_field = '-work_end_date' # Default order field if none of the conditions are met
+
+        filter_field = order_field.strip('-')
+        last_activity = ActivitySubmission.objects.filter(
+            well=obj,
+            **{f'{filter_field}__isnull': False}
+        ).order_by(order_field).first()
+        return getattr(last_activity, order_field.strip('-'), None) if last_activity else None
 
 
 class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):

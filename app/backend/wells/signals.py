@@ -49,7 +49,6 @@ if not TESTING:
             indicating a cross-reference.
             """
             search_terms = ["x-ref'd", "x-ref", "cross-ref", "cross r", "cross-r", "ref'd", "referenced", "refd", "xref", "x-r", "x r"]
-            comments = None
             comments_lower = comments.lower() if comments is not None else ''
             return any(term in comments_lower for term in search_terms)
 
