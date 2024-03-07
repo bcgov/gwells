@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "55d76a50-f8fc-43f4-8146-582326b1597f",
+		"_postman_id": "126dede9-3fce-4f58-a51d-9b26f285cf06",
 		"name": "GWELLS Well API v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
@@ -422,13 +422,13 @@
 							"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/aquifers",
+							"raw": "{{base_url}}/api/v2/aquifers",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"aquifers"
 							]
 						}
@@ -551,13 +551,13 @@
 							"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name 2\",\n\t\"area\":\"10\",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1992\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/aquifers",
+							"raw": "{{base_url}}/api/v2/aquifers",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
-								"v1",
+								"v2",
 								"aquifers"
 							]
 						}

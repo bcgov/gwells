@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "cc13aed1-3ca6-4141-beb3-0c351c641db0",
-		"name": "GWELLS Registries API v2",
+		"_postman_id": "bee087ba-835a-48ca-af24-ecad954327f3",
+		"name": "GWELLS Registries API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
 	},
@@ -92,14 +92,15 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"pm.environment.set(\"created_guid\", jsonData.org_guid);",
 											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
+											"pm.test(\"The record's identifier is in UUID format\", () => {",
 											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
 											"    var match = uuid_re.exec(jsonData.org_guid);",
 											"    pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
@@ -107,21 +108,22 @@
 											"    pm.expect(match[0]).to.eql(jsonData.org_guid);",
 											"});",
 											"",
-											"pm.test(\"Organization name equals name supplied in request\", function () {",
+											"pm.test(\"Organization name equals name supplied in request\", () => {",
 											"    pm.expect(jsonData.name, \"name does not match\").to.eql(\"Steve's Drilling Inc.\");",
 											"});",
 											"",
-											"pm.test(\"Street address equals value supplied in request\", function () {",
+											"pm.test(\"Street address equals value supplied in request\", () => {",
 											"    pm.expect(jsonData.street_address, \"address does not match\").to.eql(\"1012 Douglas\");",
 											"});",
 											"",
-											"pm.test(\"Postal code equals value supplied in request\", function () {",
+											"pm.test(\"Postal code equals value supplied in request\", () => {",
 											"    pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
 											"});",
 											"",
-											"pm.test(\"City should be empty (it wasn't supplied)\", function () {",
+											"pm.test(\"City should be empty (it wasn't supplied)\", () => {",
 											"    pm.expect(jsonData.city, \"city field has unexpected value\").to.not.be.ok;",
-											"});"
+											"});",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -189,13 +191,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -215,14 +217,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var created_guid = pm.environment.get(\"created_guid\");",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"List of drilling companies has valid drilling company objects\", function () {",
+											"pm.test(\"List of drilling companies has valid drilling company objects\", () => {",
 											"    // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
 											"    pm.expect(created_guid.length).to.eql(36);",
 											"",
@@ -234,6 +236,7 @@
 											"        pm.expect(jsonData[i].name.length).to.be.ok;",
 											"    }",
 											"});",
+											"",
 											""
 										],
 										"type": "text/javascript"
@@ -252,13 +255,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -320,13 +323,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/names",
+									"raw": "{{base_url}}/api/v1/organizations/names",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"names"
 									]
@@ -342,19 +345,19 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"    pm.test(\"Successful request (201 CREATED)\", function () {",
-											"        pm.expect(pm.response.code).to.eql(201);",
-											"    });",
-											"    ",
-											"    var jsonData = pm.response.json()",
+											"pm.test(\"Successful request (201 CREATED)\", () => {",
+											"    pm.expect(pm.response.code).to.eql(201);",
+											"});",
 											"",
-											"    pm.test(\"Author recorded\", function () {",
-											"        pm.expect(jsonData.author).to.be.ok;",
-											"    });",
-											"    ",
-											"    pm.test(\"Date recorded\", function () {",
-											"        pm.expect(jsonData.date).to.be.ok;",
-											"    });",
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"Author recorded\", () => {",
+											"    pm.expect(jsonData.author).to.be.ok;",
+											"});",
+											"",
+											"pm.test(\"Date recorded\", () => {",
+											"    pm.expect(jsonData.date).to.be.ok;",
+											"});",
 											""
 										],
 										"type": "text/javascript"
@@ -383,13 +386,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}/notes?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/notes?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										"notes"
@@ -412,25 +415,25 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Organization name equals name supplied in request (Steve's Drilling Inc.)\", function () {",
+											"pm.test(\"Organization name equals name supplied in request (Steve's Drilling Inc.)\", () => {",
 											"    pm.expect(jsonData.name).to.eql(\"Steve's Drilling Inc.\");",
 											"});",
 											"",
-											"pm.test(\"Street address equals value supplied in request (1012 Douglas)\", function () {",
+											"pm.test(\"Street address equals value supplied in request (1012 Douglas)\", () => {",
 											"    pm.expect(jsonData.street_address).to.eql(\"1012 Douglas\");",
 											"});",
 											"",
-											"pm.test(\"Postal code equals value supplied in request (a1a 1a1)\", function () {",
+											"pm.test(\"Postal code equals value supplied in request (a1a 1a1)\", () => {",
 											"    pm.expect(jsonData.postal_code).to.eql(\"a1a 1a1\");",
 											"});",
 											"",
-											"pm.test(\"City should be empty (it wasn't supplied)\", function () {",
+											"pm.test(\"City should be empty (it wasn't supplied)\", () => {",
 											"    pm.expect(jsonData.city).to.not.be.ok;",
 											"});",
 											""
@@ -451,13 +454,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}"
 									],
@@ -479,17 +482,18 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful request (200 OK)\", function () {",
+											"",
+											"pm.test(\"Successful request (200 OK)\", () => {",
 											"    pm.expect(pm.response.code).to.eql(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"City should now be Victoria\", function () {",
+											"pm.test(\"City should now be Victoria\", () => {",
 											"    pm.expect(jsonData.city).to.eql(\"Victoria\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields (who_updated, when_updated) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (who_updated, when_updated) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.update_user.length).to.be.ok;",
 											"    pm.expect(jsonData.update_date.length).to.be.ok;",
 											"});",
@@ -521,13 +525,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}"
 									],
@@ -548,16 +552,16 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"History shows city changed to Victoria\", function () {",
+											"pm.test(\"History shows city changed to Victoria\", () => {",
 											"    pm.expect(jsonData[0].diff.city).to.eql(\"Victoria\");",
 											"});",
-											"pm.test(\"Username is logged for recent update\", function () {",
+											"pm.test(\"Username is logged for recent update\", () => {",
 											"    pm.expect(jsonData[0].user).to.be.oneOf([\"TESTUSER\", \"testuser\"]);",
 											"});",
 											""
@@ -578,13 +582,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}/history?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/history?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}",
 										"history"
@@ -607,17 +611,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"pm.test(\"Response describes allowed actions for this endpoint\", () => {",
 											"    pm.response.to.have.header(\"Allow\");",
 											"});",
 											"",
-											"pm.test(\"Response body has actions object, with POST object that lists fields\", function () {",
+											"pm.test(\"Response body has actions object, with POST object that lists fields\", () => {",
 											"    pm.expect(jsonData.actions).to.be.ok;",
 											"    pm.expect(jsonData.actions.POST).to.be.ok;",
 											"    pm.expect(Object.keys(jsonData.actions.POST).length).to.be.ok;",
@@ -641,13 +645,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -668,11 +672,11 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
-											"pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"pm.test(\"Response describes allowed actions for this endpoint\", () => {",
 											"    pm.response.to.have.header(\"Allow\");",
 											"});",
 											""
@@ -697,13 +701,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}"
 									],
@@ -725,14 +729,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"});",
 											"",
 											"var jsonData = pm.response.json();",
 											"pm.environment.set(\"created_guid_bad_input\", jsonData.org_guid);",
 											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
+											"pm.test(\"The record's identifier is in UUID format\", () => {",
 											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
 											"    var match = uuid_re.exec(jsonData.org_guid);",
 											"    pm.expect(match).to.be.ok;",
@@ -740,7 +744,7 @@
 											"    pm.expect(match[0]).to.eql(jsonData.org_guid);",
 											"});",
 											"",
-											"pm.test(\"Organization name wasn't cut off by bad input\", function () {",
+											"pm.test(\"Organization name wasn't cut off by bad input\", () => {",
 											"    pm.expect(jsonData.name).to.include(\"Drilling Co\");",
 											"    pm.expect(jsonData.name).to.include(\"rest of name\");",
 											"    pm.expect(jsonData.name).to.include(\"more name\");",
@@ -753,7 +757,8 @@
 											"",
 											"pm.test(\"City wasn't cut off by bad input\", function () {",
 											"    pm.expect(jsonData.city).to.eql(\"1') or '1';\");",
-											"});"
+											"});",
+											""
 										],
 										"type": "text/javascript"
 									}
@@ -821,13 +826,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -848,24 +853,24 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful GET request (200 OK)\", function () {",
+											"pm.test(\"Successful GET request (200 OK)\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Organization name wasn't cut off by bad input\", function () {",
+											"pm.test(\"Organization name wasn't cut off by bad input\", () => {",
 											"    pm.expect(jsonData.name).to.include(\"Drilling Co\");",
 											"    pm.expect(jsonData.name).to.include(\"rest of name\");",
 											"    pm.expect(jsonData.name).to.include(\"more name\");",
 											"});",
 											"",
-											"pm.test(\"Street address wasn't cut off by bad input\", function () {",
+											"pm.test(\"Street address wasn't cut off by bad input\", () => {",
 											"    pm.expect(jsonData.street_address).to.include(\"address\");",
 											"    pm.expect(jsonData.street_address).to.include(\"rest of address\");",
 											"});",
 											"",
-											"pm.test(\"City wasn't cut off by bad input\", function () {",
+											"pm.test(\"City wasn't cut off by bad input\", () => {",
 											"    pm.expect(jsonData.city).to.eql(\"1') or '1';\");",
 											"});"
 										],
@@ -885,13 +890,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid_bad_input}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid_bad_input}}"
 									],
@@ -913,11 +918,12 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Request with missing required input should return 400 Bad Request\", function () {",
+											"",
+											"pm.test(\"Request with missing required input should return 400 Bad Request\", () => {",
 											"    pm.response.to.have.status(400);",
 											"});",
 											"",
-											"pm.test(\"Response body contains useful error message\", function () {",
+											"pm.test(\"Response body contains useful error message\", () => {",
 											"    pm.expect(pm.response.text()).to.include(\"field is required\");",
 											"});",
 											""
@@ -948,13 +954,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -975,7 +981,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});"
 										],
@@ -996,13 +1002,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid_bad_input}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid_bad_input}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid_bad_input}}"
 									],
@@ -1030,25 +1036,25 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful GET request\", function () {",
+											"pm.test(\"Successful GET request\", () => {",
 											"    pm.expect(pm.response.code).to.eql(200);",
 											"});",
 											"",
-											"var jsonData = pm.response.json()",
+											"let jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Well class code list exists\", function () {",
+											"pm.test(\"Well class code list exists\", () => {",
 											"    pm.expect(jsonData['DRILL'].well_class_codes.length).to.be.ok;",
 											"});",
 											"",
-											"pm.test(\"Subactivity code list exists\", function () {",
+											"pm.test(\"Subactivity code list exists\", () => {",
 											"    pm.expect(jsonData['DRILL'].subactivity_codes.length).to.be.ok;",
 											"});",
 											"",
-											"pm.test(\"AccreditedCertificateCode code list exists\", function () {",
+											"pm.test(\"AccreditedCertificateCode code list exists\", () => {",
 											"    pm.expect(jsonData['DRILL'].accredited_certificate_codes.length).to.be.ok;",
 											"});",
 											"",
-											"pm.test(\"Proof of age list exists\", function () {",
+											"pm.test(\"Proof of age list exists\", () => {",
 											"    pm.expect(jsonData.proof_of_age_codes.length).to.be.ok;",
 											"});",
 											""
@@ -1073,13 +1079,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/options?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/options?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"options"
 									],
@@ -1101,48 +1107,49 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"});",
 											"",
-											"var jsonData = pm.response.json()",
+											"let jsonData = pm.response.json()",
 											"pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
 											"pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
-											"var applications = jsonData.registrations[0].applications;",
+											"let applications = jsonData.registrations[0].applications;",
 											"",
-											"pm.test(\"The registration contains audit fields (create_user, create_date)\", function() {",
+											"pm.test(\"The registration contains audit fields (create_user, create_date)\", () => {",
 											"    pm.expect(jsonData.registrations[0].create_user.length).to.be.ok;",
 											"    pm.expect(jsonData.registrations[0].create_date.length).to.be.ok;",
 											"});",
 											"",
-											"pm.test(\"The registration contains an application\", function() {",
+											"pm.test(\"The registration contains an application\", () => {",
 											"    pm.expect(applications.length).to.eql(2);",
 											"});",
 											"",
-											"pm.test(\"Audit fields (create_user, create_date) on the application were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (create_user, create_date) on the application were filled in by backend\", () => {",
 											"    pm.expect(applications[0].create_user.length).to.be.ok;",
 											"    pm.expect(applications[0].create_date.length).to.be.ok;",
 											"});",
 											"",
-											"pm.test(\"The application has the specified primary certificate\", function() {",
+											"pm.test(\"The application has the specified primary certificate\", () => {",
 											"    pm.expect(applications[0].primary_certificate.acc_cert_guid).to.eql(\"28bf8730-dbb7-4218-8e9f-06bd51f60161\");",
 											"});",
 											"",
-											"pm.test(\"The application has the specified certificate no\", function() {",
+											"pm.test(\"The application has the specified certificate no\", () => {",
 											"    pm.expect(applications[0].primary_certificate_no).to.eql(\"12345\");",
 											"});",
 											"",
-											"pm.test(\"The application has a subactivity associated\", function() {",
+											"pm.test(\"The application has a subactivity associated\", () => {",
 											"    pm.expect(applications[0].subactivity.registries_subactivity_code).to.eql(\"WATER\");",
 											"});",
 											"",
-											"pm.test(\"The application has a pending status set, with the specified date\", function() {",
+											"pm.test(\"The application has a pending status set, with the specified date\", () => {",
 											"    pm.expect(applications[0].current_status.code).to.eql(\"P\");",
 											"    pm.expect(applications[0].application_recieved_date).to.eql(\"2018-05-02\");",
 											"});",
 											"",
-											"pm.test(\"The application has proof of age\", function() {",
+											"pm.test(\"The application has proof of age\", () => {",
 											"    pm.expect(applications[0].proof_of_age.code).to.eql(\"PASSPORT\");",
+											"    pm.expect(applications[1].proof_of_age.code).to.eql(\"NOTPROVIDED\");",
 											"});",
 											""
 										],
@@ -1170,13 +1177,13 @@
 									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"contact_tel\": \"(555) 555-1234\",\n  \"contact_email\": \"bobby@example.com\",\n  \"registrations\": [\n  \t{\n  \t\t\"registries_activity\": \"DRILL\", \n  \t\t\"status\": \"ACTIVE\",\n  \t\t\"organization\": \"{{created_guid}}\",\n  \t\t\"applications\": [\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t}, \n  \t\t\t\"primary_certificate_no\": \"12345\",\n  \t\t\t\"current_status\": {\"code\": \"P\"},\n  \t\t\t\"application_recieved_date\": \"2018-05-02\",\n  \t\t\t\"proof_of_age\": { \"code\": \"PASSPORT\"}\n  \t\t},\n  \t\t{\n  \t\t\t\"subactivity\": {\n  \t\t\t\t\"registries_subactivity_code\": \"WATER\"\n  \t\t\t},\n  \t\t\t\"primary_certificate\": {\n  \t\t\t\t\"acc_cert_guid\": \"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  \t\t\t},\n  \t\t\t\"primary_certificate_no\": \"67890\",\n  \t\t\t\"current_status\": {\"code\" : \"P\"},\n  \t\t\t\"proof_of_age\": { \"code\": \"NOTPROVIDED\"}\n  \t\t}\n\t\t]\n  }]\n}\n"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -1197,7 +1204,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -1219,13 +1226,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -1247,31 +1254,31 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"});",
 											"",
-											"var jsonData = pm.response.json()",
+											"const jsonData = pm.response.json()",
 											"pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
 											"pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
 											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
-											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
-											"    var match = uuid_re.exec(jsonData.person_guid);",
+											"pm.test(\"The record's identifier is in UUID format\", () => {",
+											"    let uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"    let match = uuid_re.exec(jsonData.person_guid);",
 											"    pm.expect(match).to.be.ok;",
 											"    pm.expect(match.length).to.be.ok;",
 											"    pm.expect(match[0]).to.eql(jsonData.person_guid);",
 											"});",
 											"",
-											"pm.test(\"Person first name equals name supplied in request\", function () {",
+											"pm.test(\"Person first name equals name supplied in request\", () => {",
 											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
 											"});",
 											"",
-											"pm.test(\"Last name equals value supplied in request\", function () {",
+											"pm.test(\"Last name equals value supplied in request\", () => {",
 											"    pm.expect(jsonData.surname).to.eql(\"Driller\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields (create_user, create_date) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (create_user, create_date) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.create_user.length).to.be.ok;",
 											"    pm.expect(jsonData.create_date.length).to.be.ok;",
 											"});",
@@ -1301,13 +1308,13 @@
 									"raw": "{\n  \"first_name\": \"Bobby\",\n  \"surname\": \"Driller\",\n  \"registrations\": [{\"registries_activity\": \"DRILL\", \"status\": \"ACTIVE\", \"organization\": \"{{created_guid}}\"}],\n  \"contact_info\": [{\"contact_tel\": \"555-1234\"}]\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -1328,14 +1335,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var created_guid = pm.environment.get(\"created_driller_guid\");",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"List of drillers has valid person objects\", function () {",
+											"pm.test(\"List of drillers has valid person objects\", () => {",
 											"    // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
 											"    pm.expect(created_guid.length).to.eql(36);",
 											"",
@@ -1349,7 +1356,7 @@
 											"    }",
 											"});",
 											"",
-											"pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", function () {",
+											"pm.test(\"Pagination: if there are more objects than the page limit, provide a link to the next page\", () => {",
 											"    if (jsonData.results.length < jsonData.count) {",
 											"        pm.expect(jsonData.next.length).to.be.ok;",
 											"    }",
@@ -1372,13 +1379,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -1399,10 +1406,10 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"const response = pm.response.json()",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
-											"",
 											"pm.test(\"Response schema matches\", () => {",
 											"    const schema = {",
 											"        \"type\": \"object\",",
@@ -1414,7 +1421,7 @@
 											"            \"results\": {\"type\": \"array\"}",
 											"        }",
 											"    }",
-											"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
+											"    pm.expect(response).to.be.jsonSchema(schema)",
 											"})"
 										],
 										"type": "text/javascript"
@@ -1433,13 +1440,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?search=&city=&status=&limit=10&activity=DRILL&ordering=0",
+									"raw": "{{base_url}}/api/v1/drillers?search=&city=&status=&limit=10&activity=DRILL&ordering=0",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -1480,10 +1487,24 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"const response = pm.response.json()",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
-											""
+											"",
+											"pm.test(\"Response schema matches\", () => {",
+											"    const schema = {",
+											"        \"type\": \"object\",",
+											"        \"properties\": {",
+											"            \"count\": {\"type\": \"number\"},",
+											"            \"next\": {\"type\": [\"string\", \"null\"]},",
+											"            \"previous\": {\"type\": [\"string\", \"null\"]},",
+											"            \"offset\": {\"type\": \"number\"},",
+											"            \"results\": {\"type\": \"array\"}",
+											"        }",
+											"    }",
+											"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
+											"})"
 										],
 										"type": "text/javascript"
 									}
@@ -1501,13 +1522,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?search=&city=&status=Removed&limit=10&activity=DRILL&ordering=0",
+									"raw": "{{base_url}}/api/v1/drillers?search=&city=&status=Removed&limit=10&activity=DRILL&ordering=0",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -1548,21 +1569,22 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"First name equals name supplied in request (Bobby)\", function () {",
+											"pm.test(\"First name equals name supplied in request (Bobby)\", () => {",
 											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
 											"});",
 											"",
-											"pm.test(\"Last name equals value supplied in request (Driller)\", function () {",
+											"pm.test(\"Last name equals value supplied in request (Driller)\", () => {",
 											"    pm.expect(jsonData.surname).to.eql(\"Driller\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields are present and show the user who created the record\", function () {",
+											"pm.test(\"Audit fields are present and show the user who created the record\", () => {",
 											"    pm.expect(jsonData.create_user.length).to.be.ok;",
 											"    pm.expect(jsonData.create_date.length).to.be.ok;",
 											"    pm.expect(jsonData.create_user).to.eql(pm.environment.get(\"driller_audit_name\"));",
@@ -1585,13 +1607,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -1613,21 +1635,21 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"First name equals name supplied in request (Bobby)\", function () {",
+											"pm.test(\"First name equals name supplied in request (Bobby)\", () => {",
 											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
 											"});",
 											"",
-											"pm.test(\"Last name equals value supplied in request (Driller)\", function () {",
+											"pm.test(\"Last name equals value supplied in request (Driller)\", () => {",
 											"    pm.expect(jsonData.surname).to.eql(\"Driller\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields are present and show the user who created the record\", function () {",
+											"pm.test(\"Audit fields are present and show the user who created the record\", () => {",
 											"    pm.expect(jsonData.create_user.length).to.be.ok;",
 											"    pm.expect(jsonData.create_date.length).to.be.ok;",
 											"    pm.expect(jsonData.create_user).to.eql(pm.environment.get(\"driller_audit_name\"));",
@@ -1650,13 +1672,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -1678,17 +1700,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful request (200 OK)\", function () {",
+											"pm.test(\"Successful request (200 OK)\", () => {",
 											"    pm.expect(pm.response.code).to.eql(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Last name should now be Drillerson\", function () {",
+											"pm.test(\"Last name should now be Drillerson\", () => {",
 											"    pm.expect(jsonData.surname).to.eql(\"Drillerson\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields (update_user, update_date) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (update_user, update_date) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.update_user.length).to.be.ok;",
 											"    pm.expect(jsonData.update_date.length).to.be.ok;",
 											"});",
@@ -1720,13 +1742,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -1748,13 +1770,13 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"History shows name changed in most recent update\", function () {",
+											"pm.test(\"History shows name changed in most recent update\", () => {",
 											"    pm.expect(jsonData[0].diff.surname).to.eql(\"Drillerson\");",
 											"});",
 											""
@@ -1775,13 +1797,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}/history?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/history?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										"history"
@@ -1804,20 +1826,19 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful request (201 CREATED)\", function () {",
+											"pm.test(\"Successful request (201 CREATED)\", () => {",
 											"    pm.expect(pm.response.code).to.eql(201);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Author recorded\", function () {",
+											"pm.test(\"Author recorded\", () => {",
 											"    pm.expect(jsonData.author).to.be.ok;",
 											"});",
 											"",
-											"pm.test(\"Date recorded\", function () {",
+											"pm.test(\"Date recorded\", () => {",
 											"    pm.expect(jsonData.date).to.be.ok;",
-											"});",
-											""
+											"});"
 										],
 										"type": "text/javascript"
 									}
@@ -1845,13 +1866,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}/notes?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/notes?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										"notes"
@@ -1874,21 +1895,21 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"First name equals name supplied in request (Bobby)\", function () {",
+											"pm.test(\"First name equals name supplied in request (Bobby)\", () => {",
 											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
 											"});",
 											"",
-											"pm.test(\"Last name equals value supplied in request (Drillerson)\", function () {",
+											"pm.test(\"Last name equals value supplied in request (Drillerson)\", () => {",
 											"    pm.expect(jsonData.surname).to.eql(\"Drillerson\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields are present and show the user who created the record\", function () {",
+											"pm.test(\"Audit fields are present and show the user who created the record\", () => {",
 											"    pm.expect(jsonData.create_user.length).to.be.ok;",
 											"    pm.expect(jsonData.create_date.length).to.be.ok;",
 											"    pm.expect(jsonData.create_user).to.eql(pm.environment.get(\"driller_audit_name\"));",
@@ -1911,13 +1932,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -1939,17 +1960,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful request (200 OK)\", function () {",
+											"pm.test(\"Successful request (200 OK)\", () => {",
 											"    pm.expect(pm.response.code).to.eql(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Last name should now be Drillerson\", function () {",
+											"pm.test(\"Last name should now be Drillerson\", () => {",
 											"    pm.expect(jsonData.surname).to.eql(\"Wells\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields (update_user, update_date) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (update_user, update_date) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.update_date.length).to.be.ok;",
 											"    pm.expect(jsonData.update_date.length).to.be.ok;",
 											"});",
@@ -1986,13 +2007,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -2016,11 +2037,11 @@
 										"exec": [
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.expect(pm.response.code).to.equal(200);",
 											"})",
 											"",
-											"pm.test(\"Response contains URL with signature\", function() {",
+											"pm.test(\"Response contains URL with signature\", () => {",
 											"    var jsonData = pm.response.json()",
 											"    pm.expect(jsonData.url).to.not.eql(null)",
 											"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
@@ -2049,13 +2070,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}/presigned_put_url?filename=file.pdf",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/presigned_put_url?filename=file.pdf",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}",
 										"presigned_put_url"
@@ -2077,17 +2098,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"pm.test(\"Response describes allowed actions for this endpoint\", () => {",
 											"    pm.response.to.have.header(\"Allow\");",
 											"});",
 											"",
-											"pm.test(\"Response body has actions object, with POST object that lists fields\", function () {",
+											"pm.test(\"Response body has actions object, with POST object that lists fields\", () => {",
 											"    pm.expect(jsonData.actions).to.be.ok;",
 											"    pm.expect(jsonData.actions.POST).to.be.ok;",
 											"    pm.expect(Object.keys(jsonData.actions.POST).length).to.be.ok;",
@@ -2111,13 +2132,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -2138,11 +2159,11 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
-											"pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"pm.test(\"Response describes allowed actions for this endpoint\", () => {",
 											"    pm.response.to.have.header(\"Allow\");",
 											"});",
 											""
@@ -2167,13 +2188,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -2195,7 +2216,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -2217,13 +2238,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -2245,7 +2266,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -2267,13 +2288,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}"
 									],
@@ -2295,19 +2316,19 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"var created_guid = pm.environment.get(\"created_guid\")",
-											"",
-											"pm.test(\"List of drilling companies does not include the created company (successfully deleted)\", function () {",
-											"    // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
-											"    pm.expect(created_guid.length).to.eql(36);",
+											"    pm.test(\"Status code is 200\", () => {",
+											"        pm.response.to.have.status(200);",
+											"    });",
 											"    ",
-											"    // Then check that created_guid is in the response body",
-											"    pm.expect(pm.response.text()).to.not.include(created_guid);",
-											"});",
+											"    var created_guid = pm.environment.get(\"created_guid\")",
+											"",
+											"    pm.test(\"List of drilling companies does not include the created company (successfully deleted)\", () => {",
+											"        // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
+											"        pm.expect(created_guid.length).to.eql(36);",
+											"        ",
+											"        // Then check that created_guid is in the response body",
+											"        pm.expect(pm.response.text()).to.not.include(created_guid);",
+											"    });",
 											""
 										],
 										"type": "text/javascript"
@@ -2326,13 +2347,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -2353,7 +2374,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 404\", function () {",
+											"pm.test(\"Status code is 404\", () => {",
 											"    pm.response.to.have.status(404);",
 											"});",
 											""
@@ -2374,13 +2395,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}"
 									],
@@ -2402,7 +2423,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 404\", function () {",
+											"pm.test(\"Status code is 404\", () => {",
 											"    pm.response.to.have.status(404);",
 											"});",
 											""
@@ -2423,13 +2444,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -2451,13 +2472,13 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var created_guid = pm.environment.get(\"created_driller_guid\")",
 											"",
-											"pm.test(\"List of drillers does not include the deleted driller (successfully deleted)\", function () {",
+											"pm.test(\"List of drillers does not include the deleted driller (successfully deleted)\", () => {",
 											"    // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
 											"    pm.expect(created_guid.length).to.eql(36);",
 											"    ",
@@ -2482,13 +2503,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -2509,11 +2530,12 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Request with missing required input should return 400 Bad Request\", function () {",
+											"",
+											"pm.test(\"Request with missing required input should return 400 Bad Request\", () => {",
 											"    pm.response.to.have.status(400);",
 											"});",
 											"",
-											"pm.test(\"Response body contains useful error message\", function () {",
+											"pm.test(\"Response body contains useful error message\", () => {",
 											"    pm.expect(pm.response.text()).to.include(\"field is required\");",
 											"});",
 											""
@@ -2538,13 +2560,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -2571,7 +2593,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code).to.be.oneOf([201,202]);",
 											"});",
 											"",
@@ -2579,7 +2601,7 @@
 											"pm.environment.set(\"created_driller_guid\", jsonData.person_guid);",
 											"pm.environment.set(\"driller_audit_name\", jsonData.create_user);",
 											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
+											"pm.test(\"The record's identifier is in UUID format\", () => {",
 											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
 											"    var match = uuid_re.exec(jsonData.person_guid);",
 											"    pm.expect(match).to.be.ok;",
@@ -2587,7 +2609,7 @@
 											"    pm.expect(match[0]).to.eql(jsonData.person_guid);",
 											"});",
 											"",
-											"pm.test(\"Person first name equals name supplied in request\", function () {",
+											"pm.test(\"Person first name equals name supplied in request\", () => {",
 											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
 											"});",
 											"",
@@ -2632,13 +2654,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers?format=json",
+									"raw": "{{base_url}}/api/v1/drillers?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers"
 									],
 									"query": [
@@ -2659,14 +2681,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"pm.environment.set(\"created_registration_guid\", jsonData.register_guid);",
 											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
+											"pm.test(\"The record's identifier is in UUID format\", () => {",
 											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
 											"    var match = uuid_re.exec(jsonData.register_guid);",
 											"    pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
@@ -2674,7 +2696,7 @@
 											"    pm.expect(match[0]).to.eql(jsonData.register_guid);",
 											"});",
 											"",
-											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
 											"    pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
 											"});",
@@ -2716,13 +2738,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/registrations?format=json",
+									"raw": "{{base_url}}/api/v1/registrations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"registrations"
 									],
 									"query": [
@@ -2742,14 +2764,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
 											"});",
 											"",
 											"var jsonData = pm.response.json()",
 											"pm.environment.set(\"created_guid\", jsonData.org_guid);",
 											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
+											"pm.test(\"The record's identifier is in UUID format\", () => {",
 											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
 											"    var match = uuid_re.exec(jsonData.org_guid);",
 											"    pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
@@ -2757,15 +2779,15 @@
 											"    pm.expect(match[0]).to.eql(jsonData.org_guid);",
 											"});",
 											"",
-											"pm.test(\"Organization name equals name supplied in request\", function () {",
+											"pm.test(\"Organization name equals name supplied in request\", () => {",
 											"    pm.expect(jsonData.name, \"name does not match\").to.eql(\"Steve's Drilling Inc.\");",
 											"});",
 											"",
-											"pm.test(\"Street address equals value supplied in request\", function () {",
+											"pm.test(\"Street address equals value supplied in request\", () => {",
 											"    pm.expect(jsonData.street_address, \"address does not match\").to.eql(\"1012 Douglas\");",
 											"});",
 											"",
-											"pm.test(\"Postal code equals value supplied in request\", function () {",
+											"pm.test(\"Postal code equals value supplied in request\", () => {",
 											"    pm.expect(jsonData.postal_code, \"postal code does not match\").to.eql(\"a1a 1a1\");",
 											"});",
 											""
@@ -2831,13 +2853,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations?format=json",
+									"raw": "{{base_url}}/api/v1/organizations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations"
 									],
 									"query": [
@@ -2857,16 +2879,16 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"});",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Registration number updated\", function () {",
+											"pm.test(\"Registration number updated\", () => {",
 											"    pm.expect(jsonData.registration_no, \"registration number not updated\").to.eql(\"12345\");",
 											"});",
 											"",
-											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
 											"    pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
 											"});",
@@ -2903,13 +2925,13 @@
 									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/registrations/{{created_registration_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/registrations/{{created_registration_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"registrations",
 										"{{created_registration_guid}}"
 									],
@@ -2931,17 +2953,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
 											"});",
 											"",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Response describes allowed actions for this endpoint\", function () {",
+											"pm.test(\"Response describes allowed actions for this endpoint\", () => {",
 											"    pm.response.to.have.header(\"Allow\");",
 											"});",
 											"",
-											"pm.test(\"Response body has actions object, with POST object that lists fields\", function () {",
+											"pm.test(\"Response body has actions object, with POST object that lists fields\", () => {",
 											"    pm.expect(jsonData.actions).to.be.ok;",
 											"    pm.expect(jsonData.actions.POST).to.be.ok;",
 											"    pm.expect(Object.keys(jsonData.actions.POST).length).to.be.ok;",
@@ -2965,13 +2987,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/registrations?format=json",
+									"raw": "{{base_url}}/api/v1/registrations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"registrations"
 									],
 									"query": [
@@ -2992,13 +3014,13 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
-											"});",
+											"    pm.test(\"Status code is 200\", () => {",
+											"        pm.response.to.have.status(200);",
+											"    });",
 											"",
-											"pm.test(\"Response describes allowed actions for this endpoint\", function () {",
-											"    pm.response.to.have.header(\"Allow\");",
-											"});",
+											"    pm.test(\"Response describes allowed actions for this endpoint\", () => {",
+											"        pm.response.to.have.header(\"Allow\");",
+											"    });",
 											""
 										],
 										"type": "text/javascript"
@@ -3021,13 +3043,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -3049,15 +3071,14 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", function () {",
+											"pm.test(\"Status code is 200\", () => {",
 											"    pm.response.to.have.status(200);",
-											"})",
+											"});",
 											"",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"List of registrations has valid objects\", function () {",
+											"pm.test(\"List of registrations has valid objects\", () => {",
 											"    // First check that our GUID resembles a valid UUID (i.e. we are not testing before created_guid is set)",
-											"",
 											"    pm.expect(jsonData.results.length).to.be.above(0);",
 											"",
 											"    for (var i; i < jsonData.results.length; i++) {",
@@ -3083,13 +3104,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/registrations?format=json",
+									"raw": "{{base_url}}/api/v1/registrations?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"registrations"
 									],
 									"query": [
@@ -3110,29 +3131,29 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
-											"    pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
-											"});",
+											"    pm.test(\"Successful POST request\", () => {",
+											"        pm.expect(pm.response.code, \"response code not 201\").to.be.oneOf([201,202]);",
+											"    });",
+											"    ",
+											"    var jsonData = pm.response.json()",
+											"    pm.environment.set(\"created_application_guid\", jsonData.application_guid);",
 											"",
-											"var jsonData = pm.response.json()",
-											"pm.environment.set(\"created_application_guid\", jsonData.application_guid);",
-											"",
-											"pm.test(\"The record's identifier is in UUID format\", function () {",
-											"    var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
-											"    var match = uuid_re.exec(jsonData.application_guid);",
-											"    pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
-											"    pm.expect(match.length).to.be.ok;",
-											"    pm.expect(match[0]).to.eql(jsonData.application_guid);",
-											"});",
-											"",
-											"pm.test(\"Application is pending\", function () {",
-											"    pm.expect(jsonData.current_status.code).to.eql('P')",
-											"});",
-											"",
-											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
-											"    pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
-											"    pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
-											"});",
+											"    pm.test(\"The record's identifier is in UUID format\", () => {",
+											"        var uuid_re = /\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}/;",
+											"        var match = uuid_re.exec(jsonData.application_guid);",
+											"        pm.expect(match, \"primary key not in UUID format\").to.be.ok;",
+											"        pm.expect(match.length).to.be.ok;",
+											"        pm.expect(match[0]).to.eql(jsonData.application_guid);",
+											"    });",
+											"    ",
+											"    pm.test(\"Application is pending\", () => {",
+											"        pm.expect(jsonData.current_status.code).to.eql('P')",
+											"    });",
+											"    ",
+											"    pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", () => {",
+											"        pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
+											"        pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
+											"    });",
 											""
 										],
 										"type": "text/javascript"
@@ -3159,13 +3180,13 @@
 									"raw": "{\n\t\"registration\": \"{{created_registration_guid}}\",\n\t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n  \t\"proof_of_age\": { \"code\": \"NOTPROVIDED\"}\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications?format=json",
+									"raw": "{{base_url}}/api/v1/applications?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications"
 									],
 									"query": [
@@ -3186,18 +3207,18 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
-											"    pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
-											"});",
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"The record's current status is Pending\", function () {",
-											"    pm.expect(jsonData.current_status.code, \"current status not P\").to.eql(\"P\");",
-											"});",
-											"",
-											"pm.test(\"The record's subactivity is WATER\", function () {",
-											"    pm.expect(jsonData.subactivity.registries_subactivity_code, \"current status not WATER\").to.eql(\"WATER\");",
-											"});",
+											"    pm.test(\"Successful POST request\", () => {",
+											"        pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
+											"    });",
+											"    var jsonData = pm.response.json();",
+											"    ",
+											"    pm.test(\"The record's current status is Pending\", () => {",
+											"        pm.expect(jsonData.current_status.code, \"current status not P\").to.eql(\"P\");",
+											"    });",
+											"    ",
+											"    pm.test(\"The record's subactivity is WATER\", () => {",
+											"        pm.expect(jsonData.subactivity.registries_subactivity_code, \"current status not WATER\").to.eql(\"WATER\");",
+											"    });",
 											""
 										],
 										"type": "text/javascript"
@@ -3224,13 +3245,13 @@
 									"raw": "{\n  \"subactivity\": {\n\t\"registries_subactivity_code\":\"WATER\"\n  },\n  \"current_status\": {\n    \"code\": \"P\"\n  }\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3252,16 +3273,16 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"});",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"The record's current status is Active\", function () {",
+											"pm.test(\"The record's current status is Active\", () => {",
 											"    pm.expect(jsonData.current_status.code, \"current status not A\").to.eql(\"A\");",
 											"});",
 											"",
-											"pm.test(\"The record's subactivity is GEOTECH\", function () {",
+											"pm.test(\"The record's subactivity is GEOTECH\", () => {",
 											"    pm.expect(jsonData.subactivity.registries_subactivity_code, \"current status not GEOTECH\").to.eql(\"GEOTECH\");",
 											"});",
 											""
@@ -3290,13 +3311,13 @@
 									"raw": "{\n\t\"subactivity\": \n\t{\n\t\t\"registries_subactivity_code\":\"GEOTECH\"\n\t},\n\t\"current_status\": {\n\t\t\"code\": \"A\"\n\t}\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3318,24 +3339,24 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Successful POST request\", function () {",
+											"pm.test(\"Successful POST request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"});",
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"The record's subactivity is WATER\", function () {",
+											"pm.test(\"The record's subactivity is WATER\", () => {",
 											"    pm.expect(jsonData.subactivity.registries_subactivity_code, \"current status not WATER\").to.eql(\"WATER\");",
 											"});",
 											"",
-											"pm.test(\"The records primary certificate is correct\", function() {",
+											"pm.test(\"The records primary certificate is correct\", () => {",
 											"    pm.expect(jsonData.primary_certificate.acc_cert_guid, \"primary_certificate not correct\").to.eql(\"28bf8730-dbb7-4218-8e9f-06bd51f60161\");",
 											"});",
 											"",
-											"pm.test(\"The records primary certificate no is correct\", function() {",
+											"pm.test(\"The records primary certificate no is correct\", () => {",
 											"    pm.expect(jsonData.primary_certificate_no, \"primary_certificate_no not correct\").to.eql(\"12345\");",
 											"});",
 											"",
-											"pm.test(\"The records proof of age is correct\", function() {",
+											"pm.test(\"The records proof of age is correct\", () => {",
 											"    pm.expect(jsonData.proof_of_age.code, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
 											"});",
 											""
@@ -3364,13 +3385,13 @@
 									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": {\n  \t\t\"code\": \"PASSPORT\"\n  \t}\n  }"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3413,23 +3434,23 @@
 											"    pm.expect(jsonData.proof_of_age.code, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
 											"});",
 											"",
-											"pm.test(\"Application recieved date set correctly\", function() {",
+											"pm.test(\"Application recieved date set correctly\", () => {",
 											"    pm.expect(jsonData.application_recieved_date, \"application_recieved_date\").to.eql(\"2018-01-01\")",
 											"})",
 											"",
-											"pm.test(\"Current state is correct\", function() {",
+											"pm.test(\"Current state is correct\", () => {",
 											"    pm.expect(jsonData.current_status.code).to.eql(\"A\")",
 											"});",
 											"",
-											"pm.test(\"Reason denied populated\", function() {",
+											"pm.test(\"Reason denied populated\", () => {",
 											"    pm.expect(jsonData.reason_denied).to.eql(\"Something\") ",
 											"});",
 											"",
-											"pm.test(\"Removal date is correct\", function() {",
+											"pm.test(\"Removal date is correct\", () => {",
 											"    pm.expect(jsonData.removal_date).to.eql(\"2018-01-01\")",
 											"});",
 											"",
-											"pm.test(\"Removal reason is correct\", function() {",
+											"pm.test(\"Removal reason is correct\", () => {",
 											"    pm.expect(jsonData.removal_reason.code).to.eql(\"NLACT\")",
 											"});",
 											""
@@ -3458,13 +3479,13 @@
 									"raw": "{\n    \"subactivity\": {\n    \"registries_subactivity_code\":\"WATER\"\n  },\n  \"primary_certificate\":\n  {\n    \"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n  },\n    \"primary_certificate_no\": \"12345\",\n    \"proof_of_age\": {\n      \"code\": \"PASSPORT\"\n    },\n    \"current_status\": {\"code\": \"A\"},\n    \"reason_denied\": \"Something\",\n    \"application_recieved_date\": \"2018-01-01\",\n    \"removal_date\": \"2018-01-01\",\n    \"removal_reason\": {\"code\": \"NLACT\"}\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3507,23 +3528,23 @@
 											"    pm.expect(jsonData.proof_of_age.code, \"proof_of_age not correct\").to.eql(\"PASSPORT\");",
 											"});",
 											"",
-											"pm.test(\"Application recieved date set correctly\", function() {",
+											"pm.test(\"Application recieved date set correctly\", () => {",
 											"    pm.expect(jsonData.application_recieved_date, \"application_recieved_date\").to.eql(\"2018-01-01\")",
 											"})",
 											"",
-											"pm.test(\"Current state is correct\", function() {",
+											"pm.test(\"Current state is correct\", () => {",
 											"    pm.expect(jsonData.current_status.code).to.eql(\"A\")",
 											"});",
 											"",
-											"pm.test(\"Reason denied populated\", function() {",
+											"pm.test(\"Reason denied populated\", () => {",
 											"    pm.expect(jsonData.reason_denied).to.eql(\"Something\") ",
 											"});",
 											"",
-											"pm.test(\"Removal date is correct\", function() {",
+											"pm.test(\"Removal date is correct\", () => {",
 											"    pm.expect(jsonData.removal_date).to.eql(\"2018-01-01\")",
 											"});",
 											"",
-											"pm.test(\"Removal reason is correct\", function() {",
+											"pm.test(\"Removal reason is correct\", () => {",
 											"    pm.expect(jsonData.removal_reason).to.eql(null)",
 											"});",
 											""
@@ -3552,13 +3573,13 @@
 									"raw": "{\n  \t\"subactivity\": {\n\t\t\"registries_subactivity_code\":\"WATER\"\n\t},\n\t\"primary_certificate\":\n\t{\n\t\t\"acc_cert_guid\":\"28bf8730-dbb7-4218-8e9f-06bd51f60161\"\n\t},\n  \t\"primary_certificate_no\": \"12345\",\n  \t\"proof_of_age\": {\n  \t\t\"code\": \"PASSPORT\"\n  \t},\n  \t\"current_status\": {\"code\": \"A\"},\n  \t\"reason_denied\": \"Something\",\n  \t\"application_recieved_date\": \"2018-01-01\",\n  \t\"removal_date\": \"2018-01-01\",\n  \t\"removal_reason\": {\"code\": null}\n}"
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3580,18 +3601,17 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"",
-											"pm.test(\"Successful GET request\", function () {",
+											"pm.test(\"Successful GET request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"});",
 											"var jsonData = pm.response.json()",
 											"",
-											"pm.test(\"Registration has a person\", function () {",
+											"pm.test(\"Registration has a person\", () => {",
 											"    pm.expect(jsonData.person.length, \"registration not attached to a person\").to.eql(36);",
 											"    pm.expect(jsonData.person_name, \"person name not available\").to.be.ok",
 											"});",
 											"",
-											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", function () {",
+											"pm.test(\"Audit fields (who_created, when_created) were filled in by backend\", () => {",
 											"    pm.expect(jsonData.create_user.length, \"create_user not present\").to.be.ok;",
 											"    pm.expect(jsonData.create_date.length, \"create_date not present\").to.be.ok;",
 											"});",
@@ -3613,13 +3633,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/registrations/{{created_registration_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/registrations/{{created_registration_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"registrations",
 										"{{created_registration_guid}}"
 									],
@@ -3641,8 +3661,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"",
-											"pm.test(\"Successful GET request\", function () {",
+											"pm.test(\"Successful GET request\", () => {",
 											"    pm.expect(pm.response.code, \"response code not 200\").to.eql(200);",
 											"});",
 											"var jsonData = pm.response.json()",
@@ -3664,13 +3683,13 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3692,7 +3711,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -3714,13 +3733,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/applications/{{created_application_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/applications/{{created_application_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"applications",
 										"{{created_application_guid}}"
 									],
@@ -3742,7 +3761,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -3764,13 +3783,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/registrations/{{created_registration_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/registrations/{{created_registration_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"registrations",
 										"{{created_registration_guid}}"
 									],
@@ -3792,7 +3811,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -3814,13 +3833,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"drillers",
 										"{{created_driller_guid}}"
 									],
@@ -3842,7 +3861,7 @@
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 204\", function () {",
+											"pm.test(\"Status code is 204\", () => {",
 											"    pm.response.to.have.status(204);",
 											"});",
 											""
@@ -3864,13 +3883,13 @@
 									"raw": ""
 								},
 								"url": {
-									"raw": "{{base_url}}/api/v2/organizations/{{created_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
 										"api",
-										"v2",
+										"v1",
 										"organizations",
 										"{{created_guid}}"
 									],
