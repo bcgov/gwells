@@ -274,7 +274,7 @@
 			"name": "Search",
 			"item": [
 				{
-					"name": "Aquifer Search using Aquifer_ID Copy 2",
+					"name": "Aquifer filter by aquifer_id",
 					"event": [
 						{
 							"listen": "test",
@@ -316,7 +316,7 @@
 					"response": []
 				},
 				{
-					"name": "Aquifer Search using Name",
+					"name": "Aquifer name search",
 					"event": [
 						{
 							"listen": "test",
@@ -356,105 +356,9 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Aquifer Search using Invalid Value",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const response = pm.response.json()",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									"",
-									"pm.test(\"Count reflects no matching results\", () => {",
-									"    pm.expect(response.count).to.equal(0)",
-									"})",
-									"",
-									"pm.test(\"results is an empty array\", () => {",
-									"    pm.expect(response.results).to.be.an('array')",
-									"    pm.expect((response.results).length).to.equal(0)",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/v1/aquifers?search=aValueThatWillReceiveNoResults",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"aquifers"
-							],
-							"query": [
-								{
-									"key": "search",
-									"value": "aValueThatWillReceiveNoResults"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Aquifer Search using ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"const response = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									"",
-									"pm.test(\"count is present and positive integer\", () => {",
-									"    pm.expect(response.count).to.equal(1)",
-									"    pm.expect((response.results).length).to.equal(1)",
-									"})",
-									"",
-									"pm.test(\"Results contain aquifer with matching id\", () => {",
-									"    pm.expect(response.results[0].id).to.equal(1901)",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/v1/aquifers?search=1901",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"aquifers"
-							],
-							"query": [
-								{
-									"key": "search",
-									"value": "1901"
-								}
-							]
-						}
-					},
-					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Aquifers List",
