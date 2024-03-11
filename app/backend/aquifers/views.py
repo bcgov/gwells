@@ -247,7 +247,7 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
-    """List aquifer materials codes.
+    """List aquifer section codes.
     get:
     Returns a list of aquifer section codes.
     """
@@ -265,7 +265,7 @@ class AquiferMaterialListAPIView(ListAPIView):
 
 
 class QualityConcernListAPIView(ListAPIView):
-    """List aquifer materials codes.
+    """List aquifer quality concern codes.
     get:
     Returns a list of quality concern codes.
     """

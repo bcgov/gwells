@@ -202,7 +202,7 @@ class ListFiles(APIView):
     List documents associated with a well (e.g. well construction report)
 
     get:
-    List uploaded files the well identified in the URI.
+    List uploaded files associated with the well identified in the URI.
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})

@@ -574,6 +574,6 @@ class WellDetail(WellDetailV1):
     This view is open to all, and has no permissions.
 
     get:
-    Returns details for a given well matching the well_tag_number.a
+    Returns details for a given well matching the well_tag_number.
     """
     serializer_class = WellDetailSerializer
