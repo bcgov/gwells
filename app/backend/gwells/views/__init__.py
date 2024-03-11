@@ -68,10 +68,10 @@ class HealthView(TemplateView):
 
 class SurveyListCreateView(ListCreateAPIView):
     """
-    get: returns a list of active surveys
+    get:
+    Returns a list of active surveys.
     """
 
-    swagger_schema = None
     serializer_class = SurveySerializer
     queryset = Survey.objects.all()
     pagination_class = None
@@ -87,8 +87,7 @@ class SurveyListCreateView(ListCreateAPIView):
 
 
 class SurveyUpdateDeleteView(RetrieveUpdateDestroyAPIView):
-    """ handles updating and deleting of surveys """
-    swagger_schema = None
+    """ Handler for updating and deleting surveys. """
     serializer_class = SurveySerializer
     queryset = Survey.objects.all()
     pagination_class = None

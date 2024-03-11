@@ -97,7 +97,6 @@ class CSVExportV2(ListAPIView):
     of DRF, because DRF doesn't have native CSV support.
     """
 
-    swagger_schema = None
     permission_classes = (RegistriesEditPermissions,)
 
     # Allow searching on name fields, names of related companies, etc.
@@ -146,7 +145,6 @@ class XLSXExportV2(ListAPIView):
     """
     Export the registry as XLSX.
     """
-    swagger_schema = None
     permission_classes = (RegistriesEditPermissions,)
 
     # Allow searching on name fields, names of related companies, etc.

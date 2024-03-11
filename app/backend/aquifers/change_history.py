@@ -136,7 +136,7 @@ def get_aquifer_reversion_history(aquifer):
 
 def get_vertical_aquifer_extents_history(aquifer):
     """
-    Returns a list of this aquifer's vertical extent history changes
+    Returns a list of this aquifer's vertical extent history changes.
 
     returns a list:
         [{
