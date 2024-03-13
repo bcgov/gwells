@@ -49,13 +49,12 @@ from aquifers.permissions import HasAquiferEditRole, HasAquiferEditRoleOrReadOnl
 
 logger = logging.getLogger(__name__)
 
-
 class AquiferEditDetailsAPIViewV2(RetrieveAPIView):
     """Get aquifer
-    get: return details of aquifers
+    get:
+    Return details of aquifers
     """
     permission_classes = (HasAquiferEditRole,)
-    swagger_schema = None
     lookup_field = 'aquifer_id'
     serializer_class = serializers_v2.AquiferEditDetailSerializerV2
 
@@ -70,10 +69,12 @@ class AquiferEditDetailsAPIViewV2(RetrieveAPIView):
 
 class AquiferRetrieveUpdateAPIViewV2(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
     """Get aquifer
-    get: return details of aquifers
-    patch: update aquifer
+    get:
+    Return details of aquifers.
+    
+    patch:
+    Update aquifer fields with new information.
     """
-    swagger_schema = None
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     lookup_field = 'aquifer_id'
 
@@ -205,10 +206,12 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
-    get: return a list of aquifers
-    post: create an aquifer
+    get:
+    Returns a list of aquifers.
+    
+    post:
+    Creates a new aquifer.
     """
-    swagger_schema = None
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     filter_backends = (djfilters.DjangoFilterBackend,
@@ -247,9 +250,10 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
 
 
 class AquiferNameListV2(ListAPIView):
-    """ List all aquifers in a simplified format """
-
-    swagger_schema = None
+    """
+    post:
+    List all aquifers in a simplified format.
+    """
     serializer_class = serializers.AquiferSerializerBasic
     model = Aquifer
     queryset = Aquifer.objects.all()

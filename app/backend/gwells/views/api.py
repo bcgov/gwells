@@ -2,6 +2,7 @@ import requests
 import geojson
 from geojson import Feature, FeatureCollection, Point
 from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.http import JsonResponse, HttpResponse
@@ -11,9 +12,7 @@ from gwells.settings.base import get_env_variable
 from gwells.utils import isPointInsideBC
 
 class KeycloakConfig(APIView):
-    """ serves keycloak config """
-
-    swagger_schema = None
+    """ Serves configuration object for Keycloak. """
 
     def get(self, request, **kwargs):
         config = {
@@ -29,9 +28,7 @@ class KeycloakConfig(APIView):
 
 
 class GeneralConfig(APIView):
-    """ serves general configuration """
-
-    swagger_schema = None
+    """ Serves general configuration object. """
 
     def get(self, request, **kwargs):
         config = {
@@ -42,9 +39,7 @@ class GeneralConfig(APIView):
 
 
 class AnalyticsConfig(APIView):
-    """ serves analytics config """
-
-    swagger_schema = None
+    """ Serves configuration object for Google analytics. """  
     
     def get(self, request, **kwargs):
         config = {
@@ -54,10 +49,23 @@ class AnalyticsConfig(APIView):
 
 
 class InsideBC(APIView):
-    """ Check if a given point is inside BC """
-    
-    swagger_schema = None
-    
+    """ Check if a given Latitude/Longitude are inside BC """
+    @swagger_auto_schema(
+        manual_parameters =[
+            openapi.Parameter(
+                name='longitude',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_NUMBER,
+                description="Longitude Coordinate"
+            ),
+            openapi.Parameter(
+                name='latitude',
+                in_=openapi.IN_QUERY,
+                type=openapi.TYPE_NUMBER,
+                description="Latitude Coordinate"
+            )
+        ]
+    )
     def get(self, request, **kwargs):
         latitude = request.query_params.get('latitude')
         longitude = request.query_params.get('longitude')

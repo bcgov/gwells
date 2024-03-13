@@ -82,10 +82,10 @@ from gwells.views import AuditCreateMixin, AuditUpdateMixin
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all registered drilling organizations
+    Returns a list of all registered drilling organizations.
 
     post:
-    Creates a new drilling organization record
+    Creates a new drilling organization record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -116,16 +116,16 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns the specified drilling organization
+    Returns the specified drilling organization.
 
     put:
-    Replaces the specified record with a new one
+    Replaces the specified record with a new one.
 
     patch:
-    Updates a drilling organization with the fields/values provided in the request body
+    Updates a drilling organization with the fields/values provided in the request body.
 
     delete:
-    Removes the specified drilling organization record
+    Removes the specified drilling organization record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -452,10 +452,10 @@ def exclude_persons_without_registrations(request, filtered_queryset, statuses_t
 class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all person records
+    Returns a list of all person records.
 
     post:
-    Creates a new person record
+    Creates a new person record.
     """
 
     permission_classes = (RegistriesEditOrReadOnly,)
@@ -509,16 +509,16 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns the specified person
+    Returns the specified person.
 
     put:
-    Replaces the specified person record with a new one
+    Replaces the specified person record with a new one.
 
     patch:
-    Updates a person with the fields/values provided in the request body
+    Updates a person with the fields/values provided in the request body.
 
     delete:
-    Removes the specified person record
+    Removes the specified person record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -568,14 +568,14 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
 
 class CitiesListView(ListAPIView):
     """
-    List of cities with a qualified, registered operator (driller or installer)
+    List of cities with a qualified, registered operator (driller or installer).
 
-    get: returns a list of cities with a qualified, registered operator (driller or installer)
+    get:
+    Returns a list of cities with a qualified, registered operator (driller or installer).
     """
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
-    swagger_schema = None
     permission_classes = (RegistriesEditOrReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
@@ -607,10 +607,10 @@ class CitiesListView(ListAPIView):
 class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    List all registration records
+    List all registration records.
 
     post:
-    Create a new well driller or well pump installer registration record for a person
+    Create a new well driller or well pump installer registration record for a person.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -634,16 +634,16 @@ class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns a well driller or well pump installer registration record
+    Returns a well driller or well pump installer registration record.
 
     put:
-    Replaces a well driller or well pump installer registration record with a new one
+    Replaces a well driller or well pump installer registration record with a new one.
 
     patch:
-    Updates a registration record with new values
+    Updates a registration record with new values.
 
     delete:
-    Removes the specified registration record from the database
+    Removes the specified registration record from the database.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -668,10 +668,10 @@ class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
 class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all registration applications
+    Returns a list of all registration applications.
 
     post:
-    Creates a new registries application
+    Creates a new registries application.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -686,16 +686,16 @@ class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns the specified drilling application
+    Returns the specified drilling application.
 
     put:
-    Replaces the specified record with a new one
+    Replaces the specified record with a new one.
 
     patch:
-    Updates a drilling application with the set of values provided in the request body
+    Updates a drilling application with the set of values provided in the request body.
 
     delete:
-    Removes the specified drilling application record
+    Removes the specified drilling application record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -710,7 +710,7 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
 
 class OrganizationNameListView(ListAPIView):
     """
-    A list of organizations with only organization names
+    A list of organizations with only organization names.
     """
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
@@ -718,7 +718,6 @@ class OrganizationNameListView(ListAPIView):
         .select_related('province_state')
     pagination_class = None
     lookup_field = 'organization_guid'
-    swagger_schema = None
 
     def get_queryset(self):
         return self.queryset.filter(expiry_date__gt=timezone.now())
@@ -727,15 +726,14 @@ class OrganizationNameListView(ListAPIView):
 class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns notes associated with a Person record
+    Returns notes associated with a Person record.
 
     post:
-    Adds a note record to the specified Person record
+    Adds a note record to the specified Person record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
@@ -753,21 +751,20 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns a PersonNote record
+    Returns a PersonNote record.
 
     put:
-    Replaces a PersonNote record with a new one
+    Replaces a PersonNote record with a new one.
 
     patch:
-    Updates a PersonNote record with the set of fields provided in the request body
+    Updates a PersonNote record with the set of fields provided in the request body.
 
     delete:
-    Removes a PersonNote record
+    Removes a PersonNote record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person']
@@ -777,15 +774,14 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns notes associated with a Organization record
+    Returns notes associated with a Organization record.
 
     post:
-    Adds a note record to the specified Organization record
+    Adds a note record to the specified Organization record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -803,21 +799,20 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
 class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns a OrganizationNote record
+    Returns a OrganizationNote record.
 
     put:
-    Replaces a OrganizationNote record with a new one
+    Replaces a OrganizationNote record with a new one.
 
     patch:
-    Updates a OrganizationNote record with the set of fields provided in the request body
+    Updates a OrganizationNote record with the set of fields provided in the request body.
 
     delete:
-    Removes a OrganizationNote record
+    Removes a OrganizationNote record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -826,12 +821,12 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
 
 class OrganizationHistory(APIView):
     """
-    get: returns a history of changes to an Organization model record
+    get:
+    Returns a history of changes to an Organization model record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     queryset = Organization.objects.all()
-    swagger_schema = None
 
     def get(self, request, org_guid, **kwargs):
         try:
@@ -850,17 +845,17 @@ class OrganizationHistory(APIView):
 
 class PersonHistory(APIView):
     """
-    get: returns a history of changes to a Person model record
+    get:
+    Returns a history of changes to a Person model record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     queryset = Person.objects.all()
-    swagger_schema = None
 
     def get(self, request, person_guid, **kwargs):
         """
-        Retrieves version history for the specified Person record and creates a list of diffs
-        for each revision.
+        get:
+        Retrieves version history for the specified Person record and creates a list of diffs for each revision.
         """
 
         try:
@@ -905,13 +900,12 @@ class PersonHistory(APIView):
 
 
 class PersonNameSearch(ListAPIView):
-    """Search for a person in the Register"""
+    """Search for a person in the Register."""
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
     pagination_class = None
     lookup_field = 'person_guid'
-    swagger_schema = None
 
     ordering = ('surname',)
 
@@ -923,12 +917,12 @@ class PersonNameSearch(ListAPIView):
 
 class ListFiles(APIView):
     """
-    List documents associated with a person in the Registry
+    List documents associated with a person in the Registry.
 
-    get: list files found for the person identified in the uri
+    get:
+    Returns list of files found for the person identified in the URI.
     """
 
-    swagger_schema = None
 
     def get(self, request, person_guid, **kwargs):
         user_is_staff = self.request.user.groups.filter(
@@ -947,12 +941,12 @@ class PreSignedDocumentKey(APIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     queryset = Person.objects.all()
     permission_classes = (RegistriesEditPermissions,)
-    swagger_schema = None
 
     def get(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
@@ -972,14 +966,14 @@ class PreSignedDocumentKey(APIView):
 
 class DeleteDrillerDocument(APIView):
     """
-    Delete a document from a S3 compatible store
+    Delete a document from a S3 compatible store.
 
-    delete: remove the specified object from the S3 store
+    delete:
+    Remove the specified object from the S3 store.
     """
 
     queryset = Person.objects.all()
     permission_classes = (RegistriesEditPermissions,)
-    swagger_schema = None
 
     def delete(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)

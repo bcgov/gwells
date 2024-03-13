@@ -100,14 +100,14 @@ from wells.serializers import (
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
 from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT, WELL_TAGS
 
-
 logger = logging.getLogger(__name__)
 
 
 class WellDetail(RetrieveAPIView):
     """
     Return well detail.
-    This view is open to all, and has no permissions.
+    get:
+    Returns information about a well given the well_tag_number. Unpublished wells are filtered if user is not authenticated.
     """
     serializer_class = WellDetailSerializer
 
@@ -137,7 +137,8 @@ class ListExtracts(APIView):
     """
     List well extracts
 
-    get: list well extracts
+    get:
+    list well extracts
     """
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, **kwargs):
@@ -200,7 +201,8 @@ class ListFiles(APIView):
     """
     List documents associated with a well (e.g. well construction report)
 
-    get: list files found for the well identified in the uri
+    get:
+    List uploaded files associated with the well identified in the URI.
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
@@ -224,6 +226,14 @@ class ListFiles(APIView):
         return Response(documents)
 
 class FileSumView(APIView):
+    """
+    Handler for Updating File counts for a well. Bridge method to keep database records for files stored in S3 buckets.
+    Primarily used for Advanced Search function 'Wells containing File of type n'
+
+    get:
+    Increments or decrements the count for files stored of a given type.
+    """
+    
     def get(self, request, tag, **kwargs):
         # Verify user has permissions to edit wells
         if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
@@ -267,7 +277,8 @@ class FileSumView(APIView):
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
 
-    get: returns a list of wells
+    get:
+    Returns a list of wells.
     """
 
     permission_classes = (WellsEditOrReadOnly,)
@@ -310,14 +321,16 @@ class WellListAPIViewV1(ListAPIView):
 
 
 class WellTagSearchAPIView(ListAPIView):
-    """ seach for wells by tag or owner """
+    """
+    get:
+    Search for wells by tag or owner.
+    """
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = None
     serializer_class = WellTagSearchSerializer
     lookup_field = 'well_tag_number'
-    swagger_schema = None
 
     filter_backends = (filters.SearchFilter, filters.OrderingFilter)
     ordering_fields = ('well_tag_number',)
@@ -343,7 +356,9 @@ class WellTagSearchAPIView(ListAPIView):
 class WellSubmissionsListAPIView(ListAPIView):
     """ lists submissions for a well
         See also:  submissions.SubmissionListAPIView (list all submission records)
-        get: returns submission records for a given well
+
+        get:
+        Returns submission records for a given well.
     """
 
     permission_classes = (WellsEditPermissions,)
@@ -360,14 +375,14 @@ class WellSubmissionsListAPIView(ListAPIView):
 
 
 class WellLocationListAPIViewV1(ListAPIView):
-    """ returns well locations for a given search
+    """ Returns well locations for a given search.
 
-        get: returns a list of wells with locations only
+        get:
+        Returns a list of wells with locations only.
     """
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     serializer_class = WellLocationSerializerV1
-    swagger_schema = None
 
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (WellListFilterBackend, BoundingBoxFilterBackend,
@@ -388,7 +403,12 @@ class WellLocationListAPIViewV1(ListAPIView):
         return qs
 
     def get(self, request, **kwargs):
-        """ cancels request if too many wells are found"""
+        """
+        Cancels request if too many wells are found.
+        
+        get:
+        Returns compact set of well information data for populating the maps.
+        """
 
         qs = self.get_queryset()
         locations = self.filter_queryset(qs)
@@ -557,9 +577,10 @@ class WellExportListAPIViewV1(ListAPIView):
 
 class PreSignedDocumentKey(APIView):
     """
-    Get a pre-signed document key to upload into an S3 compatible document store
+    Get a pre-signed document key to upload into an S3 compatible document store.
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     queryset = Well.objects.all()
@@ -590,9 +611,10 @@ class PreSignedDocumentKey(APIView):
 
 class DeleteWellDocument(APIView):
     """
-    Delete a document from a S3 compatible store
+    Delete a document from a S3 compatible store.
 
-    delete: remove the specified object from the S3 store
+    delete:
+    Remove the specified object from the S3 store.
     """
 
     queryset = Well.objects.all()
@@ -623,16 +645,16 @@ class DeleteWellDocument(APIView):
 
 class WellHistory(APIView):
     """
-    get: returns a history of changes to a Well model record
+    get:
+    Returns a history of changes to a Well model record.
     """
     permission_classes = (WellsEditPermissions,)
     queryset = Well.objects.all()
-    swagger_schema = None
 
     def get(self, request, well_id, **kwargs):
         """
-        Retrieves version history for the specified Well record and creates a list of diffs
-        for each revision.
+        get:
+        Retrieves version history for the specified Well record and creates a list of diffs for each revision.
         """
         try:
             well = Well.objects.get(well_tag_number=well_id)
@@ -821,12 +843,17 @@ def well_licensing(request, **kwargs):
 
 # Deprecated. Use WellSubsurface instead
 class WellScreens(ListAPIView):
-    """ returns well screen info for a range of wells """
+    """
+    Returns well screen info for a range of wells
+
+    get:
+    Returns a compact list of wells including screen_set fields
+    """
+
 
     model = Well
     serializer_class = WellDrawdownSerializer
     filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
-    swagger_schema = None
 
     def get_queryset(self):
         qs = Well.objects.all() \
@@ -873,12 +900,16 @@ class WellScreens(ListAPIView):
 
 
 class WellLithology(ListAPIView):
-    """ returns lithology info for a range of wells """
+    """
+    Returns the lithologydescription_set information for a range of wells.
+    
+    get:
+    Returns list of wells with lat/long and lithologydescription_set information.
+    """    
 
     model = Well
     serializer_class = WellLithologySerializer
     filter_backends = (GeometryFilterBackend,)
-    swagger_schema = None
 
     def get_queryset(self):
         qs = Well.objects.all()
@@ -901,6 +932,12 @@ class WellLithology(ListAPIView):
 
         return qs
 class AddressGeocoder(APIView):
+    """
+    Address Autocomplete Request handler
+    
+    get:
+    Takes Partial Address Values and returns list of possible auto complete values
+    """
     def get(self, request,**kwargs):
         GEOCODER_ADDRESS_URL = get_env_variable('GEOCODER_ADDRESS_API_BASE') + self.request.query_params.get('searchTag')
         response = requests.get(GEOCODER_ADDRESS_URL)

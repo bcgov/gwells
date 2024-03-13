@@ -65,11 +65,11 @@ logger = logging.getLogger(__name__)
 
 
 class WellLocationListV2APIView(ListAPIView):
-    """ returns well locations for a given search
+    """ Returns well locations for a given search.
 
-        get: returns a list of wells with locations only
+        get:
+        Returns a list of wells with locations only.
     """
-    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = apiLimitedPagination(MAX_LOCATION_COUNT)
@@ -179,9 +179,8 @@ class WellLocationListV2APIView(ListAPIView):
 
 class WellAquiferListV2APIView(ListAPIView):
     """
-    Returns a list of aquifers with depth information for a well
+    Returns a list of aquifers with depth information for a well.
     """
-    swagger_schema = None
     permission_classes = (HasAquiferEditRole,)
     ordering = ('start',)
     serializer_class = WellVerticalAquiferExtentSerializerV2
@@ -320,10 +319,10 @@ class WellAquiferListV2APIView(ListAPIView):
 class WellListAPIViewV2(ListAPIView):
     """List and create wells
 
-    get: returns a list of wells
+    get:
+    Returns a list of wells.
     """
 
-    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = APILimitOffsetPagination
@@ -366,7 +365,6 @@ class WellListAPIViewV2(ListAPIView):
 class WellExportListAPIViewV2(ListAPIView):
     """Returns CSV or Excel data for wells.
     """
-    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
 
@@ -515,13 +513,16 @@ class WellExportListAPIViewV2(ListAPIView):
 
 
 class WellSubsurface(ListAPIView):
-    """ Returns well subsurface info within a gemoetry or a list of wells """
-    """ This replaces WellScreen with the additional aquifer and lithology info"""
+    """
+    This replaces WellScreen with the additional aquifer and lithology info
+    
+    get:
+    Returns well subsurface info within a geometry or a list of wells.
+    """
 
     model = Well
     serializer_class = WellSubsurfaceSerializer
     filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
-    swagger_schema = None
 
     def get_queryset(self):
         qs = Well.objects.all() \
@@ -571,5 +572,8 @@ class WellDetail(WellDetailV1):
     """
     Return well detail.
     This view is open to all, and has no permissions.
+
+    get:
+    Returns details for a given well matching the well_tag_number.
     """
     serializer_class = WellDetailSerializer

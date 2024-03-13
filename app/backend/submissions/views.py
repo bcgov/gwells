@@ -221,7 +221,7 @@ def propagate_submission_comments(request, separator="."):
 
 
 class SubmissionGetAPIView(RetrieveAPIView):
-    """Get a submission"""
+    """Get a submission."""
 
     permission_classes = (WellsSubmissionViewerPermissions,)
     queryset = ActivitySubmission.objects.all()
@@ -256,7 +256,8 @@ class SubmissionGetAPIView(RetrieveAPIView):
 class SubmissionListAPIView(ListAPIView):
     """List submissions
 
-    get: returns a list of well activity submissions
+    get:
+    Returns a list of well activity submissions.
     """
 
     permission_classes = (WellsSubmissionViewerPermissions,)
@@ -318,7 +319,7 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
 
 
 class SubmissionConstructionAPIView(SubmissionBase):
-    """Create a construction submission"""
+    """Create a construction submission."""
 
     model = ActivitySubmission
     serializer_class = WellConstructionSubmissionSerializer
@@ -351,7 +352,7 @@ class SubmissionAlterationAPIView(SubmissionBase):
 
 
 class SubmissionDecommissionAPIView(SubmissionBase):
-    """Create a decommission submission"""
+    """Create a decommission submission."""
 
     model = ActivitySubmission
     serializer_class = WellDecommissionSubmissionSerializer
@@ -371,7 +372,7 @@ class SubmissionDecommissionAPIView(SubmissionBase):
 
 
 class SubmissionStaffEditAPIView(SubmissionBase):
-    """ Create a staff edit submission"""
+    """ Create a staff edit submission."""
     model = ActivitySubmission
     serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
@@ -390,9 +391,7 @@ class SubmissionStaffEditAPIView(SubmissionBase):
 
 
 class SubmissionsOptions(APIView):
-    """Options required for submitting activity report forms"""
-
-    swagger_schema = None
+    """Options required for submitting activity report forms."""
 
     def get(self, request, **kwargs):
         options = {}
@@ -544,7 +543,8 @@ class PreSignedDocumentKey(RetrieveAPIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     queryset = ActivitySubmission.objects.all()
@@ -576,7 +576,6 @@ class EmailNotification(APIView):
     """
     Send GWELLS team notification of anyone changing the GPS COORDS of a well flagged for drinking water.
     """
-    swagger_schema = None
     permission_classes = (WellsSubmissionPermissions,)
 
     def post(self, request, *args, **kwargs):

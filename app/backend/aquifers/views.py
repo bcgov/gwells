@@ -76,10 +76,11 @@ logger = logging.getLogger(__name__)
 
 class AquiferEditDetailsAPIViewV1(RetrieveAPIView):
     """List aquifers
-    get: return details of aquifers
+    get:
+    Returns details of an Aquifer matching aquifer_id after update.
     """
     permission_classes = (HasAquiferEditRole,)
-    swagger_schema = None
+    
     lookup_field = 'aquifer_id'
     serializer_class = serializers.AquiferEditDetailSerializerV1
 
@@ -94,8 +95,14 @@ class AquiferEditDetailsAPIViewV1(RetrieveAPIView):
 
 class AquiferRetrieveUpdateAPIView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
     """List aquifers
-    get: return details of aquifers
-    patch: update aquifer
+    get:
+    Returns full set of details about an aquifer matching the provided aquifer_id.
+
+    patch:
+    Updates an Aquifer.
+    
+    put:
+    Updates an Aquifer.
     """
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     queryset = Aquifer.objects.all()
@@ -202,8 +209,11 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
-    get: return a list of aquifers
-    post: create an aquifer
+    get:
+    Returns a list of aquifers.
+
+    post:
+    Create a new aquifer.
     """
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
@@ -237,80 +247,73 @@ class AquiferListCreateAPIView(RevisionMixin, AuditCreateMixin, ListCreateAPIVie
 
 
 class AquiferResourceSectionListAPIView(ListAPIView):
-    """List aquifer materials codes
-    get: return a list of aquifer material codes
+    """List aquifer section codes.
+    get:
+    Returns a list of aquifer section codes.
     """
-
-    swagger_schema = None
     queryset = AquiferResourceSection.objects.all()
     serializer_class = serializers.AquiferResourceSectionSerializer
 
 
 class AquiferMaterialListAPIView(ListAPIView):
-    """List aquifer materials codes
-    get: return a list of aquifer material codes
+    """List aquifer materials codes.
+    get:
+    Returns a list of aquifer material codes.
     """
-    swagger_schema = None
     queryset = AquiferMaterial.objects.all()
     serializer_class = serializers.AquiferMaterialSerializer
 
 
 class QualityConcernListAPIView(ListAPIView):
-    """List aquifer materials codes
-    get: return a list of quality concern codes
+    """List aquifer quality concern codes.
+    get:
+    Returns a list of quality concern codes.
     """
-
-    swagger_schema = None
     queryset = models.QualityConcern.objects.all()
     serializer_class = serializers.QualityConcernSerializer
 
 
 class AquiferVulnerabilityListAPIView(ListAPIView):
-    """List aquifer vulnerability codes
-    get: return a list of aquifer vulnerability codes
+    """List aquifer vulnerability codes.
+    get:
+    Returns a list of aquifer vulnerability codes.
     """
-
-    swagger_schema = None
     queryset = AquiferVulnerabilityCode.objects.all()
     serializer_class = serializers.AquiferVulnerabilitySerializer
 
 
 class AquiferSubtypeListAPIView(ListAPIView):
-    """List aquifer subtypes codes
-    get: return a list of aquifer subtype codes
+    """List aquifer subtypes codes.
+    get:
+    Returns a list of aquifer subtype codes.
     """
-
-    swagger_schema = None
     queryset = AquiferSubtype.objects.all()
     serializer_class = serializers.AquiferSubtypeSerializer
 
 
 class AquiferProductivityListAPIView(ListAPIView):
-    """List aquifer productivity codes
-    get: return a list of aquifer productivity codes
+    """Returns a list of aquifer productivity codes.
+    get:
+    Returns a list of aquifer productivity codes.
     """
-
-    swagger_schema = None
     queryset = AquiferProductivity.objects.all()
     serializer_class = serializers.AquiferProductivitySerializer
 
 
 class AquiferDemandListAPIView(ListAPIView):
-    """List aquifer demand codes
-    get: return a list of aquifer demand codes
+    """List aquifer demand codes.
+    get:
+    Returns a list of aquifer demand codes.
     """
-
-    swagger_schema = None
     queryset = AquiferDemand.objects.all()
     serializer_class = serializers.AquiferDemandSerializer
 
 
 class WaterUseListAPIView(ListAPIView):
     """List Water Use Codes
-    get: return a list of water use codes
+    get:
+    Returns a list of water use codes.
     """
-
-    swagger_schema = None
     queryset = models.WaterUse.objects.all()
     serializer_class = serializers.WaterUseSerializer
 
@@ -319,7 +322,8 @@ class ListFiles(APIView):
     """
     List documents associated with an aquifer
 
-    get: list files found for the aquifer identified in the uri
+    get:
+    List files found for the aquifer identified in the URI.
     """
 
     @swagger_auto_schema(responses={200: openapi.Response(
@@ -355,12 +359,12 @@ class ListFiles(APIView):
 
 
 class AquiferNameList(ListAPIView):
-    """ List all aquifers in a simplified format """
+    """ List all aquifers in a simplified format. """
 
     serializer_class = serializers.AquiferSerializerBasic
     model = Aquifer
     pagination_class = None
-    swagger_schema = None
+    
     filter_backends = (filters.SearchFilter,)
     ordering = ('aquifer_id',)
     search_fields = (
@@ -388,16 +392,17 @@ class AquiferNameList(ListAPIView):
 
 class AquiferHistory(APIView):
     """
-    get: returns a history of changes to a Aquifer model record
+    get:
+    returns a history of changes to a Aquifer model record
     """
     permission_classes = (HasAquiferEditRole,)
     queryset = Aquifer.objects.all()
-    swagger_schema = None
+    
 
     def get(self, request, aquifer_id, **kwargs):
         """
-        Retrieves version history for the specified Aquifer record and creates a list of diffs
-        for each revision.
+        get:
+        Retrieves version history for the specified Aquifer record and creates a list of diffs for each revision.
         """
 
         try:
@@ -414,7 +419,8 @@ class PreSignedDocumentKey(APIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     permission_classes = (HasAquiferEditRole,)
@@ -442,9 +448,10 @@ class PreSignedDocumentKey(APIView):
 
 class DeleteAquiferDocument(APIView):
     """
-    Delete a document from a S3 compatible store
+    Delete a document from a S3 compatible store.
 
-    delete: remove the specified object from the S3 store
+    delete:
+    Remove the specified object from the S3 store.
     """
 
     permission_classes = (HasAquiferEditRole,)
