@@ -28,3 +28,36 @@ WELL_TAGS_PRIVATE = [
 WELL_TAGS = []
 WELL_TAGS.extend(WELL_TAGS_PUBLIC.copy())
 WELL_TAGS.extend(WELL_TAGS_PRIVATE.copy())
+
+# bc geocoder endpoint of interest
+GEOCODER_ENDPOINT = "https://geocoder.api.gov.bc.ca/sites/nearest.json"
+ADDRESS_COLUMNS = [
+    "fullAddress",
+    "siteName",
+    "unitDesignator",
+    "unitNumber",
+    "unitNumberSuffix",
+    "civicNumber",
+    "civicNumberSuffix",
+    "streetName",
+    "streetType",
+    "isStreetTypePrefix",
+    "streetDirection",
+    "isStreetDirectionPrefix",
+    "streetQualifier",
+    "localityName",
+    "localityType",
+    "electoralArea",
+    "provinceCode",
+    "locationPositionalAccuracy",
+    "locationDescriptor",
+    "siteID",
+    "blockID",
+    "fullSiteDescriptor",
+    "accessNotes",
+    "siteStatus",
+    "siteRetireDate",
+    "changeDate",
+    "isOfficial",
+    "distance",
+]

@@ -33,3 +33,5 @@ class WellsConfig(AppConfig):
 
     def ready(self):
         post_migrate.connect(post_migration_callback, sender=self)
+        import wells.signals #noqa
+        import wells.utils #noqa

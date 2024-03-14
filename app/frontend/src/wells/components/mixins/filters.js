@@ -145,6 +145,14 @@ const SEARCH_FIELDS = {
     type: 'number',
     sortable: true,
   },
+  wellActivityType: {
+    param: 'well_activity_type',
+    label: 'Well Activity Type',
+    type: 'select',
+    textField: 'description',
+    valueField: 'code',
+    sortable: true,
+  },
   wellClass: {
     param: 'well_class',
     label: 'Class of well',
@@ -874,6 +882,105 @@ const SEARCH_FIELDS = {
     textField: 'description',
     valueField: 'well_disinfected_code',
     sortable: true,
+  },
+  latitude: { param: 'latitude', label: 'Latitude', type: 'number' },
+  longitude: { param: 'longitude', label: 'Longitude', type: 'number' },
+  geocodeDistance: {
+    param: 'geocode_distance',
+    label: 'Geocode Distance',
+    type: 'range',
+    sortable: true,
+  },
+  distanceToPid: {
+    param: 'distance_to_pid',
+    label: 'Distance to Matching PID',
+    type: 'range',
+    sortable: true,
+  },
+  scoreAddress: {
+    param: 'score_address',
+    label: 'Score Address',
+    type: 'range',
+    sortable: true,
+  },
+  scoreCity: {
+    param: 'score_city',
+    label: 'Score City',
+    type: 'range',
+    sortable: true,
+  },
+  naturalResourceRegion: {
+    param: 'natural_resource_region',
+    label: 'Natural Resource Region',
+    type: 'select',
+    sortable: true,
+  },
+  finishedWellDepthNull: {
+    param: 'finished_well_depth',
+    label: 'Finished well depth',
+    type: 'nullcheck'
+  },
+  intendedWaterUseNull: {
+    param: 'intended_water_use',
+    label: 'Intended water use',
+    type: 'nullcheck'
+  },
+  wellClassNull: {
+    param: 'well_class',
+    label: 'Class of well',
+    type: 'nullcheck'
+  },
+  latitudeNull: {
+    param: 'latitude',
+    label: 'Latitude',
+    type: 'nullcheck'
+  },
+  longitudeNull: {
+    param: 'longitude',
+    label: 'Longitude',
+    type: 'nullcheck'
+  },
+  diameterNull: {
+    param: 'diameter',
+    label: 'Casing Diameter (inches)',
+    type: 'nullcheck'
+  },
+  surfaceSealDepthNull: {
+    param: 'surface_seal_depth',
+    label: 'Seal Depth (feet)',
+    type: 'nullcheck'
+  },
+  surfaceSealThicknessNull: {
+    param: 'surface_seal_thickness',
+    label: 'Seal Thickness (inches)',
+    type: 'nullcheck'
+  },
+  aquiferLithologyNull: {
+    param: 'aquifer_lithology',
+    label: 'Lithology',
+    type: 'nullcheck'
+  },
+  workStartDateNull: {
+    param: 'work_start_date',
+    label: 'Work Start Date',
+    type: 'nullcheck'
+  },
+  workEndDateNull: {
+    param: 'work_end_date',
+    label: 'Work End Date',
+    type: 'nullcheck'
+  },
+  crossReferencedBy: {
+    param: 'cross_referenced_by',
+    label: 'Cross Referenced By',
+    type: 'text',
+    sortable: true
+  },
+  crossReferencedDate: {
+    param: 'cross_referenced_date',
+    label: 'Cross Referenced Date',
+    type: 'dateRange',
+    sortable: true
   }
 }
 
@@ -963,11 +1070,14 @@ export default {
         surfaceSealMethod: this.codes.surface_seal_methods || [],
         waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
         waterQualityColour: this.codes.water_quality_colours || [],
+        wellActivityType: this.codes.activity_types || [],
         wellClass: this.codes.well_classes || [],
         wellDisinfectedStatus: this.codes.well_disinfected_codes || [],
         wellStatus: this.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
-        yieldEstimationMethod: this.codes.yield_estimation_methods || []
+        yieldEstimationMethod: this.codes.yield_estimation_methods || [],
+        naturalResourceRegion: ['Northeast', 'West Coast', 'South Coast', 'Omineca',
+          'Skeena', 'Thompson-Okanagan', 'Cariboo', 'Kootenay']
       }
 
       Object.keys(options).forEach(optionId => {

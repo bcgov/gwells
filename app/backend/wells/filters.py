@@ -14,16 +14,18 @@
 import json
 import logging
 from collections import OrderedDict
+from datetime import datetime, timedelta
 
 from django import forms
 from django.core.exceptions import FieldDoesNotExist
 from django.db import connection
+from django.contrib.gis.db import models
 from django.http import HttpRequest, QueryDict
 from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
 from django.contrib.gis.gdal import GDALException
 from django.contrib.gis.db.models.functions import Transform
 from django.contrib.gis.measure import D
-from django.db.models import Max, Min, Q, QuerySet
+from django.db.models import Max, Min, Q, QuerySet,  Subquery, OuterRef
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
 from rest_framework.exceptions import ValidationError
@@ -41,7 +43,10 @@ from wells.models import (
     WellAttachment,
     PumpingTestDescriptionCode,
     BoundaryEffectCode,
-    AnalysisMethodCode
+    AnalysisMethodCode,
+    LithologyDescription,
+    Casing,
+    ActivitySubmission
 )
 from wells.constants import WELL_TAGS
 
@@ -828,5 +833,315 @@ class WellListOrderingFilter(OrderingFilter):
 
         if ordering:
             return queryset.order_by(*ordering)
+
+        return queryset
+
+
+class WellQaQcFilterBackend(filters.DjangoFilterBackend):
+    """
+    Custom well list filtering logic for the QaQc Dashboard.
+    allows additional 'filter_group' params.
+    """
+    def parse_datetime_with_fallback(self, date_str):
+        try:
+            # First, try to parse with full datetime format
+            return datetime.strptime(date_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            # If it fails, parse with date-only format and assume midnight
+            return datetime.strptime(date_str, "%Y-%m-%d")
+    
+
+    def filter_queryset(self, request, queryset, view):
+        try:
+            filter_groups = request.query_params.getlist('filter_group', [])
+            for group in filter_groups:
+                try:
+                    group_params = json.loads(group)
+                except ValueError as exc:
+                    raise ValidationError({
+                        'filter_group': 'Error parsing JSON data: {}'.format(exc),
+                    })
+
+                if not group_params:
+                    continue
+                
+                q_objects = Q()
+                q_fields = [
+                    'well_tag_number', 'identification_plate_number', 'natural_resource_region',
+                    'cross_referenced_by', 'create_user', 'update_user', 'internal_comments', 
+                    'comments'
+                ]
+                date_fields = [
+                    'create_date_before', 'create_date_after', 
+                    'update_date_before', 'update_date_after',
+                    'cross_referenced_date_before', 'cross_referenced_date_after'
+                ]
+
+                for field, value in group_params.items():
+                    if field in q_fields and value != 'null':
+                        q_objects &= Q(**{f'{field}__icontains': value})
+
+                    # Set filter date fields
+                    elif field in date_fields:
+                        suffix = field.split('_')[-1]  # after or before
+                        date_field = '_'.join(field.split('_')[:-1])  # remove _after or _before
+                        # Use the new parsing function with fallback
+                        date_value = self.parse_datetime_with_fallback(value)
+                        if suffix == 'after':
+                            # Set to the start of the day if only a date is provided
+                            if len(value) <= 10:  # YYYY-MM-DD is 10 characters
+                                start_of_day = date_value
+                            else:
+                                start_of_day = date_value
+                            q_objects &= Q(**{f'{date_field}__gte': start_of_day})
+                        elif suffix == 'before':
+                            # Set to the end of the day if only a date is provided
+                            if len(value) <= 10:  # YYYY-MM-DD is 10 characters
+                                end_of_day = datetime.combine(date_value, datetime.max.time())
+                            else:
+                                end_of_day = date_value
+                            q_objects &= Q(**{f'{date_field}__lte': end_of_day})
+
+                    # Apply range filters
+                    elif field.endswith('min') or field.endswith('max'):
+                        range_field = '_'.join(field.split('_')[:-1])  # remove _min or _max
+                        suffix = field.split('_')[-1]  # min or max
+                        if suffix == 'min':
+                            q_objects &= Q(**{f'{range_field}__gte': value})
+                        elif suffix == 'max':
+                            q_objects &= Q(**{f'{range_field}__lte': value})
+
+                    # Directly handle special cases for fields like latitude and longitude
+                    elif field in ['latitude', 'longitude'] and value == 'null':
+                        q_objects &= Q(**{'geom__isnull': True})
+                        
+                    elif field == 'intended_water_use':
+                        q_objects &= Q(intended_water_use__intended_water_use_code=value)
+
+                    # Person responsible checks
+                    elif field == 'person_responsible_name' and value != 'null':
+                        q_objects &= (
+                            Q(person_responsible__first_name__icontains=value) |
+                            Q(person_responsible__surname__icontains=value)
+                        )
+
+                    elif field == 'person_responsible_name' and value == 'null':
+                        q_objects &= (Q(person_responsible__isnull=True) | Q(person_responsible__first_name__isnull=True) |
+                                      Q(person_responsible__first_name='') | Q(person_responsible__first_name=' '))
+
+                    elif field == 'company_of_person_responsible_name' and value != 'null':
+                        q_objects &= Q(company_of_person_responsible__name__icontains=value)
+
+                    elif field == 'company_of_person_responsible_name' and value == 'null':
+                        q_objects &= (Q(company_of_person_responsible__isnull=True) |
+                                      Q(company_of_person_responsible__name__isnull=True) |
+                                      Q(company_of_person_responsible__name='') | Q(company_of_person_responsible__name=' '))
+
+                    elif field == 'well_class':
+                        q_objects &= Q(well_class__well_class_code=value)
+
+                    elif field == 'well_subclass' and value != '00000000-0000-0000-0000-000000000000':
+                        q_objects &= Q(well_subclass__well_subclass_guid=value)
+
+                    # Check for null 'well_subclass'
+                    elif field == 'well_subclass' and value == '00000000-0000-0000-0000-000000000000':
+                        q_objects &= Q(well_subclass__well_subclass_guid__isnull=True)
+
+                    # Check for null or empty 'aquifer_lithology'
+                    elif field == 'aquifer_lithology' and value == 'null':
+                        # Subquery to get the last lithology description's raw data for each well
+                        last_lithology_raw_data = Subquery(
+                            LithologyDescription.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-end').values('lithology_raw_data')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_lithology_raw_data=last_lithology_raw_data
+                        )
+                        q_objects &= (
+                            Q(last_lithology_raw_data__isnull=True) |
+                            Q(last_lithology_raw_data='') |
+                            Q(last_lithology_raw_data=' ')
+                        )
+
+                    # Check for null or empty 'casing_diameter' using the subquery
+                    elif field == 'diameter' and value == 'null':
+                        # Subquery to get the last casing's diameter for each well
+                        last_casing_diameter = Subquery(
+                            Casing.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-end').values('diameter')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_casing_diameter=last_casing_diameter
+                        )
+                        q_objects &= Q(last_casing_diameter__isnull=True)
+
+                    elif field == 'well_activity_type':
+                        # Subquery to get the well_activity_type__code of the latest ActivitySubmission
+                        # for each well, excluding 'STAFF_EDIT'
+                        latest_well_activity_type_code = Subquery(
+                            ActivitySubmission.objects.filter(
+                                well=OuterRef('pk')  # Reference the outer Well's primary key
+                            ).exclude(
+                                well_activity_type__code="STAFF_EDIT"
+                            ).order_by(
+                                '-work_end_date'  # Ensure the latest activity comes first
+                            ).values(
+                                'well_activity_type__code'  # Select the well_activity_type__code field
+                            )[:1]  # Limit to the first (latest) entry
+                        )
+                        # Annotate the queryset with the result of the subquery
+                        queryset = queryset.annotate(
+                            latest_well_activity_type_code=latest_well_activity_type_code
+                        )
+                        # Apply filters based on the annotated 'latest_well_activity_type_code'
+                        if value == 'null':
+                            q_objects &= Q(latest_well_activity_type_code__isnull=True)
+                        else:
+                            q_objects &= Q(latest_well_activity_type_code=value)
+
+                    elif field == 'work_start_date' and value == 'null':
+                        last_activity_start_date = Subquery(
+                            ActivitySubmission.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-work_end_date').values('work_start_date')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_work_start_date=last_activity_start_date
+                        )
+                        q_objects &= Q(last_work_start_date__isnull=True)
+
+                    elif field == 'work_end_date' and value == 'null':
+                        last_activity_end_date = Subquery(
+                            ActivitySubmission.objects.filter(
+                                well=OuterRef('pk')
+                            ).order_by('-work_end_date').values('work_end_date')[:1]
+                        )
+                        queryset = queryset.annotate(
+                            last_work_end_date=last_activity_end_date
+                        )
+                        q_objects &= Q(last_work_end_date__isnull=True)
+
+                    # This acts as a catch all for all null field checks
+                    elif value == 'null':
+                        # Check if the field exists in the model
+                        try:
+                            field_obj = queryset.model._meta.get_field(field)
+                        except models.FieldDoesNotExist:
+                            continue
+                        
+                        # Now handling CharField, including checks for empty strings and spaces
+                        if isinstance(field_obj, models.CharField):
+                            q_objects &= (Q(**{f'{field}__isnull': True}) | Q(**{f'{field}': ''}) | Q(**{f'{field}': ' '}))
+                        else:
+                            # For other field types, just check for null
+                            q_objects &= Q(**{f'{field}__isnull': True})
+                
+                # Apply the combined Q object filters to the queryset
+                queryset = queryset.filter(q_objects)
+
+            # Apply any custom sorting
+            queryset = self.sort_ordering(request, queryset)
+
+        except Exception as e:
+            print(e)
+        return queryset
+
+    def sort_ordering(self, request, queryset):
+        # Apply custom ordering on the calculated annotation fields
+        # If not a custom field set here, ordering will fall back 
+        # to WellListOrderingFilter class, set in serializer
+        # Get ordering params
+        order_value = request.query_params.get('ordering', 'well_tag_number')
+        order_field = order_value.lstrip('-')
+
+        # Handle custom ordering for well_subclass
+        if order_field == 'well_subclass':
+            # Annotate queryset with the description of the well subclass for ordering
+            queryset = queryset.annotate(
+                well_subclass_description=models.F('well_subclass__description')
+            )
+            
+            # Determine if we are ordering in descending order
+            if order_value.startswith('-'):
+                order_value = '-well_subclass_description'
+            else:
+                order_value = 'well_subclass_description'
+            
+            # Return the queryset ordered by the annotated well subclass description
+            return queryset.order_by(order_value)
+
+        if order_field not in ['aquifer_lithology', 'diameter', 'well_activity_type', 
+                               'work_start_date', 'work_end_date']:
+            return queryset
+
+        # Mapping of fields to their related order fields
+        related_order_mapping = {
+            'aquifer_lithology': 'last_lithology_raw_data',
+            'diameter': 'last_casing_diameter',
+            'well_activity_type': 'latest_well_activity_type_code',
+            'work_start_date': 'last_activity_start_date',
+            'work_end_date': 'last_activity_end_date'
+        }
+
+        # Get mapped annoation name
+        related_order = related_order_mapping.get(order_field, '')
+
+        # if we're descending, then add the negative sign prefix
+        if order_value.startswith('-'):
+            related_order = f'-{related_order}'
+
+        # print(f"ORDER VALUES: {order_value}, Descending: {order_value.startswith('-')}, Field: {order_field}")
+        
+        # Apply sorting field annotations
+        queryset = self.annotate_custom_fields(queryset, order_field)
+
+        # Return ordered queryset
+        return queryset.order_by(related_order)
+    
+
+    def annotate_custom_fields(self, queryset, field_name):
+        # Apply annotations for calculated fields if they are not already annotated
+        if field_name == 'aquifer_lithology' and not queryset.query.annotations.get('last_lithology_raw_data'):
+            queryset = queryset.annotate(last_lithology_raw_data=Subquery(
+                LithologyDescription.objects.filter(
+                    well=OuterRef('pk')
+                ).order_by('-end').values('lithology_raw_data')[:1]
+            ))
+
+        if field_name == 'diameter' and not queryset.query.annotations.get('last_casing_diameter'):
+            queryset = queryset.annotate(last_casing_diameter=Subquery(
+                Casing.objects.filter(
+                    well=OuterRef('pk')
+                ).order_by('-end').values('diameter')[:1]
+            ))
+
+        if field_name == 'well_activity_type' and not queryset.query.annotations.get('latest_well_activity_type_code'):
+            queryset = queryset.annotate(latest_well_activity_type_code=Subquery(
+                ActivitySubmission.objects.filter(
+                    well=OuterRef('pk')
+                ).exclude(
+                    well_activity_type__code="STAFF_EDIT"
+                ).order_by(
+                    '-work_end_date'
+                ).values(
+                    'well_activity_type__code'
+                )[:1]
+            ))
+
+        if field_name == 'work_start_date' and not queryset.query.annotations.get('last_activity_start_date'):
+            queryset = queryset.annotate(last_activity_start_date=Subquery(
+                ActivitySubmission.objects.filter(
+                    well=OuterRef('pk')
+                ).order_by('-work_start_date').values('work_start_date')[:1]
+            ))
+        
+        if field_name == 'work_end_date' and not queryset.query.annotations.get('last_activity_end_date'):
+            queryset = queryset.annotate(last_activity_end_date=Subquery(
+                ActivitySubmission.objects.filter(
+                    well=OuterRef('pk')
+                ).order_by('-work_end_date').values('work_end_date')[:1]
+            ))
 
         return queryset

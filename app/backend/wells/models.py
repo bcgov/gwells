@@ -13,16 +13,14 @@
 """
 
 import uuid
-import math
 import reversion
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from django.dispatch import receiver
-from django.db.models.signals import pre_save
+
 from django.contrib.gis.db import models
-from django.contrib.gis.gdal import SpatialReference, CoordTransform
+
 
 from gwells.models import AuditModel, ProvinceStateCode, ScreenIntakeMethodCode, ScreenMaterialCode,\
     ScreenOpeningCode, ScreenBottomCode, ScreenTypeCode, ScreenAssemblyTypeCode, CodeTableModel,\
@@ -33,6 +31,7 @@ from gwells.models.lithology import (
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
     LithologyMoistureCode, SurficialMaterialCode)
 from gwells.db_comments.patch_fields import patch_fields
+
 
 # from aquifers.models import Aquifer
 
@@ -1148,6 +1147,31 @@ class Well(AuditModelStructure):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
+    # QaQc Fields for internal use
+    geocode_distance = models.DecimalField(
+        null=True, blank=True, max_digits=12, decimal_places=2, verbose_name='Geocode Distance',
+        db_comment='Distance calculated during geocoding process.')
+    distance_to_pid = models.DecimalField(
+        null=True, blank=True, max_digits=12, decimal_places=2, verbose_name='Distance to PID',
+        db_comment='Distance to the Property Identification Description.')
+    score_address = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for Address',
+        db_comment='Score representing the accuracy or confidence of the address geocoding.')
+    score_city = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for City',
+        db_comment='Score representing the accuracy or confidence of the city geocoding.')
+    cross_referenced = models.BooleanField(
+        default=False, verbose_name='Cross Referenced',
+        db_comment='Indicates if the record has been cross-referenced by an internal team member.')
+    cross_referenced_date = models.DateTimeField(
+        null=True, verbose_name='Cross Referenced Date',
+        db_comment='The date when a well was cross referenced by an internal team member.')
+    cross_referenced_by = models.CharField(
+        max_length=100, blank=True, null=True, 
+        verbose_name="Internal team member who cross referenced well.")
+    natural_resource_region = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Natural Resource Region",
+        db_comment='The Natural Resource Region the well is located within.')
 
     class Meta:
         db_table = 'well'
@@ -1279,19 +1303,6 @@ class Well(AuditModelStructure):
         "yield_estimation_method_code":"Codes for the valid methods that can be used to estimate the well yield. E.g. Air Lifting, Bailing, Pumping, Other.",
         "yield_estimation_rate":"Rate at which the well water was pumped during the well yield test, measured in US gallons per minute.",
     }
-
-
-@receiver(pre_save, sender=Well)
-def update_utm(sender, instance, **kwargs):
-    if instance.geom and (-180 < instance.geom.x < 180): # only update utm when geom is valid
-        utm_zone = math.floor((instance.geom.x + 180) / 6) + 1
-        coord_transform = CoordTransform(SpatialReference(4326), SpatialReference(32600 + utm_zone))
-        utm_point = instance.geom.transform(coord_transform, clone=True)
-
-        instance.utm_zone_code = utm_zone
-        # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
-        instance.utm_easting = round(utm_point.x)
-        instance.utm_northing = round(utm_point.y)
 
 
 class CasingMaterialCode(CodeTableModel):
