@@ -116,9 +116,11 @@ To have a more complete dataset while running locally, you can opt to point the 
 
 2. Using the database secrets from GWELLS' staging namespace on OpenShift, replace the variables in your new `.env.test` file. You'll need to change `ENVIRONMENT` to 'test' as well to ensure the proper `command` is run from the `app/scripts/backend-command-script.sh` file.
 
-    Note: to get the `GWELLS_SERVICE_HOST` and `GWELLS_SERVICE_PORT`, run the following command to view the `TransportServer` for the staging database:
+    Note: to get the `GWELLS_SERVICE_HOST` and `GWELLS_SERVICE_PORT`, use the `oc` CLI and login to GWELLS' test namespace; run the following command to view the `TransportServer` for the staging database:
 
     ```
+    oc project 26e83e-test
+
     oc -n 26e83e-test get ts
     ```
 
