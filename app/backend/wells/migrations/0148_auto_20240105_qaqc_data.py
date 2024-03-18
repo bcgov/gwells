@@ -35,7 +35,9 @@ def process_wells(Well, reader):
 
             # Process in batches of batch_size
             if count % batch_size == 0:
-                Well.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 'score_city', 'cross_referenced', 'natural_resource_region'])
+                Well.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 
+                                                           'score_city', 'cross_referenced', 'cross_referenced_date', 
+                                                           'cross_referenced_by', 'natural_resource_region'])
                 wells_to_update = []  # Reset the list after updating
 
         except Well.DoesNotExist:
@@ -45,7 +47,9 @@ def process_wells(Well, reader):
 
     # Update any remaining wells in the list
     if wells_to_update:
-        Well.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address', 'score_city', 'cross_referenced', 'natural_resource_region'])
+        Well.objects.bulk_update(wells_to_update, ['geocode_distance', 'distance_to_pid', 'score_address',
+                                                   'score_city', 'cross_referenced', 'cross_referenced_date',
+                                                   'cross_referenced', 'natural_resource_region'])
 
 def update_well_attributes(well, row):
     fields_to_update = ['distance_geocode', 'distance_to_matching_pid', 'score_address', 'score_city']
