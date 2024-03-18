@@ -153,6 +153,8 @@ You should now have a local build with a backend that points to staging's databa
 
 If you're encountering any issues with the build, ensure that your VPN is connected and working properly.
 
+>Minio doesn't download while connected using the VPN. This is a known issue.
+
 ### Running GWELLS in Debug Mode
 
 Ensure you have a `launch.json` file in the `.vscode` directory.
