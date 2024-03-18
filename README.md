@@ -108,6 +108,53 @@ cd gwells
 docker-compose up
 ```
 
+### Running GWELLS locally with a connection to Staging's Database
+
+To have a more complete dataset while running locally, you can opt to point the backend at GWELLS' staging database **while using the BC Government VPN**. This will provide a more robust dataset for debugging or feature testing.
+
+1. Duplicate `.env.template` and rename the new file as `.env.test`
+
+2. Using the database secrets from GWELLS' staging namespace on OpenShift, replace the variables in your new `.env.test` file. You'll need to change `ENVIRONMENT` to 'test' as well to ensure the proper `command` is run from the `app/scripts/backend-command-script.sh` file.
+
+    Note: to get the `GWELLS_SERVICE_HOST` and `GWELLS_SERVICE_PORT`, use the `oc` CLI and login to GWELLS' test namespace; run the following command to view the `TransportServer` for the staging database:
+
+    ```
+    oc project 26e83e-test
+
+    oc -n 26e83e-test get ts
+    ```
+
+    This should print out a `VIRTUALSERVERADDRESS` (the `GWELLS_SERVICE_HOST`) and a `VIRTUALSERVERPORT` (the `GWELLS_SERVICE_PORT`)
+
+    ```
+    NAME              VIRTUALSERVERADDRESS   VIRTUALSERVERPORT   POOL          POOLPORT   IPAMLABEL   IPAMVSADDRESS   STATUS   AGE
+    yourservice-tsc   142.34.194.68          65555               yourservice   8000                   None            Ok       21d
+    ```
+
+    Your `.env.test` file should look something like this:
+
+    ```
+    # .env for test environment
+    ENVIRONMENT=test
+    API_TARGET=http://backend:8000/
+    DATABASE_USER=<db-user>
+    DATABASE_PASSWORD=<db-password>
+    GWELLS_SERVICE_HOST=142.34.194.68
+    GWELLS_SERVICE_PORT=<port-number>
+    ```
+
+3. Once `.env.test` has the proper environment variables, run the `docker-compose up` command with the `--env-file` flag:
+
+    ```
+    docker-compose --env-file ./.env.test up
+    ```
+
+You should now have a local build with a backend that points to staging's database. **Be mindful when saving or changing data to the staging database**.
+
+If you're encountering any issues with the build, ensure that your VPN is connected and working properly.
+
+>Minio doesn't download while connected using the VPN. This is a known issue.
+
 ### Running GWELLS in Debug Mode
 
 Ensure you have a `launch.json` file in the `.vscode` directory.
