@@ -43,7 +43,7 @@ app/backend/aquifers/fixtures/tmp/*
 ehthumbs.db
 Thumbs.db
 *.md5
-.env.test
+.env*
 
 ##################
 # This repo only #

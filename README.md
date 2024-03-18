@@ -112,7 +112,7 @@ docker-compose up
 
 To have a more complete dataset while running locally, you can opt to point the backend at GWELLS' staging database **while using the BC Government VPN**. This will provide a more robust dataset for debugging or feature testing.
 
-1. Duplicate `.env` and rename the new file as `.env.test`
+1. Duplicate `.env.template` and rename the new file as `.env.test`
 
 2. Using the database secrets from GWELLS' staging namespace on OpenShift, replace the variables in your new `.env.test` file. You'll need to change `ENVIRONMENT` to 'test' as well to ensure the proper `command` is run from the `app/scripts/backend-command-script.sh` file.
 

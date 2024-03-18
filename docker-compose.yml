@@ -100,7 +100,7 @@ services:
     - path: ./env.test
       required: false
     environment:
-      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD}@${GWELLS_SERVICE_HOST}:${GWELLS_SERVICE_PORT}/gwells"
+      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD:-test1}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
     ports:
       - "7800:7800"
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
@@ -118,7 +118,7 @@ services:
       VUE_APP_AXIOS_BASE_URL: /api/
       VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
-      API_TARGET: "${API_TARGET}"
+      API_TARGET: "${API_TARGET:-http://backend:8000/}"
     command: /bin/bash -c "
         set -x &&
         cd /app/frontend &&
@@ -148,13 +148,13 @@ services:
     - path: ./env.test
       required: false
     environment:
-      ENVIRONMENT: "${ENVIRONMENT}"
+      ENVIRONMENT: "${ENVIRONMENT:-local}"
       APP_CONTEXT_ROOT: gwells
       CSRF_COOKIE_SECURE: "False"
       CUSTOM_GDAL_GEOS: "False"
       DATABASE_NAME: gwells
-      DATABASE_USER: "${DATABASE_USER}"
-      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+      DATABASE_USER: "${DATABASE_USER:-gwells}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD:-test1}"
       DATABASE_SERVICE_NAME: gwells
       DJANGO_ADMIN_URL: admin
       DJANGO_DEBUG: "True"
@@ -162,8 +162,8 @@ services:
       ENABLE_ADDITIONAL_DOCUMENTS: "True"
       ENABLE_AQUIFERS_SEARCH: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
-      GWELLS_SERVICE_HOST: "${GWELLS_SERVICE_HOST}"
-      GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT}"
+      GWELLS_SERVICE_HOST: "${GWELLS_SERVICE_HOST:-db}"
+      GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
       PYTHONUNBUFFERED: "1"
