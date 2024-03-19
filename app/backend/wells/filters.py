@@ -25,12 +25,14 @@ from django.contrib.gis.geos import GEOSException, Polygon, GEOSGeometry, Point
 from django.contrib.gis.gdal import GDALException
 from django.contrib.gis.db.models.functions import Transform
 from django.contrib.gis.measure import D
-from django.db.models import Max, Min, Q, QuerySet,  Subquery, OuterRef
+from django.db.models import Max, Min, Q, QuerySet, Subquery, OuterRef, \
+  Case, F, DateField, When
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
 from rest_framework.exceptions import ValidationError
 from rest_framework.filters import BaseFilterBackend, OrderingFilter
 from rest_framework.request import clone_request
+from django.db.models.functions import Coalesce
 
 from gwells.roles import WELLS_VIEWER_ROLE
 from wells.models import (
@@ -48,7 +50,13 @@ from wells.models import (
     Casing,
     ActivitySubmission
 )
-from wells.constants import WELL_TAGS
+from wells.constants import (
+  WELL_TAGS,
+  WELL_ACTIVITY_CODE_STAFF_EDIT,
+  WELL_ACTIVITY_CODE_CONSTRUCTION,
+  WELL_ACTIVITY_CODE_DECOMMISSION,
+  WELL_ACTIVITY_CODE_ALTERATION,
+)
 
 logger = logging.getLogger('wells_filters')
 
@@ -1000,24 +1008,80 @@ class WellQaQcFilterBackend(filters.DjangoFilterBackend):
                             q_objects &= Q(latest_well_activity_type_code=value)
 
                     elif field == 'work_start_date' and value == 'null':
-                        last_activity_start_date = Subquery(
-                            ActivitySubmission.objects.filter(
-                                well=OuterRef('pk')
-                            ).order_by('-work_end_date').values('work_start_date')[:1]
-                        )
                         queryset = queryset.annotate(
-                            last_work_start_date=last_activity_start_date
+                            last_work_start_date=Subquery(
+                                ActivitySubmission.objects.filter(
+                                    well=OuterRef('pk')
+                                ).exclude(
+                                    well_activity_type__code=WELL_ACTIVITY_CODE_STAFF_EDIT
+                                ).order_by('-work_end_date').annotate(
+                                    correct_start_date=Case(
+                                        When(
+                                            well_activity_type__code=WELL_ACTIVITY_CODE_CONSTRUCTION,
+                                            construction_start_date__isnull=False,
+                                            then=F('construction_start_date')
+                                        ),
+                                        When(
+                                            well_activity_type__code=WELL_ACTIVITY_CODE_ALTERATION,
+                                            alteration_start_date__isnull=False,
+                                            then=F('alteration_start_date')
+                                        ),
+                                        When(
+                                            well_activity_type__code=WELL_ACTIVITY_CODE_DECOMMISSION,
+                                            decommission_start_date__isnull=False,
+                                            then=F('decommission_start_date')
+                                        ),
+                                        default=Coalesce(
+                                            'work_start_date',
+                                            'construction_start_date',
+                                            'alteration_start_date',
+                                            'decommission_start_date',
+                                            output_field=DateField()
+                                        ),
+                                        output_field=DateField()
+                                    )
+                                ).values('correct_start_date')[:1],
+                                output_field=DateField()
+                            )
                         )
                         q_objects &= Q(last_work_start_date__isnull=True)
 
                     elif field == 'work_end_date' and value == 'null':
-                        last_activity_end_date = Subquery(
-                            ActivitySubmission.objects.filter(
-                                well=OuterRef('pk')
-                            ).order_by('-work_end_date').values('work_end_date')[:1]
-                        )
                         queryset = queryset.annotate(
-                            last_work_end_date=last_activity_end_date
+                            last_work_end_date=Subquery(
+                                ActivitySubmission.objects.filter(
+                                    well=OuterRef('pk')
+                                ).exclude(
+                                    well_activity_type__code=WELL_ACTIVITY_CODE_STAFF_EDIT
+                                ).order_by('-work_end_date').annotate(
+                                    correct_end_date=Case(
+                                        When(
+                                            well_activity_type__code=WELL_ACTIVITY_CODE_CONSTRUCTION,
+                                            construction_end_date__isnull=False,
+                                            then=F('construction_end_date')
+                                        ),
+                                        When(
+                                            well_activity_type__code=WELL_ACTIVITY_CODE_ALTERATION,
+                                            alteration_end_date__isnull=False,
+                                            then=F('alteration_end_date')
+                                        ),
+                                        When(
+                                            well_activity_type__code=WELL_ACTIVITY_CODE_DECOMMISSION,
+                                            decommission_end_date__isnull=False,
+                                            then=F('decommission_end_date')
+                                        ),
+                                        default=Coalesce(
+                                            'work_end_date',
+                                            'construction_end_date',
+                                            'alteration_end_date',
+                                            'decommission_end_date',
+                                            output_field=DateField()
+                                        ),
+                                        output_field=DateField()
+                                    )
+                                ).values('correct_end_date')[:1],
+                                output_field=DateField()
+                            )
                         )
                         q_objects &= Q(last_work_end_date__isnull=True)
 
