@@ -27,6 +27,12 @@ from wells.serializers import (
     LithologyDescriptionSummarySerializer,
     WellDetailSerializer as WellDetailSerializerV1
 )
+from wells.constants import (
+  WELL_ACTIVITY_CODE_STAFF_EDIT,
+  WELL_ACTIVITY_CODE_CONSTRUCTION,
+  WELL_ACTIVITY_CODE_DECOMMISSION,
+  WELL_ACTIVITY_CODE_ALTERATION,
+)
 
 from aquifers.serializers import HYDRAULIC_SUBTYPES
 COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD = 'company_of_person_responsible.name'
@@ -460,11 +466,6 @@ class WellDetailSerializer(WellDetailSerializerV1):
     class Meta(WellDetailSerializerV1.Meta):
         ref_name = "well_detail_v2"
 
-
-WELL_ACTIVITY_CODE_CONSTRUCTION = 'CON'
-WELL_ACTIVITY_CODE_DECOMMISSION = 'DEC'
-WELL_ACTIVITY_CODE_ALTERATION = 'ALT'
-WELL_ACTIVITY_CODE_STAFF_EDIT = 'STAFF_EDIT'
 
 class ActivitySubmissionMixin:
     def get_last_activity(self, obj):
