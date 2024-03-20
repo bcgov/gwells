@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "126dede9-3fce-4f58-a51d-9b26f285cf06",
+		"_postman_id": "084c6037-7481-4657-9e97-7c4b92569c7d",
 		"name": "GWELLS Well API v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
@@ -381,6 +381,55 @@
 					"response": []
 				},
 				{
+					"name": "Wells Location Curated Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"",
+									"pm.test(\"Response Object correct\", () => {",
+									"    let response = pm.response.json();",
+									"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
+									"    response.results.forEach((result) => {",
+									"        pm.expect(result.hasOwnProperty('street_address')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('longitude')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('latitude')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('well_tag_number')).to.be.true;",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v2/wells/locations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v2",
+								"wells",
+								"locations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Create a new Aquifer",
 					"event": [
 						{
@@ -708,6 +757,370 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "General Well Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set limit to 5 to shrink response size for test",
+							"pm.test(\"Response 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"pm.test(\"Response Object correct\", () => {",
+							"    let response = pm.response.json();",
+							"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
+							"    pm.expect(response.results.length).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v2/wells?limit=5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"wells"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "General Well Search Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Set limit to 5 to shrink response size for test",
+							"pm.test(\"Response 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"pm.test(\"Response Object correct\", () => {",
+							"    let response = pm.response.json();",
+							"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
+							"    pm.expect(response.results.length).to.be.ok;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v2/wells?limit=5",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"wells"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Well",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.environment.set(\"well_tag_number\", jsonData.well);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"   pm.expect(pm.response.code).to.equal(201);",
+							"})",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"driller_name\": \"Jimithy\",\n\t\"consultant_name\": \"Bobothy\",\n\t\"consultant_company\": \"Inc & Inc\",\n\t\"work_end_date\": \"2018-07-10\",\n\t\"owner_full_name\": \"Holly Homeowner\",\n\t\"work_start_date\": \"2018-07-01\",\n\t\"owner_province_state\": \"BC\",\n\t\"owner_mailing_address\": \"321 Main Street\",\n\t\"owner_city\": \"Anytown\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v2/submissions/construction?format=json",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"submissions",
+						"construction"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "json"
+						}
+					]
+				},
+				"description": "Submit a submission"
+			},
+			"response": []
+		},
+		{
+			"name": "Well Single Instance Get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"wells",
+						"{{well_tag_number}}"
+					]
+				},
+				"description": "Request a list of wells"
+			},
+			"response": []
+		},
+		{
+			"name": "Well History Search",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();",
+							"pm.test(\"Response 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"pm.test(\"History Object returned\", () => {",
+							"    pm.expect(jsonData.hasOwnProperty('history')).to.be.true;",
+							"    pm.expect(jsonData.hasOwnProperty('create_user')).to.be.true;",
+							"    pm.expect(jsonData.hasOwnProperty('create_date')).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/history",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"wells",
+						"{{well_tag_number}}",
+						"history"
+					]
+				},
+				"description": "Request a list of wells"
+			},
+			"response": []
+		},
+		{
+			"name": "Well Get Files",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response has public/private\", () => {",
+							"    const response = pm.response.json();",
+							"    pm.expect(response.public).to.be.an('array')",
+							"    pm.expect(response.private).to.be.an('array')",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/files",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"wells",
+						"{{well_tag_number}}",
+						"files"
+					]
+				},
+				"description": "Request a list of wells"
+			},
+			"response": []
+		},
+		{
+			"name": "Wells Get PUT_URL",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response contains URL with signature\", function() {",
+							"    var jsonData = pm.response.json()",
+							"    pm.expect(jsonData.url).to.not.eql(null)",
+							"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/wells/{{well_tag_number}}/presigned_put_url?filename=file.pdf",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"wells",
+						"{{well_tag_number}}",
+						"presigned_put_url"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "file.pdf"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

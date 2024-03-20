@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "bee087ba-835a-48ca-af24-ecad954327f3",
+		"_postman_id": "54c4d7b3-3109-477e-a2f7-e1fc8914355a",
 		"name": "GWELLS Registries API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
@@ -409,6 +409,77 @@
 							"response": []
 						},
 						{
+							"name": "Company get notes",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful request (200)\", () => {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"Response formatted as expected\", () => {",
+											"    pm.expect(jsonData.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(jsonData.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(jsonData.hasOwnProperty('previous')).to.be.true;",
+											"    jsonData.results.forEach((result) => {",
+											"        pm.expect(result.hasOwnProperty('org_note_guid')).to.be.true;",
+											"        pm.expect(result.hasOwnProperty('author')).to.be.true;",
+											"        pm.expect(result.hasOwnProperty('date')).to.be.true;",
+											"        pm.expect(result.hasOwnProperty('note')).to.be.true;",
+											"    })",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "note",
+											"value": "Experienced groundwater well driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}/notes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}",
+										"notes"
+									]
+								},
+								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
 							"name": "Company retrieve (single organization detail)",
 							"event": [
 								{
@@ -601,6 +672,85 @@
 									]
 								},
 								"description": "Retrieve single organization details"
+							},
+							"response": []
+						},
+						{
+							"name": "Company update Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Successful request (200 OK)\", () => {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"City should now be Victoria\", () => {",
+											"    pm.expect(jsonData.city).to.eql(\"Squamish\");",
+											"});",
+											"",
+											"pm.test(\"Audit fields (who_updated, when_updated) were filled in by backend\", () => {",
+											"    pm.expect(jsonData.update_user.length).to.be.ok;",
+											"    pm.expect(jsonData.update_date.length).to.be.ok;",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "city",
+											"value": "Squamish",
+											"type": "text"
+										},
+										{
+											"key": "name",
+											"value": "New Company",
+											"type": "text"
+										},
+										{
+											"key": "province_state",
+											"value": "AB",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/organizations/{{created_guid}}?format=json",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"organizations",
+										"{{created_guid}}"
+									],
+									"query": [
+										{
+											"key": "format",
+											"value": "json"
+										}
+									]
+								}
 							},
 							"response": []
 						},
@@ -1329,6 +1479,62 @@
 							"response": []
 						},
 						{
+							"name": "Get Applications",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status Code 200\", () => pm.expect(pm.response.code).to.equal(200))",
+											"pm.test(\"Response Object formatted correctly\", () => {",
+											"    const data = pm.response.json();",
+											"    pm.expect(data.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('previous')).to.be.true;",
+											"    pm.expect(data.results).to.be.an('array');",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/applications",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"applications"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Driller List",
 							"event": [
 								{
@@ -1629,34 +1835,26 @@
 							"response": []
 						},
 						{
-							"name": "Driller retrieve (single driller detail) Copy",
+							"name": "Driller Retrieve Files",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"exec": [
-											"pm.test(\"Status code is 200\", () => {",
-											"    pm.response.to.have.status(200);",
-											"});",
+											"pm.test('Response 200', () => {",
+											"    pm.expect(pm.response.code).to.equal(200)",
+											"})",
 											"",
-											"var jsonData = pm.response.json()",
+											"pm.test('Response contains Public', () => {",
+											"    pm.expect(pm.response.json().public).to.be.an('array');",
+											"})",
 											"",
-											"pm.test(\"First name equals name supplied in request (Bobby)\", () => {",
-											"    pm.expect(jsonData.first_name).to.eql(\"Bobby\");",
-											"});",
-											"",
-											"pm.test(\"Last name equals value supplied in request (Driller)\", () => {",
-											"    pm.expect(jsonData.surname).to.eql(\"Driller\");",
-											"});",
-											"",
-											"pm.test(\"Audit fields are present and show the user who created the record\", () => {",
-											"    pm.expect(jsonData.create_user.length).to.be.ok;",
-											"    pm.expect(jsonData.create_date.length).to.be.ok;",
-											"    pm.expect(jsonData.create_user).to.eql(pm.environment.get(\"driller_audit_name\"));",
-											"});",
-											""
+											"pm.test('Response contains Private', () => {",
+											"    pm.expect(pm.response.json().private).to.be.an('array');",
+											"})"
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1672,7 +1870,7 @@
 									}
 								],
 								"url": {
-									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}?format=json",
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/files",
 									"host": [
 										"{{base_url}}"
 									],
@@ -1680,13 +1878,8 @@
 										"api",
 										"v1",
 										"drillers",
-										"{{created_driller_guid}}"
-									],
-									"query": [
-										{
-											"key": "format",
-											"value": "json"
-										}
+										"{{created_driller_guid}}",
+										"files"
 									]
 								},
 								"description": "Driller model detail view - single driller"
@@ -1838,9 +2031,13 @@
 											"",
 											"pm.test(\"Date recorded\", () => {",
 											"    pm.expect(jsonData.date).to.be.ok;",
-											"});"
+											"});",
+											"",
+											"pm.environment.set('person_note_guid', jsonData.person_note_guid);",
+											""
 										],
-										"type": "text/javascript"
+										"type": "text/javascript",
+										"packages": {}
 									}
 								}
 							],
@@ -1882,6 +2079,77 @@
 											"key": "format",
 											"value": "json"
 										}
+									]
+								},
+								"description": "Update a driller record"
+							},
+							"response": []
+						},
+						{
+							"name": "Driller get Notes about Driller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Successful request (200)\", () => {",
+											"    pm.expect(pm.response.code).to.eql(200);",
+											"});",
+											"",
+											"var jsonData = pm.response.json()",
+											"",
+											"pm.test(\"Response formatted as expected\", () => {",
+											"    pm.expect(jsonData.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(jsonData.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(jsonData.hasOwnProperty('previous')).to.be.true;",
+											"    jsonData.results.forEach((result) => {",
+											"        pm.expect(result.hasOwnProperty('person_note_guid')).to.be.true;",
+											"        pm.expect(result.hasOwnProperty('author')).to.be.true;",
+											"        pm.expect(result.hasOwnProperty('date')).to.be.true;",
+											"        pm.expect(result.hasOwnProperty('note')).to.be.true;",
+											"    })",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "note",
+											"value": "Experienced groundwater well driller",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/{{created_driller_guid}}/notes",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"{{created_driller_guid}}",
+										"notes"
 									]
 								},
 								"description": "Update a driller record"
@@ -2577,6 +2845,52 @@
 									]
 								},
 								"description": "Attempt to create a driller record with missing required input."
+							},
+							"response": []
+						},
+						{
+							"name": "Get Driller Names",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let response = pm.response.json();",
+											"pm.test(\"Status code to be 200\", () => {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"pm.test(\"Response is an array\", () => {",
+											"    const id = pm.environment.get(\"aquifer_id\")",
+											"    pm.expect(response).to.be.an('array')",
+											"})",
+											"pm.test(\"Response contains correct object schema\", () => {",
+											"    response.forEach((item) => {",
+											"        pm.expect(item.hasOwnProperty('name')).to.be.true;",
+											"        pm.expect(item.hasOwnProperty('person_guid')).to.be.true;",
+											"        pm.expect(item.hasOwnProperty('registrations')).to.be.true;",
+											"    })",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/drillers/names",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"drillers",
+										"names"
+									]
+								}
 							},
 							"response": []
 						}

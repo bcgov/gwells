@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "b1a070c0-227d-4c95-9d1a-2e4c498ac329",
+		"_postman_id": "5af206dc-0c56-4a30-b354-9ba715416251",
 		"name": "GWELLS Submissions API v2",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
@@ -1877,6 +1877,74 @@
 				{
 					"name": "Decommission",
 					"item": [
+						{
+							"name": "Log in Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"pm.environment.set(\"token\", jsonData.access_token);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"A token was returned\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+											"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{client_secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{client_id}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{auth_server}}",
+									"host": [
+										"{{auth_server}}"
+									]
+								},
+								"description": "Get token (log in)"
+							},
+							"response": []
+						},
 						{
 							"name": "Decommission well",
 							"event": [
