@@ -301,8 +301,17 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                         if ("dev".equalsIgnoreCase("${envSuffix}")) {
                             sh """
                                 newman run ./wells_search_api_tests.json \
-                                --global-var base_url=\$BASE_URL \
-                                -r cli,junit,html
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_search_V2_api_tests.json \
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
                             """
                         }
 
