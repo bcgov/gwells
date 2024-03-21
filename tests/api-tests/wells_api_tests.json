@@ -324,52 +324,6 @@
 					"response": []
 				},
 				{
-					"name": "Wells Location Curated Search",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"",
-									"pm.test(\"Response 200\", () => {",
-									"    pm.expect(pm.response.code).to.equal(200)",
-									"})",
-									"",
-									"pm.test(\"Response Object correct\", () => {",
-									"    let response = pm.response.json();",
-									"    pm.expect(response.length).to.be.ok;",
-									"    response.forEach((result) => {",
-									"        pm.expect(result.hasOwnProperty('street_address')).to.be.true;",
-									"        pm.expect(result.hasOwnProperty('longitude')).to.be.true;",
-									"        pm.expect(result.hasOwnProperty('latitude')).to.be.true;",
-									"        pm.expect(result.hasOwnProperty('well_tag_number')).to.be.true;",
-									"    })",
-									"})"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/v1/wells/locations",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"wells",
-								"locations"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Well Get Files - Auth",
 					"event": [
 						{
