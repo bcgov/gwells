@@ -777,56 +777,8 @@
 							"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
 							"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
 							"    pm.expect(response.results.length).to.be.ok;",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/api/v2/wells?limit=5",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v2",
-						"wells"
-					],
-					"query": [
-						{
-							"key": "limit",
-							"value": "5"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "General Well Search Copy",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Set limit to 5 to shrink response size for test",
-							"pm.test(\"Response 200\", () => {",
-							"    pm.expect(pm.response.code).to.equal(200)",
 							"})",
-							"",
-							"pm.test(\"Response Object correct\", () => {",
-							"    let response = pm.response.json();",
-							"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
-							"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
-							"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
-							"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
-							"    pm.expect(response.results.length).to.be.ok;",
-							"})"
+							"pm.environment.set('well_tag_number', pm.response.json().results[0].well_tag_number);"
 						],
 						"type": "text/javascript",
 						"packages": {}

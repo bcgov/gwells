@@ -101,7 +101,9 @@
 									"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
 									"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
 									"    pm.expect(response.results.length).to.be.ok;",
-									"})"
+									"})",
+									"",
+									"pm.environment.set('well_tag_number', pm.response.json().results[0].well_tag_number);"
 								],
 								"type": "text/javascript",
 								"packages": {}
