@@ -1617,8 +1617,8 @@
 							"",
 							"pm.test(\"Responses contains search term\", () => {",
 							"    jsonData.forEach((entry) => {",
-							"        const stringified = JSON.stringify(entry)",
-							"        pm.expect(stringified.includes('Aquifer')).to.be.true;",
+							"        const stringified = JSON.stringify(entry).toLowerCase()",
+							"        pm.expect(stringified.includes('aquifer')).to.be.true;",
 							"    })",
 							"})"
 						],
