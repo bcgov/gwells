@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "bb412a60-d5a7-4758-9518-320628ebac6e",
+		"_postman_id": "e90dc2af-da89-4df4-a49c-71d29b09c874",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "33152761"
@@ -78,10 +78,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "Wells",
-			"item": []
 		},
 		{
 			"name": "Activity Submissions",
@@ -298,6 +294,53 @@
 					"name": "Construction",
 					"item": [
 						{
+							"name": "Construction Get",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code 200\", () => {",
+											"    pm.expect(pm.response.code).to.equal(200)",
+											"})",
+											"pm.test(\"Response matches format\", () => {",
+											"    const data = pm.response.json();",
+											"    pm.expect(data.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('previous')).to.be.true;",
+											"    pm.expect(data.results).to.be.an('array');",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/construction",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"construction"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Construction Submission",
 							"event": [
 								{
@@ -376,6 +419,58 @@
 									]
 								},
 								"description": "Submit a submission"
+							},
+							"response": []
+						},
+						{
+							"name": "Activity Submission Presigned Put URL",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Response code 200\", () => {",
+											"    pm.expect(pm.response.code).to.equal(200);",
+											"})",
+											"pm.test(\"Response keys match expected values\", () => {",
+											"    let response = pm.response.json();",
+											"    pm.expect(response.object_name).to.equal('file.pdf');",
+											"    pm.expect(response.url.includes('X-Amz-Expires'));",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/{{filing_number}}/presigned_put_url?filename=file.pdf",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"{{filing_number}}",
+										"presigned_put_url"
+									],
+									"query": [
+										{
+											"key": "filename",
+											"value": "file.pdf"
+										}
+									]
+								}
 							},
 							"response": []
 						},
@@ -1801,6 +1896,53 @@
 							"response": []
 						},
 						{
+							"name": "Alteration Get",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code 200\", () => {",
+											"    pm.expect(pm.response.code).to.equal(200)",
+											"})",
+											"pm.test(\"Response matches format\", () => {",
+											"    const data = pm.response.json();",
+											"    pm.expect(data.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('previous')).to.be.true;",
+											"    pm.expect(data.results).to.be.an('array');",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/alteration",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"alteration"
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Alteration - Person Responsible - Well Updated",
 							"event": [
 								{
@@ -2039,6 +2181,53 @@
 									]
 								},
 								"description": "Check if the submission was created correclty."
+							},
+							"response": []
+						},
+						{
+							"name": "Decommission Get",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code 200\", () => {",
+											"    pm.expect(pm.response.code).to.equal(200)",
+											"})",
+											"pm.test(\"Response matches format\", () => {",
+											"    const data = pm.response.json();",
+											"    pm.expect(data.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('previous')).to.be.true;",
+											"    pm.expect(data.results).to.be.an('array');",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/decommission",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"decommission"
+									]
+								}
 							},
 							"response": []
 						}
@@ -2407,6 +2596,53 @@
 									"response": []
 								}
 							]
+						},
+						{
+							"name": "staff_edit Get",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code 200\", () => {",
+											"    pm.expect(pm.response.code).to.equal(200)",
+											"})",
+											"pm.test(\"Response matches format\", () => {",
+											"    const data = pm.response.json();",
+											"    pm.expect(data.hasOwnProperty('count')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('next')).to.be.true;",
+											"    pm.expect(data.hasOwnProperty('previous')).to.be.true;",
+											"    pm.expect(data.results).to.be.an('array');",
+											"})"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "JWT {{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/v1/submissions/staff_edit",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"submissions",
+										"staff_edit"
+									]
+								}
+							},
+							"response": []
 						},
 						{
 							"name": "Construction Submission",
@@ -3068,6 +3304,37 @@
 		{
 			"name": "Stacking",
 			"item": [
+				{
+					"name": "Log in Copy",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic Z3dlbGxzLWFwaS10ZXN0cy00ODIwOlN3Z05oZDQ1UUpTdXJ4SFUxUU42NVBNbFZUTzRnRGs3",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth_server}}",
+							"host": [
+								"{{auth_server}}"
+							]
+						},
+						"description": "Get token (log in)"
+					},
+					"response": []
+				},
 				{
 					"name": "Submission - construction submission",
 					"event": [

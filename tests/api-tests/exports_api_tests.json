@@ -1,0 +1,339 @@
+{
+	"info": {
+		"_postman_id": "fd5059fb-80b6-4e94-a877-417580573f85",
+		"name": "Exports",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
+	},
+	"item": [
+		{
+			"name": "Log in",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"pm.environment.set(\"token\", jsonData.access_token);",
+							"",
+							"pm.test(\"Status code is 200\", () => {",
+							"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"A token was returned\", () => {",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+							"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{client_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{client_id}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{auth_server}}",
+					"host": [
+						"{{auth_server}}"
+					]
+				},
+				"description": "Get token (log in)"
+			},
+			"response": []
+		},
+		{
+			"name": "Well Export",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response has proper keys\", () => {",
+							"    let items = pm.response.json()",
+							"    pm.expect(items.type).to.equal('FeatureCollection');",
+							"    pm.expect(items.features).to.be.an('array');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v2/gis/wells?realtime=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"gis",
+						"wells"
+					],
+					"query": [
+						{
+							"key": "realtime",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Well Search Export CSV",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Only returns a CSV File based on the results of a user search, no other tests to write",
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/export?format=csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						"export"
+					],
+					"query": [
+						{
+							"key": "format",
+							"value": "csv"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Lithology Export",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response has proper keys\", () => {",
+							"    let items = pm.response.json()",
+							"    pm.expect(items.type).to.equal('FeatureCollection');",
+							"    pm.expect(items.features).to.be.an('array');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/gis/lithology?realtime=true",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"gis",
+						"lithology"
+					],
+					"query": [
+						{
+							"key": "realtime",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Parameter Export",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response has proper keys\", () => {",
+							"    let items = pm.response.json()",
+							"    pm.expect(items.type).to.equal('FeatureCollection');",
+							"    pm.expect(items.features).to.be.an('array');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v2/gis/aquifer-parameters?realtime=True",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"gis",
+						"aquifer-parameters"
+					],
+					"query": [
+						{
+							"key": "realtime",
+							"value": "True"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Drillers CSV",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/drillers/csv",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"drillers",
+						"csv"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Drillers xlsx",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/drillers/xlsx",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"drillers",
+						"xlsx"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

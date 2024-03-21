@@ -1,0 +1,134 @@
+{
+	"info": {
+		"_postman_id": "355f69cf-a554-4fbb-9f82-510b885e4d7e",
+		"name": "Configuration",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
+	},
+	"item": [
+		{
+			"name": "Analytic Config",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Analytic Object returns a boolean value\", () => {",
+							"    pm.expect(response.enable_google_analytics).to.be.a('boolean');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/analytics",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"analytics"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Keycloak Configuration",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Analytic Object returns a boolean value\", () => {",
+							"    pm.expect(response.hasOwnProperty('realm')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('auth-server-url')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('ssl-required')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('resource')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('public-client')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('confidential-port')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('clientId')).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/keycloak",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"keycloak"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Configuration Object",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Analytic Object returns a boolean value\", () => {",
+							"    pm.expect(response.hasOwnProperty('enable_aquifers_search')).to.be.true;",
+							"    pm.expect(response.hasOwnProperty('sso_idp_hint')).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/config",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"config"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

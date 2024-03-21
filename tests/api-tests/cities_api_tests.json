@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "5db9f289-7a51-4b73-ad8e-af340fad2c1a",
+		"name": "Cities",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
+	},
+	"item": [
+		{
+			"name": "Drillers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json()",
+							"pm.test(\"Status code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"pm.test(\"Returns list of cities\", () => {",
+							"    pm.expect(response).to.be.an(\"array\");",
+							"    response.forEach((item) => {",
+							"        pm.expect(item.hasOwnProperty('city')).to.be.true",
+							"        pm.expect(item.hasOwnProperty('province_state')).to.be.true",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/cities/drillers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"cities",
+						"drillers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Installers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json()",
+							"pm.test(\"Status code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"pm.test(\"Returns list of cities\", () => {",
+							"    pm.expect(response).to.be.an(\"array\");",
+							"    response.forEach((item) => {",
+							"        pm.expect(item.hasOwnProperty('city')).to.be.true",
+							"        pm.expect(item.hasOwnProperty('province_state')).to.be.true",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/cities/installers",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"cities",
+						"installers"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
