@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     /**
-     * @desc Gets export URL with headers and file format. Trims '/api' from url because APIService duplicates it.
+     * @desc Gets export URL with headers and file format.
      * @param {string} format Filetype: "csv", "xlsx"
      */
     getExportUrl (format) {
