@@ -53,7 +53,7 @@ export default {
   },
   data () {
     return {
-      exportBaseUrl: `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export`,
+      exportBaseUrl: `wells/export`,
       maxExportSize: MAX_API_RESULT_AND_EXPORT_COUNT
     }
   },
@@ -96,7 +96,7 @@ export default {
       if (this.fullQueryString) {
         url = `${url}&${this.fullQueryString}`
       }
-      return url.replace("/api", "")
+      return url
     },
     /**
      * @desc    Gets the correctly formatted export URL given the filetype and leverages users Auth to send download request
