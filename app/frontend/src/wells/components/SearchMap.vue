@@ -42,7 +42,6 @@ import {
   wellLayerFilter,
   SEARCHED_WELLS_LAYER_ID,
   WELLS_SOURCE,
-wellsAquiferParameters
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { createWellPopupElement } from '../popup'
@@ -90,10 +89,6 @@ export default {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
             },
-            {
-              imageSrc: wellsHydraulicLegendSrc,
-              label: `aquifer <br/> <div class='float-right'>parameters</div>`
-            }
           ]
         }
       ],
@@ -247,7 +242,6 @@ export default {
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
           focusedWellsLayer(),
-          wellsAquiferParameters()
         ]
       }
     },
