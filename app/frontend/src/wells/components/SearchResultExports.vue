@@ -17,10 +17,24 @@
     <div>
       <ul>
         <li>
-          <a :href="excelExportUrl" download="search-results.xlsx" @click="handleExportClickEvent('Excel')">Excel</a>
+          <b-button
+            variant="outline-primary"
+            type="download"
+            download="search-results.xlsx"
+            @click="exportHandler('xlsx')"
+          >
+            Excel
+          </b-button>
         </li>
         <li>
-          <a :href="csvExportUrl" download="search-results.csv" @click="handleExportClickEvent('CSV')">CSV</a>
+          <b-button
+            variant="outline-primary"
+            type="download"
+            download="search-results.csv"
+            @click="exportHandler('csv')"
+          >
+            CSV
+          </b-button>
         </li>
       </ul>
     </div>
@@ -29,7 +43,7 @@
 
 <script>
 import querystring from 'querystring'
-
+import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
@@ -71,23 +85,31 @@ export default {
 
       return querystring.stringify(queryParams)
     },
-    excelExportUrl () {
-      return this.getExportUrl('xlsx')
-    },
-    csvExportUrl () {
-      return this.getExportUrl('csv')
-    }
   },
   methods: {
+    /**
+     * @desc Gets export URL with headers and file format. Trims '/api' from url because APIService duplicates it.
+     * @param {string} format Filetype: "csv", "xlsx"
+     */
     getExportUrl (format) {
       let url = `${this.exportBaseUrl}?format=${format}`
       if (this.fullQueryString) {
         url = `${url}&${this.fullQueryString}`
       }
-
-      return url
+      return url.replace("/api", "")
     },
-    handleExportClickEvent (format) {
+    /**
+     * @desc    Gets the correctly formatted export URL given the filetype and leverages users Auth to send download request
+     *          then sends Google Analytics request
+     * @summary Downloads search data for file format.
+     * @param   {string} format Filetype: "csv", "xlsx"
+     */
+    exportHandler(format) {
+      const exportUrl = this.getExportUrl(format);
+      ApiService.download(exportUrl);
+      this.sendAnalytics(format);
+    },
+    sendAnalytics (format) {
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
@@ -101,5 +123,11 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+  ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+  }
+  ul > li:first-child { margin-right: 1em; }
 </style>
