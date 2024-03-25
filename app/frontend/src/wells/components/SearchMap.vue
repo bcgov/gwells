@@ -42,7 +42,6 @@ import {
   wellLayerFilter,
   SEARCHED_WELLS_LAYER_ID,
   WELLS_SOURCE,
-wellsAquiferParameters
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { createWellPopupElement } from '../popup'
@@ -53,7 +52,6 @@ import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.type
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
-import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 import { mapGetters } from 'vuex'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
@@ -90,10 +88,6 @@ export default {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
             },
-            {
-              imageSrc: wellsHydraulicLegendSrc,
-              label: `aquifer <br/> <div class='float-right'>parameters</div>`
-            }
           ]
         }
       ],
@@ -247,7 +241,6 @@ export default {
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
           focusedWellsLayer(),
-          wellsAquiferParameters()
         ]
       }
     },
