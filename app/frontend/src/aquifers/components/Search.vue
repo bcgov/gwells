@@ -140,13 +140,13 @@
             v-if="searchPerformed"
             :tbody-tr-class="searchResultsRowClass"
             responsive>
-            <template slot="id" slot-scope="row">
+            <template v-slot:cell(id)="row">
               <router-link :to="{ name: 'aquifers-view', params: {id: row.item.aquifer_id} }">{{ row.item.aquifer_id }}</router-link>
             </template>
-            <template slot="name" slot-scope="row">
+            <template v-slot:cell(name)="row">
               {{row.item.name}}
             </template>
-            <template slot="retire_date" slot-scope="row">
+            <template v-slot:cell(retire_date)="row">
               <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </template>
             <template v-slot:table-busy>
@@ -197,7 +197,8 @@ import features from '../../common/features'
 import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
 
 const SEARCH_RESULTS_PER_PAGE = 10
-const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
+const AQUIFER_NOTATION_CODE = 'Notations'
+const UNPUBLISHED_AQUIFERS = 'Unpublished'
 const URL_QS_SEARCH_KEYS = ['constrain', 'resources__section__code', 'match_any', 'search']
 
 const RESULTS_TABLE_FIELDS = [
@@ -211,7 +212,7 @@ const RESULTS_TABLE_FIELDS = [
   { key: 'area', label: 'Size\u2011km²', sortable: true },
   { key: 'productivity', label: 'Productivity', sortable: true },
   { key: 'demand', label: 'Demand', sortable: true },
-  { key: 'mapping_year', label: 'Year\xa0of\xa0mapping', sortable: true },
+  { key: 'mapping_year', label: 'Year\xa0of\xa0mapping', sortable: true }
 ]
 
 export default {
@@ -223,8 +224,11 @@ export default {
     let query = this.$route.query
 
     let selectedSections = query.resources__section__code ? query.resources__section__code.split(',') : []
-    if (query.hydraulically_connected) {
-      selectedSections.push(HYDRAULICALLY_CONNECTED_CODE)
+    if (query.aquifer_notations) {
+      selectedSections.push(AQUIFER_NOTATION_CODE)
+    }
+    if (query.unpublished) {
+      selectedSections.push(UNPUBLISHED_AQUIFERS)
     }
 
     return {
@@ -360,10 +364,22 @@ export default {
     fetchResourceSections () {
       ApiService.query('aquifers/sections').then((response) => {
         let sections = (response.data || {}).results || []
-        sections.splice(2, 0, {
-          name: 'Hydraulically connected',
-          code: HYDRAULICALLY_CONNECTED_CODE
+        // remove pumping stress index option
+        const idx = sections.findIndex(s => s.code === 'P')
+        if (idx > -1) {
+          sections.splice(idx, 1)
+        }
+        // add aquifer notations to search options
+        sections.splice(1, 0, {
+          name: 'Aquifer notations',
+          code: AQUIFER_NOTATION_CODE
         })
+        if (this.userRoles.aquifers.edit) {
+          sections.push({
+            name: 'Unpublished aquifers',
+            code: UNPUBLISHED_AQUIFERS
+          })
+        }
         this.addSections(sections)
       })
     },

@@ -97,7 +97,8 @@ const aquiferFixture = {
       purpose__description: '03B - Irrigation: Private ',
       total_qty: 2
     }],
-    hydraulically_connected: true
+    hydraulically_connected: true,
+    aquifer_notations: true
   }
 }
 

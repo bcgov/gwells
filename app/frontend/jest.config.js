@@ -15,7 +15,7 @@ module.exports = {
     '/node_modules/'
   ],
   moduleNameMapper: {
-    ".+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$": "babel-jest",
+    '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': 'babel-jest',
     '^@/(.*)$': '<rootDir>/src/$1'
   },
   snapshotSerializers: [

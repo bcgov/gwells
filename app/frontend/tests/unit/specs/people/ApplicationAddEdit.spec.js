@@ -9,14 +9,22 @@ localVue.use(Vuex)
 
 describe('ApplicationAddEdit.vue', () => {
   describe('When loaded', () => {
-    const getters = {
-      drillerOptions: jest.fn().mockReturnValue(fakeOptions),
-      loading: () => false
-    }
-    const actions = {
-      [FETCH_DRILLER_OPTIONS]: jest.fn()
-    }
-    const store = new Vuex.Store({ getters, actions })
+    const store = new Vuex.Store({
+      modules: {
+        registriesStore: {
+          namespaced: true,
+          getters: {
+            drillerOptions: jest.fn().mockReturnValue(fakeOptions),
+            loading: () => false
+          },
+          actions: {
+            [FETCH_DRILLER_OPTIONS]: jest.fn()
+          },
+          mutations: {
+          }
+        }
+      }
+    })
     const activity = 'DRILL'
 
     const wrapper = mount(ApplicationAddEdit, {

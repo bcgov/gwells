@@ -76,7 +76,7 @@
           <b-col cols="12" md="4">
             <b-form-group
               id="emailInputGroup"
-              label="Email address:"
+              label="Email Address:"
               label-for="emailInput">
               <b-form-input
                 id="emailInput"
@@ -212,7 +212,7 @@ export default {
         contact_email: (this.fieldErrors.contact_email && this.fieldErrors.contact_email.length) ? false : null
       }
     },
-    ...mapGetters([
+    ...mapGetters('registriesStore', [
       'error',
       'currentDriller'
     ])

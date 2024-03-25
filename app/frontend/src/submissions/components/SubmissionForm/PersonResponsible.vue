@@ -53,12 +53,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="no-options">
                   Type to search registry...
               </template>
-              <template slot="selected-option" slot-scope="option">
+              <template v-slot:cell(selected-option)="option">
                 <div>
                   {{ personNameReg (option) }}
                 </div>
               </template>
-              <template slot="option" slot-scope="option">
+              <template v-slot:cell(option)="option">
                 <div>
                   {{ personNameReg (option) }}
                 </div>
@@ -91,7 +91,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-form-group
               aria-describedby="companyOfPersonResponsibleInvalidFeedback"
               :state="false">
-            <label>Company of person Responsible for Drilling</label>
+            <label>Company of Person Responsible for Drilling</label>
             <v-select
               :disabled="companies === null"
               id="companyOfPersonResponsibleSelect"

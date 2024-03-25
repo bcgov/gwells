@@ -26,7 +26,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
       </b-row>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
-      <p>After the GPS coordinates are entered, the map pin can be moved by clicking and dragging it on the map. The GPS coordinates will be updated automatically.</p>
+      <p class="bg-warning p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
         <b-col sm="12" md="6">
           <b-card no-body class="p-3 m-1 m-md-1">
@@ -203,10 +203,29 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </b-col>
         <b-col sm="12" md="6">
-          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate"/>
+          <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water"/>
         </b-col>
       </b-row>
-
+      <b-card>
+      <b-modal
+        v-model="confirmRemoveModalInput"
+        no-close-on-esc
+        no-close-on-backdrop
+        hide-header-close
+        centered
+        title="Confirm Coordinates Change"
+        @shown="focusRemoveModal">
+        WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.
+        <div slot="modal-footer">
+          <b-btn variant="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn">
+            No, Cancel
+          </b-btn>
+          <b-btn variant="danger" @click="confirmRemoveModalInput=false;confirmCoords()">
+            Yes, Update
+          </b-btn>
+        </div>
+      </b-modal>
+    </b-card>
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
       <b-alert class="mt-3" variant="danger" :show="errorCoordsNotProvided">
         Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.
@@ -255,7 +274,11 @@ export default {
     saveDisabled: {
       type: Boolean,
       isInput: false
-    }
+    },
+    drinking_water: {
+      type: Boolean,
+      default: false
+    },
   },
   data () {
     return {
@@ -286,15 +309,23 @@ export default {
       coordinateLookup: new Map(),
       coordinateResolveLookup: new Map(),
       validCoordinate: null,
-      timeout: null
+      timeout: null,
+      initialLongitude: null,
+      initialLatitude: null,
+      confirmRemoveModalInput: false,
+      temporaryDeactivateModal: false
     }
   },
   created () {
     if (this.latitude || this.longitude) {
       // If we're loaded with a latitude and longitude, trigger an update so that degree,minute,second
       // and East/Northing get populated.
-      this.handleMapCoordinate({ lng: Math.abs(Number(this.longitude)), lat: Number(this.latitude) })
+      this.handleMapCoordinate({ lng: Math.abs(this.roundDecimalDegrees(Number(this.longitude))), lat: this.roundDecimalDegrees(Number(this.latitude)) })
     }
+
+    // Save original the coords to compare against if user select "No" to the modal
+    this.initialLatitude = this.latitude
+    this.initialLongitude = this.longitude
   },
   computed: {
     // BC is covered by UTM zones 7 through 11
@@ -420,11 +451,26 @@ export default {
     updateDegrees (longitude, latitude) {
       const newLong = this.roundDecimalDegrees(longitude)
       const newLat = this.roundDecimalDegrees(latitude)
+
+      // Check if the coordinates coming in have changed
+      // while also checking if the drinking water flag is true.
+      // If the user has changed the coordinates and selected "Yes", we don't show again
+      if ((newLong !== this.longitude * -1 || newLat !== this.latitude) &&
+        this.drinking_water &&
+        !this.temporaryDeactivateModal) {
+        // Show the confirmation modal if the coordinates have changed
+        this.confirmRemoveModalInput = true
+      }
+
+      this.setNewDegrees(newLong, newLat)
+    },
+    setNewDegrees (newLong, newLat) {
       // Set the prop value of longitude and latitude
       this.longitudeInput = Math.abs(newLong) * -1 // Always make longitude negative so form is clean
       this.latitudeInput = newLat
       this.degrees.longitude = Math.abs(newLong)
       this.degrees.latitude = newLat
+
       this.checkIfCoordinateIsValid(newLat, newLong)
     },
     resetDegrees () {
@@ -456,6 +502,26 @@ export default {
           this.validCoordinate = result
         })
       }, 500)
+    },
+    focusRemoveModal () {
+      // Focus the "cancel" button in the confirm remove popup.
+      this.$refs.cancelRemoveBtn.focus()
+    },
+    revertCoords () {
+      // Revert the coordinates to the initial values, hide modal
+      this.handleMapCoordinate({ lng: Math.abs(Number(this.initialLongitude)), lat: Number(this.initialLatitude) })
+      this.confirmRemoveModalInput = false
+      return
+    },
+    confirmCoords () {
+      // User agrees to update coords, so modal doesn't need to show again
+      this.temporaryDeactivateModal = true
+      let coords = {
+        lat: this.initialLatitude,
+        lng: this.initialLongitude
+      }
+      this.$emit('editWater', coords)
+      return
     }
   }
 }

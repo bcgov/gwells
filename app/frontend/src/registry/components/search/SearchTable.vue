@@ -1,6 +1,6 @@
 <template>
   <div class="registry-search-table">
-    <div class="registry-search-table-loading" v-if="loading">
+    <div class="registry-search-table-loading" v-if="loading || isSearchInProgress">
       <b-spinner/>
     </div>
     <div class="table-responsive">
@@ -18,8 +18,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="drillers.results && drillers.results.length"
-              v-for="(driller, index) in drillers.results"
+          <tr v-if="searchResponse.results && searchResponse.results.length"
+              v-for="(driller, index) in searchResponse.results"
               :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
             <td :id="`drillerName${index}`">
               <router-link
@@ -65,18 +65,18 @@
     </div>
     <div class="row">
       <div class="col-xs-12 col-sm-4">
-        <span v-if="drillers.results && drillers.results.length">Showing <span id="drillersCurrentOffset">{{ drillers.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ drillers.offset + drillers.results.length }}</span> of <span id="drillersTotalResults">{{ drillers.count }}</span></span>
+        <span v-if="searchResponse.results && searchResponse.results.length">Showing <span id="drillersCurrentOffset">{{ searchResponse.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ searchResponse.offset + searchResponse.results.length }}</span> of <span id="drillersTotalResults">{{ searchResponse.count }}</span></span>
       </div>
-      <div v-if="drillers.results && drillers.results.length" class="col-xs-12 col-sm-4 offset-sm-4 offset-md-5 col-md-3">
-        <nav aria-label="List navigation" v-if="drillers.results && drillers.results.length">
+      <div v-if="searchResponse.results && searchResponse.results.length" class="col-xs-12 col-sm-4 offset-sm-4 offset-md-5 col-md-3">
+        <nav aria-label="List navigation" v-if="searchResponse.results && searchResponse.results.length">
           <ul class="pagination">
             <li class="ml-auto">
-              <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev" :disabled="!drillers.previous">
+              <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev" :disabled="!searchResponse.previous">
                 <span aria-hidden="true">Previous</span>
               </button>
             </li>
             <li>
-              <button type="button" @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next" :disabled="!drillers.next">
+              <button type="button" @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next" :disabled="!searchResponse.next">
                 <span aria-hidden="true">Next</span>
               </button>
             </li>
@@ -88,11 +88,11 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import smoothScroll from 'smoothscroll'
 import querystring from 'querystring'
 
-import { FETCH_DRILLER_LIST } from '@/registry/store/actions.types'
+import { SEARCH } from '@/registry/store/actions.types'
 import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
 import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
 import DrillerContactInfo from '@/registry/components/search/table-helpers/DrillerContactInfo.vue'
@@ -171,19 +171,16 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
+    ...mapGetters(['userRoles']),
+    ...mapGetters('registriesStore', [
       'loading',
+      'isSearchInProgress',
       'listError',
-      'userRoles',
-      'drillers',
+      'searchResponse',
       'activity'
     ])
   },
   watch: {
-    // When drillers has a new state, scroll to the top of the searchTable.
-    drillers () {
-      this.scrollToTableTop()
-    }
   },
   methods: {
     /**
@@ -191,25 +188,27 @@ export default {
      */
     paginationNext () {
       // API provides 'next' and 'previous' links with query strings for the current search
-      if (this.drillers.next && ~this.drillers.next.indexOf('?')) {
-        this.getPage(this.drillers.next.split('?')[1])
+      if (this.searchResponse.next && ~this.searchResponse.next.indexOf('?')) {
+        this.getPage(this.searchResponse.next.split('?')[1])
       }
     },
     /**
      * Gets called when the user clicks on the previous button, load the previous result page.
      */
     paginationPrev () {
-      if (this.drillers.previous && ~this.drillers.previous.indexOf('?')) {
-        this.getPage(this.drillers.previous.split('?')[1])
+      if (this.searchResponse.previous && ~this.searchResponse.previous.indexOf('?')) {
+        this.getPage(this.searchResponse.previous.split('?')[1])
       }
     },
     /**
-     * Triggers FETCH_DRILLER_LIST store action.
+     * Triggers SEARCH store action.
      * @param {string} query QueryString of the new page to be loaded.
      */
     getPage (query) {
-      if (!query) throw new Error('query parameter is required.')
-      this.$store.dispatch(FETCH_DRILLER_LIST, querystring.parse(query))
+      if (!query) {
+        throw new Error('query parameter is required.')
+      }
+      this.SEARCH(querystring.parse(query))
     },
     fieldSortable (field) {
       return Boolean(field.sortable && field.sortCode)
@@ -224,7 +223,10 @@ export default {
      */
     scrollToTableTop () {
       smoothScroll(this.$el, 100)
-    }
+    },
+    ...mapActions('registriesStore', [
+      SEARCH
+    ])
   }
 }
 </script>

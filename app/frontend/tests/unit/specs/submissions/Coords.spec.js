@@ -168,7 +168,7 @@ describe('Coords.vue', () => {
         },
         expected: {
           latitude: 49.41555,
-          longitude: 142.97861
+          longitude: 142.978614
         }
       },
       {
@@ -186,7 +186,7 @@ describe('Coords.vue', () => {
         },
         expected: {
           latitude: -49.41555,
-          longitude: -142.97861
+          longitude: -142.978614
         }
       }
     ]
@@ -263,12 +263,12 @@ describe('Coords.vue', () => {
     wrapper.find('#longitudeSecInput').setValue('1')
 
     // Degrees fields should be updated to reflect the change in DMS
-    expect(wrapper.vm.degrees.latitude).toBe(50.01694)
-    expect(wrapper.vm.degrees.longitude).toBe(120.01694)
+    expect(wrapper.vm.degrees.latitude).toBe(50.016944)
+    expect(wrapper.vm.degrees.longitude).toBe(120.016944)
 
     // UTM fields should be updated to reflect the change in DMS
     expect(wrapper.vm.utm.easting).toBe(713695)
-    expect(wrapper.vm.utm.northing).toBe(5544778)
+    expect(wrapper.vm.utm.northing).toBe(5544779)
     expect(wrapper.vm.utm.zone).toBe(10)
 
     // When any DMS field is invalid then reset Degrees and UTM
@@ -302,7 +302,7 @@ describe('Coords.vue', () => {
 
     // Degrees fields should be updated to reflect the change in UTM
     expect(wrapper.vm.degrees.latitude).toBe(50)
-    expect(wrapper.vm.degrees.longitude).toBe(119.99998)
+    expect(wrapper.vm.degrees.longitude).toBe(119.999983)
 
     // DMS fields should be updated to reflect the change in UTM
     expect(wrapper.vm.dms.lat.deg).toBe(50)

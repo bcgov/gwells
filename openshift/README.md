@@ -66,7 +66,6 @@ A backup cronjob is deployed by the pipeline, but the BuildConfig needs to be cr
 
 Data will have to be migrated to the database running on OCP4.
 
-
 The following was tested for staging:
 * ensure `ftw_reader` user is in place (for tile server).  Must have connect privileges.
 * `pg_dump -d gwells -Fp -c -C -f /tmp/backup/staging-20201208.sql --exclude-table=spatial_ref_sys`

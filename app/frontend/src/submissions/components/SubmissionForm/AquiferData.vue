@@ -15,7 +15,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset>
     <b-row>
       <b-col cols="12" lg="6">
-        <legend :id="id">Well Testing and Aquifer Details</legend>
+        <legend :id="id">Aquifer Information</legend>
       </b-col>
       <b-col cols="12" lg="6">
         <div class="float-right">
@@ -27,7 +27,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <b-row>
       <b-col cols="12" md="6" xl="3">
-        <b-form-group label="Associated aquifer">
+        <b-form-group label="Associated Aquifer">
           <v-select
             v-model="aquiferInput"
             id="aquiferSelect"
@@ -40,12 +40,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <template slot="no-options">
                 Search for an aquifer by name or id number
             </template>
-            <template slot="option" slot-scope="option">
+            <template v-slot:cell(option)="option">
               <div>
                 {{ option.description }}
               </div>
             </template>
-            <template slot="selected-option" slot-scope="option">
+            <template v-slot:cell(selected-option)="option">
               <div>
                 {{ option.description }}
               </div>
@@ -53,126 +53,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </v-select>
         </b-form-group>
       </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4">
-        <form-input
-            id="aquiferVulnerabilityIndexInput"
-            label="AVI"
-            hint="years"
-            type="number"
-            v-model="aquiferVulnerabilityIndexInput"
-            :errors="errors['aquifer_vulnerability_index']"
-            :loaded="fieldsLoaded['aquifer_vulnerability_index']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="4">
-        <form-input
-            id="storativityInput"
-            label="Storativity"
-            type="number"
-            v-model="storativityInput"
-            :errors="errors['storativity']"
-            :loaded="fieldsLoaded['storativity']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="4">
-        <form-input
-            id="transmissivityInput"
-            label="Transmissivity"
-            hint="m²/s"
-            type="number"
-            v-model="transmissivityInput"
-            :errors="errors['transmissivity']"
-            :loaded="fieldsLoaded['transmissivity']"
-        ></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4">
-        <form-input
-            id="hydraulicConductivityInput"
-            label="Hydraulic Conductivity"
-            hint="m/s"
-            type="text"
-            v-model="hydraulicConductivityInput"
-            :errors="errors['hydraulic_conductivity']"
-            :loaded="fieldsLoaded['hydraulic_conductivity']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="4">
-        <form-input
-            id="specificStorageInput"
-            label="Specific storage"
-            hint="1/m"
-            type="text"
-            v-model="specificStorageInput"
-            :errors="errors['specific_storage']"
-            :loaded="fieldsLoaded['specific_storage']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="4">
-        <form-input
-            id="specificYieldInput"
-            label="Specific yield"
-            type="number"
-            v-model="specificYieldInput"
-            :errors="errors['specific_yield']"
-            :loaded="fieldsLoaded['specific_yield']"
-        ></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4">
-        <form-input
-            id="testingMethodInput"
-            label="Testing method"
-            type="text"
-            v-model="testingMethodInput"
-            :errors="errors['test_method']"
-            :loaded="fieldsLoaded['test_method']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="4">
-        <form-input
-            id="testingDuration"
-            label="Testing duration"
-            hint="hours"
-            type="number"
-            v-model="testingDurationInput"
-            :errors="errors['testing_duration']"
-            :loaded="fieldsLoaded['testing_duration']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="4">
-        <form-input
-            id="analyticSolution"
-            label="Analytic solution"
-            type="number"
-            v-model="analyticSolutionInput"
-            :errors="errors['analytic_solution_type']"
-            :loaded="fieldsLoaded['analytic_solution_type']"
-        ></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4">
-        <form-input
-          label="Boundary effect"
-          id="boundaryEffect"
-          select
-          v-model="boundaryEffectInput"
-          :options="codes.boundary_effect_codes"
-          placeholder="Select Boundary effect"
-          text-field="description"
-          value-field="boundary_effect_code"
-          :errors="errors['boundary_effect']"
-          :loaded="fieldsLoaded['boundary_effect']"/>
-      </b-col>
       <b-col cols="12" md="4">
         <b-form-group
           id="aquiferLithology"
-          label="Aquifer Lithology">
+          label="Aquifer Material">
           <b-form-select
             v-model="aquiferLithologyInput"
             value-field="aquifer_lithology_code"
@@ -214,7 +98,7 @@ export default {
     specificStorage: null,
     specificYield: null,
     testingMethod: null,
-    testingDuration: null,
+    testDuration: null,
     analyticSolutionType: null,
     boundaryEffect: null,
     aquiferLithology: null,
@@ -248,7 +132,7 @@ export default {
     specificStorageInput: 'specificStorage',
     specificYieldInput: 'specificYield',
     testingMethodInput: 'testingMethod',
-    testingDurationInput: 'testingDuration',
+    testDurationInput: 'testDuration',
     analyticSolutionInput: 'analyticSolutionType',
     boundaryEffectInput: 'boundaryEffect',
     aquiferLithologyInput: 'aquiferLithology'

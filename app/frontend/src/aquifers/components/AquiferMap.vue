@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { difference, uniq } from 'lodash'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 import { SEARCH_AQUIFERS } from '../store/actions.types'
 import {
@@ -53,7 +53,9 @@ import {
   WELLS_SOURCE,
   AQUIFERS_SOURCE,
   observationWellsLayer,
-  WELLS_OBSERVATION_LAYER_ID
+  WELLS_OBSERVATION_LAYER_ID,
+  WELLS_AQUIFER_PARAMETER_LAYER_ID,
+  wellsAquiferParameters,
 } from '../../common/mapbox/layers'
 import {
   LayersControl,
@@ -68,7 +70,8 @@ import {
   createAquiferPopupElement,
   createWellPopupElement,
   createEcocatPopupElement,
-  createWaterLicencePopupElement
+  createWaterLicencePopupElement,
+  createWellAquiferParametersPopupElement
 } from '../popup'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
@@ -80,6 +83,7 @@ import observationWellInactiveLegendSrc from '../../common/assets/images/owells-
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 export default {
@@ -150,6 +154,12 @@ export default {
         },
         {
           show: false,
+          id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
+          label: 'Wells - aquifer parameters', 
+          imageSrc: wellsHydraulicLegendSrc
+        },
+        {
+          show: false,
           id: WELLS_OBSERVATION_LAYER_ID,
           label: 'Observation wells',
           legend: [
@@ -188,6 +198,9 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles']),
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     highlightIdsMap () {
       return this.highlightAquiferIds.reduce((obj, aquiferId) => {
         obj[aquiferId] = aquiferId
@@ -202,7 +215,12 @@ export default {
     }
   },
   methods: {
+    ...mapActions('aquiferStore/notations', [
+      'fetchNotationsFromDataBC'
+    ]),
     initMapBox () {
+      this.fetchNotationsFromDataBC()
+
       if (!mapboxgl.supported()) {
         this.browserUnsupported = true
         return
@@ -299,6 +317,10 @@ export default {
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
+          },
+          [WELLS_AQUIFER_PARAMETER_LAYER_ID]: {
+            snapToCenter: true,
+            createTooltipContent: this.createWellPopupElement
           }
         }
 
@@ -337,6 +359,7 @@ export default {
           groundWaterLicencesLayer({ layout: { visibility: 'none' } }),
           wellsBaseAndArtesianLayer({ layout: { visibility: 'none' }, filter: wellLayerFilter(this.showUnpublishedWells) }),
           observationWellsLayer({ layout: { visibility: 'none' } }),
+          wellsAquiferParameters({ layout: { visibility: 'none' } })
         ]
       }
     },
@@ -455,7 +478,13 @@ export default {
     createWellPopupElement (features, { canInteract }) {
       return createWellPopupElement(features, this.map, this.$router, {
         canInteract,
-        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID ]
+        wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID, WELLS_AQUIFER_PARAMETER_LAYER_ID ]
+      })
+    },
+    createWellAquiferParametersPopupElement (features, { canInteract }) {
+      return createWellAquiferParametersPopupElement(features, this.map, this.$router, {
+        canInteract,
+        wellLayerIds: [ WELLS_AQUIFER_PARAMETER_LAYER_ID]
       })
     },
     createEcocatPopupElement (features, { canInteract }) {

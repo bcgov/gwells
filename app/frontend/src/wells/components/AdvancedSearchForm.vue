@@ -105,6 +105,9 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'ownerCity',
        'ownerProvince',
        'ownerPostalCode' ] },
+  { header: "Licence Information",
+    fields:
+     [ 'licenceNumber'] },
   { header: 'Well location',
     fields:
      [ 'legalBlock',
@@ -190,19 +193,15 @@ const ADDITIONAL_FILTER_SECTIONS = [
   { header: 'Comments',
     fields:
      [ 'comments', 'alternativeSpecsSubmitted', 'internalComments' ] },
-  { header: 'Well testing and aquifer details',
+  { header: 'Aquifer Parameters',
     fields:
-     [ 'aquiferLithology',
-       'aquiferVulnerabilityIndex',
-       'storativity',
+     [ 'storativity',
        'transmissivity',
        'hydraulicConductivity',
-       'specificStorage',
        'specificYield',
-       'testingMethod',
-       'testingDuration',
-       'analyticSolutionType',
-       'boundaryEffect' ] },
+       'specificCapacity',
+       'pumpingTestDescription',
+       'startDatePumpingTest' ] },
   { header: 'Record maintenance',
     authenticated: true,
     fields: [ 'createUser', 'createDate', 'updateUser', 'updateDate' ] } ]
@@ -223,7 +222,7 @@ export default {
       defaultFilterSections: [
         { header: 'Search By', fields: ['matchAny', 'well', 'streetOrCity', 'ownerName', 'publicationStatus'] },
         { header: 'Location', fields: ['legal', 'landDistrict'] },
-        { header: 'Well Details', fields: ['wellStatus', 'licencedStatus', 'personResponsibleGuid', 'orgResponsibleGuid', 'dateOfWork', 'wellDepth'] },
+        { header: 'Well Details', fields: ['wellStatus', 'licencedStatus', 'personResponsibleGuid', 'orgResponsibleGuid', 'dateOfWork', 'wellDepth', 'wellDocumentType'] },
         { header: 'Aquifer', fields: ['aquiferNr'] }
       ],
       additionalFilterSections: ADDITIONAL_FILTER_SECTIONS

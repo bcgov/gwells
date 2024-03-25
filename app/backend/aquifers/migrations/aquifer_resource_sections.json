@@ -7,7 +7,7 @@
             "create_date": "2018-01-01T08:00:00Z",
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
-            "name": "Artesian advisory"
+            "name": "Drilling and operation advisory"
         }
     },
     {
@@ -63,6 +63,17 @@
             "update_user": "DATALOAD_USER",
             "update_date": "2018-01-01T08:00:00Z",
             "name": "Other information"
+        }
+    },
+    {
+        "model": "aquifers.AquiferResourceSection",
+        "pk": "Q",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2023-12-19T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2023-12-19T08:00:00Z",
+            "name": "Aquifer parameters"
         }
     }
 ]

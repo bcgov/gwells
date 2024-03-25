@@ -15,7 +15,9 @@ import logging
 from django.utils import timezone
 from django.db import transaction
 import logging
+from requests.exceptions import HTTPError
 from rest_framework import serializers
+from gwells.utils import geocode_bc_location
 from gwells.models import ProvinceStateCode
 from gwells.serializers import AuditModelSerializer, ProvinceStateCodeSerializer
 from registries.models import (
@@ -34,6 +36,7 @@ from registries.models import (
     PersonNote,
     PersonNote,
     OrganizationNote,
+    RegionalArea
 )
 
 logger = logging.getLogger(__name__)
@@ -177,11 +180,74 @@ class ApplicationListSerializer(AuditModelSerializer):
             'display_status',
             'current_status')
 
+class OrganizationUpdateMixin():
+    """
+    A mixin class that adds a convenience function to populate the 'geom'
+    attribute from the 'street_address'.
+    """
 
-class OrganizationListSerializer(AuditModelSerializer):
+    def populate_geom_from_address(self, instance, validated_data):
+        """
+        Geocodes the 'street_address' and/or 'city' to determine the 
+        geographic coordinates.  Injects these coordinates into the 'geom' property
+        of validated_data.
+        If both 'street_address' and 'city' are provided, geocodes both.  If only 'city' 
+        is provided (but not 'street_address') then geocodes only the city.
+        :param instance: An existing instance of Organization (optional.  May be None.)
+        :param validated_data: The 'geom' property of this parameter is modified
+        """
+        
+        street_address = validated_data.get("street_address") \
+            if "street_address" in validated_data else \
+            instance.street_address if instance else \
+            None
+        city = validated_data.get("city") \
+            if "city" in validated_data else \
+            instance.city if instance else \
+            None
+        prov_state = validated_data.get("province_state") \
+            if "province_state" in validated_data else \
+            instance.province_state if instance else \
+            None
+
+        point = None
+
+        #try to geocode street_address + city
+        if street_address and city and prov_state and \
+            prov_state.province_state_code == "BC":
+            try:
+                point = geocode_bc_location({                        
+                  "addressString": street_address, 
+                  "localityName": city,
+                  "localities": city
+                })
+            except (HTTPError, ValueError):
+                #silently ignore the failed geocode
+                pass       
+        
+        #try to geocode the city only 
+        if point == None and city and prov_state and \
+            prov_state.province_state_code == "BC":
+            try:
+                point = geocode_bc_location({                        
+                  "localityName": city,
+                  "localities": city,
+                  "matchPrecision": "LOCALITY"
+                })
+            except (HTTPError, ValueError):
+                #silently ignore the failed geocode
+                pass
+
+        validated_data["geom"] = point
+
+class OrganizationListSerializer(AuditModelSerializer, OrganizationUpdateMixin):
     """
     Serializes Organization model fields for "list" view.
     """
+
+    def create(self, validated_data):
+        self.populate_geom_from_address(None, validated_data)
+        return super().create(validated_data)
 
     class Meta:
         model = Organization
@@ -197,6 +263,9 @@ class OrganizationListSerializer(AuditModelSerializer):
             'fax_tel',
             'email',
             'website_url',
+            'latitude',
+            'longitude',
+            'regional_areas'
         )
 
 
@@ -253,7 +322,6 @@ class OrganizationSerializer(AuditModelSerializer):
     """
     Serializes Organization model fields (public fields list)
     """
-
     class Meta:
         model = Organization
         fields = (
@@ -268,10 +336,13 @@ class OrganizationSerializer(AuditModelSerializer):
             'fax_tel',
             'email',
             'website_url',
+            'latitude',
+            'longitude',
+            'regional_areas'
         )
 
 
-class OrganizationAdminSerializer(AuditModelSerializer):
+class OrganizationAdminSerializer(AuditModelSerializer, OrganizationUpdateMixin):
     """
     Serializes Organization model fields (admin fields list)
     """
@@ -300,8 +371,21 @@ class OrganizationAdminSerializer(AuditModelSerializer):
             'website_url',
             'person_set',
             'notes',
-            'registrations_count'
+            'registrations_count',
+            'latitude',
+            'longitude',
+            'regional_areas'
         )
+
+    def update(self, instance, validated_data):
+        #if the street_address, city or province have changed then also 
+        #update the 'geom'
+        if (not instance.geom or\
+            instance.street_address != validated_data.get("street_address")) or\
+            (instance.city != validated_data.get("city")) or\
+            (instance.province_state != validated_data.get("province_state")):
+            self.populate_geom_from_address(instance, validated_data)
+        return super().update(instance, validated_data)
 
     def get_notes(self, obj):
         """
@@ -738,3 +822,11 @@ class PersonNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ('name', 'person_guid', 'registrations')
+
+
+class RegionalAreaSerializer(serializers.ModelSerializer):
+    """Serializes regional area names for quick searching"""
+
+    class Meta:
+        model = RegionalArea
+        fields = ('name', 'regional_area_guid',)

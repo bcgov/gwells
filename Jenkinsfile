@@ -267,8 +267,24 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./aquifers_v2_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./cities_api_tests.json \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./configuration_api_tests.json \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./utilities_api_tests.json \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
@@ -279,8 +295,23 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                         if ("dev".equalsIgnoreCase("${envSuffix}")) {
                             sh """
                                 newman run ./wells_search_api_tests.json \
-                                --global-var base_url=\$BASE_URL \
-                                -r cli,junit,html
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_search_v2_api_tests.json \
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./exports_api_tests.json \
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
                             """
                         }
 

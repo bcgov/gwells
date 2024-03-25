@@ -35,17 +35,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :per-page="submissionsPerPage"
             :current-page="submissionsPage"
           >
-          <template slot="report" slot-scope="data">
+          <template v-slot:cell(report)="data">
             <div>
               <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
             </div>
           </template>
-          <template slot="date_entered" slot-scope="data">
+          <template v-slot:cell(date_entered)="data">
             <div>
               <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
             </div>
           </template>
-          <template slot="entered_by" slot-scope="data">
+          <template v-slot:cell(entered_by)="data">
             <div>
               {{ data.item.create_user }}
             </div>
@@ -85,26 +85,26 @@ export default {
       submissionsPage: 1,
       submissionsBusy: false,
       submissionsRecordsCount: 0,
-      tableHeaders: {
-        report: {
+      tableHeaders: [
+        {
           label: 'Report',
           thStyle: {
             width: '33%'
           }
         },
-        date_entered: {
+        {
           label: 'Date Entered',
           thStyle: {
             width: '33%'
           }
         },
-        entered_by: {
+        {
           label: 'Entered By',
           thStyle: {
             width: '33%'
           }
         }
-      }
+      ]
     }
   },
   computed: {

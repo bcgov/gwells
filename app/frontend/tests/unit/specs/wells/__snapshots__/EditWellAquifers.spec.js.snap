@@ -11,11 +11,9 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
       footertag="div"
       headertag="div"
       nobody="true"
-      subtitle=""
       subtitletag="h6"
       subtitletextvariant="muted"
       tag="div"
-      title=""
       titletag="h4"
     >
       <b-breadcrumb-stub
@@ -29,11 +27,9 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
       class="container"
       footertag="div"
       headertag="div"
-      subtitle=""
       subtitletag="h6"
       subtitletextvariant="muted"
       tag="div"
-      title=""
       titletag="h4"
     >
       <!---->
@@ -143,9 +139,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                   >
                     <b-btn-stub
                       class="mt-2"
-                      event="click"
                       id="removeAquiferRowButton0"
-                      routertag="a"
                       size="sm"
                       tag="button"
                       target="_self"
@@ -221,9 +215,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                   >
                     <b-btn-stub
                       class="mt-2"
-                      event="click"
                       id="removeAquiferRowButton1"
-                      routertag="a"
                       size="sm"
                       tag="button"
                       target="_self"
@@ -298,9 +290,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
                   >
                     <b-btn-stub
                       class="mt-2"
-                      event="click"
                       id="removeAquiferRowButton2"
-                      routertag="a"
                       size="sm"
                       tag="button"
                       target="_self"
@@ -320,9 +310,7 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
            
           <b-btn-stub
             class="mt-2"
-            event="click"
             id="addAquiferRowButton"
-            routertag="a"
             size="sm"
             tag="button"
             target="_self"
@@ -345,8 +333,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
           >
             <b-btn-stub
               class="mr-2"
-              event="click"
-              routertag="a"
               tag="button"
               target="_self"
               type="submit"
@@ -359,8 +345,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
             </b-btn-stub>
              
             <b-btn-stub
-              event="click"
-              routertag="a"
               tag="button"
               target="_self"
               type="reset"
@@ -373,11 +357,13 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
       </b-form-stub>
        
       <b-modal-stub
-        buttonsize=""
         canceltitle="Cancel"
         cancelvariant="secondary"
         centered="true"
+        footertag="footer"
+        headerclosecontent="&times;"
         headercloselabel="Close"
+        headertag="header"
         oktitle="OK"
         okvariant="primary"
         size="md"
@@ -389,8 +375,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
         
         <div>
           <b-btn-stub
-            event="click"
-            routertag="a"
             tag="button"
             target="_self"
             type="button"
@@ -402,8 +386,6 @@ exports[`EditWellAquifers.vue matches the snapshot 1`] = `
           </b-btn-stub>
            
           <b-btn-stub
-            event="click"
-            routertag="a"
             tag="button"
             target="_self"
             type="button"

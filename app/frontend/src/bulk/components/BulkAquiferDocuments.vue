@@ -62,45 +62,83 @@
 
           <div v-if="behaviourPicked">
             <b-card id="instructions" class="mb-3" title="Instructions">
-              <div>
-                <ol>
-                  <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'one'}">Use the file picker below to choose one or more documents.</li>
-                  <li v-else :class="{active: keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID (e.g. factsheet_0001.pdf, factsheet_0002.pdf).</li>
-                  <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
-                  <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'three'}">Add more aquifers as needed.</li>
-                  <li :class="{active: multiActiveStep === 'four' || keyedActiveStep === 'two'}">
-                    Click “Submit” to upload the
-                    <plural :count="multiBehaviourPicked ? upload_files.length : numAquiferDocuments">
-                      <template #zero>
-                        documents
-                      </template>
-                      <template #singular="{ count }">
-                        {{count}} document
-                      </template>
-                      <template #plural="{ count }">
-                        {{count}} documents
-                      </template>
-                    </plural>
-                    <plural :count="multiBehaviourPicked ? aquiferIds.length : Object.keys(aquiferDocuments).length">
-                      <template #zero>
-                        <!-- needs a zero-width-word-joiner on purpose to force zero case to be empty -->
-                        &#8203;
-                      </template>
-                      <template #singular="{ count }">
-                        for {{count}} aquifer
-                      </template>
-                      <template #plural="{ count }">
-                        for {{count}} aquifers
-                      </template>
-                    </plural>
-                  </li>
-                </ol>
-              </div>
+              <b-row>
+                <b-col md="4">
+                  <ol>
+                    <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'one'}">Use the file picker below to choose one or more documents.</li>
+                    <li v-else :class="{active: keyedActiveStep === 'one'}">Use the file picker below to choose one or more documents keyed by aquifer ID (e.g. factsheet_0001.pdf, factsheet_0002.pdf).</li>
+                    <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'two'}">Search for the aquifer in the dropdown list to the right.</li>
+                    <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'three'}">Add more aquifers as needed.</li>
+                    <li :class="{active: multiActiveStep === 'four' || keyedActiveStep === 'two'}">
+                      Click “Submit” to upload the
+                      <plural :count="multiBehaviourPicked ? upload_files.length : numAquiferDocuments">
+                        <template #zero>
+                          documents
+                        </template>
+                        <template #singular="{ count }">
+                          {{count}} document
+                        </template>
+                        <template #plural="{ count }">
+                          {{count}} documents
+                        </template>
+                      </plural>
+                      <plural :count="multiBehaviourPicked ? aquiferIds.length : Object.keys(aquiferDocuments).length">
+                        <template #zero>
+                          <!-- needs a zero-width-word-joiner on purpose to force zero case to be empty -->
+                          &#8203;
+                        </template>
+                        <template #singular="{ count }">
+                          for {{count}} aquifer
+                        </template>
+                        <template #plural="{ count }">
+                          for {{count}} aquifers
+                        </template>
+                      </plural>
+                    </li>
+                  </ol>
+                </b-col>
+                <b-col v-if="multiBehaviourPicked" md="8">
+                  <div style="color: red;">
+                    <p>
+                      NOTE: When selecting files, ensure name does <u>not</u> include the aquifer number,
+                      as this information is automatically added when uploaded (AQ_XXXXX).
+                    </p>
+                    <p>e.g., File name -> "Factsheet.pdf" and then selecting "Aquifer 123" - will upload as "AQ_00123_Factsheet.pdf"</p>
+                  </div>
+                  <br>
+                  <p>Aquifer attachment naming conventions guidance:</p>
+                  <ul>
+                    <li>
+                      Standard file names (before upload to GWELLS) include:
+                      <ul>
+                        <li>Aquifer_Factsheet.pdf</li>
+                        <li>Aquifer_Mapping_Report.pdf</li>
+                        <li>Hydrogeologic_Map_1.jpg (if more than one continue numbering)</li>
+                        <li>CrossSection_YY_XofX.jpg (where YY is the cross-section line, and x is number of parts of the cross-section)
+                          <ul><li>E.g., “CrossSection_2L2L’_1of2”, “CrossSection_AA’_1of1”</li></ul>
+                        </li>
+                        <li>Hydrogeologic_Schematic_XX (where XX is direction, e.g., EW or NS)
+                          <ul><li>E.g., “Hydrogeologic_Schematic_NS”</li></ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      If file name does not fit one of the standards above, consider the following when creating a file name:
+                      <ul>
+                        <li>Do not include aquifer number in file name, it is added to the file name automatically when the aquifer number is selected from the search bar.</li>
+                        <li>No spaces in the name – use underscores.</li>
+                        <li>If name is identical to older version, older version will be overwritten (please check spelling).</li>
+                        <li>Name must be as succinct but as clear as possible as to what the attachment includes.</li>
+                      </ul>
+                    </li>
+                  </ul>
+                </b-col>
+              </b-row>
             </b-card>
 
             <b-form @submit.prevent="save()" @reset.prevent="reset()">
               <b-row>
-                <b-col md="6" id="documents">
+                <b-col md="4" id="documents">
                   <h5>Documents</h5>
                   <b-row class="align-items-center mb-3">
                     <b-col md="3">
@@ -127,7 +165,7 @@
                     </tbody>
                   </table>
                 </b-col>
-                <b-col md="6" id="aquifers">
+                <b-col md="8" id="aquifers">
                   <h5>Aquifers</h5>
                   <div v-if="multiBehaviourPicked">
                     <ul>
@@ -146,10 +184,10 @@
                           <template slot="no-options">
                             Search for an aquifer by name or id number
                           </template>
-                          <template slot="option" slot-scope="option">
+                          <template v-slot:cell(option)="option">
                             <div>{{ option.description }}</div>
                           </template>
-                          <template slot="selected-option" slot-scope="option">
+                          <template v-slot:cell(selected-option)="option">
                             <div>{{ option.description }}</div>
                           </template>
                         </v-select>
@@ -164,16 +202,15 @@
                     <b-table
                       :items="aquiferTableData"
                       :fields="aquiferTableFields"
-                      v-if="upload_files.length > 0"
                       :show-empty="aquiferTableData.length === 0"
                       empty-text="No documents with keyed aquifer IDs"
                       striped>
-                      <template slot="aquiferId" slot-scope="row">
+                      <template v-slot:cell(aquiferId)="row">
                         <span :class="{ unknown: checkAquiferIsUnknown(row.item.aquiferId) }">
                           {{row.item.aquiferId}}
                         </span>
                       </template>
-                      <template slot="documents" slot-scope="row">
+                      <template v-slot:cell(documents)="row">
                         <ul>
                           <li v-for="(file, index) in row.item.documents" :key="index">
                             {{ fileNameWithoutPrefix(file.name) }}
@@ -201,6 +238,50 @@
                   Reset
                 </b-button>
               </b-button-group>
+
+              <b-row v-if="!multiBehaviourPicked">
+                <b-col md="4"/>
+                <b-col md="8">
+                  <div style="color: red;">
+                    <p>
+                      NOTE: When selecting files, ensure the file name includes aquifer number as "_XXXX", as the upload process
+                      looks for this number to assign the file to the correct aquifer page (AQ_XXXXX)
+                    </p>
+                    <p>e.g., File name -> "Factsheet_0123.pdf" will upload as "AQ_00123_Factsheet.pdf" on the Aquifer 123 page.</p>
+                  </div>
+                  <br>
+                  <p>Aquifer attachment naming conventions guidance:</p>
+                  <ul>
+                    <li>
+                      Standard file names (before upload to GWELLS) include:
+                      <ul>
+                        <li>Aquifer_Factsheet_XXXX.pdf</li>
+                        <li>Aquifer_Mapping_Report_XXXX.pdf</li>
+                        <li>Hydrogeologic_Map_1_XXXX.jpg (if more than one, continue numbering)</li>
+                        <li>CrossSection_YY_XofX_XXXX.jpg (where YY is the cross-section line, and x is number of parts of the cross-section)
+                          <ul><li>E.g., “CrossSection_2L2L’_1of2_XXXX”, “CrossSection_AA’_1of1_XXXX”</li></ul>
+                        </li>
+                        <li>Hydrogeologic_Schematic_XX (where XX is direction, e.g., EW or NS)
+                          <ul><li>E.g., “Hydrogeologic_Schematic_NS_XXXX”</li></ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li>
+                      If file name does not fit one of the standards above, consider the following when creating a file name:
+                      <ul>
+                        <li>No spaces in the name – use underscores.</li>
+                        <li>If name is identical to older version, older version will be overwritten (please check spelling).</li>
+                        <li>Name must be as succinct but as clear as possible as to what the attachment includes.</li>
+                        <li>Add aquifer number as 4 digits in front of the file type to let application know what aquifer to assign the attachment,<br/>
+                          E.g., Aquifer_Factsheet_0001.pdf or Aquifer_Mapping_Report_0456.pdf
+                          <ul><li>It will automatically be renamed. E.g., “AQ_0001_Aquifer_Factsheet.pdf” or “AQ_0456_ Aquifer_Mapping_Report.pdf”</li></ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </b-col>
+              </b-row>
+
             </b-form>
           </div>
         </div>

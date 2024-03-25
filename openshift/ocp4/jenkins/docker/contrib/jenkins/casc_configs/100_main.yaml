@@ -7,8 +7,6 @@ jenkins:
   - "Ping"
   disabledAdministrativeMonitors:
   - "jenkins.security.QueueItemAuthenticatorMonitor"
-  remotingSecurity:
-    enabled: true
   clouds:
   - kubernetes:
       containerCap: 10
@@ -56,8 +54,16 @@ unclassified:
               - "gitBranchDiscovery"
               - "gitTagDiscovery"
   location:
-    adminAddress: "address not configured yet <nobody@nowhere>"
+    adminAddress: "Sustainment.Team@gov.bc.ca"
     url: "${JENKINS_URL}"
+  mailer:
+    authentication:
+      password: "{AQAAABAAAAAgStO5EunJg6DPC+IaKAg8OUJFoAA9MgKF3wdZ+a02caLqCg2DvA7YYov885tVSaK5}"
+      username: "Sustainment.Team@gov.bc.ca"
+    charset: "UTF-8"
+    smtpHost: "apps.smtp.gov.bc.ca"
+    useSsl: false
+    useTls: false
 tool:
   git:
     installations:

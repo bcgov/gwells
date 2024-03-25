@@ -20,7 +20,10 @@ export function setupFeatureTooltips (map, layers, options = {}) {
 
       const layer = layers[feature.layer.id]
 
-      if (layer.id !== currentLayerId && feature.id !== currentFeatureId) {
+      // enable showOnHover if the layer option isn't specified (for backwards compatibility)
+      const showOnHover = !layer.hasOwnProperty('showOnHover') || layer.showOnHover
+
+      if (showOnHover && layer.id !== currentLayerId && feature.id !== currentFeatureId) {
         const contentDiv = layer.createTooltipContent(features, { canInteract: false })
         tooltip.setDOMContent(contentDiv)
         currentFeatureId = feature.id

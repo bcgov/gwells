@@ -124,12 +124,12 @@
               hover
               :items="errorsTableData"
               :fields="errorTableFields">
-              <template slot="wellTagNumber" slot-scope="row">
+              <template v-slot:cell(wellTagNumber)="row">
                 <span :class="{ error: isUnknownWell(row.item.wellTagNumber) }">
                   {{row.item.wellTagNumber}}
                 </span>
               </template>
-              <template slot="aquiferId" slot-scope="row">
+              <template v-slot:cell(aquiferId)="row">
                 <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
                   {{row.item.aquiferId}}
                 </span>
@@ -153,15 +153,15 @@
               hover
               :items="tableData"
               :fields="tableFields">
-              <template slot="wellTagNumber" slot-scope="row">
+              <template v-slot:cell(wellTagNumber)="row">
                 <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: row.item.wellTagNumber} }" target="_blank">
                   {{row.item.wellTagNumber}}
                 </router-link>
               </template>
-              <template slot="fromDepth" slot-scope="row">
+              <template v-slot:cell(fromDepth)="row">
                 {{row.item.fromDepth.toFixed(2)}}
               </template>
-              <template slot="toDepth" slot-scope="row">
+              <template v-slot:cell(toDepth)="row">
                 {{row.item.toDepth === null ? '\u2014' : row.item.toDepth.toFixed(2)}}
               </template>
             </b-table>

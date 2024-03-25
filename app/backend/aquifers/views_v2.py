@@ -15,7 +15,7 @@ import logging
 import csv
 import openpyxl
 from openpyxl.writer.excel import save_virtual_workbook
-
+import requests
 from django_filters import rest_framework as djfilters
 from django.http import HttpResponse, HttpResponseRedirect, StreamingHttpResponse
 from django.db import connection
@@ -24,42 +24,37 @@ from django.db.models.functions import Cast
 from django.contrib.gis.db.models.functions import Transform
 from django.views.decorators.cache import cache_page
 from django.utils import timezone
-
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
 from rest_framework import filters
 from rest_framework.decorators import api_view, schema
 from rest_framework.response import Response
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveUpdateAPIView, RetrieveAPIView
 from rest_framework.pagination import PageNumberPagination
-
 from reversion.views import RevisionMixin
-
 from gwells.settings.base import get_env_variable
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
 from gwells.management.commands.export_databc import (
     AQUIFERS_SQL_V2,
-    GeoJSONIterator,
     AQUIFER_CHUNK_SIZE,
+    GeoJSONIterator
 )
 from gwells.roles import AQUIFERS_EDIT_ROLE
-
 from aquifers import serializers, serializers_v2
 from aquifers.models import Aquifer
+from wells.models import Well, AquiferParameters
 from aquifers.filters import BoundingBoxFilterBackend
 from aquifers.permissions import HasAquiferEditRole, HasAquiferEditRoleOrReadOnly
 
 logger = logging.getLogger(__name__)
 
-
 class AquiferEditDetailsAPIViewV2(RetrieveAPIView):
     """Get aquifer
-    get: return details of aquifers
+    get:
+    Return details of aquifers
     """
     permission_classes = (HasAquiferEditRole,)
-    swagger_schema = None
     lookup_field = 'aquifer_id'
     serializer_class = serializers_v2.AquiferEditDetailSerializerV2
 
@@ -74,10 +69,12 @@ class AquiferEditDetailsAPIViewV2(RetrieveAPIView):
 
 class AquiferRetrieveUpdateAPIViewV2(RevisionMixin, AuditUpdateMixin, RetrieveUpdateAPIView):
     """Get aquifer
-    get: return details of aquifers
-    patch: update aquifer
+    get:
+    Return details of aquifers.
+    
+    patch:
+    Update aquifer fields with new information.
     """
-    swagger_schema = None
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     lookup_field = 'aquifer_id'
 
@@ -107,7 +104,10 @@ def _aquifer_qs(request):
     qs = Aquifer.objects.all()
     resources__section__code = query.get("resources__section__code")
     hydraulic = query.get('hydraulically_connected')
+    notations = query.get('aquifer_notations')
+    unpublished = query.get('unpublished')
     search = query.get('search')
+    aquifer_parameters = False
 
     # V2 changes to `and`-ing the filters by default unless "match_any" is explicitly set to 'true'
     match_any = query.get('match_any') == 'true'
@@ -118,10 +118,33 @@ def _aquifer_qs(request):
     if hydraulic:
         filters.append(Q(subtype__code__in=serializers.HYDRAULIC_SUBTYPES))
 
+    if unpublished:
+        now = timezone.now()
+        filters.append(Q(expiry_date__lt=now))
+
+    if notations:
+        # Get list of aquifers from DataBC that have notations
+        url = "https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0" + \
+          "&REQUEST=GetFeature&outputFormat=json&srsName=epsg:4326" + \
+          "&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP" + \
+          "&propertyName=AQUIFER_ID"
+        try:
+            resp = requests.get(url)
+            data = resp.json()
+            properties = [feature["properties"] for feature in data["features"]]
+            aquifer_ids = [prop["AQUIFER_ID"] for prop in properties]
+            filters.append(Q(aquifer_id__in=aquifer_ids))
+        except Exception as e:
+            print("Cannot get aquifer notations, call to DataBC failed: " + e)
+
     # ignore missing and empty string for resources__section__code qs param
+    # remove Aquifer parameters code from resource__section__code if present and set a flag
     if resources__section__code:
         for code in resources__section__code.split(','):
-            filters.append(Q(resources__section__code=code))
+            if code != 'Q':
+             filters.append(Q(resources__section__code=code))
+            else:
+                aquifer_parameters = True
 
     if match_any:
         if len(filters) > 0:
@@ -156,6 +179,22 @@ def _aquifer_qs(request):
 
     qs = qs.distinct()
 
+    # if Aquifer parameters flag is set, obtain list of wells with aquifer parameters set and compare its aquifer id against the original query set
+    # remove aquifers that doesn't have a match from the original query set
+    if (aquifer_parameters):
+        # Get wells that are associated with an aquifer
+        well_qs = Well.objects.filter(aquifer_id__isnull=False)
+        # Get AquiferParameter records with a non null well_tag_number
+        aquifer_parameter_qs = AquiferParameters.objects.filter(Q(well__isnull=False)).values()
+        # Make an array with just well_tag_number and strip out everything else
+        aquiferparameter_well_tag_array = [aquiferparameter['well_id'] for aquiferparameter in aquifer_parameter_qs]
+        # Filter wells queryset to get only the wells with aquifer parameters
+        wells_with_ap_qs = well_qs.filter(well_tag_number__in = aquiferparameter_well_tag_array)
+        # Make an array with just aquifer_id and strip out everything else
+        well_aquifer_id_array = [well.aquifer_id for well in wells_with_ap_qs]
+        # Filter Aquifer queryset to get only aquifers that have a well with aquifer parameters
+        qs = qs.filter(aquifer_id__in = well_aquifer_id_array)
+
     return qs
 
 
@@ -167,10 +206,12 @@ class LargeResultsSetPagination(PageNumberPagination):
 
 class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """List aquifers
-    get: return a list of aquifers
-    post: create an aquifer
+    get:
+    Returns a list of aquifers.
+    
+    post:
+    Creates a new aquifer.
     """
-    swagger_schema = None
     pagination_class = LargeResultsSetPagination
     permission_classes = (HasAquiferEditRoleOrReadOnly,)
     filter_backends = (djfilters.DjangoFilterBackend,
@@ -209,9 +250,10 @@ class AquiferListCreateAPIViewV2(RevisionMixin, AuditCreateMixin, ListCreateAPIV
 
 
 class AquiferNameListV2(ListAPIView):
-    """ List all aquifers in a simplified format """
-
-    swagger_schema = None
+    """
+    post:
+    List all aquifers in a simplified format.
+    """
     serializer_class = serializers.AquiferSerializerBasic
     model = Aquifer
     queryset = Aquifer.objects.all()
@@ -276,7 +318,6 @@ def aquifer_geojson_v2(request, **kwargs):
             'api/v1/gis/aquifers.json')
         return HttpResponseRedirect(url)
 
-
 AQUIFER_EXPORT_FIELDS_V2 = [
     'aquifer_id',
     'aquifer_name',
@@ -290,7 +331,6 @@ AQUIFER_EXPORT_FIELDS_V2 = [
     'demand',
     'mapping_year'
 ]
-
 
 def csv_export_v2(request, **kwargs):
     """

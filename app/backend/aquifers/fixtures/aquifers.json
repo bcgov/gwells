@@ -871,6 +871,21 @@
     }
   },
   {
+    "model": "aquifers.waterrightslicence",
+    "pk": 8,
+    "fields": {
+      "create_user": "",
+      "create_date": "2019-11-04T19:40:43.379Z",
+      "update_user": "",
+      "update_date": "2019-11-04T19:47:48.075Z",
+      "purpose": "03A",
+      "licence_number": 501528,
+      "quantity_flag": "T",
+      "quantity": "100000.000",
+      "effective_date": "2019-11-04T19:40:43.379Z"
+    }
+  },
+  {
     "model": "wells.well",
     "pk": 100123,
     "fields": {
@@ -984,7 +999,20 @@
       "hydro_fracturing_yield_increase": null,
       "decommission_sealant_material": "CONCRETE",
       "decommission_backfill_material": "test",
-      "geom": "POINT(-125.376319 52.528545)"
+      "geom": "POINT(-125.376319 52.528545)",
+      "distance_to_pid": "123.45",
+      "geocode_distance": "543.21",
+      "score_address": "78.90",
+      "score_city": "56.78",
+      "cross_referenced": false,
+      "natural_resource_region": "Northeast"
+    }
+  },
+  {
+    "model": "wells.wellattachment",
+    "pk": 100123,
+    "fields": {
+      "well_tag_number": 100123
     }
   },
   {
@@ -1102,7 +1130,20 @@
       "hydro_fracturing_yield_increase": null,
       "decommission_sealant_material": "CONCRETE",
       "decommission_backfill_material": "test",
-      "geom": "POINT(-125.351850 52.461419)"
+      "geom": "POINT(-125.351850 52.461419)",
+      "distance_to_pid": "234.56",
+      "geocode_distance": "654.32",
+      "score_address": "89.01",
+      "score_city": "67.89",
+      "cross_referenced": true,
+      "natural_resource_region": "Northeast"
+    }
+  },
+  {
+    "model": "wells.wellattachment",
+    "pk": 100124,
+    "fields": {
+      "well_tag_number": 100124
     }
   },
   {
@@ -1220,7 +1261,20 @@
       "hydro_fracturing_yield_increase": null,
       "decommission_sealant_material": "CONCRETE",
       "decommission_backfill_material": "test",
-      "geom": "POINT(-125.361842 52.476454)"
+      "geom": "POINT(-125.361842 52.476454)",
+      "distance_to_pid": "345.67",
+      "geocode_distance": "765.43",
+      "score_address": "90.12",
+      "score_city": "78.90",
+      "cross_referenced": false,
+      "natural_resource_region": "Northeast"
+    }
+  },
+  {
+    "model": "wells.wellattachment",
+    "pk": 100125,
+    "fields": {
+      "well_tag_number": 100125
     }
   },
   {
@@ -1242,7 +1296,7 @@
       "well_subclass": "ce97445a-664e-44f1-a096-95c97ffd084e",
       "intended_water_use": "DWS",
       "well_status": "NEW",
-      "licences": [4, 5, 6, 7],
+      "licences": [4, 5, 6, 7, 8],
       "street_address": "6647 CHRISTENSEN ROAD",
       "city": "ANAHIM LAKE",
       "legal_lot": "A",
@@ -1337,7 +1391,20 @@
       "hydro_fracturing_yield_increase": null,
       "decommission_sealant_material": "CONCRETE",
       "decommission_backfill_material": "test",
-      "geom": "POINT(-125.381245 52.466459)"
+      "geom": "POINT(-125.381245 52.466459)",
+      "distance_to_pid": "456.78",
+      "geocode_distance": "876.54",
+      "score_address": "12.34",
+      "score_city": "89.01",
+      "cross_referenced": true,
+      "natural_resource_region": "Northeast"
+    }
+  },
+  {
+    "model": "wells.wellattachment",
+    "pk": 117042,
+    "fields": {
+      "well_tag_number": 117042
     }
   },
   {

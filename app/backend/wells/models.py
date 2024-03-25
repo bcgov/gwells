@@ -13,16 +13,14 @@
 """
 
 import uuid
-import math
 import reversion
 from decimal import Decimal
 
 from django.core.validators import MinValueValidator
 from django.utils import timezone
-from django.dispatch import receiver
-from django.db.models.signals import pre_save
+
 from django.contrib.gis.db import models
-from django.contrib.gis.gdal import SpatialReference, CoordTransform
+
 
 from gwells.models import AuditModel, ProvinceStateCode, ScreenIntakeMethodCode, ScreenMaterialCode,\
     ScreenOpeningCode, ScreenBottomCode, ScreenTypeCode, ScreenAssemblyTypeCode, CodeTableModel,\
@@ -34,6 +32,7 @@ from gwells.models.lithology import (
     LithologyMoistureCode, SurficialMaterialCode)
 from gwells.db_comments.patch_fields import patch_fields
 
+
 # from aquifers.models import Aquifer
 
 patch_fields()
@@ -43,7 +42,6 @@ WELL_STATUS_CODE_CONSTRUCTION = 'NEW'
 WELL_STATUS_CODE_DECOMMISSION = 'CLOSURE'
 WELL_STATUS_CODE_ALTERATION = 'ALTERATION'
 WELL_STATUS_CODE_OTHER = 'OTHER'
-
 
 class DecommissionMethodCode(CodeTableModel):
     decommission_method_code = models.CharField(primary_key=True, max_length=10, editable=False,
@@ -193,6 +191,40 @@ class BoundaryEffectCode(CodeTableModel):
 
     db_table_comment = ('The observed boundary effect in the pumping test analysis. Constant head or '
                         'no flow boundaries are two possible observations.')
+
+    def __str__(self):
+        return self.description
+
+
+class PumpingTestDescriptionCode(CodeTableModel):
+    """
+     The pumping test method description in aquifer pumping tests.
+    """
+    pumping_test_description_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'pumping_test_description_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('Type of the pumping test method used for aquifer pumping tests.')
+
+    def __str__(self):
+        return self.description
+
+
+class AnalysisMethodCode(CodeTableModel):
+    """
+     The analysis method used in aquifer pumping tests.
+    """
+    analysis_method_code = models.CharField(primary_key=True, max_length=10, editable=False)
+    description = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'analysis_method_code'
+        ordering = ['display_order', 'description']
+
+    db_table_comment = ('The analysis method used in aquifer pumping tests.')
 
     def __str__(self):
         return self.description
@@ -957,6 +989,16 @@ class Well(AuditModelStructure):
         db_comment=('Indicates if an alternative specification was used for siting of a water supply'
                     ' well, or a permanent dewatering well, or for the method used for decommissioning a'
                     ' well.'))
+    
+    technical_report = models.BooleanField(default=False, verbose_name='Technical Report',
+                                          db_comment=('Highlights the existence of a technical assessment '
+                                                      'or Environmental Flow Needs report.'))
+    
+    drinking_water_protection_area_ind = models.BooleanField(
+        default=False,
+        verbose_name='Drinking Water Protection Area',
+        choices=((False, 'No'), (True, 'Yes')),
+        db_comment=('Indicate if a well is in a delineated capture zone for drinking water.'))
 
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.PROTECT, blank=True, null=True)
@@ -1105,6 +1147,31 @@ class Well(AuditModelStructure):
     recommended_pump_rate = models.DecimalField(max_digits=7, decimal_places=2, blank=True, null=True,
                                                 verbose_name='Recommended pump rate',
                                                 validators=[MinValueValidator(Decimal('0.00'))])
+    # QaQc Fields for internal use
+    geocode_distance = models.DecimalField(
+        null=True, blank=True, max_digits=12, decimal_places=2, verbose_name='Geocode Distance',
+        db_comment='Distance calculated during geocoding process.')
+    distance_to_pid = models.DecimalField(
+        null=True, blank=True, max_digits=12, decimal_places=2, verbose_name='Distance to PID',
+        db_comment='Distance to the Property Identification Description.')
+    score_address = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for Address',
+        db_comment='Score representing the accuracy or confidence of the address geocoding.')
+    score_city = models.DecimalField(
+        null=True, blank=True, max_digits=7, decimal_places=2, verbose_name='Score for City',
+        db_comment='Score representing the accuracy or confidence of the city geocoding.')
+    cross_referenced = models.BooleanField(
+        default=False, verbose_name='Cross Referenced',
+        db_comment='Indicates if the record has been cross-referenced by an internal team member.')
+    cross_referenced_date = models.DateTimeField(
+        null=True, verbose_name='Cross Referenced Date',
+        db_comment='The date when a well was cross referenced by an internal team member.')
+    cross_referenced_by = models.CharField(
+        max_length=100, blank=True, null=True, 
+        verbose_name="Internal team member who cross referenced well.")
+    natural_resource_region = models.CharField(
+        max_length=250, blank=True, null=True, verbose_name="Natural Resource Region",
+        db_comment='The Natural Resource Region the well is located within.')
 
     class Meta:
         db_table = 'well'
@@ -1152,6 +1219,8 @@ class Well(AuditModelStructure):
 
     db_column_supplemental_comments = {
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well or a permanent dewatering well, or if an alternative specification was used for decommissioning a well.",
+        "technical_report":"Highlights the existence of a technical assessment or Environmental Flow Needs report.",
+        "drinking_water_protection_area_ind": "Indicate if a well is in a delineated capture zone for drinking water.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
         "artesian_flow":"Measurement of the artesian well's water flow that occurs naturally due to inherent water pressure in the well. Pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump. Flowing artesian wells can flow on an intermittent or continuous basis. Recorded in US Gallons Per Minute.",
         "artesian_pressure":"Pressure of the water coming out of an artesian well as measured at the time of construction. Measured in PSI (pounds per square inch).",
@@ -1234,19 +1303,6 @@ class Well(AuditModelStructure):
         "yield_estimation_method_code":"Codes for the valid methods that can be used to estimate the well yield. E.g. Air Lifting, Bailing, Pumping, Other.",
         "yield_estimation_rate":"Rate at which the well water was pumped during the well yield test, measured in US gallons per minute.",
     }
-
-
-@receiver(pre_save, sender=Well)
-def update_utm(sender, instance, **kwargs):
-    if instance.geom and (-180 < instance.geom.x < 180): # only update utm when geom is valid
-        utm_zone = math.floor((instance.geom.x + 180) / 6) + 1
-        coord_transform = CoordTransform(SpatialReference(4326), SpatialReference(32600 + utm_zone))
-        utm_point = instance.geom.transform(coord_transform, clone=True)
-
-        instance.utm_zone_code = utm_zone
-        # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
-        instance.utm_easting = round(utm_point.x)
-        instance.utm_northing = round(utm_point.y)
 
 
 class CasingMaterialCode(CodeTableModel):
@@ -1619,6 +1675,16 @@ class ActivitySubmission(AuditModelStructure):
         null=True,
         verbose_name='Alternative specs submitted (if required)', choices=((False, 'No'), (True, 'Yes')))
 
+    technical_report = models.BooleanField(default=False, verbose_name='Technical Report',
+                                          db_comment=('Highlights the existence of a technical assessment '
+                                                      'or Environmental Flow Needs report.'))
+    
+    drinking_water_protection_area_ind = models.BooleanField(
+        default=False,
+        verbose_name='Drinking Water Protection Area',
+        choices=((False, 'No'), (True, 'Yes')),
+        db_comment=('Indicate if a well is in a delineated capture zone for drinking water.'))
+
     well_yield_unit = models.ForeignKey(
         WellYieldUnitCode, db_column='well_yield_unit_code', on_delete=models.PROTECT, blank=True, null=True)
     # want to be integer in future
@@ -1736,6 +1802,8 @@ class ActivitySubmission(AuditModelStructure):
     db_table_comment = 'Submission of data and information related to a groundwater wells.'
     db_column_supplemental_comments = {
         "alternative_specs_submitted":"Indicates if an alternative specification was used for siting of a water supply well, or a permanent dewatering well, or for the method used for decommissioning a well.",
+        "technical_report":"Highlights the existence of a technical assessment or Environmental Flow Needs report.",
+        "drinking_water_protection_area_ind": "Indicate if a well is in a delineated capture zone for drinking water.",
         "analytic_solution_type":"Mathematical formulation used to estimate hydraulic parameters.",
         "aquifer_id":"System generated sequential number assigned to each aquifer. It is widely used by groundwater staff as it is the only consistent unique identifier for a mapped aquifer. It is also commonly referred to as Aquifer Number.",
         "artesian_conditions": "Artesian conditions arise when there is a movement of groundwater from a recharge area under a confining formation to a point of discharge at a lower elevation. An example of this is a natural spring, or in the example of the drilling industry, a flowing water well.",
@@ -1952,6 +2020,8 @@ class FieldsProvided(models.Model):
     comments = models.BooleanField(default=False)
     internal_comments = models.BooleanField(default=False)
     alternative_specs_submitted = models.BooleanField(default=False)
+    technical_report = models.BooleanField(default=False)
+    drinking_water_protection_area_ind = models.BooleanField(default=False)
     well_yield_unit = models.BooleanField(default=False)
     diameter = models.BooleanField(default=False)
     ems = models.BooleanField(default=False)
@@ -1985,6 +2055,7 @@ class FieldsProvided(models.Model):
     recommended_pump_rate = models.BooleanField(default=False)
     lithologydescription_set = models.BooleanField(default=False)
     casing_set = models.BooleanField(default=False)
+    aquifer_parameters_set = models.BooleanField(default=False)
     decommission_description_set = models.BooleanField(default=False)
     screen_set = models.BooleanField(default=False)
     linerperforation_set = models.BooleanField(default=False)
@@ -2093,7 +2164,7 @@ class LithologyDescription(AuditModel):
 
     class Meta:
         db_table = 'lithology_description'
-        ordering = ["lithology_sequence_number"]
+        ordering = ["start", "end"]
 
     db_table_comment = ('Describes the different lithologic qualities, characteristics, and materials found '
                         'at different depths while drilling.')
@@ -2420,3 +2491,173 @@ class DecommissionDescription(AuditModel):
     db_table_comment = ('A cross refernce table maintaining the list of wells that have been decomissioned'
                         ' and the materials used to fill the well when decomissioned. E.g. Bentonite chips,'
                         ' Native sand or gravel, Commercial gravel/pea gravel.')
+
+
+class AquiferParameters(AuditModel):
+    """
+    Aquifer Parameter information from well pumping tests
+
+    There can be many pumping tests done for a well so there may be many aquifer parameter records per well
+    """
+    aquifer_parameters_guid = models.UUIDField(
+        primary_key=False, default=uuid.uuid4, editable=False)
+    
+    testing_number = models.AutoField(
+        primary_key=True, verbose_name='Testing Number',
+        db_comment=('The testing number is automatically assigned to each pumping test record that gets created'))
+    
+    activity_submission = models.ForeignKey(ActivitySubmission, db_column='filing_number',
+                                            on_delete=models.PROTECT, blank=True, null=True,
+                                            related_name='aquifer_parameters_set')
+    well = models.ForeignKey(
+        Well, db_column='well_tag_number', on_delete=models.PROTECT,
+        blank=True, null=True,
+        related_name='aquifer_parameters_set',
+        db_comment=('The file number assigned to a particular well in the in the province\'s Groundwater '
+                    'Wells and Aquifers application.'))
+    
+    start_date_pumping_test = models.DateField(
+        null=True, verbose_name='Start date of pumping test',
+        db_comment='The date when the analysis started.')
+    
+    pumping_test_description = models.ForeignKey(PumpingTestDescriptionCode, db_column='pumping_test_description_code',
+                                    on_delete=models.PROTECT, blank=True, null=True,
+                                    verbose_name='Testing Type',
+                                    db_comment='Valid codes for the testing types used in '
+                                                'pumping test analysis. i.e. ST, PTPW, PTOW, RT, OTHER')
+    
+    test_duration = models.PositiveIntegerField(blank=True, null=True)
+
+    boundary_effect = models.ForeignKey(BoundaryEffectCode, db_column='boundary_effect_code',
+                                on_delete=models.PROTECT, blank=True, null=True,
+                                verbose_name='Boundary Effect',
+                                db_comment='Valid codes for the boundaries observed in '
+                                            'pumping test analysis. i.e. CH, NF.')
+
+    storativity = models.DecimalField(
+        max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
+    
+    transmissivity = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Transmissivity')
+    
+    hydraulic_conductivity = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Hydraulic Conductivity')
+    
+    specific_yield = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+    
+    specific_capacity = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+   
+    analysis_method = models.ForeignKey(AnalysisMethodCode, db_column='analysis_method_code',
+                                    on_delete=models.PROTECT, blank=True, null=True,
+                                    verbose_name='Analysis Method',
+                                    db_comment='Valid codes for the analysis methods used in '
+                                                'pumping test analysis. i.e. TH, CJ, HJ, N, B, PC, OTHER')
+    
+    comments = models.TextField(
+        max_length=350,
+        blank=True,
+        null=True,
+        verbose_name='Testing Comments')
+
+    class Meta:
+        ordering = ["start_date_pumping_test"]
+        db_table = 'aquifer_parameters'
+
+    db_table_comment = ('Aquifer parameter testing stats from well pumping tests.')
+
+    db_column_supplemental_comments = {
+        "testing_number":"System generated sequential number assigned to each pumping test record.",
+        "aquifer_parameters_guid":"System generated unique guid assigned to each pumping test record.",
+        "well_tag_number":"System generated sequential number assigned to each well. It is widely used by groundwater staff as it is the only consistent unique identifier for each well. It is different from a well ID plate number.",
+        "start_date_pumping_test":"Start date of the pumping test.",
+        "pumping_test_description_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
+        "test_duration":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
+        "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
+        "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
+        "transmissivity":"Transmissivity estimated from hydraulic testing.",
+        "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
+        "specific_yield":"Specific Yield estimated from hydraulic testing (dimensionless).",
+        "specific_capacity":"Specific Capacity.",
+        "analysis_method_code":"The mathematical solution to the groundwater flow equation used to fit the observational data and estimate hydraulic parameters e.g. Theis 1935",
+        "comments":"Any additional comments about the pumping test.",
+    }
+
+    def __str__(self):
+        if self.activity_submission:
+            return 'activity_submission {} {}'.format(self.activity_submission, self.aquifer_parameters_guid)
+        else:
+            return 'well {} {}'.format(self.well, self.aquifer_parameters_guid)
+
+    def as_dict(self):
+        return {
+            "testing_number": self.testing_number,
+            "aquifer_parameters_guid": self.aquifer_parameters_guid,
+            "well_tag_number": self.well,
+            "start_date_pumping_test": self.start_date_pumping_test,
+            "pumping_test_description_code": self.pumping_test_description,
+            "test_duration": self.test_duration,
+            "storativity": self.storativity,
+            "transmissivity": self.transmissivity,
+            "hydraulic_conductivity": self.hydraulic_conductivity,
+            "specific_yield": self.specific_yield,
+            "specific_capacity": self.specific_capacity,
+            "analysis_method": self.analysis_method,
+            "comments": self.comments
+        }
+
+class WellAttachment(models.Model):
+    id = models.AutoField(primary_key=True)
+    well_tag_number = models.ForeignKey(Well, on_delete=models.PROTECT, blank=True, null = False)
+    # Public Tags
+    well_construction = models.PositiveSmallIntegerField(default=0)
+    well_alteration = models.PositiveSmallIntegerField(default=0)
+    well_decommission = models.PositiveSmallIntegerField(default=0)
+    photo = models.PositiveSmallIntegerField(default=0)
+    well_pump_installation = models.PositiveSmallIntegerField(default=0)
+    pumping_test_data = models.PositiveSmallIntegerField(default=0)
+    directions_artesianconditions = models.PositiveSmallIntegerField(default=0)
+    map = models.PositiveSmallIntegerField(default=0)
+    additional_details = models.PositiveSmallIntegerField(default=0)
+    # Private Tags
+    well_inspection = models.PositiveSmallIntegerField(default=0)
+    artesianmgmtreport = models.PositiveSmallIntegerField(default=0)
+    alternative_specs = models.PositiveSmallIntegerField(default=0)
+    water_quality = models.PositiveSmallIntegerField(default=0)
+    health_authority = models.PositiveSmallIntegerField(default=0)
+    consultants_report = models.PositiveSmallIntegerField(default=0)
+    sharing_agreement = models.PositiveSmallIntegerField(default=0)
+    pumping_test_info = models.PositiveSmallIntegerField(default=0)
+    class Meta:
+        db_table = "well_attachment_count"
+        
+    
+    def __str__(self):
+        template = "{} File count: {}\n"
+        return_string = "Files for WTN: {}\n".format(self.well_tag_number)
+        return_string += template.format('Well Construction',self.well_construction)
+        return_string += template.format('Well Alteration',self.well_alteration)
+        return_string += template.format('Well Decommission',self.well_decommission)
+        return_string += template.format('Well Photos',self.photo)
+        return_string += template.format('Well Pump Installations',self.well_pump_installation)
+        return_string += template.format('Pumping Test',self.pumping_test_data)
+        return_string += template.format('Map',self.map)
+        return_string += template.format('Additional Detail',self.additional_details)
+        return_string += template.format('Well Inspections',self.well_inspection)
+        return_string += template.format('Alternative Specs',self.alternative_specs)
+        return_string += template.format('Water Quality',self.water_quality)
+        return_string += template.format('Health Authority',self.health_authority)
+        return_string += "{} File count: {}".format('Consultants Report',self.consultants_report)
+        
+        return return_string
+
+class WellLicence(models.Model):
+    id = models.IntegerField(primary_key=True)
+    well_id = models.IntegerField()
+    waterrightslicence_id = models.IntegerField()
+    class Meta:
+        db_table = "well_licences"
+        managed = False
+    def __str__(self):
+        return "Well Number: " + str(self.well_id) + ", License #: " + str(self.waterrightslicence_id)

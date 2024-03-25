@@ -87,6 +87,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ well.artesian_conditions | nullBooleanToYesNo }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Technical Report:</span>
+              <a
+                v-if="well.technical_report"
+                id="technical_report"
+                href='https://foirequestform.gov.bc.ca/?general='
+                target="_blank"
+                rel="noopener noreferrer"
+              > Report Available</a>
+              <span v-if="!well.technical_report"> N/A</span>
+            </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ well.drinking_water_protection_area_ind | nullBooleanToYesNo }}</b-col>
           </b-row>
         </fieldset>
 
@@ -103,12 +114,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
               <b-col cols="12" md="4">
                 <div><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
+                <div><a class="jump_link" href="#aquifer_parameters_fieldset">Aquifer Parameters</a></div>
                 <div><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
                 <div><a class="jump_link" href="#liner_details_fieldset">Liner Details</a></div>
                 <div><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
-                <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
               </b-col>
               <b-col cols="12" md="4">
+                <div><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
                 <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
                 <div><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
                 <div><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
@@ -123,9 +135,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <legend>Licensing Information</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ wellLicence.status }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number:</span>&nbsp;
-              <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${wellLicence.number}`" target="_blank">
-                {{ wellLicence.number }}
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number{{ wellLicence.number.length > 1 ? "s" : "" }}:</span>&nbsp;
+              <a v-for="(licence, index) in wellLicence.number" :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${licence}`" target="_blank">
+                {{ licence}}{{ index + 1 < wellLicence.number.length ? ", " : ""}}
               </a>
             </b-col>
             <b-col cols="12" md="4"></b-col>
@@ -231,7 +243,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :current-page="submissionsPage"
             :fields="activity_fields"
           >
-            <template slot="create_date" slot-scope="data">
+            <template v-slot:cell(create_date)="data">
               <div>
                 {{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}
               </div>
@@ -294,9 +306,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :items="well.lithologydescription_set"
             show-empty
             :fields="lithology_fields">
-            <template slot="start" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-            <template slot="end" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
-            <template slot="water_bearing_estimated_flow" slot-scope="data">{{ data.item.water_bearing_estimated_flow | excludeZeroDecimals }}</template>
+            <template v-slot:cell(start)="data">{{ data.item.start | excludeZeroDecimals }}</template>
+            <template v-slot:cell(end)="data">{{ data.item.end | excludeZeroDecimals }}</template>
+            <template v-slot:cell(water_bearing_estimated_flow)="data">{{ data.item.water_bearing_estimated_flow | excludeZeroDecimals }}</template>
           </b-table>
         </fieldset>
 
@@ -311,17 +323,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
                 show-empty>
 
-              <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-              <template slot="HEAD_from" slot-scope="data">{{ data.label }} (ft bgl)</template>
-              <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
-              <template slot="HEAD_to" slot-scope="data">{{ data.label }} (ft bgl)</template>
-              <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
-              <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
-              <template slot="HEAD_diameter" slot-scope="data">{{ data.label }} (in)</template>
-              <template slot="diameter" slot-scope="data">{{ data.item.diameter | excludeZeroDecimals }}</template>
-              <template slot="HEAD_wall_thickness" slot-scope="data">{{ data.label }} (in)</template>
-              <template slot="wall_thickness" slot-scope="data">{{ data.item.wall_thickness | excludeZeroDecimals }}</template>
-              <template slot="drive_shoe" slot-scope="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
+              <template v-slot:cell(from)="data">{{ data.item.start | excludeZeroDecimals }}</template>
+              <template v-slot:cell(HEAD_from)="data">{{ data.label }} (ft bgl)</template>
+              <template v-slot:cell(to)="data">{{ data.item.end | excludeZeroDecimals }}</template>
+              <template v-slot:cell(HEAD_to)="data">{{ data.label }} (ft bgl)</template>
+              <template v-slot:cell(casing_type)="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
+              <template v-slot:cell(casing_material)="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+              <template v-slot:cell(HEAD_diameter)="data">{{ data.label }} (in)</template>
+              <template v-slot:cell(diameter)="data">{{ data.item.diameter | excludeZeroDecimals }}</template>
+              <template v-slot:cell(HEAD_wall_thickness)="data">{{ data.label }} (in)</template>
+              <template v-slot:cell(wall_thickness)="data">{{ data.item.wall_thickness | excludeZeroDecimals }}</template>
+              <template v-slot:cell(drive_shoe)="data">{{codeToDescription('drive_shoe', data.item.drive_shoe_status)}}</template>
             </b-table>
           </div>
         </fieldset>
@@ -370,10 +382,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to']"
                   show-empty
               >
-                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="from" slot-scope="data">{{ data.item.start | excludeZeroDecimals }}</template>
-                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="to" slot-scope="data">{{ data.item.end | excludeZeroDecimals }}</template>
+                <template v-slot:cell(HEAD_from)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(from)="data">{{ data.item.start | excludeZeroDecimals }}</template>
+                <template v-slot:cell(HEAD_to)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(to)="data">{{ data.item.end | excludeZeroDecimals }}</template>
               </b-table>
             </b-col>
           </b-row>
@@ -409,13 +421,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
-                <template slot="HEAD_from" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="from" slot-scope="data">{{data.item.start}}</template>
-                <template slot="HEAD_to" slot-scope="data">{{data.label}} (ft bgl)</template>
-                <template slot="to" slot-scope="data">{{data.item.end}}</template>
-                <template slot="HEAD_diameter" slot-scope="data">{{data.label}} (in)</template>
-                <template slot="diameter" slot-scope="data">{{data.item.diameter}}</template>
-                <template slot="assembly_type" slot-scope="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
+                <template v-slot:cell(HEAD_from)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(from)="data">{{data.item.start}}</template>
+                <template v-slot:cell(HEAD_to)="data">{{data.label}} (ft bgl)</template>
+                <template v-slot:cell(to)="data">{{data.item.end}}</template>
+                <template v-slot:cell(HEAD_diameter)="data">{{data.label}} (in)</template>
+                <template v-slot:cell(diameter)="data">{{data.item.diameter}}</template>
+                <template v-slot:cell(assembly_type)="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
               </b-table>
             </b-col>
           </b-row>
@@ -465,13 +477,82 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
+        <fieldset id="aquifer_parameters_fieldset" class="my-3 detail-section">
+          <legend>Pumping Test Information and Aquifer Parameters</legend>
+          <div class="table-responsive">
+            <b-table
+                striped
+                small
+                bordered
+                :items="well.aquifer_parameters_set"
+                :fields="[
+                  { key: 'start_date_pumping_test', label: 'Start Date' },
+                  { key: 'pumping_test_description', label: 'Description' },
+                  { key: 'test_duration', label: 'Test Duration (min)' },
+                  { key: 'boundary_effect', label: 'Boundary Effect' },
+                  { key: 'storativity', label: 'Storativity' },
+                  { key: 'transmissivity', label: 'Transmissivity (m²/day)' },
+                  { key: 'hydraulic_conductivity', label: 'Hydraulic Conductivity (m/day)' },
+                  { key: 'specific_yield', label: 'Specific Yield' },
+                  { key: 'specific_capacity', label: 'Specific Capacity (L/s/m)' },
+                  { key: 'analysis_method', label: 'Analysis Method' },
+                  { key: 'comments', label: 'Comments' }
+                ]"
+                show-empty>
+                <template v-slot:head(pumping_test_description)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="test_duration" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="test_duration" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.pumping_test" ></b-popover>
+                </template>
+                <template v-slot:head(boundary_effect)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="boundary_effect" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="boundary_effect" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.boundary_effect" ></b-popover>
+                </template>
+                <template v-slot:head(storativity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="storativity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="storativity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.storativity" ></b-popover>
+                </template>
+                <template v-slot:head(transmissivity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="transmissivity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="transmissivity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.transmissivity" ></b-popover>
+                </template>
+                <template v-slot:head(hydraulic_conductivity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="hydraulic_conductivity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="hydraulic_conductivity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.hydraulic_conductivity" ></b-popover>
+                </template>
+                <template v-slot:head(specific_yield)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="specific_yield" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="specific_yield" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.specific_yield" ></b-popover>
+                </template>
+                <template v-slot:head(specific_capacity)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="specific_capacity" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="specific_capacity" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.specific_capacity" ></b-popover>
+                </template>
+                <template v-slot:head(analysis_method)="data">
+                  <span>{{ data.label }}</span>&nbsp;
+                  <i id="analysis_method" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none" ></i>
+                  <b-popover no-arrow target="analysis_method" placement="top" triggers="hover focus" :content="TOOLTIP_TEXT.pumping_test_information.analysis_method" ></b-popover>
+                </template>
+                <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
+                <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
+                <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
+                <template v-slot:cell(storativity)="data">{{data.item.storativity && parseFloat(data.item.storativity).toString()}}</template>
+                <template v-slot:cell(transmissivity)="data">{{data.item.transmissivity && parseFloat(data.item.transmissivity).toString()}}</template>
+                <template v-slot:cell(hydraulic_conductivity)="data">{{data.item.hydraulic_conductivity && parseFloat(data.item.hydraulic_conductivity).toString()}}</template>
+            </b-table>
+          </div>
+        </fieldset>
+
         <fieldset id="well_comments_fieldset" class="my-3 detail-section">
           <legend>Comments</legend>
           <p>
             {{ well.comments ? well.comments : 'No comments submitted' }}
-          </p>
-          <p>
-            <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ well.alternative_specs_submitted | nullBooleanToYesNo }}
           </p>
         </fieldset>
 
@@ -500,9 +581,10 @@ import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
-
+import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
+import { TOOLTIP_TEXT } from '@/common/constants.js';
 
 export default {
   name: 'WellDetail',
@@ -515,33 +597,34 @@ export default {
   ],
   data () {
     return {
+      TOOLTIP_TEXT: TOOLTIP_TEXT,
       surveys: [],
-      lithology_fields: {
-        start: { label: 'From (ft bgl)' },
-        end: { label: 'To (ft bgl)' },
-        lithology_raw_data: { label: 'Raw Data' },
-        lithology_description: { label: 'Description' },
-        lithology_moisture: { label: 'Moisture' },
-        lithology_colour: { label: 'Colour' },
-        lithology_hardness: { label: 'Hardness' },
-        lithology_observation: { label: 'Observations' },
-        water_bearing_estimated_flow: { label: 'Water Bearing Flow Estimate (USGPM)' }
-      },
-      activity_fields: {
-        well_activity_description: { label: 'Activity', sortable: true },
-        work_start_date: { label: 'Work Start Date', sortable: true },
-        work_end_date: { label: 'Work End Date', sortable: true },
-        drilling_company: { label: 'Drilling Company', sortable: true },
-        create_date: { label: 'Date Entered', sortable: true }
-      },
-      work_date_fields: {
-        construction_start_date: { label: 'Start Date of Construction', class: 'text-center' },
-        construction_end_date: { label: 'End Date of Construction', class: 'text-center' },
-        alteration_start_date: { label: 'Start Date of Alteration', class: 'text-center' },
-        alteration_end_date: { label: 'End Date of Alteration', class: 'text-center' },
-        decommission_start_date: { label: 'Start Date of Decommission', class: 'text-center' },
-        decommission_end_date: { label: 'End Date of Decommission', class: 'text-center' }
-      },
+      lithology_fields: [
+        { key: 'start', label: 'From (ft bgl)' },
+        { key: 'end', label: 'To (ft bgl)' },
+        { key: 'lithology_raw_data', label: 'Raw Data' },
+        { key: 'lithology_description', label: 'Description' },
+        { key: 'lithology_moisture', label: 'Moisture' },
+        { key: 'lithology_colour', label: 'Colour' },
+        { key: 'lithology_hardness', label: 'Hardness' },
+        { key: 'lithology_observation', label: 'Observations' },
+        { key: 'water_bearing_estimated_flow', label: 'Water Bearing Flow Estimate (USGPM)' }
+      ],
+      activity_fields: [
+        { key: 'well_activity_description', label: 'Activity', sortable: true },
+        { key: 'work_start_date', label: 'Work Start Date', sortable: true },
+        { key: 'work_end_date', label: 'Work End Date', sortable: true },
+        { key: 'drilling_company', label: 'Drilling Company', sortable: true },
+        { key: 'create_date', label: 'Date Entered', sortable: true }
+      ],
+      work_date_fields: [
+        { key: 'construction_start_date', label: 'Start Date of Construction', class: 'text-center' },
+        { key: 'construction_end_date', label: 'End Date of Construction', class: 'text-center' },
+        { key: 'alteration_start_date', label: 'Start Date of Alteration', class: 'text-center' },
+        { key: 'alteration_end_date', label: 'End Date of Alteration', class: 'text-center' },
+        { key: 'decommission_start_date', label: 'Start Date of Decommission', class: 'text-center' },
+        { key: 'decommission_end_date', label: 'End Date of Decommission', class: 'text-center' }
+      ],
       submissionsPerPage: 5,
       submissionsPage: 1,
       loading: false,
@@ -593,7 +676,7 @@ export default {
     isUnpublished () {
       return !this.well.is_published
     },
-    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId'])
+    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId', 'codes'])
   },
   methods: {
     handlePrint () {
@@ -648,7 +731,7 @@ export default {
   },
   created () {
     this.fetchSurveys()
-
+    this.$store.dispatch(FETCH_CODES)
     if (this.id === null) {
       this.error = `Unable to load well '${this.id}'`
     }
@@ -661,6 +744,12 @@ export default {
 </script>
 
 <style lang="scss">
+.popover .arrow {
+  display: none !important;
+}
+.popover {
+  margin: 1em !important;
+}
 .well-detail .print-notice {
   font-size: 1rem;
 }

@@ -25,6 +25,8 @@
 *.rar
 *.tar
 *.zip
+!regional_areas.zip
+!qaqc_well_data.zip
 
 # Logs and databases #
 ######################
@@ -41,7 +43,7 @@ app/backend/aquifers/fixtures/tmp/*
 ehthumbs.db
 Thumbs.db
 *.md5
-
+.env*
 
 ##################
 # This repo only #
@@ -96,6 +98,7 @@ pip-delete-this-directory.txt
 htmlcov/
 .tox/
 .coverage
+**/coverage
 .coverage.*
 .cache
 *,cover

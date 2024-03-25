@@ -126,6 +126,7 @@ def unitTestDjango (String stageName, String envProject, String envSuffix) {
                 }
             }
         }
+        
 
         echo "Running Django unit tests"
         def ocoutput = openshift.exec(
@@ -175,16 +176,6 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                             value: "https://${stageUrl}/gwells"
                         ),
                         secretEnvVar(
-                            key: 'GWELLS_API_TEST_USER',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'username'
-                        ),
-                        secretEnvVar(
-                            key: 'GWELLS_API_TEST_PASSWORD',
-                            secretName: 'apitest-secrets',
-                            secretKey: 'password'
-                        ),
-                        secretEnvVar(
                             key: 'GWELLS_API_TEST_AUTH_SERVER',
                             secretName: 'apitest-secrets',
                             secretKey: 'auth_server'
@@ -212,64 +203,86 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                             newman run ./registries_api_tests.json \
                                 --color on \
                                 --disable-unicode \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./registries_v2_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./wells_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./wells_v2_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./submissions_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./submissions_v2_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./aquifers_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
                                 --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
                                 -r cli,junit,html
                             newman run ./aquifers_v2_api_tests.json \
-                                --global-var test_user=\$GWELLS_API_TEST_USER \
-                                --global-var test_password=\$GWELLS_API_TEST_PASSWORD \
+                                --color on \
+                                --disable-unicode \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./cities_api_tests.json \
+                                --color on \
+                                --disable-unicode \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./configuration_api_tests.json \
+                                --color on \
+                                --disable-unicode \
+                                --global-var base_url=\$BASE_URL \
+                                --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                -r cli,junit,html
+                            newman run ./utilities_api_tests.json \
+                                --color on \
+                                --disable-unicode \
                                 --global-var base_url=\$BASE_URL \
                                 --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
                                 --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
@@ -280,8 +293,29 @@ def apiTest (String stageName, String stageUrl, String envSuffix) {
                         if ("dev".equalsIgnoreCase("${envSuffix}")) {
                             sh """
                                 newman run ./wells_search_api_tests.json \
-                                --global-var base_url=\$BASE_URL \
-                                -r cli,junit,html
+                                    --color on \
+                                    --disable-unicode \
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./wells_search_v2_api_tests.json \
+                                    --color on \
+                                    --disable-unicode \
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
+                                newman run ./exports_api_tests.json \
+                                    --color on \
+                                    --disable-unicode \
+                                    --global-var base_url=\$BASE_URL \
+                                    --global-var auth_server=\$GWELLS_API_TEST_AUTH_SERVER \
+                                    --global-var client_id=\$GWELLS_API_TEST_CLIENT_ID \
+                                    --global-var client_secret=\$GWELLS_API_TEST_CLIENT_SECRET \
+                                    -r cli,junit,html
                             """
                         }
 
@@ -355,9 +389,8 @@ def deployToDev() {
                         List newObjectCopies = []
 
                         for (o in (deployTemplate + deployDBTemplate)) {
-
                             // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false
                             if (sourceName && sourceName.length() > 0) {
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
                                 if (selector.count() == 1) {
@@ -514,19 +547,19 @@ def dbBackup (String envProject, String envSuffix) {
     def dumpTemp = "/tmp/unverified.dump"
     int maxBackups = 10
 
-    // Dump to temporary file
+    //Dump to temporary file
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
         pg_dump -U \${PG_USER} -d \${PG_DATABASE} -Fc -f ${dumpTemp} ${dumpOpts} \
     '"
 
     // Verify dump size is at least 1M
-    int sizeAtLeast1M = sh (
+    String sizeAtLeast1M = sh (
         script: "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
             du --threshold=1M ${dumpTemp} | wc -l \
         '",
         returnStdout: true
     )
-    assert sizeAtLeast1M == 1
+    assert sizeAtLeast1M.toInteger() == 1
 
     // Store verified dump
     sh "oc rsh -n ${envProject} dc/${dcName} bash -c ' \
@@ -544,6 +577,9 @@ def dbBackup (String envProject, String envSuffix) {
 }
 
 pipeline {
+    triggers {
+        cron(env.BRANCH_NAME == 'PR-1800' ? '0 7 * * 1-5' : '')
+    }
     options {
         timestamps()
         ansiColor('xterm')
@@ -653,6 +689,16 @@ pipeline {
                         echo "Build Started: ${newBuildSelector.names()}"
                         newBuildSelector.logs("-f")
                         echo "Build Ended: ${newBuildSelector.names()}"
+                        
+                        def buildStatus = ""
+                        timeout(1) {
+                            waitUntil {
+                                buildStatus = newBuildSelector.object().status.phase
+                                echo "Build Status: ${buildStatus}"
+                                return buildStatus != "Running"
+                            }
+                        }
+                        
                         if (newBuildSelector.object().status.phase != "Complete") {
                             error("Build ${newBuildSelector.names()} has failed!")
                         }
@@ -812,7 +858,7 @@ pipeline {
                         for (o in (deployTemplate + deployDBTemplate)) {
 
                             // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false
                             if (sourceName && sourceName.length() > 0) {
 
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
@@ -1103,7 +1149,13 @@ pipeline {
             agent none
             when {
                 beforeInput true
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }                    
+                    echo "Build Cause: ${buildCause}"
+                    env.CHANGE_TARGET == 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
             }
             input {
                 message "Deploy to production?"
@@ -1119,7 +1171,13 @@ pipeline {
             agent { label 'deploy' }
             when {
                 beforeAgent true
-                expression { env.CHANGE_TARGET == 'master' }
+                expression { 
+                    def buildCause = currentBuild.rawBuild.getCauses().collect { 
+                            it.getClass().getName().tokenize('.').last() 
+                    }    
+                    echo "Build Cause: ${buildCause}"                                    
+                    env.CHANGE_TARGET == 'master' && buildCause.toString() != '[TimerTrigger$TimerTriggerCause]'
+                }
             }
             steps {
                 script {
@@ -1187,7 +1245,7 @@ pipeline {
                         for (o in (deployTemplate + deployDBTemplate)) {
 
                             // only perform this operation on objects with 'as-copy-of'
-                            def sourceName = o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']
+                            def sourceName = (o.metadata && o.metadata.annotations && o.metadata.annotations['as-copy-of']) ? o.metadata.annotations['as-copy-of'] : false 
                             if (sourceName && sourceName.length() > 0) {
                                 def selector = openshift.selector("${o.kind}/${sourceName}")
                                 if (selector.count() == 1) {
@@ -1403,6 +1461,16 @@ pipeline {
                         createDeploymentStatus(prodSuffix, 'SUCCESS', prodHost)
                     }
                 }
+            }
+        }
+    }
+    post {
+        always {
+            node('build') {
+                step([$class: 'Mailer',
+                    notifyEveryUnstableBuild: true,
+                    recipients: "David.Claveau@gov.bc.ca,Fergus.MacConnell@gov.bc.ca,Adam.Catchpole@gov.bc.ca,Matthew.1.Logan@gov.bc.ca,Sanjay.Babu@gov.bc.ca",
+                    sendToIndividuals: true])
             }
         }
     }

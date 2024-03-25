@@ -64,8 +64,14 @@ export default {
       return files.reduce((previousPromise, file, i) => {
         return previousPromise.then((results) => {
           // use override file name if it exists
-          const fileName = fileNames[i] || file.name
-
+          let fileName;
+          if(file.file){
+            fileName = file.file.name;
+            isPrivate = file.private;
+            file = file.file;
+          } else {
+            fileName = fileNames[i] || file.name
+          }
           return ApiService.presignedPutUrl(
             documentType,
             recordId,
@@ -85,6 +91,11 @@ export default {
               return ApiService.fileUpload(url, file, options)
                 .then(() => {
                   console.log('successfully added file: ' + objectName)
+                  if(documentType === "wells"){
+                    const fileNameSplit = objectName.split("_");
+                    const fileDocumentType = fileNameSplit.length > 2 ? `${fileNameSplit[0]}_${fileNameSplit[1]}` : fileNameSplit[0];
+                    ApiService.incrementFileCount(`wells/${recordId}`, fileDocumentType)
+                  }
                 })
                 .catch(error => {
                   console.log(error)
@@ -95,7 +106,6 @@ export default {
             .catch(error => {
               console.log(error)
               context.commit('addError', error)
-              throw error
             })
         })
       }, Promise.resolve())

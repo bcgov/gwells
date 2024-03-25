@@ -52,7 +52,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <b-form-group
               id="wellClass"
-              label="Class of Well"
+              label="Class of Well *"
               aria-describedby="wellClassInvalidFeedback">
             <b-form-select
                 v-model="wellClassInput"
@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :options="intendedWaterUseOptions"
             value-field="intended_water_use_code"
             text-field="description"
-            label="Intended Water Use"
+            label="Intended Water Use *"
             placeholder="Select intended use"
             :errors="errors['intended_water_use']"
             :loaded="fieldsLoaded['intended_water_use']"
@@ -126,12 +126,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template slot="no-options">
                   Search by well tag number or owner name
               </template>
-              <template slot="option" slot-scope="option">
+              <template v-slot:cell(option)="option">
                 <div>
                   {{ option.well_tag_number }} ({{ option.owner_full_name }})
                 </div>
               </template>
-              <template slot="selected-option" slot-scope="option">
+              <template v-slot:cell(selected-option)="option">
                 <div>
                   {{ option.well_tag_number }}
                 </div>
@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="idPlateNumber"
-              label="Well Identification Plate Number"
+              :label="wellIdentificationPlateNumberLabel"
               type="number"
               v-model="idPlateNumberInput"
               :errors="errors['identification_plate_number']"
@@ -155,7 +155,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" md="4">
           <form-input
               id="wellPlateAttached"
-              label="Where Identification Plate Attached"
+              :label="wellIdentificationPlateAttachedLabel"
               type="text"
               v-model="wellPlateAttachedInput"
               :errors="errors['well_identification_plate_attached']"
@@ -200,22 +200,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
               id="workStartDateInput"
               type="date"
-              label="Start Date of Work *"
+              :label="startDateOfWorkLabel"
               placeholder="YYYY-MM-DD"
               v-model="workStartDateInput"
               :errors="errors.work_start_date"
-              :loaded="fieldsLoaded['work_start_date']">
+              :loaded="fieldsLoaded['work_start_date']"
+              @input="handleDateInput($event, 'workStartDate')"
+              >
           </form-input>
         </b-col>
         <b-col cols="12" md="6">
           <form-input
               id="workEndDateInput"
               type="date"
-              label="End Date of Work *"
+              :label="endDateOfWorkLabel"
               placeholder="YYYY-MM-DD"
               v-model="workEndDateInput"
               :errors="errors.work_end_date"
-              :loaded="fieldsLoaded['work_end_date']">
+              :loaded="fieldsLoaded['work_end_date']"
+              @input="handleDateInput($event, 'workEndDate')"
+              >
           </form-input>
         </b-col>
       </b-row>
@@ -252,6 +256,11 @@ export default {
     drillerSameAsPersonResponsible: Boolean,
     waterSupplySystem: String,
     waterSupplyWell: String,
+    handleDateInput: Function,
+    startDateOfWorkLabel: String,
+    endDateOfWorkLabel: String,
+    wellIdentificationPlateNumberLabel: String,
+    wellIdentificationPlateAttachedLabel: String,
     errors: {
       type: Object,
       default: () => ({})
@@ -297,7 +306,7 @@ export default {
       return this.wellClass !== 'WATR_SPPLY' && this.intendedWaterUseInput === 'NA'
     },
     intendedWaterUseOptions () {
-      if (this.wellClass === 'WATR_SPPLY') {
+      if (this.wellClass === 'WATR_SPPLY' && this.codes.intended_water_uses) {
         // Do not allow user to pick "Not Applicable" when well_class_code is WATR_SPPLY
         return this.codes.intended_water_uses.filter((code) => {
           return code.intended_water_use_code !== 'NA'

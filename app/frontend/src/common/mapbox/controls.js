@@ -111,6 +111,7 @@ export class BoxZoomControl {
   constructor (options = {}) {
     this.onZoom = options.onZoom || function () {}
     this.enabled = false
+    this.suppressClickEvent = options.suppressClickEvent || false
 
     this._start = null
     this._current = null
@@ -232,6 +233,12 @@ export class BoxZoomControl {
   }
 
   onMouseUp (e) {
+    if (this.enabled && this.suppressClickEvent) {
+      // Listen for the click event so we can stop it from propagating.
+      // In some cases, this may allow the control to interoperate better
+      // with other controls and map event handlers.
+      document.addEventListener('click', this.suppressClick, true)
+    }
     // Capture xy coordinates
     this.finish(this.mousePos(e))
   }
@@ -241,6 +248,14 @@ export class BoxZoomControl {
     if (e.keyCode === 27) {
       this.finish()
     }
+  }
+
+  suppressClick = (clickEvent) => {
+    // Stop a click event from being propagated.
+    clickEvent.stopPropagation()
+    // Remove this event handler so future click events are
+    // processed normally
+    document.removeEventListener('click', this.suppressClick, true)
   }
 
   finish (endPoint) {

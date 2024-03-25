@@ -92,7 +92,13 @@ export default {
       }
       return []
     },
-    ...mapGetters(['currentDriller', 'userRoles'])
+    ...mapGetters([
+      'userRoles'
+    ]),
+    ...mapGetters('registriesStore', [
+      'currentDriller'
+    ])
+
   },
   methods: {
     noteSubmit () {

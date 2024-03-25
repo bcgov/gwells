@@ -13,7 +13,11 @@
 # - Run script:
 #     ./local_newman.sh
 
-
+# Load ENVs to environment if not already present
+if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./.envrc" ]; then
+  source ./.envrc
+  set -e
+fi
 
 ENV_VARS=(
     "GWELLS_API_TEST_USER"
@@ -23,6 +27,8 @@ ENV_VARS=(
     "GWELLS_API_TEST_CLIENT_ID"
     "GWELLS_API_TEST_CLIENT_SECRET"
 )
+
+echo "Running local_wells.sh"
 
 for env_var in ${ENV_VARS[@]}
 do

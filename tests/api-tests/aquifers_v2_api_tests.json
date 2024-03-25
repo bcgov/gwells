@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "94caf24b-33e4-4b1e-9d5a-2a73fa47cfad",
+		"_postman_id": "9f58290b-6a4f-4ec7-a8b0-a9f9b3d970ac",
 		"name": "GWELLS Aquifers v2",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
 	},
 	"item": [
 		{
@@ -14,7 +15,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
@@ -36,7 +36,19 @@
 					],
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -49,28 +61,8 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "username",
-									"value": "{{test_user}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{test_password}}",
-									"type": "text"
-								},
-								{
 									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "client_id",
-									"value": "{{client_id}}",
-									"type": "text"
-								},
-								{
-									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "client_credentials",
 									"type": "text"
 								}
 							]
@@ -85,8 +77,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Codes",
@@ -97,16 +88,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -134,16 +120,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -171,16 +152,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -208,16 +184,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -245,16 +216,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -282,16 +248,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -319,16 +280,11 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
+									"// All tests are written in the folder, not individually for this section"
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -351,69 +307,81 @@
 					"response": []
 				}
 			],
-			"protocolProfileBehavior": {}
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response schema matches\", () => {",
+							"    const schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"count\": {\"type\": \"number\"},",
+							"            \"next\": {\"type\": [\"string\", \"null\"]},",
+							"            \"previous\": {\"type\": [\"string\", \"null\"]},",
+							"            \"offset\": {\"type\": \"number\"},",
+							"            \"results\": {\"type\": \"array\"}",
+							"        }",
+							"    }",
+							"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
+							"})",
+							""
+						]
+					}
+				}
+			]
 		},
 		{
 			"name": "Search",
 			"item": [
-				{
-					"name": "Aquifer filter by aquifer_id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "e291aa1f-95f3-4ca8-8e6c-f88b496980ba",
-								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{base_url}}/api/v2/aquifers?aquifer_id=123",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v2",
-								"aquifers"
-							],
-							"query": [
-								{
-									"key": "aquifer_id",
-									"value": "123"
-								}
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "Aquifer name search",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "7ab4ef72-57cb-4c27-8b88-2cb379cab83c",
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
+									"",
+									"pm.test(\"Response schema matches\", () => {",
+									"    const schema = {",
+									"        \"type\": \"object\",",
+									"        \"properties\": {",
+									"            \"count\": {\"type\": \"number\"},",
+									"            \"next\": {\"type\": [\"string\", \"null\"]},",
+									"            \"previous\": {\"type\": [\"string\", \"null\"]},",
+									"            \"offset\": {\"type\": \"number\"},",
+									"            \"results\": {\"type\": \"array\"}",
+									"        }",
+									"    }",
+									"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
+									"})",
 									""
 								],
-								"type": "text/javascript"
+								"type": "text/javascript",
+								"packages": {}
 							}
 						}
 					],
@@ -440,8 +408,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Bulk",
@@ -452,7 +419,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8f3aa783-2831-40f6-a4f9-3ccf241c44aa",
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"pm.environment.set(\"bulk_aquifer_id\", jsonData.aquifer_id);",
@@ -504,7 +470,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7a45223c-da07-49be-adc9-95919a90e263",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -564,7 +529,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "8a189545-04ff-4d92-ac73-24de257fb899",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -631,7 +595,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f247ba01-7d63-42d2-b922-d505b57838de",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -698,7 +661,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f247ba01-7d63-42d2-b922-d505b57838de",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -764,7 +726,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "ebc2262c-3d93-4e5f-aa48-4904501c525a",
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"var aquifer_id = pm.environment.get('bulk_aquifer_id')",
@@ -806,8 +767,7 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Aquifers List",
@@ -815,16 +775,30 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "85664ee3-92d9-4510-b7d8-6bd6c44ec870",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.expect(pm.response.code).to.equal(200);",
 							"})",
+							"",
+							"pm.test(\"Response schema matches\", () => {",
+							"    const schema = {",
+							"        \"type\": \"object\",",
+							"        \"properties\": {",
+							"            \"count\": {\"type\": \"number\"},",
+							"            \"next\": {\"type\": [\"string\", \"null\"]},",
+							"            \"previous\": {\"type\": [\"string\", \"null\"]},",
+							"            \"offset\": {\"type\": \"number\"},",
+							"            \"results\": {\"type\": \"array\"}",
+							"        }",
+							"    }",
+							"    pm.expect(pm.response.json()).to.be.jsonSchema(schema)",
+							"})",
 							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -851,7 +825,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "8f3aa783-2831-40f6-a4f9-3ccf241c44aa",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"pm.environment.set(\"aquifer_id\", jsonData.aquifer_id);",
@@ -924,7 +897,8 @@
 							"    pm.expect(jsonData.resources[0].section_code).to.eql(\"M\");",
 							"});"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -947,14 +921,71 @@
 					"raw": "{ \n\t\"aquifer_name\":\"Aquifer Name \",\n\t\"demand\":\"H\",\n\t\"known_water_use\":\"M\",\n\t\"litho_stratographic_unit\":\"Aquifer Litho Stratographic Unit\",\n\t\"location_description\":\"Location Description\",\n\t\"mapping_year\":\"1991\",\n\t\"material\":\"B\",\n\t\"notes\":\"Notes\",\n\t\"productivity\":\"H\",\n\t\"quality_concern\":\"N\",\n\t\"subtype\":\"1a\",\n\t\"vulnerability\":\"H\",\n\t\"resources\": [\n\t\t{ \"name\": \"resource 1\", \"url\": \"http://www.example.com/\", \"section_code\": \"M\" }\n\t]\n}\n"
 				},
 				"url": {
-					"raw": "{{base_url}}/api/v1/aquifers",
+					"raw": "{{base_url}}/api/v2/aquifers",
 					"host": [
 						"{{base_url}}"
 					],
 					"path": [
 						"api",
-						"v1",
+						"v2",
 						"aquifers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Aquifer with PUT",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"pm.environment.set(\"aquifer_id\", jsonData.aquifer_id);",
+							"",
+							"pm.test(\"Status code is 201\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Aquifer mapping_year equals name supplied in request\", function () {",
+							"    pm.expect(jsonData.mapping_year).to.eql(1992);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n\t\"mapping_year\":\"1992\"\n}\n"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers/{{aquifer_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers",
+						"{{aquifer_id}}"
 					]
 				}
 			},
@@ -966,7 +997,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
 						"exec": [
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.expect(pm.response.code).to.equal(200);",
@@ -1018,7 +1048,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
@@ -1058,7 +1087,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cfe894ea-0d9f-4b92-8857-34eb257915ab",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
@@ -1151,12 +1179,11 @@
 			"response": []
 		},
 		{
-			"name": "Aquifer Get PUT_URL",
+			"name": "Aquifer Get PRESIGNED_PUT_URL",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
@@ -1212,27 +1239,16 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.expect(pm.response.code).to.equal(200);",
 							"})",
-							"",
-							"pm.test(\"Response is length 2\", function() {",
-							"    pm.expect(jsonData.length).to.equal(2)",
-							"})",
-							"",
-							"pm.test(\"Latest history is correct\", function() {",
-							"    latestHistoryItem = jsonData[0]",
-							"    pm.expect(latestHistoryItem.diff.aquifer_name).to.equal('Aquifer Name Updated')",
-							"    pm.expect(latestHistoryItem.diff.area).to.equal(20.803)",
-							"    pm.expect(latestHistoryItem.diff.mapping_year).to.equal(1992)",
-							"    pm.expect(latestHistoryItem.diff).to.have.property('geom')",
-							"})"
+							""
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1267,7 +1283,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cfe894ea-0d9f-4b92-8857-34eb257915ab",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
@@ -1318,7 +1333,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "4a882f11-c10d-44ee-a3b9-1915ce90baff",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"var aquifer_id = pm.environment.get(\"aquifer_id\");",
@@ -1366,16 +1380,20 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "cd8fff75-07d1-4eff-865d-3a88ccadb210",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"",
 							"pm.test(\"Status code is 200\", function () {",
 							"    pm.expect(pm.response.code).to.equal(200);",
 							"})",
-							""
+							"",
+							"pm.test('Aquifer id matches', () => {",
+							"    const aquiferID = pm.environment.get(\"aquifer_id\")",
+							"    pm.expect(jsonData.aquifer_id).to.equal(aquiferID)",
+							"})"
 						],
-						"type": "text/javascript"
+						"type": "text/javascript",
+						"packages": {}
 					}
 				}
 			],
@@ -1417,7 +1435,6 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "42917a15-1f0e-445e-ba78-3a5171313c13",
 						"exec": [
 							"var jsonData = pm.response.json()",
 							"var aquifer_id = pm.environment.get(\"aquifer_id\");",
@@ -1460,13 +1477,191 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Aquifer Names Search - No fields",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response is empty array\", () => {",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"    pm.expect(jsonData.length).to.equal(0);",
+							"})",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers/names",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers",
+						"names"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Names Search - Aquifer_Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"let aquifersInSearch = [1901, 2, 1900];",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response contains 3 entries\", () => {",
+							"    pm.expect(jsonData).to.be.an('array');",
+							"    pm.expect(jsonData.length).to.equal(3);",
+							"})",
+							"",
+							"pm.test(\"Response formatted with id and description\", () => {",
+							"    jsonData.forEach((entry) => {",
+							"        pm.expect(entry.hasOwnProperty('aquifer_id')).to.be.true;",
+							"        pm.expect(entry.hasOwnProperty('description')).to.be.true;",
+							"    })",
+							"})",
+							"",
+							"pm.test('Results match specified Aquifer_ids', () => {",
+							"    ",
+							"    jsonData.forEach((result) => {",
+							"        const condition = aquifersInSearch.includes(result.aquifer_id)",
+							"        pm.expect(condition).to.be.true;",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers/names?aquifer_ids=1901,2,1900",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers",
+						"names"
+					],
+					"query": [
+						{
+							"key": "aquifer_ids",
+							"value": "1901,2,1900"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Aquifer Names Search - Aquifer_Id Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json()",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"})",
+							"",
+							"pm.test(\"Response formatted with id and description\", () => {",
+							"    jsonData.forEach((entry) => {",
+							"        pm.expect(entry.hasOwnProperty('aquifer_id')).to.be.true;",
+							"        pm.expect(entry.hasOwnProperty('description')).to.be.true;",
+							"    })",
+							"})",
+							"",
+							"pm.test(\"Responses contains search term\", () => {",
+							"    jsonData.forEach((entry) => {",
+							"        const stringified = JSON.stringify(entry).toLowerCase()",
+							"        pm.expect(stringified.includes('aquifer')).to.be.true;",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v2/aquifers/names?search=Aquifer",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v2",
+						"aquifers",
+						"names"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "Aquifer"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"event": [
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "f9450125-5f57-42f0-8051-68351ac89ee4",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1476,7 +1671,6 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "53a4f702-7db1-42f2-9f23-f26312363bee",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -1486,11 +1680,9 @@
 	],
 	"variable": [
 		{
-			"id": "a2df1849-1a25-4497-b5b9-1bd98a4862bb",
 			"key": "KNOWN_AQUIFER_ID",
 			"value": "2000",
 			"type": "string"
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }

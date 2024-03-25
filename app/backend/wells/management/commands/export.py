@@ -118,6 +118,14 @@ select
 """)
 STATS_SQL_V2 = STATS_SQL_V1
 
+"""
+Aquifer Parameters v1 & v2
+"""
+AQUIFER_PARAMETERS_SQL_V1 = ("""
+    select * from export_aquifer_parameters_v1_view
+""")
+AQUIFER_PARAMETERS_SQL_V2 = AQUIFER_PARAMETERS_SQL_V1
+
 
 class Command(BaseCommand):
 
@@ -145,6 +153,7 @@ class Command(BaseCommand):
                     'perforation': PERFORATION_EXPORT_VIEW_V1,
                     'drilling_method': DRILLING_METHOD_EXPORT_VIEW_V1,
                     'development_method': DEVELOPMENT_METHOD_EXPORT_VIEW_V1,
+                    'pt_aquifer_parameters': AQUIFER_PARAMETERS_SQL_V1,
                     'stats': STATS_SQL_V1
                 }
             },
@@ -158,6 +167,7 @@ class Command(BaseCommand):
                     'perforation': PERFORATION_EXPORT_VIEW_V2,
                     'drilling_method': DRILLING_METHOD_EXPORT_VIEW_V2,
                     'development_method': DEVELOPMENT_METHOD_EXPORT_VIEW_V2,
+                    'pt_aquifer_parameters': AQUIFER_PARAMETERS_SQL_V2,
                     'stats': STATS_SQL_V2
                 }
             }

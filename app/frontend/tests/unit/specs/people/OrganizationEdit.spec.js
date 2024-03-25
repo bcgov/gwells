@@ -11,21 +11,27 @@ localVue.use(Vuex)
 
 describe('OrganizationEdit.vue', () => {
   let store
-  let getters
-  let mutations
-  const actions = {
-    [FETCH_DRILLER_OPTIONS]: jest.fn()
-  }
 
   beforeEach(() => {
     moxios.install()
-    getters = {
-      error: () => null,
-      drillerOptions: jest.fn().mockReturnValue(fakeOptions),
-      provinceStateOptions: () => ['BC', 'AB']
-    }
 
-    store = new Vuex.Store({ getters, actions, mutations })
+    store = new Vuex.Store({
+      modules: {
+        registriesStore: {
+          namespaced: true,
+          getters: {
+            error: () => null,
+            drillerOptions: jest.fn().mockReturnValue(fakeOptions),
+            provinceStateOptions: () => ['BC', 'AB']
+          },
+          actions: {
+            [FETCH_DRILLER_OPTIONS]: jest.fn()
+          },
+          mutations: {
+          }
+        }
+      }
+    })
   })
 
   afterEach(() => {

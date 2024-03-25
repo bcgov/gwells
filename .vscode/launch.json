@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Remote Django App",
+      "type": "python",
+      "request": "attach",
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/app/backend",
+          "remoteRoot": "/app/backend"
+        }
+      ],
+      "port": 3000,
+      "host": "localhost"
+    }
+  ]
+}

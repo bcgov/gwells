@@ -61,6 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
               <activity-submission-form
                 v-else
+                ref="activitySubmissionForm"
                 :form="form"
                 :events="events"
                 :submissionsHistory="submissionsHistory"
@@ -80,6 +81,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-on:submit_edit="formSubmit"
                 v-on:resetForm="resetForm"
                 v-on:fetchFiles="fetchFiles"
+                v-on:editWater="editWater"
                 />
             </div>
 
@@ -128,6 +130,8 @@ import filterBlankRows from '@/common/filterBlankRows.js'
 import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue'
 import parseErrors from '@/common/helpers/parseErrors.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
+import { TYPE_OF_WORK, WELL_CLASS, NEW_WELL_CONSTRUCTION_VALIDATION_DATE } from '@/common/constants.js'
+import { isValidPostalCodeOrZipCode } from '@/common/helpers/isValidPostalCodeOrZipCode.js'
 
 export default {
   name: 'SubmissionsHome',
@@ -212,6 +216,13 @@ export default {
       'resetUploadFiles'
     ]),
     ...mapActions([ RESET_WELL_DATA ]),
+
+    editWater(coords){
+      this.initialLatitude = coords.lat
+      this.initialLongitude = coords.lng
+      this.editedWater = true
+    },
+
     formSubmit () {
       const data = Object.assign({}, this.form)
       const meta = data.meta
@@ -226,6 +237,7 @@ export default {
         let skipAltDates = 'alteration_start_date' in meta.valueChanged || 'alteration_end_date' in meta.valueChanged
         let skipDecDates = 'decommission_start_date' in meta.valueChanged || 'decommission_end_date' in meta.valueChanged
         let skipGroundElevation = 'ground_elevation' in meta.valueChanged || 'ground_elevation_method' in meta.valueChanged
+        let doNotSkip = ['drinking_water_protection_area_ind', 'technical_report', 'aquifer_parameters_set']
         Object.keys(data).forEach((key) => {
           // Skip lat lon if one of them has changed
           if ((key === 'latitude' || key === 'longitude') && skipLatLon) { return }
@@ -242,8 +254,8 @@ export default {
           if ((key === 'decommission_start_date' || key === 'decommission_end_date') && skipDecDates) {
             if (data[key] === '') { data[key] = null } return
           }
-          // Remove any fields that aren't changed
-          if (key !== 'well' && !(key in meta.valueChanged)) { delete data[key] }
+          // Remove any fields that aren't changed or booleans
+          if (key !== 'well' && !(key in meta.valueChanged) && !doNotSkip.includes(key)) { delete data[key] }
         })
       }
 
@@ -273,13 +285,18 @@ export default {
         this.stripBlankStrings(data, skipKeys)
       }
 
-      const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set', 'casing_set', 'decommission_description_set']
+      const sets = ['linerperforation_set', 'lithologydescription_set', 'screen_set',
+        'casing_set', 'aquifer_parameters_set', 'decommission_description_set']
       sets.forEach((key) => {
         if (key in data) {
           data[key] = this.filterBlankRows(data[key])
         }
       })
-
+      data.aquifer_parameters_set = data.aquifer_parameters_set.map((item, index) => {
+    // Create a copy of the object without the "testing_number" and "well" property
+    const { testing_number,well, ...newItem } = item;
+    return newItem;
+});
       // Check to see if we are currently saving this form. If so - don't try to POST again
       if (this.formSubmitLoading) { return }
 
@@ -288,6 +305,7 @@ export default {
         return
       }
 
+      let testEnv = false
       this.formSubmitLoading = true
       this.formSubmitSuccess = false
       this.formSubmitError = false
@@ -300,6 +318,17 @@ export default {
       // different endpoints.
       const PATH = this.codes.activity_types.find((item) => item.code === this.activityType).path
       ApiService.post(PATH, data).then((response) => {
+        // If we are in a test environment, we want to make note in the email
+        if (window.location.href.indexOf('localhost:8080') > -1 ||
+            window.location.href.indexOf('gwells-dev-pr') > -1 ||
+            window.location.href.indexOf('gwells-staging') > -1
+        ) { 
+          testEnv = true
+        }
+
+        if(this.editedWater){
+          ApiService.post(`/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}&testEnv=${testEnv}`).then((response) => {})
+        }
         this.formSubmitSuccess = true
         this.formSubmitSuccessWellTag = response.data.well
 
@@ -480,6 +509,7 @@ export default {
         backfill_type: '',
         backfill_depth: '',
         casing_set: [],
+        aquifer_parameters_set: [],
         screen_intake_method: '',
         screen_type: '',
         screen_material: '',
@@ -526,6 +556,8 @@ export default {
         comments: '',
         internal_comments: '',
         alternative_specs_submitted: false,
+        technical_report: false,
+        drinking_water_protection_area_ind: false,
         decommission_description_set: [],
         decommission_reason: '',
         decommission_method: '',
@@ -553,14 +585,158 @@ export default {
       }
       this.componentUpdateTrigger = Date.now()
     },
+    groundwaterProtectionRegulationValidation(errors) {
+      const {
+        owner_full_name, 
+        owner_mailing_address,
+        owner_city,
+        owner_province_state,
+        owner_postal_code,
+      } = this.form
+      this.isWellLocationFilled(errors);
+      if (!owner_full_name) {
+        errors.owner_full_name = ['Owners Full Name Required.'];
+      }
+      if (!owner_mailing_address) {
+        errors.owner_mailing_address = ['Owners Mailing Address Required.'];
+      }
+      if (!owner_city) {
+        errors.owner_city = ['Owners City Required.'];
+      }
+      if (!owner_province_state) {
+        errors.owner_province_state = ['Owners Province or State Required.'];
+      }
+      if (!owner_postal_code) {
+        errors.owner_postal_code = ['Owners Postal Code Required.'];
+      }
+      if (owner_postal_code && !isValidPostalCodeOrZipCode(owner_postal_code)) {
+        errors.owner_postal_code = ['Invalid Postal Code or ZIP Code.'];
+      }
+    },
+    validateWellIdentificationPlateFields(errors) {
+      const { 
+        well_class,
+        identification_plate_number,
+        well_identification_plate_attached,
+      } = this.form
+
+      const validateWellClasses = [WELL_CLASS.WATER_SUPPLY, WELL_CLASS.INJECTION, WELL_CLASS.RECHARGE]
+      const isWellIdentificationPlateToBeVerified = validateWellClasses.includes(well_class)
+      
+      if (isWellIdentificationPlateToBeVerified == false) { return; }
+
+      if (!identification_plate_number) {
+        errors.identification_plate_number = ['Identification Plate Number Required.'];
+      }
+      if (!well_identification_plate_attached) {
+        errors.well_identification_plate_attached = ['Where Identification Plate Attached Required.'];
+      }
+    },
+    validateWellFields(errors) {
+      const { 
+        work_start_date, 
+        work_end_date, 
+        drilling_methods, 
+        total_depth_drilled, 
+        finished_well_depth
+      } = this.form;
+
+      if (!work_start_date) {
+        errors.work_start_date = ['Start Date of Work Required.'];
+      }
+      if (!work_end_date) {
+        errors.work_end_date = ['End Date of Work Required.'];
+      }
+      if (drilling_methods.length === 0) {
+        errors.drilling_methods = ['Drilling Methods Required.'];
+      }
+      if (!total_depth_drilled) { 
+        errors.total_depth_drilled = ['Total Depth Drilled Required.']; 
+      }
+      if (!finished_well_depth) { 
+        errors.finished_well_depth = ['Finished Well Depth Required.']; 
+      }
+    },
+    newlyConstructedWellValidation(errors) {
+      const { 
+        work_start_date,
+        work_end_date,
+      } = this.form
+      
+      const mandatoryLicensingDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
+
+      const workStartDatePastWorkEndDate = ((work_start_date !== '' && work_end_date !== '') && work_start_date > work_end_date);
+      const workEndDatePastMandatoryLicensingDate = (work_end_date !== '' && work_end_date >= mandatoryLicensingDate);
+      const workStartDatePastMandatoryLicensingDate = (work_start_date !== '' && work_start_date >= mandatoryLicensingDate);
+
+      if (this.activityType !== TYPE_OF_WORK.CON) { return; }
+
+      if (workStartDatePastWorkEndDate) {
+        errors.work_start_date = ['Invalid Start Date comes after End Date.'];
+        errors.work_end_date = ['Invalid End Date comes before Start Date.'];
+      }
+
+      if (workStartDatePastMandatoryLicensingDate || workEndDatePastMandatoryLicensingDate) {
+        this.validateWellIdentificationPlateFields(errors);
+        this.validateWellFields(errors);
+      }
+    },
+    /**
+     * @desc Users must fill in one of three "Well Location" fields (well location address, legal description, parcel identifier),
+     * To count as correct, one of these three sections has to be filled in.
+     * @summary validates Well Location section of form
+     */
+    isWellLocationFilled(errors){
+      const {
+        legal_lot, legal_plan, legal_district_lot,
+        legal_block, legal_section, legal_township,
+        legal_range, land_district, legal_pid,
+        street_address, city,
+      } = this.form;
+
+      const legalDescriptionFields = [
+        legal_lot, legal_plan, legal_district_lot,
+        legal_block, legal_section, legal_township,
+        legal_range, land_district
+      ];
+      const locationAddressValidate = !!street_address && !!city;
+      // for legalDescription a user is only required to fill in a minimum one field
+      const legalDescriptionValidate = legalDescriptionFields.some((item) => !!item);
+      const pidAddressValidate = legal_pid > 0;
+
+      if(locationAddressValidate || legalDescriptionValidate || pidAddressValidate) { return; }
+      errors.well_location_section = ['Well location not filled out'];
+    },
     isFormValid () {
       const errors = {}
+
+      // We don't want to validate on edits of older wells
+      if (this.activityType !== 'STAFF_EDIT') {
+        this.groundwaterProtectionRegulationValidation(errors);
+        this.newlyConstructedWellValidation(errors);
+      }
 
       let validateWellClassAndIntendedWaterUse = true
       if ((this.activityType === 'ALT' || this.activityType === 'DEC') && this.form.well) {
         validateWellClassAndIntendedWaterUse = false
       }
 
+      if (this.$refs.activitySubmissionForm) {
+        const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
+        const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
+        //
+        if (wellCoordsMissing) {
+          if (!this.form.latitude){
+            errors.latitude = ['Valid Latitude Required'];
+          }
+          if (!this.form.longitude) { 
+            errors.longitude = ['Valid Longitude Required']
+          }
+        } else if (wellCoordsNotWithinBC) {
+          errors.position = ['Coordinates not within BC']
+        }
+      }
+      
       // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
       // well_tag_number specified
       if (validateWellClassAndIntendedWaterUse) {
@@ -794,6 +970,9 @@ export default {
 
 function initialState () {
   return {
+    editedWater: false,
+    initialLatitude: null,
+    initialLongitude: null,
     activityType: 'CON',
     formIsFlat: false,
     preview: false,
@@ -893,12 +1072,13 @@ function initialState () {
         'wellYield',
         'waterQuality',
         'wellCompletion',
+        'aquiferData',
         'observationWellInfo',
         'closureDescription',
         'decommissionInformation',
         'comments',
         'documents',
-        'aquiferData',
+        'aquiferParameters',
         'editHistory'
       ]
     }
@@ -946,6 +1126,9 @@ function initialState () {
   }
   .input-width-medium {
     max-width: 6rem;
+  }
+  .input-width-large {
+    max-width: 8rem;
   }
   .loader {
     border: 5px solid #f3f3f3;

@@ -114,5 +114,14 @@
               "construction_start_date": null,
               "well_status": null,
               "filter_pack_thickness": null,
-              "well_yield": null}}
+              "well_yield": null,
+              "distance_to_pid": "123.45",
+              "geocode_distance": "543.21",
+              "score_address": "78.90",
+              "score_city": "56.78",
+              "cross_referenced": false,
+              "cross_referenced_date": "2023-02-08T17:06:47.229Z",
+              "cross_referenced_by": "DATA_LOAD_USER",
+              "natural_resource_region": "Northeast"
+              }}
 ]

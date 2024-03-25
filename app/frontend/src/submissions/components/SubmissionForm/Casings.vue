@@ -25,7 +25,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
     </b-row>
     <div class="table-responsive" id="casingTable">
-      <table class="table table-sm">
+      <table class="table table-sm" aria-describedby="casingsDetails">
         <thead>
           <tr>
             <th class="font-weight-normal">Unknown Length</th>

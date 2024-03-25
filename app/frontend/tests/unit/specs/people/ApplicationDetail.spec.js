@@ -13,28 +13,41 @@ jest.mock('@/common/services/ApiService.js')
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
+const GET_DEFAULT_STORE_MODULES = () => {
+  return {
+    auth: {
+      getters: {
+        user: () => null,
+        userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
+      }
+    },
+    registriesStore: {
+      namespaced: true,
+      getters: {
+        loading: () => false,
+        error: () => null,
+        currentDriller: jest.fn().mockReturnValue(fakePerson),
+        searchResponse: () => [],
+        drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions)
+      },
+      actions: {
+        [FETCH_DRILLER_OPTIONS]: jest.fn()
+      },
+      mutations: {
+      }
+    }
+  }
+}
+
 describe('ApplicationDetail.vue', () => {
   let store
-  let getters
-  let mutations
-  let actions
+  let modules
 
   beforeEach(() => {
-    getters = {
-      loading: () => false,
-      error: () => null,
-      user: () => null,
-      currentDriller: jest.fn().mockReturnValue(fakePerson),
-      drillers: () => [],
-      drillerOptions: () => jest.fn().mockReturnValue(fakeDrillerOptions),
-      userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
-    }
-    mutations = {
-    }
-    actions = {
-      [FETCH_DRILLER_OPTIONS]: jest.fn()
-    }
-    store = new Vuex.Store({ getters, actions, mutations })
+    modules = GET_DEFAULT_STORE_MODULES()
+    store = new Vuex.Store({
+      modules: modules
+    })
 
     ApiService.__setMockResponse(fakeRegistration)
   })
@@ -71,22 +84,21 @@ describe('ApplicationDetail.vue', () => {
   })
 
   describe('User has edit rights', () => {
+    console.log(modules)
     ApiService.__setMockResponse(fakeRegistration)
-
-    let getters = {
+    modules = GET_DEFAULT_STORE_MODULES()
+    modules.registriesStore.getters = Object.assign({}, modules.registriesStore.getters, {
       loading: () => false,
       error: () => null,
-      user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
-      drillers: () => [],
+      drillers: () => []
+    })
+    modules.auth.getters = Object.assign({}, modules.registriesStore.getters, {
+      user: () => null,
       userRoles: () => ({ registry: { edit: true, view: true, approve: true } })
-    }
-    let mutations = {}
-    let actions = {
-      [FETCH_DRILLER_OPTIONS]: jest.fn()
-    }
-    let store = new Vuex.Store({ getters, actions, mutations })
+    })
+    let store = new Vuex.Store({ modules: modules })
     const wrapper = shallowMount(ApplicationDetail, {
       localVue,
       store,
@@ -133,22 +145,20 @@ describe('ApplicationDetail.vue', () => {
   })
 
   describe('User can\'t edit', () => {
-    let getters = {
+    modules = GET_DEFAULT_STORE_MODULES()
+    modules.registriesStore.getters = Object.assign({}, modules.registriesStore.getters, {
       loading: () => false,
       error: () => null,
-      user: () => null,
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
-      drillers: () => [],
+      drillers: () => []
+    })
+    modules.auth.getters = Object.assign({}, modules.registriesStore.getters, {
+      user: () => null,
       userRoles: () => ({ registry: { edit: false, view: true, approve: false } })
-    }
+    })
 
-    let mutations = {}
-    let actions = {
-      [FETCH_DRILLER_OPTIONS]: jest.fn()
-    }
-
-    let store = new Vuex.Store({ getters, actions, mutations })
+    let store = new Vuex.Store({ modules: modules })
     const wrapper = shallowMount(ApplicationDetail, {
       localVue,
       store,

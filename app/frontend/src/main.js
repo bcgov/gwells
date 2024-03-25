@@ -79,7 +79,6 @@ Vue.use(VueAnalytics, {
   })
 })
 
-
 if (isProduction()) {
   Vue.use(VueMatomo, {
     host: 'https://water-matomo.apps.silver.devops.gov.bc.ca/',

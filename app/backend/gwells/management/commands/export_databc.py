@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 #   contain the added data
 WELLS_SQL_V1 = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326)) :: json as "geometry",
     well.well_tag_number as well_tag_number,
     well.identification_plate_number as identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
@@ -208,7 +208,7 @@ from well
 
 WELLS_SQL_V2 = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326)) :: json as "geometry",
     well.well_tag_number as well_tag_number,
     well.identification_plate_number as identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
@@ -372,7 +372,7 @@ WELL_CHUNK_SIZE = 10000
 # stable!
 LITHOLOGY_SQL = ("""
 select
-    ST_AsGeoJSON(ST_Transform(geom, 4326)) :: json as "geometry",
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326)) :: json as "geometry",
     well.well_tag_number,
     identification_plate_number,
     SUBSTRING(well_status_code.description for 255) as well_status,
@@ -435,6 +435,61 @@ from well
 """)
 LITHOLOGY_CHUNK_SIZE = 10000
 
+PUMPING_TEST_AQUIFER_PARAMETER_SQL = ("""
+SELECT
+    ST_AsGeoJSON(ST_Transform(well.geom, 4326))::json AS "geometry",
+    well.well_tag_number AS well_tag_number,
+    well.identification_plate_number AS identification_plate_number,
+    SUBSTRING(well_status_code.description FROM 1 FOR 255) AS well_status,
+    CASE WHEN licence_q.cur_licences > 0
+        THEN 'Licensed'
+        ELSE 'Unlicensed'
+    END AS licence_status,
+    CONCAT('https://apps.nrs.gov.bc.ca/gwells/well/', well.well_tag_number) AS detail,
+    well.finished_well_depth AS finished_well_depth,
+    well.bedrock_depth AS bedrock_depth,
+    ap.start_date_pumping_test AS start_date_pumping_test,
+    SUBSTRING(pumping_test_description_code.description FROM 1 FOR 100) AS pumping_test_description,
+    ap.test_duration AS test_duration,
+    SUBSTRING(boundary_effect_code.description FROM 1 FOR 100) AS boundary_effect,
+    SUBSTRING(analysis_method_code.description FROM 1 FOR 100) AS analysis_method,
+    ap.storativity AS storativity,
+    ap.transmissivity AS transmissivity,
+    ap.hydraulic_conductivity AS hydraulic_conductivity,
+    ap.specific_yield AS specific_yield,
+    ap.specific_capacity AS specific_capacity,
+    ap.comments AS comments,
+    aq.aquifer_id AS aquifer_id,
+    SUBSTRING(aquifer_subtype_code.description FROM 1 FOR 100) AS aquifer_subtype,
+    CASE WHEN aquifer_material_code.aquifer_material_code IN ('G', 'S', 'GS')
+        THEN 'Sand and Gravel'
+        ELSE aquifer_material_code.description
+    END AS material
+FROM 
+    well
+LEFT JOIN aquifer_parameters ap ON well.well_tag_number = ap.well_tag_number
+LEFT JOIN aquifer aq ON well.aquifer_id = aq.aquifer_id
+LEFT JOIN aquifer_material_code ON aquifer_material_code.aquifer_material_code = aq.aquifer_material_code
+LEFT JOIN pumping_test_description_code ON pumping_test_description_code.pumping_test_description_code = ap.pumping_test_description_code
+LEFT JOIN analysis_method_code ON analysis_method_code.analysis_method_code = ap.analysis_method_code
+LEFT JOIN well_status_code ON well_status_code.well_status_code = well.well_status_code
+LEFT JOIN boundary_effect_code ON boundary_effect_code.boundary_effect_code = ap.boundary_effect_code
+LEFT JOIN (
+    SELECT well_tag_number, COUNT(*) AS cur_licences
+    FROM well
+    JOIN well_licences ON well.well_tag_number = well_licences.well_id
+    GROUP BY well_tag_number
+) AS licence_q ON well.well_tag_number = licence_q.well_tag_number
+LEFT JOIN aquifer_subtype_code ON
+    aquifer_subtype_code.aquifer_subtype_code = aq.aquifer_subtype_code
+WHERE
+    (well.well_publication_status_code = 'Published' or well.well_publication_status_code = null) AND
+    ap.well_tag_number is not null AND
+    well.geom is not null
+ORDER BY well.well_tag_number;
+""")
+
+PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE = 10000
 # IMPORTANT: If the underlying data structure changes (e.g. column name changes etc.), the
 # property names have to stay the same! This endpoint is consumed by DataBC and must remain
 # stable!

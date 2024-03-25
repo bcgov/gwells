@@ -46,8 +46,15 @@ from gwells.pagination import APILimitOffsetPagination
 from gwells.settings.base import get_env_variable
 from gwells.open_api import (
     get_geojson_schema, get_model_feature_schema, GEO_JSON_302_MESSAGE, GEO_JSON_PARAMS)
-from gwells.management.commands.export_databc import (WELLS_SQL_V1, LITHOLOGY_SQL, GeoJSONIterator,
-                                                      LITHOLOGY_CHUNK_SIZE, WELL_CHUNK_SIZE)
+from gwells.management.commands.export_databc import (
+    GeoJSONIterator,
+    LITHOLOGY_CHUNK_SIZE,
+    LITHOLOGY_SQL,
+    WELL_CHUNK_SIZE,
+    PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE,
+    PUMPING_TEST_AQUIFER_PARAMETER_SQL,
+    WELLS_SQL_V1,
+)
 
 from submissions.serializers import WellSubmissionListSerializer
 from submissions.models import WellActivityCode
@@ -70,10 +77,12 @@ from wells.models import (
     LithologyHardnessCode,
     LithologyMaterialCode,
     Well,
+    WellAttachment,
     WellClassCode,
     WellYieldUnitCode,
     WellStatusCode,
 )
+
 from wells.change_history import get_well_history
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 from wells.serializers import (
@@ -89,8 +98,7 @@ from wells.serializers import (
     WellLithologySerializer,
 )
 from wells.permissions import WellsEditPermissions, WellsEditOrReadOnly
-from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT
-
+from wells.constants import MAX_EXPORT_COUNT, MAX_LOCATION_COUNT, WELL_TAGS
 
 logger = logging.getLogger(__name__)
 
@@ -98,7 +106,8 @@ logger = logging.getLogger(__name__)
 class WellDetail(RetrieveAPIView):
     """
     Return well detail.
-    This view is open to all, and has no permissions.
+    get:
+    Returns information about a well given the well_tag_number. Unpublished wells are filtered if user is not authenticated.
     """
     serializer_class = WellDetailSerializer
 
@@ -128,7 +137,8 @@ class ListExtracts(APIView):
     """
     List well extracts
 
-    get: list well extracts
+    get:
+    list well extracts
     """
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, **kwargs):
@@ -191,12 +201,12 @@ class ListFiles(APIView):
     """
     List documents associated with a well (e.g. well construction report)
 
-    get: list files found for the well identified in the uri
+    get:
+    List uploaded files associated with the well identified in the URI.
     """
 
     @swagger_auto_schema(responses={200: openapi.Response('OK', LIST_FILES_OK)})
     def get(self, request, tag, **kwargs):
-
         well = get_object_or_404(Well, pk=tag)
 
         if well.well_publication_status\
@@ -215,11 +225,60 @@ class ListFiles(APIView):
 
         return Response(documents)
 
+class FileSumView(APIView):
+    """
+    Handler for Updating File counts for a well. Bridge method to keep database records for files stored in S3 buckets.
+    Primarily used for Advanced Search function 'Wells containing File of type n'
+
+    get:
+    Increments or decrements the count for files stored of a given type.
+    """
+    
+    def get(self, request, tag, **kwargs):
+        # Verify user has permissions to edit wells
+        if not self.request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+            return HttpResponse(status=403)
+        increment = self.request.query_params.get('inc')
+        document_type = self.request.query_params.get('documentType')
+        
+        # Verify we have correct query params, and the document type is valid
+        if self.request.query_params.get('documentType') == None \
+            or increment == None \
+            or not any(item['value'] == document_type for item in WELL_TAGS):
+            return HttpResponse(status=400)
+        
+        attachment = document_type.replace(' ', "_").lower()
+        try:
+            # Create entry to WellAttachment in event it does not already have one
+            if not WellAttachment.objects.filter(well_tag_number=tag).exists():
+                well = Well.objects.get(well_tag_number=tag)
+                WellAttachment.objects.create(well_tag_number=well)
+                
+            if increment == "true":
+                well_attach = WellAttachment.objects.get(well_tag_number=tag)
+                setattr(well_attach, attachment, getattr(well_attach, attachment) + 1)
+                well_attach.save()
+                return HttpResponse("Count updated successfully", status=200)
+            elif increment == "false":
+                well_attach = WellAttachment.objects.get(well_tag_number=tag)
+                if getattr(well_attach, attachment) > 0:
+                    setattr(well_attach, attachment, getattr(well_attach, attachment) - 1)
+                    well_attach.save()
+                    return HttpResponse("File count decreased", status=200)
+                else:
+                    return HttpResponse("Cannot have negative number of files", status=400)
+            else:
+                return HttpResponse("Invalid value for qs: increment", status=400)
+                
+        except Exception as e:
+            print(e)
+            return HttpResponse(400)
 
 class WellListAPIViewV1(ListAPIView):
     """List and create wells
 
-    get: returns a list of wells
+    get:
+    Returns a list of wells.
     """
 
     permission_classes = (WellsEditOrReadOnly,)
@@ -262,7 +321,10 @@ class WellListAPIViewV1(ListAPIView):
 
 
 class WellTagSearchAPIView(ListAPIView):
-    """ seach for wells by tag or owner """
+    """
+    get:
+    Search for wells by tag or owner.
+    """
 
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
@@ -294,7 +356,9 @@ class WellTagSearchAPIView(ListAPIView):
 class WellSubmissionsListAPIView(ListAPIView):
     """ lists submissions for a well
         See also:  submissions.SubmissionListAPIView (list all submission records)
-        get: returns submission records for a given well
+
+        get:
+        Returns submission records for a given well.
     """
 
     permission_classes = (WellsEditPermissions,)
@@ -311,9 +375,10 @@ class WellSubmissionsListAPIView(ListAPIView):
 
 
 class WellLocationListAPIViewV1(ListAPIView):
-    """ returns well locations for a given search
+    """ Returns well locations for a given search.
 
-        get: returns a list of wells with locations only
+        get:
+        Returns a list of wells with locations only.
     """
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
@@ -338,7 +403,12 @@ class WellLocationListAPIViewV1(ListAPIView):
         return qs
 
     def get(self, request, **kwargs):
-        """ cancels request if too many wells are found"""
+        """
+        Cancels request if too many wells are found.
+        
+        get:
+        Returns compact set of well information data for populating the maps.
+        """
 
         qs = self.get_queryset()
         locations = self.filter_queryset(qs)
@@ -507,9 +577,10 @@ class WellExportListAPIViewV1(ListAPIView):
 
 class PreSignedDocumentKey(APIView):
     """
-    Get a pre-signed document key to upload into an S3 compatible document store
+    Get a pre-signed document key to upload into an S3 compatible document store.
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     queryset = Well.objects.all()
@@ -540,9 +611,10 @@ class PreSignedDocumentKey(APIView):
 
 class DeleteWellDocument(APIView):
     """
-    Delete a document from a S3 compatible store
+    Delete a document from a S3 compatible store.
 
-    delete: remove the specified object from the S3 store
+    delete:
+    Remove the specified object from the S3 store.
     """
 
     queryset = Well.objects.all()
@@ -573,16 +645,16 @@ class DeleteWellDocument(APIView):
 
 class WellHistory(APIView):
     """
-    get: returns a history of changes to a Well model record
+    get:
+    Returns a history of changes to a Well model record.
     """
     permission_classes = (WellsEditPermissions,)
     queryset = Well.objects.all()
-    swagger_schema = None
 
     def get(self, request, well_id, **kwargs):
         """
-        Retrieves version history for the specified Well record and creates a list of diffs
-        for each revision.
+        get:
+        Retrieves version history for the specified Well record and creates a list of diffs for each revision.
         """
         try:
             well = Well.objects.get(well_tag_number=well_id)
@@ -631,15 +703,8 @@ WELL_PROPERTIES = openapi.Schema(
 
 
 @swagger_auto_schema(
-    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of wells.'),
-    method='get',
-    manual_parameters=GEO_JSON_PARAMS,
-    responses={
-        302: openapi.Response(GEO_JSON_302_MESSAGE),
-        200: openapi.Response(
-            'GeoJSON data for well.',
-            get_geojson_schema(WELL_PROPERTIES, 'Point'))
-    }
+    method="GET",
+    auto_schema=None
 )
 @api_view(['GET'])
 def well_geojson(request, **kwargs):
@@ -653,7 +718,7 @@ def well_geojson(request, **kwargs):
         bounds_sql = ''
 
         if sw_long and sw_lat and ne_long and ne_lat:
-            bounds_sql = 'and geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
@@ -710,16 +775,8 @@ LITHOLOGY_PROPERTIES = openapi.Schema(
 
 
 @swagger_auto_schema(
-    operation_description=('Get GeoJSON (see https://tools.ietf.org/html/rfc7946) dump of well '
-                           'lithology.'),
-    method='get',
-    manual_parameters=GEO_JSON_PARAMS,
-    responses={
-        302: openapi.Response(GEO_JSON_302_MESSAGE),
-        200: openapi.Response(
-            'GeoJSON data for well lithology.',
-            get_geojson_schema(LITHOLOGY_PROPERTIES, 'Point'))
-    }
+    method="GET",
+    auto_schema=None
 )
 @api_view(['GET'])
 def lithology_geojson(request, **kwargs):
@@ -733,7 +790,7 @@ def lithology_geojson(request, **kwargs):
         bounds_sql = ''
 
         if sw_long and sw_lat and ne_long and ne_lat:
-            bounds_sql = 'and geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
             bounds = (sw_long, sw_lat, ne_long, ne_lat)
 
         iterator = GeoJSONIterator(
@@ -751,56 +808,52 @@ def lithology_geojson(request, **kwargs):
             'api/v1/gis/lithology.json')
         return HttpResponseRedirect(url)
 
-
+@swagger_auto_schema(method='GET', auto_schema=None)
 @api_view(['GET'])
 def well_licensing(request, **kwargs):
     tag = request.GET.get('well_tag_number')
-    e_licensing_url = get_env_variable('E_LICENSING_URL')
-    api_success = False
+    try:
+        if tag and tag.isnumeric():
+            well = Well.objects.get(well_tag_number=tag)
+            raw_query = """
+                SELECT DISTINCT 
+                aw.licence_number 
+                FROM well_licences wl 
+                LEFT JOIN aquifers_waterrightslicence aw 
+                ON aw.wrl_sysid = wl.waterrightslicence_id
+                WHERE well_id = %s
+            """
 
-    headers = {
-        'content_type': 'application/json',
-        'AuthUsername': get_env_variable('E_LICENSING_AUTH_USERNAME'),
-        'AuthPass': get_env_variable('E_LICENSING_AUTH_PASSWORD')
-    }
+            with connection.cursor() as cursor:
+                cursor.execute(raw_query, [tag])
+                result = cursor.fetchall()
+                flattened_result = [value for row in result for value in row]
+                data = {
+                    'status': well.licenced_status.description,
+                    'number': flattened_result,
+                    'date': ''
+                }
+            return JsonResponse(data)
+    except Exception:
+        return HttpResponse(status=500)
+    return HttpResponse(status=400)
 
-    if e_licensing_url:
-        try:
-            response = requests.get(e_licensing_url + '{}'.format(tag), headers=headers)
-            if response.ok:
-                try:
-                    licence = response.json()[-1]  # Use the latest licensing value, fails purposely if empty array
-                    licence_status = 'Licensed' if licence.get('authorization_status') == 'ACTIVE' else 'Unlicensed'
-                    data = {
-                        'status': licence_status,
-                        'number': licence.get('authorization_number'),
-                        'date': licence.get('authorization_status_date')
-                    }
-                    api_success = True
-                except:
-                    pass
-        except:
-            pass
-
-    if not api_success:
-        well = Well.objects.get(well_tag_number=tag)
-        data = {
-            'status': well.licenced_status.description,
-            'number': '',
-            'date': ''
-        }
-
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    
 
 
 # Deprecated. Use WellSubsurface instead
 class WellScreens(ListAPIView):
-    """ returns well screen info for a range of wells """
+    """
+    Returns well screen info for a range of wells
+
+    get:
+    Returns a compact list of wells including screen_set fields
+    """
+
 
     model = Well
     serializer_class = WellDrawdownSerializer
     filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
-    swagger_schema = None
 
     def get_queryset(self):
         qs = Well.objects.all() \
@@ -847,12 +900,16 @@ class WellScreens(ListAPIView):
 
 
 class WellLithology(ListAPIView):
-    """ returns lithology info for a range of wells """
+    """
+    Returns the lithologydescription_set information for a range of wells.
+    
+    get:
+    Returns list of wells with lat/long and lithologydescription_set information.
+    """    
 
     model = Well
     serializer_class = WellLithologySerializer
     filter_backends = (GeometryFilterBackend,)
-    swagger_schema = None
 
     def get_queryset(self):
         qs = Well.objects.all()
@@ -874,3 +931,53 @@ class WellLithology(ListAPIView):
             qs = qs.filter(well_tag_number__in=wells)
 
         return qs
+class AddressGeocoder(APIView):
+    """
+    Address Autocomplete Request handler
+    
+    get:
+    Takes Partial Address Values and returns list of possible auto complete values
+    """
+    def get(self, request,**kwargs):
+        GEOCODER_ADDRESS_URL = get_env_variable('GEOCODER_ADDRESS_API_BASE') + self.request.query_params.get('searchTag')
+        response = requests.get(GEOCODER_ADDRESS_URL)
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            data = response.json()
+            # Create a Django JsonResponse object and return it
+            return JsonResponse(data)
+        else:
+        # If the request was not successful, return an appropriate HTTP response
+            return JsonResponse({'error': f"Error: {response.status_code} - {response.text}"}, status=500)
+
+@api_view(['GET'])
+def aquifer_pump_params(request, **kwargs):
+    realtime = request.GET.get('realtime') in ('True', 'true')
+    if realtime:
+        sw_long = request.query_params.get('sw_long')
+        sw_lat = request.query_params.get('sw_lat')
+        ne_long = request.query_params.get('ne_long')
+        ne_lat = request.query_params.get('ne_lat')
+        bounds = None
+        bounds_sql = ''
+
+        if sw_long and sw_lat and ne_long and ne_lat:
+            bounds_sql = 'and well.geom @ ST_MakeEnvelope(%s, %s, %s, %s, 4326)'
+            bounds = (sw_long, sw_lat, ne_long, ne_lat)
+
+        iterator = GeoJSONIterator(
+                        PUMPING_TEST_AQUIFER_PARAMETER_SQL.format(bounds=bounds_sql), PUMPING_TEST_AQUIFER_PARAMETER_CHUNK_SIZE,
+                        connection.cursor(),
+                        bounds)
+        response = StreamingHttpResponse((item for item in iterator),
+                                         content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="pumpingTestAquiferParameters.json"'
+        return response
+    else:
+        # Generating spatial data realtime is much too slow,
+        # so we have to redirect to a pre-generated instance.
+        url = 'https://{}/{}/{}'.format(
+            get_env_variable('S3_HOST'),
+            get_env_variable('S3_WELL_EXPORT_BUCKET'),
+            'api/v2/gis/pumpingTestAquiferParameters.json')
+        return HttpResponseRedirect(url)

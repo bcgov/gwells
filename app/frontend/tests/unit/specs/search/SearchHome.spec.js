@@ -1,3 +1,4 @@
+import '../../mocks/mapbox-gl'
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import moxios from 'moxios'
@@ -5,91 +6,132 @@ import SearchHome from '@/registry/components/search/SearchHome'
 import SearchTable from '@/registry/components/search/SearchTable'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
 import fakeDrillerOptions from '../fakeDrillerOptions'
-import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
-import { SET_DRILLER_LIST } from '@/registry/store/mutations.types'
+import {
+  FETCH_CITY_LIST,
+  FETCH_DRILLER_OPTIONS,
+  REQUEST_MAP_POSITION,
+  SEARCH,
+  RESET_SEARCH
+} from '@/registry/store/actions.types'
+import { SET_SEARCH_RESPONSE, SET_LAST_SEARCHED_PARAMS } from '@/registry/store/mutations.types'
 import fakePersonList from '../fakePersonList.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
 
+const DEFAULT_REGISTRIES_STORE_GETTERS = {
+  drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
+  searchResponse: () => {
+    return {
+      results: [
+        {
+          person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a03',
+          first_name: 'Alexis',
+          surname: 'Rodriguez',
+          organization_name: null,
+          street_address: null,
+          city: null,
+          province_state: null,
+          contact_tel: null,
+          contact_email: null,
+          activity: 'Well Driller',
+          status: 'Active',
+          registration_no: 'WD 08315530'
+        },
+        {
+          person_guid: 'db02b5bb-1473-4f97-9bcf-f6214e8dd5aa',
+          first_name: 'Ann',
+          surname: 'Berg',
+          organization_name: 'Earthplex Installers',
+          street_address: '7010 Rocky Bluff Mall',
+          city: 'Atlin',
+          province_state: 'BC',
+          contact_tel: '(604) 424-7090',
+          contact_email: 'cardenas@driller.ca',
+          activity: 'Well Driller',
+          status: 'Active',
+          registration_no: 'WD 04187177'
+        }
+      ]
+    }
+  },
+  loading: () => false,
+  listError: () => null,
+  cityList: () => {
+    return {
+      drillers: [
+        {
+          cities: ['Duncan', 'Esquimalt'],
+          prov: 'BC'
+        },
+        {
+          prov: 'AB',
+          cities: ['Jasper']
+        }
+      ],
+      installers: [
+        {
+          cities: ['Nanaimo'],
+          prov: 'BC'
+        }
+      ]
+    }
+  },
+  activity: () => 'DRILL',
+  searchParams: () => {
+    return {
+      search: '',
+      city: [''],
+      activity: 'DRILL',
+      status: 'A',
+      limit: '10',
+      ordering: ''
+    }
+  },
+  isSearchInProgress: () => false,
+  lastSearchedParams: () => {
+    return {
+      raw: {
+        search: '',
+        city: [''],
+        activity: 'DRILL',
+        status: 'A',
+        limit: '10',
+        ordering: 'surname'
+      },
+      api: {}
+    }
+  },
+  requestedMapPosition: () => null,
+  hasSearched: () => false
+}
+const DEFAULT_REGISTRIES_STORE_ACTIONS = {
+  [FETCH_CITY_LIST]: jest.fn(),
+  [FETCH_DRILLER_OPTIONS]: jest.fn(),
+  [REQUEST_MAP_POSITION]: jest.fn(),
+  [SEARCH]: jest.fn(),
+  [RESET_SEARCH]: jest.fn()
+}
+const DEFAULT_REGISTIES_STORE_MUTATIONS = {
+  [SET_SEARCH_RESPONSE]: jest.fn(),
+  [SET_LAST_SEARCHED_PARAMS]: jest.fn()
+}
+
 describe('SearchHome.vue', () => {
   let store
-  let getters
-  let actions
-  let mutations
+  let authGetters
 
   beforeEach(() => {
     moxios.install()
-    getters = {
-      drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
-      drillers: () => {
-        return {
-          results: [
-            {
-              person_guid: '1e252dca-ccb9-439a-a6ec-aeec0f7e4a03',
-              first_name: 'Alexis',
-              surname: 'Rodriguez',
-              organization_name: null,
-              street_address: null,
-              city: null,
-              province_state: null,
-              contact_tel: null,
-              contact_email: null,
-              activity: 'Well Driller',
-              status: 'Active',
-              registration_no: 'WD 08315530'
-            },
-            {
-              person_guid: 'db02b5bb-1473-4f97-9bcf-f6214e8dd5aa',
-              first_name: 'Ann',
-              surname: 'Berg',
-              organization_name: 'Earthplex Installers',
-              street_address: '7010 Rocky Bluff Mall',
-              city: 'Atlin',
-              province_state: 'BC',
-              contact_tel: '(604) 424-7090',
-              contact_email: 'cardenas@driller.ca',
-              activity: 'Well Driller',
-              status: 'Active',
-              registration_no: 'WD 04187177'
-            }
-          ]
-        }
-      },
-      loading: () => false,
-      listError: () => null,
-      cityList: () => {
-        return {
-          drillers: [
-            {
-              cities: ['Duncan', 'Esquimalt'],
-              prov: 'BC'
-            },
-            {
-              prov: 'AB',
-              cities: ['Jasper']
-            }
-          ],
-          installers: [
-            {
-              cities: ['Nanaimo'],
-              prov: 'BC'
-            }
-          ]
-        }
-      },
-      userRoles: () => ({ registry: { edit: false, view: false, approve: false } }),
-      activity: () => 'DRILL'
+    authGetters = {
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } })
     }
-    actions = {
-      [FETCH_CITY_LIST]: jest.fn(),
-      [FETCH_DRILLER_LIST]: jest.fn(),
-      [FETCH_DRILLER_OPTIONS]: jest.fn()
-    }
-    mutations = {
-      [SET_DRILLER_LIST]: jest.fn()
-    }
-    store = new Vuex.Store({ getters, actions, mutations })
+    store = new Vuex.Store({
+      modules: {
+        auth: { getters: authGetters },
+        registriesStore: { namespaced: true, getters: DEFAULT_REGISTRIES_STORE_GETTERS, actions: DEFAULT_REGISTRIES_STORE_ACTIONS, mutations: DEFAULT_REGISTIES_STORE_MUTATIONS }
+      }
+    })
   })
 
   afterEach(() => {
@@ -106,17 +148,24 @@ describe('SearchHome.vue', () => {
   })
 
   it('loads the error component if there is an error', () => {
-    const getters = {
-      drillers: () => [],
+    const authGetters = {
+      userRoles: () => ({ registry: { edit: false, view: false, approve: false } })
+    }
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS, {
+      searchResponse: () => [],
       loading: () => false,
       listError: () => {
         return { status: '400', statusText: 'error!' }
       },
       cityList: () => [],
-      activity: () => 'DRILL',
-      userRoles: () => ({ registry: { edit: false, view: false, approve: false } })
-    }
-    const store = new Vuex.Store({ getters, actions })
+      activity: () => 'DRILL'
+    })
+    const store = new Vuex.Store({
+      modules: {
+        auth: { getters: authGetters },
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS, mutations: DEFAULT_REGISTIES_STORE_MUTATIONS }
+      }
+    })
     const wrapper = shallowMount(SearchHome, {
       store,
       localVue
@@ -133,48 +182,17 @@ describe('SearchHome.vue', () => {
     expect(wrapper.findAll(APIErrorMessage).length)
       .toEqual(0)
   })
-  it('resets search params when reset button is clicked', () => {
-    const wrapper = mount(SearchHome, {
-      store,
-      localVue
-    })
-    wrapper.setData({
-      searchParams: {
-        search: 'Bob Driller',
-        activity: 'PUMP',
-        city: [''],
-        status: 'INACTIVE',
-        limit: '10',
-        ordering: ''
-      }
-    })
-    expect(wrapper.vm.searchParams).toEqual({
-      search: 'Bob Driller',
-      city: [''],
-      activity: 'PUMP',
-      status: 'INACTIVE',
-      limit: '10',
-      ordering: ''
-    })
-    wrapper.find('[type=reset]').trigger('reset')
-    expect(wrapper.vm.searchParams).toEqual({
-      search: '',
-      city: [''],
-      activity: 'DRILL',
-      status: 'A',
-      limit: '10',
-      ordering: ''
-    })
-  })
   it('calls sort method when register table component emits a sort code', () => {
     const wrapper = shallowMount(SearchHome, {
       store,
       localVue
     })
     const table = wrapper.find(SearchTable)
-    wrapper.vm.lastSearchedParams = wrapper.vm.searchParams
-    table.vm.$emit('sort', 'surname')
-    expect(wrapper.vm.lastSearchedParams.ordering).toEqual('-surname')
+    let spy = jest.spyOn(wrapper.vm, 'sortTable')
+    wrapper.setMethods({ sortTable: spy })
+    table.vm.$emit('sort', '-surname')
+    expect(spy).toHaveBeenCalledWith('-surname')
+    spy.mockRestore()
   })
   it('has a list of cities for drillers', () => {
     const wrapper = shallowMount(SearchHome, {
@@ -188,27 +206,34 @@ describe('SearchHome.vue', () => {
     expect(cityOptions.at(2).text()).toEqual('Esquimalt')
     expect(cityOptions.at(3).text()).toEqual('Jasper')
   })
-  it('clears driller list when reset is clicked', () => {
+  it('store reset_search action is dispatched after reset button clicked', () => {
     const wrapper = mount(SearchHome, {
       store,
       localVue
     })
     wrapper.find('[type=reset]').trigger('reset')
-    expect(mutations.SET_DRILLER_LIST).toHaveBeenCalled()
+    expect(DEFAULT_REGISTRIES_STORE_ACTIONS.RESET_SEARCH).toHaveBeenCalled()
   })
   it('shows shows the xlsx and csv download links', () => {
-    const getters = {
+    const authGetters = {
+      userRoles: () => ({ registry: { edit: false, view: true, approve: false } })
+    }
+    const registriesStoreGetters = Object.assign({}, DEFAULT_REGISTRIES_STORE_GETTERS, {
       drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),
-      drillers: jest.fn().mockReturnValue(fakePersonList),
+      searchResponse: jest.fn().mockReturnValue(fakePersonList),
       loading: () => false,
       listError: () => {
         return { status: '400', statusText: 'error!' }
       },
       cityList: () => [],
-      activity: () => 'DRILL',
-      userRoles: () => ({ registry: { edit: false, view: true, approve: false } })
-    }
-    const store = new Vuex.Store({ getters, actions })
+      activity: () => 'DRILL'
+    })
+    const store = new Vuex.Store({
+      modules: {
+        auth: { getters: authGetters },
+        registriesStore: { namespaced: true, getters: registriesStoreGetters, actions: DEFAULT_REGISTRIES_STORE_ACTIONS, mutations: DEFAULT_REGISTIES_STORE_MUTATIONS }
+      }
+    })
     const wrapper = shallowMount(SearchHome, {
       store,
       localVue

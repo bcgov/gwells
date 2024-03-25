@@ -118,19 +118,53 @@
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Descriptive location</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.location_description}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Vulnerability</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Vulnerability
+                      <i id="vulnerability-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="vulnerability-info"
+                        triggers="hover focus"
+                        content="The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants."/>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.vulnerability}}</b-col>
                   </b-row>
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Material type</b-col>
                     <b-col cols="6" md="3" lg="6">{{record.material}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Subtype</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Subtype
+                      <i id="aquifer-subtype-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquifer-subtype-info"
+                        triggers="hover focus"
+                      >
+                        There are different types of aquifers, depending on the geologic materials in which they occur. Subtype descriptions can be
+                        <a href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/understanding-aquifers/aquifer-subtype-code-description' target='_blank' rel="noopener noreferrer" \class='d-print-url'>found here</a>.
+                      </b-popover>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.subtype}}</b-col>
                   </b-row>
                   <b-row>
-                    <b-col cols="6" md="3" lg="6">Quality concerns</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Quality concerns
+                      <i id="aquifer-quality-concerns" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="aquifer-quality-concerns"
+                        triggers="hover focus"
+                      >
+                        Classified as unknown/none, isolated, local, or regional. For details see page 16 of the Guide to Using the
+                        <a href='https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/science-data/aquifer_maps_guide.pdf' target='_blank' rel="noopener noreferrer" class='d-print-url'>BC Aquifer Classification System</a>.
+                      </b-popover>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.quality_concern}}</b-col>
-                    <b-col cols="6" md="3" lg="6">Productivity</b-col>
+                    <b-col cols="6" md="3" lg="6">
+                      Productivity
+                      <i id="productivity-info" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="productivity-info"
+                        triggers="hover focus"
+                        content="Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high."/>
+                    </b-col>
                     <b-col cols="6" md="3" lg="6">{{record.productivity}}</b-col>
                   </b-row>
                   <b-row>
@@ -156,6 +190,7 @@
                 :aquifer-id="id"
                 :geom="record.geom"
                 :key="mapKey"
+                :aquifer-notations="aquiferNotations"
                 @mapLoading="loadingMap = true"
                 @mapLoaded="loadingMap = false"/>
             </b-col>
@@ -167,33 +202,51 @@
               <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
-                  <dt>Number of wells correlated to the aquifer</dt>
-                  <dd class="m-0">
-                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
-                      {{ licenceDetails.num_wells }}
-                    </router-link>
-                  </dd>
+                  <dl>
+                    <dt>Number of wells correlated to the aquifer
+                      <i id="correlated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="correlated-wells-count"
+                        triggers="hover focus"
+                        content="The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer."/>
+                    </dt>
+                    <dd class="m-0">
+                      <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'search':'', 'well':''}, hash: '#advanced'}">
+                        {{ licenceDetails.num_wells }}
+                      </router-link>
+                    </dd>
+                  </dl>
                 </li>
                 <li>
-                  <dt>
-                    Number of uncorrelated wells within mapped aquifer extent
-                    <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-                    <b-popover
-                      target="uncorrelated-wells-count"
-                      triggers="hover focus"
-                      content="The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth."/>
-                  </dt>
-                  <dd class="m-0">
-                    {{ uncorrelatedWells.length }}
-                  </dd>
+                  <dl>
+                    <dt>
+                      Number of uncorrelated wells within mapped aquifer extent
+                      <i id="uncorrelated-wells-count" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="uncorrelated-wells-count"
+                        triggers="hover focus"
+                        content="The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth."/>
+                    </dt>
+                    <dd class="m-0">
+                      {{ uncorrelatedWells.length }}
+                    </dd>
+                  </dl>
                 </li>
                 <li>
-                  <dt>Artesian wells</dt>
-                  <dd class="m-0">
-                    <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_conditions':true}, hash: '#advanced'}">
-                      {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
-                    </router-link>
-                  </dd>
+                  <dl>
+                    <dt>Flowing artesian wells
+                      <i id="artesian-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                      <b-popover
+                        target="artesian-wells"
+                        triggers="hover focus"
+                        content="A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump."/>
+                    </dt>
+                    <dd class="m-0">
+                      <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'aquifer': id, 'artesian_conditions':true}, hash: '#advanced'}">
+                        {{ licenceDetails.num_artesian_wells }} artesian wells in aquifer
+                      </router-link>
+                    </dd>
+                  </dl>
                 </li>
               </ul>
               <p>
@@ -214,8 +267,9 @@
               <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
               <div>
                 <p>
-                  The licensing summaries should be considered estimates. Due to complexities in the structure
-                  of the licensing data, reported values should be confirmed through the
+                  The licensing summaries should be considered estimates. Total volume is likely more than what is indicated in charts due to
+                  domestic use and unprocessed licence applications. Due to complexities in the structure of the licensing data,
+                  reported values should be confirmed through the
                   <a href="https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main" target="_blank" class="d-print-url">
                     e&#8209;licensing portal</a>.
                 </p>
@@ -253,12 +307,12 @@
                 </b-row>
               </div>
               <b-table id="licenses" striped :items="licenceDetails.wells_by_licence">
-                <template slot="licence_number" slot-scope="row">
+                <template v-slot:cell(licence_number)="row">
                   <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
                     {{ row.item.licence_number }}
                   </a>
                 </template>
-                <template slot="well_tag_numbers_in_licence" slot-scope="row">
+                <template v-slot:cell(well_tag_numbers_in_licence)="row">
                   <ul class="p-0 m-0">
                     <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
                       <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
@@ -297,70 +351,172 @@
                     </dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
                   </div>
                   <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
-                    <dt class="text-right">Observation wells</dt>
-                    <dd class="m-0">
-                      <div v-if="activeObsWells.length > 0">
-                        <h6 class="border-bottom">Active</h6>
-                        <ul class="p-0 m-0">
-                          <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                            <observation-well
-                              :observationWell="owell"
-                              @reload="getWaterLevels"/>
-                          </li>
-                        </ul>
-                      </div>
-                      <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
-                        <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
-                        <ul class="p-0 m-0">
-                          <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
-                            <observation-well
-                              :observationWell="owell"
-                              @reload="getWaterLevels"/>
-                          </li>
-                          <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
-                            No Water Level Analysis:
-                            <observation-well
-                              v-for="owell in inativeObsWellsWithOutWaterLevel"
-                              :key="owell.observation_well_number"
-                              :observationWell="owell"
-                              @reload="getWaterLevels"/>
-                          </li>
-                        </ul>
-                      </div>
-                      <div v-if="noObsWells">
-                        No information available.
-                      </div>
-                    </dd>
+                    <dl>
+                      <dt class="text-right">Observation wells
+                        <i id="aquifer-observation-wells" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquifer-observation-wells"
+                          triggers="hover focus"
+                          content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."/>
+                      </dt>
+                      <dd class="m-0">
+                        <div v-if="activeObsWells.length > 0">
+                          <h6 class="border-bottom">Active</h6>
+                          <ul class="p-0 m-0">
+                            <li v-for="owell in activeObsWells" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
+                              <observation-well
+                                :observationWell="owell"
+                                @reload="getWaterLevels"/>
+                            </li>
+                          </ul>
+                        </div>
+                        <div v-if="inactiveObsWellsWithWaterLevel.length > 0 || inativeObsWellsWithOutWaterLevel.length > 0">
+                          <h6 class="border-bottom mt-2">Inactive<br><small>(data may not be available)</small></h6>
+                          <ul class="p-0 m-0">
+                            <li v-for="owell in inactiveObsWellsWithWaterLevel" :key="owell.well_tag_number" :data-water-level="owell.waterLevels" :class="{error: owell.errorFetching}">
+                              <observation-well
+                                :observationWell="owell"
+                                @reload="getWaterLevels"/>
+                            </li>
+                            <li v-if="inativeObsWellsWithOutWaterLevel.length > 0" class="obs-wells-wo-well-level">
+                              No Water Level Analysis:
+                              <observation-well
+                                v-for="owell in inativeObsWellsWithOutWaterLevel"
+                                :key="owell.observation_well_number"
+                                :observationWell="owell"
+                                @reload="getWaterLevels"/>
+                            </li>
+                          </ul>
+                        </div>
+                        <div v-if="noObsWells">
+                          No information available.
+                        </div>
+                      </dd>
+                    </dl>
                   </div>
                   <div class="water-quality-information" v-else-if="section.key === 'water-quality'">
-                    <dt class="text-right">Water quality information</dt>
-                    <dd class="m-0">
-                      <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
-                        {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
-                      </router-link>
-                    </dd>
+                    <dl>
+                      <dt class="text-right">Water quality information
+                        <i id="aquiferWaterQualityInformation" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferWaterQualityInformation"
+                          triggers="hover focus"
+                          content="Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database."/>
+                      </dt>
+                      <dd class="m-0">
+                        <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
+                          {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
+                        </router-link>
+                      </dd>
+                    </dl>
                   </div>
                   <div class="aquifer-connected" v-else-if="section.key === 'aquifer-connected'">
-                    <dt class="text-right">Hydraulically connected (screening level)
-                      <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-                      <b-popover
-                        target="aquiferConnectedInfo"
-                        triggers="hover focus"
-                        content="Inferred based on aquifer subtype - not field verified."/>
-                    </dt>
-                    <dd class="m-0">{{ licenceDetails['hydraulically_connected'] ? "More likely" : "Less likely"}}</dd>
+                    <dl>
+                      <dt class="text-right">Hydraulically connected (screening level)
+                        <i id="aquiferConnectedInfo" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferConnectedInfo"
+                          triggers="hover focus"
+                          content="Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement. "/>
+                      </dt>
+                      <dd class="m-0">
+                        <a href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf"
+                        target="_blank" rel="noopener noreferrer">See Guidance on Determining Likelihood of Hydraulic Connection</a>
+                      </dd>
+                    </dl>
+                  </div>
+                  <div class="aquifer-numerical-model" v-else-if="section.code === 'N'">
+                    <dl>
+                      <dt class="text-right">Numerical Model
+                        <i id="aquiferNumericalModel" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferNumericalModel"
+                          triggers="hover focus"
+                          content="Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies."/>
+                      </dt>
+                      <dd class="m-0">
+                        <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        </ul>
+                        <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                  <div class="aquifer-water-budget" v-else-if="section.code === 'W'">
+                    <dl>
+                      <dt class="text-right">Water Budget
+                        <i id="aquiferWaterBudget" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferWaterBudget"
+                          triggers="hover focus"
+                          content="Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time."/>
+                      </dt>
+                      <dd class="m-0">
+                        <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        </ul>
+                        <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                  <div class="aquifer-groundwater-surface-interactions" v-else-if="section.code === 'G'">
+                    <dl>
+                      <dt class="text-right">Groundwater Surface Water Interactions
+                        <i id="aquiferGroundwaterSurfaceInteractions" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferGroundwaterSurfaceInteractions"
+                          triggers="hover focus"
+                          content="Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface."/>
+                      </dt>
+                      <dd class="m-0">
+                        <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        </ul>
+                        <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                  <div class="aquifer-artesian-advisory" v-else-if="section.code === 'A'">
+                    <dl>
+                      <dt class="text-right">Drilling & operation advisory
+                        <i id="aquiferArtesianAdvisory" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferArtesianAdvisory"
+                          triggers="hover focus"
+                          content="Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions."/>
+                      </dt>
+                      <dd class="m-0">
+                        <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        </ul>
+                        <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                      </dd>
+                    </dl>
+                  </div>
+                  <div class="aquifer-notations" v-else-if="section.key === 'aquifer-notations'">
+                    <dl>
+                      <dt class="text-right">Aquifer notations
+                        <i id="aquiferNotations" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquiferNotations"
+                          triggers="hover focus">
+                          <p>Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source. For details click <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-allocation-notations">here</a>.</p>
+                        </b-popover>
+                      </dt>
+                      <dd class="m-0">{{ aquiferNotations || 'No notation currently assigned.' }}</dd>
+                    </dl>
                   </div>
                   <div v-else>
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="resource.url" @click="handleExternalResourceClicks" target="_blank" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
@@ -391,6 +547,7 @@ import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
+import { sanitizeUrl } from '@braintree/sanitize-url'
 
 const ONE_MILLION = 1 * 1000 * 1000
 
@@ -430,10 +587,10 @@ export default {
       showSaveSuccess: false,
       aquifer_resource_sections: [
         { code: 'M', name: 'Advanced mapping' },
-        { code: 'A', name: 'Artesian advisory' },
+        { code: 'A', name: 'Drilling and operation advisory' },
         { key: 'obs-wells', name: 'Oberservation Wells' },
         { code: 'N', name: 'Numerical model' },
-        { code: 'P', name: 'Pumping stress index' },
+        { key: 'aquifer-notations', name: 'Aquifer notations' },
         { code: 'W', name: 'Water budget' },
         { key: 'water-quality', name: 'Water quality information' },
         { key: 'aquifer-connected', name: 'Hydraulically connected (screening level)' },
@@ -463,6 +620,9 @@ export default {
     ...mapGetters('aquiferStore/view', {
       uncorrelatedWells: 'wellsWithoutAquiferCorrelation'
     }),
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
@@ -589,6 +749,9 @@ export default {
       }
 
       return false
+    },
+    aquiferNotations () {
+      return this.getAquiferNotationsById(this.id, this.record.geom)
     }
   },
   watch: {
@@ -613,7 +776,7 @@ export default {
     formatDate: function (value) {
       if (!value) return ''
       value = new Date(value)
-      return value.getMonth() + '/' + value.getDate() + '/' + value.getFullYear()
+      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   methods: {
@@ -738,7 +901,6 @@ export default {
       return ApiService.query(`aquifers/${id}`)
         .then((response) => {
           const responseData = response.data || {}
-
           if (responseData.licence_details.wells_by_licence) {
             responseData.licence_details.wells_by_licence.forEach((licence) => {
               if (licence.well_tag_numbers_in_licence) {
@@ -841,6 +1003,10 @@ export default {
           eventLabel: 'Aquifer Factsheet'
         })
       }
+    },
+    sanitizeResourceUrl (url) {
+      const sanitized = sanitizeUrl(url)
+      return encodeURI(sanitized)
     }
   }
 }

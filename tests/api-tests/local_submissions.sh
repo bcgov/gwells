@@ -14,6 +14,12 @@
 #     ./local_newman.sh
 
 
+# Load ENVs to environment if not already present
+if [ -z "$GWELLS_API_TEST_USER" ] && [ -f "./.envrc" ]; then
+  source ./.envrc
+  set -e
+fi
+
 ENV_VARS=(
     "GWELLS_API_TEST_USER"
     "GWELLS_API_TEST_PASSWORD"

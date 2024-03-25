@@ -1,0 +1,652 @@
+{
+	"info": {
+		"_postman_id": "c5b0341a-50af-4245-a597-a390ef438b3c",
+		"name": "Utilities",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
+	},
+	"item": [
+		{
+			"name": "Authenticate",
+			"item": [
+				{
+					"name": "Log in",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"pm.environment.set(\"token\", jsonData.access_token);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"A token was returned\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+									"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{auth_server}}",
+							"host": [
+								"{{auth_server}}"
+							]
+						},
+						"description": "Get token (log in)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Surveys",
+			"item": [
+				{
+					"name": "Create new Survey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"let survey = pm.response.json();",
+									"pm.test(\"Response 201\", () => {",
+									"    pm.expect(pm.response.code).to.equal(201);",
+									"})",
+									"",
+									"pm.test(\"Response entries are Surveys\", () => {",
+									"    pm.expect(survey.hasOwnProperty('survey_guid')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_introduction_text')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_link')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_page')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_enabled')).to.be.true;",
+									"})",
+									"",
+									"pm.environment.set('survey_guid', survey.survey_guid);",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Surveys",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"let jsonData = pm.response.json();",
+									"pm.test(\"Response to be an array\", () => {",
+									"    pm.expect(jsonData).to.be.an('array');",
+									"})",
+									"",
+									"pm.test(\"Response entries are Surveys\", () => {",
+									"    jsonData.forEach((survey) => {",
+									"        pm.expect(survey.hasOwnProperty('survey_guid')).to.be.true;",
+									"        pm.expect(survey.hasOwnProperty('survey_introduction_text')).to.be.true;",
+									"        pm.expect(survey.hasOwnProperty('survey_link')).to.be.true;",
+									"        pm.expect(survey.hasOwnProperty('survey_page')).to.be.true;",
+									"        pm.expect(survey.hasOwnProperty('survey_enabled')).to.be.true;",
+									"    })  ",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Survey by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"let survey = pm.response.json();",
+									"",
+									"pm.test(\"Response is Desired Survey\", () => {",
+									"    pm.expect(survey.survey_guid).to.equal(pm.environment.get('survey_guid'));",
+									"    pm.expect(survey.hasOwnProperty('survey_introduction_text')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_link')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_page')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_enabled')).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys/{{survey_guid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys",
+								"{{survey_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Survey by ID Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// This functionality is seemingly the same as the PATCH functionality",
+									"let survey = pm.response.json();",
+									"",
+									"pm.test(\"Response is Desired Survey\", () => {",
+									"    pm.expect(survey.survey_guid).to.equal(pm.environment.get('survey_guid'));",
+									"    pm.expect(survey.hasOwnProperty('survey_introduction_text')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_link')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_page')).to.be.true;",
+									"    pm.expect(survey.survey_enabled).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "survey_enabled",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys/{{survey_guid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys",
+								"{{survey_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Survey by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"let survey = pm.response.json();",
+									"",
+									"pm.test(\"Response is Desired Survey\", () => {",
+									"    pm.expect(survey.survey_guid).to.equal(pm.environment.get('survey_guid'));",
+									"    pm.expect(survey.survey_introduction_text).to.equal(\"This is my survey\");",
+									"    pm.expect(survey.hasOwnProperty('survey_link')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_page')).to.be.true;",
+									"    pm.expect(survey.hasOwnProperty('survey_enabled')).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "survey_introduction_text",
+									"value": "This is my survey",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys/{{survey_guid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys",
+								"{{survey_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Survey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response status 204\", () => {",
+									"    pm.expect(pm.response.code).to.equal(204);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "survey_introduction_text",
+									"value": "This is my survey",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys/{{survey_guid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys",
+								"{{survey_guid}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Non-existent survey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"let survey = pm.response.json();",
+									"",
+									"pm.test(\"Response status 404\", () => {",
+									"    pm.expect(pm.response.code).to.equal(404);",
+									"})",
+									"pm.test(\"API Returns response Object\", () => {",
+									"    pm.expect(survey.detail).to.equal('Not found.');",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "survey_introduction_text",
+									"value": "This is my survey",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/surveys/{{survey_guid}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"surveys",
+								"{{survey_guid}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "insidebc Inside Coords",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Results to be inside BC\", () => {",
+							"    pm.expect(pm.response.json().inside).to.be.true;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/gis/insidebc?latitude=54.121&longitude=-121.43",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"gis",
+						"insidebc"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "54.121"
+						},
+						{
+							"key": "longitude",
+							"value": "-121.43"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "insidebc Outside BC Coords",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Results to be outside BC\", () => {",
+							"    pm.expect(pm.response.json().inside).to.be.false;",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/api/v1/gis/insidebc?latitude=54.121&longitude=251.43",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"gis",
+						"insidebc"
+					],
+					"query": [
+						{
+							"key": "latitude",
+							"value": "54.121"
+						},
+						{
+							"key": "longitude",
+							"value": "251.43"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Geocoder",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();",
+							"",
+							"pm.test(\"Response code 200\", () => {",
+							"    pm.expect(pm.response.code).to.equal(200)",
+							"})",
+							"",
+							"pm.test(\"Response has features property\", () => {",
+							"    pm.expect(response.features).to.be.an('array');",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/v1/wells/geocoder?searchTag=TestAddress",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"wells",
+						"geocoder"
+					],
+					"query": [
+						{
+							"key": "searchTag",
+							"value": "TestAddress"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

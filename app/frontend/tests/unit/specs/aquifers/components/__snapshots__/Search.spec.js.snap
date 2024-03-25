@@ -47,10 +47,7 @@ exports[`Search Component Matches the snapshot 1`] = `
               class="form-group search-title mt-3 mb-3"
             >
               <!---->
-              <div
-                role="group"
-                tabindex="-1"
-              >
+              <div>
                 <input
                   class="w-75 form-control"
                   id="aquifers-search-field"
@@ -72,15 +69,11 @@ exports[`Search Component Matches the snapshot 1`] = `
               class="form-group"
             >
               <!---->
-              <div
-                role="group"
-                tabindex="-1"
-              >
+              <div>
                 <div
                   class="custom-control custom-control-inline custom-radio"
                 >
                   <input
-                    autocomplete="off"
                     class="custom-control-input"
                     name="match-any"
                     type="radio"
@@ -97,7 +90,6 @@ exports[`Search Component Matches the snapshot 1`] = `
                   class="custom-control custom-control-inline custom-radio"
                 >
                   <input
-                    autocomplete="off"
                     class="custom-control-input"
                     name="match-any"
                     type="radio"
@@ -116,7 +108,7 @@ exports[`Search Component Matches the snapshot 1`] = `
             </fieldset>
              
             <div
-              class="aquifer-checkbox-group"
+              class="aquifer-checkbox-group bv-no-focus-ring"
               role="group"
               tabindex="-1"
             >
@@ -124,7 +116,6 @@ exports[`Search Component Matches the snapshot 1`] = `
                 class="custom-control custom-checkbox"
               >
                 <input
-                  autocomplete="off"
                   class="custom-control-input"
                   type="checkbox"
                   value="a"
@@ -239,7 +230,6 @@ exports[`Search Component Matches the snapshot 1`] = `
                 class="d-inline-block custom-control custom-checkbox"
               >
                 <input
-                  autocomplete="off"
                   class="custom-control-input"
                   type="checkbox"
                   value="true"
@@ -264,6 +254,7 @@ exports[`Search Component Matches the snapshot 1`] = `
             aria-colcount="12"
             class="table b-table table-striped border"
             id="aquifers-results"
+            role="table"
           >
             <!---->
             <!---->
@@ -273,145 +264,216 @@ exports[`Search Component Matches the snapshot 1`] = `
             >
               <!---->
               <tr
+                class=""
                 role="row"
               >
                 <th
                   aria-colindex="1"
-                  aria-label="Click to sort Descending"
                   aria-sort="ascending"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Aquifer number
+                  <div>
+                    Aquifer number
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort descending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="2"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Date retired
+                  <div>
+                    Date retired
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="3"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Aquifer name
+                  <div>
+                    Aquifer name
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="4"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Descriptive location
+                  <div>
+                    Descriptive location
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="5"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Material
+                  <div>
+                    Material
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="6"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Litho stratigraphic unit
+                  <div>
+                    Litho stratigraphic unit
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="7"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Subtype
+                  <div>
+                    Subtype
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="8"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Vulnerability
+                  <div>
+                    Vulnerability
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="9"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Size‑km²
+                  <div>
+                    Size‑km²
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="10"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Productivity
+                  <div>
+                    Productivity
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="11"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Demand
+                  <div>
+                    Demand
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
                 <th
                   aria-colindex="12"
-                  aria-label="Click to sort Ascending"
                   aria-sort="none"
-                  class=""
+                  class="position-relative"
                   role="columnheader"
                   scope="col"
                   tabindex="0"
                 >
-                  Year of mapping
+                  <div>
+                    Year of mapping
+                  </div>
+                  <span
+                    class="sr-only"
+                  >
+                     (Click to sort ascending)
+                  </span>
                 </th>
               </tr>
             </thead>
-            <!---->
             <tbody
-              class=""
               role="rowgroup"
             >
               <!---->
@@ -506,6 +568,7 @@ exports[`Search Component Matches the snapshot 1`] = `
               <!---->
               <!---->
             </tbody>
+            <!---->
           </table>
         </div>
          

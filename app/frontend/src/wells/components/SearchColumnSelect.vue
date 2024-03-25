@@ -167,14 +167,14 @@ const RESULT_COLUMNS = [
   'internalComments',
   'aquiferLithology',
   'aquiferVulnerabilityIndex',
+  'startDatePumpingTest',
   'storativity',
   'transmissivity',
   'hydraulicConductivity',
   'specificStorage',
   'specificYield',
-  'testingMethod',
-  'testingDuration',
-  'analyticSolutionType',
+  'specificCapacity',
+  'pumpingTestDescription',
   'boundaryEffect',
   'createUser',
   'createDate',
@@ -185,7 +185,8 @@ const RESULT_COLUMNS = [
   'alterationStartDate',
   'alterationEndDate',
   'decomissionStartDate',
-  'decomissionEndDate'
+  'decomissionEndDate',
+  'licenceNumber',
 ]
 
 export default {

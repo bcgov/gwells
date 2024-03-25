@@ -37,7 +37,8 @@ import {
   SET_SEARCH_MAP_ZOOM
 } from './mutations.types.js'
 
-const HYDRAULICALLY_CONNECTED_CODE = 'Hydra'
+const AQUIFER_NOTATION_CODE = 'Notations'
+const UNPUBLISHED_AQUIFERS = 'Unpublished'
 
 Vue.use(Vuex)
 
@@ -181,11 +182,13 @@ const aquiferSearchStore = {
       }
 
       const codes = state.selectedSections.filter((s) => {
-        if (s === HYDRAULICALLY_CONNECTED_CODE) {
+        if (s === AQUIFER_NOTATION_CODE ||
+              s === UNPUBLISHED_AQUIFERS) {
           return false
         }
         return true
       })
+
       if (codes.length > 0) {
         params.resources__section__code = codes.join(',')
       }
@@ -194,8 +197,12 @@ const aquiferSearchStore = {
         params.match_any = String(state.searchMatchAny)
       }
 
-      if (state.selectedSections.find((o) => o === HYDRAULICALLY_CONNECTED_CODE)) {
-        params.hydraulically_connected = 'yes'
+      if (state.selectedSections.find((o) => o === AQUIFER_NOTATION_CODE)) {
+        params.aquifer_notations = 'yes'
+      }
+
+      if (state.selectedSections.find((o) => o === UNPUBLISHED_AQUIFERS)) {
+        params.unpublished = 'yes'
       }
 
       if (state.searchMapCentre) {

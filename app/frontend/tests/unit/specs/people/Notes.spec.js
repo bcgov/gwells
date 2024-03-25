@@ -32,7 +32,7 @@ describe('Notes.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       }
     })
     expect(wrapper.find('#notesSectionTitle').text()).toEqual('Notes')
@@ -44,7 +44,7 @@ describe('Notes.vue', () => {
       localVue,
       stubs: ['router-link', 'router-view'],
       mocks: {
-        $route: {params: {person_guid: 'aaaa-4444-bbbb-1111'}}
+        $route: { params: { person_guid: 'aaaa-4444-bbbb-1111' } }
       },
       propsData: { type: 'person', guid: fakePerson.person_guid, record: fakePerson }
     })

@@ -14,11 +14,14 @@
 import uuid
 import logging
 import os
+import json
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.core.management import call_command
 from django.utils.six import StringIO
 from django.contrib.auth.models import User, Group
+from django.contrib.gis.geos import GEOSGeometry
 
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -37,7 +40,6 @@ from registries.models import (
     ProofOfAgeCode)
 from registries.views import PersonListView, PersonDetailView
 from gwells.roles import (roles_to_groups, REGISTRIES_VIEWER_ROLE, REGISTRIES_EDIT_ROLE)
-
 
 # Note: see postman/newman for more API tests.
 # Postman API tests include making requests with incomplete data, missing required fields etc.
@@ -234,15 +236,17 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
         self.initial_data = {
             'name': 'Bobby\'s Drilling',
+            'street_address': '501 Belleville St',
             'city': 'Victoria',
             'province_state': 'BC'
         }
 
-    def test_create_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_create_organization(self, mock_geocode_bc_location):
         """
         Create a new organization object.
         """
-
+        mock_geocode_bc_location.return_value = None
         url = reverse('organization-list', kwargs={'version': 'v1'})
         count_before = Organization.objects.count()
 
@@ -251,7 +255,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Organization.objects.count(), count_before + 1)
 
-    def test_list_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_list_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(url, self.initial_data, format='json')
         created_guid = new_object.data['org_guid']
@@ -262,7 +268,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(len(created_guid), 36)
         self.assertContains(response, created_guid)
 
-    def test_retrieve_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_retrieve_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
@@ -276,7 +284,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['name'], self.initial_data['name'])
         self.assertEqual(response.data['city'], self.initial_data['city'])
 
-    def test_patch_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_patch_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         new_data = {
             'city': 'Duncan'
         }
@@ -298,7 +308,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['name'], self.initial_data['name'])
         self.assertEqual(response.data['city'], new_data['city'])
 
-    def test_put_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_put_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         new_data = {
             'name': 'Betty\'s Drilling',
             'city': 'Duncan',
@@ -322,7 +334,9 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         self.assertEqual(response.data['name'], new_data['name'])
         self.assertEqual(response.data['city'], new_data['city'])
 
-    def test_delete_organization(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_delete_organization(self, mock_geocode_bc_location):
+        mock_geocode_bc_location.return_value = None
         # setup
         logger = logging.getLogger('django.request')
         previous_level = logger.getEffectiveLevel()
@@ -355,12 +369,13 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         # teardown
         logger.setLevel(previous_level)
 
-    def test_organization_audit_fields(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_organization_audit_fields(self, mock_geocode_bc_location):
         """
         Test that AuditModel fields (create_user, create_date etc.)
         are updated when Organization objects are created.
         """
-
+        mock_geocode_bc_location.return_value = None
         create_url = reverse('organization-list', kwargs={'version': 'v1'})
         new_object = self.client.post(
             create_url, self.initial_data, format='json')
@@ -375,10 +390,12 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
         # TODO: When authentication is enforced, this line will need to change
         self.assertEqual(response.data['create_user'], self.user.username)
 
-    def test_create_org_not_authenticated(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_create_org_not_authenticated(self, mock_geocode_bc_location):
         """
         Ensure that users who are not authenticated cannot create Organization objects
         """
+        mock_geocode_bc_location.return_value = None
         self.client.force_authenticate(user=None)
         url = reverse('organization-list', kwargs={'version': 'v1'})
         data = {'name': 'Big Time Drilling Co'}
@@ -387,11 +404,14 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def test_unsafe_methods_by_unauthorized_users(self):
+    @patch('registries.serializers.geocode_bc_location')
+    def test_unsafe_methods_by_unauthorized_users(self, mock_geocode_bc_location):
         """
         Ensure that users who are not authenticated cannot perform "unsafe" actions
         like UPDATE, PUT, DELETE on an object that is already in database
         """
+        mock_geocode_bc_location.return_value = None
+
         self.client.force_authenticate(user=None)
         org_object = Organization.objects.create(
             name='Big Time Drilling Co', province_state=self.province)
@@ -416,7 +436,157 @@ class APIOrganizationTests(AuthenticatedAPITestCase):
                          status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(delete_response.status_code,
                          status.HTTP_401_UNAUTHORIZED)
+    
+    @patch('registries.serializers.geocode_bc_location')
+    def test_create_org_no_geom(self, mock_geocode_bc_location):
+        """
+        When a new Organization is created without an address, the
+        geom attribute is not populated
+        """
+  
+        # Note: we use a mock version of mock_geocode_bc_location(..) just in
+        # case the create org implementation makes a call to it.  We don't
+        # want this test to depend on a remote API.
+        mock_geocode_bc_location.return_value = None
 
+        # Create an organization with an initial address
+        org_data = {
+            "name": "test", 
+            "province_state": "BC", 
+            "street_address": None
+        }
+        url = reverse('organization-list', kwargs={'version': 'v1'})        
+        response = self.client.post(url, org_data, format='json')
+
+        # check that the response includes the geographic coordinates
+        self.assertEquals(response.data.get("longitude"), None)
+        self.assertEquals(response.data.get("latitude"), None)
+
+        organization = Organization.objects.get(
+            org_guid=response.data['org_guid'])
+  
+        # check that the organization was created and that is has a value
+        # in the geom attribute
+        self.assertTrue(organization != None)
+        self.assertTrue(organization.geom == None)
+
+    def test_create_update_org_populates_geom_1(self):
+        """
+        When a new Organization is created with an address in BC, a geometry
+        should be automatically populated with the geocoded value.
+        When that organization is updated with a different address, the
+        geometry should be automatically updated too.
+        """
+    
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
+
+          #create an organization with an initial address
+          mock_lon_1 = -124.2
+          mock_lat_1 = 50.1
+          mock_geocode_bc_location_1.return_value = \
+              GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
+
+          url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
+          response_1 = self.client.post(url_1, self.initial_data, format='json')
+
+          # check that the mock geocode function was used instead of the 
+          # real version
+          mock_geocode_bc_location_1.assert_called_once()
+
+          # check that the response includes the geographic coordinates
+          self.assertEquals(response_1.data.get("longitude"), mock_lon_1)
+          self.assertEquals(response_1.data.get("latitude"), mock_lat_1)
+
+          organization = Organization.objects.get(
+              org_guid=response_1.data['org_guid'])
+    
+          # check that the organization was created and that is has a value
+          # in the geom attribute
+          self.assertTrue(organization != None)
+          self.assertTrue(organization.geom != None)
+
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_2:
+
+          # update the organization with a new address
+          mock_lon_2 = -123.9
+          mock_lat_2 = 51.3
+          mock_geocode_bc_location_2.return_value = \
+              GEOSGeometry(f'POINT({mock_lon_2} {mock_lat_2})', srid=4326)
+          
+          url_2 = reverse('organization-detail',
+              kwargs={'org_guid': response_1.data['org_guid'], 'version': 'v1'})
+          response_2 = self.client.patch(url_2, {"street_address": "101 NewAddress Ave."}, format='json')
+          
+          updated_org = Organization.objects.get(
+              org_guid=response_1.data['org_guid'])
+
+          # check that the response includes new geographic coordinates
+          self.assertEquals(response_2.data.get("longitude"), mock_lon_2)
+          self.assertEquals(response_2.data.get("latitude"), mock_lat_2)
+
+          # check that the updated organization has updated geometry
+          self.assertEquals(updated_org.latitude, mock_lat_2)
+          self.assertEquals(updated_org.longitude, mock_lon_2)
+
+    def test_create_update_org_populates_geom_2(self):
+        """
+        When a new Organization is created with an address in BC, a geometry
+        should be automatically populated with the geocoded value.
+        When that organization is updated with an incomplete address (no city), 
+        the geometry should be reset to None
+        """
+    
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_1:
+
+          #create an organization with an initial address
+          mock_lon_1 = -124.6
+          mock_lat_1 = 50.8
+          mock_geocode_bc_location_1.return_value = \
+              GEOSGeometry(f'POINT({mock_lon_1} {mock_lat_1})', srid=4326)
+
+          url_1 = reverse('organization-list', kwargs={'version': 'v1'})        
+          resp_1 = self.client.post(url_1, self.initial_data, format='json')
+
+          # check that the mock geocode function was used instead of the 
+          # real version
+          mock_geocode_bc_location_1.assert_called_once()
+
+          # check that the response includes the geographic coordinates
+          self.assertEquals(resp_1.data.get("longitude"), mock_lon_1)
+          self.assertEquals(resp_1.data.get("latitude"), mock_lat_1)
+
+          organization = Organization.objects.get(
+              org_guid=resp_1.data['org_guid'])
+    
+          # check that the organization was created and that is has a value
+          # in the geom attribute
+          self.assertTrue(organization != None)
+          self.assertTrue(organization.geom != None)
+
+        with patch('registries.serializers.geocode_bc_location') as mock_geocode_bc_location_2:
+
+          # update the organization to unset the 'city'.  
+          # Note: use a mock version of the mock_geocode_bc_location(...) function 
+          # just in case the the update causes a call to that function 
+          # (it may not, but we just want to be sure this test 
+          # doesn't depend on a remote API call).
+          mock_geocode_bc_location_2.return_value = None
+          
+          url_2 = reverse('organization-detail',
+              kwargs={'org_guid': resp_1.data['org_guid'], 'version': 'v1'})
+          resp_2 = self.client.patch(url_2, {"street_address": ""}, format='json')
+
+          updated_organization = Organization.objects.get(
+              org_guid=resp_1.data['org_guid'])
+         
+          # check that the response shows that the lat/lon have been cleared
+          self.assertEquals(resp_2.data.get("longitude"), None)
+          self.assertEquals(resp_2.data.get("latitude"), None)
+
+          # check that the updated organization has no geometry
+          self.assertEquals(updated_organization.latitude, None)
+          self.assertEquals(updated_organization.longitude, None)
+          self.assertEquals(updated_organization.geom, None)
 
 class APIPersonTests(AuthenticatedAPITestCase):
     """
@@ -458,6 +628,168 @@ class APIPersonTests(AuthenticatedAPITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(created_guid), 36)
         self.assertContains(response, created_guid)
+
+    def test_list_people_within_bbox(self):
+        """
+        Tests that the "within" parameter causes the backend to limit results to
+        within the specified GeoJSON geometry
+        """
+        
+        surname_of_person_in_victoria = "One"
+
+        #register one person and their organization
+        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
+        person_1 = Person.objects.create(
+            first_name='Person', surname=surname_of_person_in_victoria)
+        org_1 = Organization.objects.create(
+            name="Victoria Drilling Company",
+            province_state=self.prov,
+            geom=GEOSGeometry('POINT(-123.35948 48.4268161)', srid=4326) #near Victoria, BC
+        )
+        Register.objects.create(
+            person=person_1,
+            organization=org_1,
+            registries_activity=activity,
+            registration_no="F54321",
+        )
+
+        #register another person and their organization
+        person_2 = Person.objects.create(
+            first_name='Person', surname="Two")
+        org_2 = Organization.objects.create(
+            name="Kelowna Drilling Company",
+            province_state=self.prov,
+            geom=GEOSGeometry('POINT(-119.47901 49.882042)', srid=4326) #near Kelowna, BC
+        )
+        Register.objects.create(
+            person=person_2,
+            organization=org_2,
+            registries_activity=activity,
+            registration_no="F62232",
+        )
+        
+
+
+        # Search for drillers near Victoria.  expect one result.
+        url = reverse('person-list', kwargs={'version': 'v1'})
+        search_params = {
+          'sw_long': -123.40253945033623,
+          'sw_lat': 48.40057269436966,
+          'ne_long': -123.26195857741126,
+          'ne_lat': 48.47868009861898              
+          }
+        response = self.client.get(url, search_params, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        results = response.data.get("results")
+        self.assertEqual(len(results), 1)
+
+        surname = results[0].get("surname")
+        self.assertEqual(surname, surname_of_person_in_victoria)
+
+    def test_list_people_filtered_by_subactivity(self):
+        """
+        Tests that the "subactivities" query string param causes search results to 
+        be limited to people registered only for those subactivities
+        """
+        
+        proof_of_age = ProofOfAgeCode.objects.create(
+            code="TESTING",
+            description="Testing",
+            display_order="1")
+
+        #register one person and their organization
+        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
+        person_1 = Person.objects.create(
+            first_name='Person', surname="One")
+        org_1 = Organization.objects.create(
+            name="Drilling Company A",
+            province_state=self.prov
+        )
+        registration_1 = Register.objects.create(
+            person=person_1,
+            organization=org_1,
+            registries_activity=activity,
+            registration_no="F54321",
+        )
+        RegistriesApplication.objects.create(
+            registration=registration_1,
+            proof_of_age=proof_of_age,
+            subactivity=SubactivityCode.objects.get(registries_subactivity_code='WATER')
+        )
+
+        #register another person and their organization
+        person_2 = Person.objects.create(
+            first_name='Person', surname="Two")
+        org_2 = Organization.objects.create(
+            name="Drilling Company B",
+            province_state=self.prov
+        )
+        registration_2 = Register.objects.create(
+            person=person_2,
+            organization=org_2,
+            registries_activity=activity,
+            registration_no="F62232",
+        )
+        RegistriesApplication.objects.create(
+            registration=registration_2,
+            proof_of_age=proof_of_age,
+            subactivity=SubactivityCode.objects.get(registries_subactivity_code='GEOTECH')
+        )
+        
+
+        # Search for drillers with subactivity 'GEOTECH'
+        url = reverse('person-list', kwargs={'version': 'v1'})
+        search_params = {
+          'subactivities': "GEOTECH"    
+          }
+        response = self.client.get(url, search_params, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+        results = response.data.get("results")
+        self.assertEqual(len(results), 1)
+
+
+        subactivity = results[0].get("registrations")[0].get("applications")[0].get("subactivity")
+        self.assertEqual(subactivity.get("registries_subactivity_code"), "GEOTECH")        
+        
+
+    def test_list_people_includes_org_coords(self):
+        """
+        Tests that latitude and longitude attributes are included in 
+        each embedded Organization 
+        (Person -> Registration -> Organization -> [latitude and longitude])
+        """
+        # Create registered driller linked to an organization
+        activity = ActivityCode.objects.get(registries_activity_code="DRILL")
+        driller = Person.objects.create(
+            first_name='Debbie', surname="Driller")
+        org = Organization.objects.create(
+            name="Big Time Drilling Company",
+            province_state=self.prov
+        )
+        Register.objects.create(
+            person=driller,
+            organization=org,
+            registries_activity=activity,
+            registration_no="F54321",
+        )
+
+        # list all people
+        url = reverse('person-list', kwargs={'version': 'v1'})
+        response = self.client.get(url, format='json')
+
+        # Check that the Organization embedded under the Person has latitude 
+        # and longitude attributes (although the values for both are None)
+        results = response.data.get("results")            
+        registrations = results[0].get("registrations")
+        registered_org = registrations[0].get("organization")
+
+        self.assertTrue("latitude" in registered_org)
+        self.assertTrue("longitude" in registered_org)
+        self.assertTrue(registered_org["latitude"] == None)
+        self.assertTrue(registered_org["longitude"] == None)
+
 
     def test_retrieve_person(self):
         create_url = reverse('person-list', kwargs={'version': 'v1'})

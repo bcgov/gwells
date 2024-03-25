@@ -2,6 +2,7 @@ import mapboxgl from 'mapbox-gl'
 import { pick } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
+import intersect from '@turf/intersect'
 
 export const CENTRE_LNG_LAT_BC = new mapboxgl.LngLat(-126.495, 54.459)
 export const DEFAULT_MAP_ZOOM = 4
@@ -45,6 +46,46 @@ export function containsBounds (containerBounds, testBounds) {
   }
 
   return true
+}
+
+export function peopleToGeoJSON (people = []) {
+  // Converts a list of people from a search of registered well drillers
+  // and pump installers into a GeoJSON feature collection.
+  // If a person is registered with multiple organizations, it will
+  // result in multiple features (because in the source data
+  // geospatial location is associated with the organization, not the
+  // person)
+
+  const personFeatures = []
+  people.forEach(person => {
+    person.registrations.forEach(reg => {
+      const feature = personOrganizationToGeoJSON(person, reg.organization)
+      if (feature.geometry) {
+        personFeatures.push(feature)
+      }
+    })
+  })
+
+  return { type: 'FeatureCollection', features: personFeatures }
+}
+
+export function personOrganizationToGeoJSON (person, org) {
+  // Combines a person and an organization into a single
+  // GeoJSON Feature.  (Properties come from the person,
+  // geometry comes from the organization.)
+  const feature = Object.assign({
+    type: 'Feature',
+    properties: Object.assign({}, person),
+    geometry: null
+  })
+
+  if (org && org.longitude && org.latitude) {
+    feature.geometry = {
+      coordinates: [org.longitude, org.latitude],
+      type: 'Point'
+    }
+  }
+  return feature
 }
 
 export function buildWellsGeoJSON (wells = [], properties = []) {
@@ -123,4 +164,9 @@ export function checkCoordsAreTheSame (lngLat1, lngLat2, precision = 0.00001) {
   const { lng: lng1, lat: lat1 } = lngLat1
   const { lng: lng2, lat: lat2 } = lngLat2
   return Math.abs(lat1 - lat2) <= precision && Math.abs(lng1 - lng2) <= precision
+}
+
+export function doPolygonsIntersect (f1, f2) {
+  const intersection = intersect(f1, f2)
+  return (intersection !== null)
 }

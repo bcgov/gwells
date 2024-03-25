@@ -14,16 +14,16 @@
 from django.conf.urls import url
 from django.views.decorators.cache import never_cache
 from rest_framework.documentation import include_docs_urls
-from rest_framework_jwt.views import obtain_jwt_token
 from drf_yasg.views import get_schema_view
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+import os
 from registries import permissions
 from . import views
 from . import views_v2
 from gwells.urls import api_path_prefix
-
+LOCAL = os.environ.get('LOCAL', False)
+API_URL = 'http://localhost:8000/gwells/' if LOCAL else 'https://apps.nrs.gov.bc.ca/gwells/'
 schema_view = get_schema_view(
     openapi.Info(
         title="Groundwater Wells, Aquifers and Registry API",
@@ -36,7 +36,8 @@ schema_view = get_schema_view(
         license=openapi.License(name="Open Government License - British Columbia",
                                 url="https://www2.gov.bc.ca/gov/content?id=A519A56BC2BF44E4A008B33FCF527F61"),
     ),
-    public=False,
+    url=API_URL,
+    public=LOCAL,
     permission_classes=(permissions.RegistriesEditOrReadOnly,)
 )
 
@@ -128,6 +129,6 @@ urlpatterns = [
         name='city-list-installers'),
 
     # Swagger documentation endpoint
-    url(r'^api/$', schema_view.with_ui('redoc', cache_timeout=None), name='api-docs'),
+    url(r'^api/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
 
 ]

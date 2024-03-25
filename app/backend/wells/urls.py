@@ -73,6 +73,10 @@ urlpatterns = [
     url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/files$',
         never_cache(views.ListFiles.as_view()), name='file-list'),
 
+    # Increment/Decrement count of files for a given well during uploads
+    url(api_path_prefix() + r'/wells/(?P<tag>[0-9]+)/sum$',
+        never_cache(views.FileSumView.as_view()), name='file-sums'),
+
     # Extract files
     url(api_path_prefix() + r'/wells/extracts$', views.ListExtracts.as_view(), name='extract-list'),
 
@@ -108,7 +112,35 @@ urlpatterns = [
     url(api_path_prefix() + r'/gis/lithology$',
         views.lithology_geojson, name='well-lithology-geojson'),
 
+    # 'Pumping Test and Aquifer Parameters' endpoint for DataBC
+    url(r'api/v2/gis/aquifer-parameters$',
+        views.aquifer_pump_params, name='aquifers-parameters'),
+    
     # Well Licensing status endpoint from e-Licensing.
     url(api_path_prefix() + r'/wells/licensing$',
-        views.well_licensing, name='well-licensing')
+        views.well_licensing, name='well-licensing'),
+    
+    # get geocoder address
+    url(api_path_prefix() + r'/wells/geocoder$',
+        views.AddressGeocoder.as_view(), name='address-geocoder'),
+
+    # QA/QC Endpoints
+    url(api_path_prefix() + r'/qaqc/crossreferencing$',
+        never_cache(views_v2.CrossReferencingListView.as_view()), name='qaqc-cross-referencing'),
+
+    url(api_path_prefix() + r'/qaqc/mislocatedwells$',
+        never_cache(views_v2.MislocatedWellsListView.as_view()), name='qaqc-mislocated-wells'),
+
+    url(api_path_prefix() + r'/qaqc/recordcompliance$',
+        never_cache(views_v2.RecordComplianceListView.as_view()), name='qaqc-record-compliance'),
+
+    # Download URLs for QA/QC Endpoints
+    url(api_path_prefix() + r'/qaqc/crossreferencing/download$',
+        never_cache(views_v2.CrossReferencingDownloadView.as_view()), name='qaqc-cross-referencing-download'),
+
+    url(api_path_prefix() + r'/qaqc/mislocatedwells/download$',
+        never_cache(views_v2.MislocatedWellsDownloadView.as_view()), name='qaqc-mislocated-wells-download'),
+
+    url(api_path_prefix() + r'/qaqc/recordcompliance/download$',
+        never_cache(views_v2.RecordComplianceDownloadView.as_view()), name='qaqc-record-compliance-download'),
 ]

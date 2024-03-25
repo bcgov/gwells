@@ -845,7 +845,22 @@
             "decommission_method": null,
             "decommission_details": null,
             "water_quality_characteristics": [],
-            "geom": "POINT(-122.540000 49.260000)"
+            "geom": "POINT(-122.540000 49.260000)",
+            "distance_to_pid": "123.45",
+            "geocode_distance": "543.21",
+            "score_address": "78.90",
+            "score_city": "56.78",
+            "cross_referenced": false,
+            "cross_referenced_date": "2023-02-08T17:06:47.229Z",
+            "cross_referenced_by": "DATA_LOAD_USER",
+            "natural_resource_region": "Northeast"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 123,
+        "fields": {
+          "well_tag_number": 123
         }
     },
     {
@@ -959,7 +974,20 @@
             "drawdown": "190.00",
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
-            "geom": "POINT(-122.540000 49.200000)"
+            "geom": "POINT(-122.540000 49.200000)",
+            "distance_to_pid": "234.56",
+            "geocode_distance": "654.32",
+            "score_address": "89.01",
+            "score_city": "67.89",
+            "cross_referenced": true,
+            "natural_resource_region": "Northeast"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 112316,
+        "fields": {
+          "well_tag_number": 112316
         }
     },
     {
@@ -1073,7 +1101,20 @@
             "drawdown": null,
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
-            "geom": "POINT(-122.580000 49.230000)"
+            "geom": "POINT(-122.580000 49.230000)",
+            "distance_to_pid": "345.67",
+            "geocode_distance": "765.43",
+            "score_address": "90.12",
+            "score_city": "78.90",
+            "cross_referenced": false,
+            "natural_resource_region": "Northeast"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 113169,
+        "fields": {
+          "well_tag_number": 113169
         }
     },
     {
@@ -1187,7 +1228,20 @@
             "drawdown": null,
             "hydro_fracturing_performed": false,
             "hydro_fracturing_yield_increase": null,
-            "geom": "POINT(-122.590000 49.250000)"
+            "geom": "POINT(-122.590000 49.250000)",
+            "distance_to_pid": "456.78",
+            "geocode_distance": "876.54",
+            "score_address": "12.34",
+            "score_city": "89.01",
+            "cross_referenced": true,
+            "natural_resource_region": "Northeast"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 112286,
+        "fields": {
+          "well_tag_number": 112286
         }
     },
     {
@@ -1304,7 +1358,20 @@
             "hydro_fracturing_yield_increase": null,
             "decommission_sealant_material": "CONCRETE",
             "decommission_backfill_material": "test",
-            "geom": "POINT(-125.360830 52.456449)"
+            "geom": "POINT(-125.360830 52.456449)",
+            "distance_to_pid": "567.89",
+            "geocode_distance": "987.65",
+            "score_address": "23.45",
+            "score_city": "90.12",
+            "cross_referenced": false,
+            "natural_resource_region": "South Coast"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 20143,
+        "fields": {
+          "well_tag_number": 20143
         }
     },
     {
@@ -1444,7 +1511,20 @@
             ],
             "decommission_backfill_material": null,
             "decommission_sealant_material": null,
-            "geom": null
+            "geom": null,
+            "distance_to_pid": "678.90",
+            "geocode_distance": "109.87",
+            "score_address": "34.56",
+            "score_city": "12.34",
+            "cross_referenced": true,
+            "natural_resource_region": "Kootenay"
+        }
+    },
+    {
+        "model": "wells.wellattachment",
+        "pk": 216265,
+        "fields": {
+          "well_tag_number": 216265
         }
     }
 ]

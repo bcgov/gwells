@@ -6,7 +6,7 @@ import {
   AQUIFERS_FILL_LAYER_ID,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_GROUND_WATER_LICENCES_LAYER_ID,
-  DATABC_SURFACE_WATER_LICENCES_LAYER_ID
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
 } from '../common/mapbox/layers'
 import { popupItems, popupItem } from '../common/mapbox/popup'
 
@@ -99,14 +99,16 @@ export function createAquiferPopupElement (features, map, $router, options = {})
     const {
       aquifer_id: aquiferId,
       is_retired: isRetired,
-      is_published: isPublished
+      is_published: isPublished,
+      material_type: materialType,
+      subtype: subType
     } = feature.properties
     const linkToAquifer = canInteract && currentAquiferId !== aquiferId
 
     const item = {
       className: `${isRetired ? 'retired' : ''} ${isPublished ? 'published' : ''}`,
       route: linkToAquifer ? { name: 'aquifers-view', params: { id: aquiferId } } : null,
-      text: `Aquifer ${aquiferId}`,
+      text: `Aquifer ${aquiferId} (${materialType}, ${subType})`,
       suffix: [
         isRetired ? 'retired' : null,
         !isPublished ? 'unpublished' : null
@@ -130,7 +132,6 @@ export function createAquiferPopupElement (features, map, $router, options = {})
 
   return container
 }
-
 // Creates a <div> for the ecocat's popup content
 export function createEcocatPopupElement (features, map, options = {}) {
   const canInteract = Boolean(options.canInteract)

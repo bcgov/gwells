@@ -4,6 +4,7 @@ const VECTOR_TILE_SERVER = `${window.location.protocol}//${window.location.host}
 
 export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
 export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
+export const WELLS_AQUIFER_PARAMETER_LAYER_ID = 'wells-with-aquifer-parameters'
 export const WELLS_UNCORRELATED_LAYER_ID = 'wells-uncorrelated'
 export const WELLS_EMS_LAYER_ID = 'wells-ems'
 export const WELLS_OBSERVATION_LAYER_ID = 'wells-observation'
@@ -17,9 +18,16 @@ export const FOCUSED_WELLS_ARTESIAN_LAYER_ID = 'focused-wells-artesian'
 export const FOCUSED_WELL_IMAGE_ID = 'focused-well-image'
 export const FOCUSED_WELL_ARTESIAN_IMAGE_ID = 'focused-artesian-well-image'
 
+export const SEARCHED_REGISTRIES_SOURCE_ID = 'searched-registries-source'
+export const SEARCHED_REGISTRIES_LAYER_ID = 'searched-registries-layer'
+
 export const AQUIFERS_SOURCE_ID = 'postgis_ftw.gwells_aquifer_view'
 export const AQUIFERS_LINE_LAYER_ID = 'aquifer-line'
 export const AQUIFERS_FILL_LAYER_ID = 'aquifer-fill'
+
+export const REGISTRY_SOURCE_ID = 'postgis_ftw.registries_regional_areas_view'
+export const REGISTRY_LINE_LAYER_ID = 'registry-line'
+export const REGISTRY_FILL_LAYER_ID = 'registry-fill'
 
 export const DATABC_ROADS_SOURCE_ID = 'DATABC-roads-source'
 export const DATABC_ROADS_LAYER_ID = 'DATABC-roads-layer'
@@ -107,6 +115,7 @@ export const DATABC_CADASTREL_LAYER = {
 
 export const WELLS_SOURCE = vectorSourceConfig(WELLS_SOURCE_ID, { promoteId: 'well_tag_number' })
 export const AQUIFERS_SOURCE = vectorSourceConfig(AQUIFERS_SOURCE_ID, { promoteId: 'aquifer_id' })
+export const REGISTRY_SOURCE = vectorSourceConfig(REGISTRY_SOURCE_ID, { promoteId: 'name' })
 
 function vectorLayerConfig (id, source, painttype, paint = {}, layout = {}, filter = null) {
   const cfg = {
@@ -170,6 +179,41 @@ export function toggleAquiferHover (map, aquiferId, hoveredState) {
   )
 }
 
+// Adds mouse event listeners to the map to highlight the hovered registry regional area
+export function setupRegistryHover (map, registryFillLayerId) {
+  map.hoveredStateId = null
+
+  map.on('mousemove', registryFillLayerId, (e) => {
+    if (e.features.length > 0) {
+      const newHoveredStateId = e.features[0].id
+      if (newHoveredStateId !== map.hoveredStateId) {
+        if (map.hoveredStateId) { // un-set hover state on previously hovered asquifer
+          toggleRegistryHover(map, map.hoveredStateId, false)
+        }
+
+        toggleRegistryHover(map, newHoveredStateId, true)
+        map.hoveredStateId = newHoveredStateId
+      }
+    }
+  })
+
+  // When the mouse leaves the state-fill layer, update the un-set the hover state of the
+  // previously hovered registry region.
+  map.on('mouseleave', registryFillLayerId, () => {
+    if (map.hoveredStateId) {
+      toggleRegistryHover(map, map.hoveredStateId, false)
+    }
+    map.hoveredStateId = null
+  })
+}
+
+export function toggleRegistryHover (map, name, hoveredState) {
+  map.setFeatureState(
+    { source: REGISTRY_SOURCE_ID, id: name, sourceLayer: REGISTRY_SOURCE_ID },
+    { hover: hoveredState }
+  )
+}
+
 export function ecoCatLayer (options = {}) {
   const layerId = options.id || DATABC_ECOCAT_LAYER_ID
   const styles = defaultsDeep(options.styles, {
@@ -182,6 +226,18 @@ export function ecoCatLayer (options = {}) {
   })
 
   return vectorLayerConfig(layerId, options.source || DATABC_ECOCAT_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
+}
+
+export function searchedRegistriesLayer (options = {}) {
+  const layerId = options.id || SEARCHED_REGISTRIES_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color': '#ff0000',
+    'circle-radius': 5,
+    'circle-stroke-color': '#000000',
+    'circle-stroke-width': 1
+  })
+
+  return layerConfig(layerId, options.source || SEARCHED_REGISTRIES_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
 }
 
 export function surfaceWaterLicencesLayer (options = {}) {
@@ -231,14 +287,29 @@ export function wellsBaseAndArtesianLayer (options = {}) {
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
-    'circle-stroke-width': 1
+    'circle-stroke-width': 2.5
   })
 
   const filter = options.filter || wellLayerFilter(false)
 
   return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
 }
+// Builds MapBox layer config object for wells with aquifer parameters with a green outline
+export function wellsAquiferParameters (options = {}) {
+  const layerId = options.id || WELLS_AQUIFER_PARAMETER_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'circle-color' : '#0162FE',
+    'circle-radius' : 3,
+    'circle-stroke-color': '#5dfc00',
+    'circle-stroke-width': 2.5
+  })
 
+  const filter = [
+    'to-boolean', ['get', 'has_aquifer_parameters']
+  ]
+
+  return vectorLayerConfig(layerId, options.source || WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout, filter)
+}
 // Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
 export function searchedWellsLayer (options = {}) {
   const layerId = options.id || SEARCHED_WELLS_LAYER_ID
@@ -254,7 +325,7 @@ export function searchedWellsLayer (options = {}) {
       ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],
-    'circle-stroke-width': 2
+    'circle-stroke-width': 2.5
   })
 
   return layerConfig(layerId, options.source || SEARCHED_WELLS_SOURCE_ID, options.layerType || 'circle', styles, options.layout)
@@ -390,4 +461,35 @@ export function aquiferLayerFilter (showUnpublishedAquifers, showRetiredAquifers
     ['get', 'is_retired'], !!showRetiredAquifers,
     true
   ]
+}
+
+// Builds MapBox layer config object for registry line outlines
+export function registryLineLayer (options = {}) {
+  const layerId = options.id || REGISTRY_LINE_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'line-color': '#FFA500',
+    'line-width': [
+      'case',
+      ['boolean', ['feature-state', 'selected'], false], 2,
+      1
+    ],
+    'line-opacity': 0.5
+  })
+
+  return vectorLayerConfig(layerId, options.source || REGISTRY_SOURCE_ID, options.layerType || 'line', styles, options.layout)
+}
+
+// Builds MapBox layer config object for registry fill
+export function registryFillLayer (options = {}) {
+  const layerId = options.id || REGISTRY_FILL_LAYER_ID
+  const styles = defaultsDeep(options.styles, {
+    'fill-color': '#FFA500',
+    'fill-opacity': [
+      'case',
+      ['boolean', ['feature-state', 'hover'], false], 0.1,
+      0.001
+    ]
+  })
+
+  return vectorLayerConfig(layerId, options.source || REGISTRY_SOURCE_ID, options.layerType || 'fill', styles, options.layout)
 }

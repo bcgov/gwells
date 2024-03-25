@@ -8,6 +8,9 @@ version: '3.7'
 #        For example:
 #          docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
 services:
+#############################################################################################
+###                                       Minio-Pub                                       ###
+#############################################################################################
   minio-public:
     build:
       context: ./openshift/docker/minio/
@@ -22,6 +25,11 @@ services:
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server /data
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Minio-Priv                                      ###
+#############################################################################################
   minio-private:
     build:
       context: ./openshift/docker/minio/
@@ -33,9 +41,16 @@ services:
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
+      MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       CrunchyDB                                       ###
+#############################################################################################
   db:
+    platform: linux/x86_64
     image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
     hostname: db
     environment:
@@ -64,18 +79,38 @@ services:
         source: ./app/database/scripts/local_dev/setup.sql
         target: /pgconf/setup.sql
         consistency: cached
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/pgsql-12/bin/pg_isready", "-d", "gwells"]
+      interval: 20s
+      timeout: 30s
+      retries: 5
+      start_period: 120s
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Tileserv                                        ###
+#############################################################################################
   tileserv:
     hostname: tileserv
     depends_on:
       - db
-    image: pramsey/pg_tileserv:latest
+    platform: linux/x86_64
+    image: pramsey/pg_tileserv:20231005
+    env_file:
+    - path: ./.env.test
+      required: false
     environment:
-      DATABASE_URL: postgres://ftw_reader:test1@db:5432/gwells
+      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD:-test1}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
     ports:
       - "7800:7800"
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Frontend                                        ###
+#############################################################################################
   frontend:
-    image: node:8.9.4
+    image: node:14.21.3
     hostname: frontend
     working_dir: /app/frontend
     environment:
@@ -83,8 +118,7 @@ services:
       VUE_APP_AXIOS_BASE_URL: /api/
       VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
-      CHOKIDAR_USEPOLLING: "True"
-      API_TARGET: "${API_TARGET}"
+      API_TARGET: "${API_TARGET:-http://backend:8000/}"
     command: /bin/bash -c "
         set -x &&
         cd /app/frontend &&
@@ -96,20 +130,31 @@ services:
       - type: bind
         source: ./app/frontend
         target: /app/frontend
-        consistency: cached
       - /app/frontend/node_modules/
     depends_on:
       - backend
+    networks:
+      - gwells-network
+#############################################################################################
+###                                       Backend                                         ###
+#############################################################################################
   backend:
-    image: gwells/backend
+    platform: linux/x86_64
+    build:
+      context: ./openshift/docker/backend
+      dockerfile: Dockerfile.dev
     hostname: backend
+    env_file:
+    - path: ./.env.test
+      required: false
     environment:
+      ENVIRONMENT: "${ENVIRONMENT:-local}"
       APP_CONTEXT_ROOT: gwells
       CSRF_COOKIE_SECURE: "False"
       CUSTOM_GDAL_GEOS: "False"
       DATABASE_NAME: gwells
-      DATABASE_USER: gwells
-      DATABASE_PASSWORD: test1
+      DATABASE_USER: "${DATABASE_USER:-gwells}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD:-test1}"
       DATABASE_SERVICE_NAME: gwells
       DJANGO_ADMIN_URL: admin
       DJANGO_DEBUG: "True"
@@ -117,19 +162,21 @@ services:
       ENABLE_ADDITIONAL_DOCUMENTS: "True"
       ENABLE_AQUIFERS_SEARCH: "True"
       ENABLE_GOOGLE_ANALYTICS: "False"
-      GWELLS_SERVICE_HOST: db
-      GWELLS_SERVICE_PORT: 5432
+      GWELLS_SERVICE_HOST: "${GWELLS_SERVICE_HOST:-db}"
+      GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
       PYTHONUNBUFFERED: "1"
       SESSION_COOKIE_SECURE: "False"
-      SSO_AUDIENCE: gwells-test
-      SSO_CLIENT: gwells-test
-      SSO_AUTH_HOST: https://test.oidc.gov.bc.ca/auth
+      SSO_AUDIENCE: gwells-4121
+      SSO_CLIENT: gwells-4121
+      SSO_TEST_AUDIENCE: gwells-api-tests-4820
+      SSO_TEST_CLIENT: gwells-api-tests-4820
+      SSO_AUTH_HOST: https://test.loginproxy.gov.bc.ca/auth
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
-      SSO_REALM: gwells
-      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAh+5Hc4w/PKN04avW1LX/orSyXsJ7nJiEbErMyQqCvYAEKmQUeok7Yy+r6sVuJSyQQMCExk37NY3fUQOK92J83oC/9WGij7bvlWHew810edIisechoKpLuQbw63xlj/5ifQfJ977NM1n1RQgXF4hr4MDuhGbV+PAkQGdSPfufjEFleCwj8mvjUwTFnSwE9I+Rf78DVJzCHZbpFMq9skvrpCzeNsLNNoz+k1DENQ6MKnVnbUYskG+j5NZ3g+kxfkRf2G0tw2KisLYtxUSdfwutieT2Zxglk/kZeMWS7khXWzhwjvWf5a1qM5ebreVVYNhra7MjcrkXSh0v5IBcW+122wIDAQAB
+      SSO_REALM: standard
+      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiFdv9GA83uHuy8Eu9yiZHGGF9j6J8t7FkbcpaN81GDjwbjsIJ0OJO9dKRAx6BAtTC4ubJTBJMPvQER5ikOhIeBi4o25fg61jpgsU6oRZHkCXc9gX6mrjMjbsPaf3/bjjYxP5jicBDJQeD1oRa24+tiGggoQ7k6gDEN+cRYqqNpzC/GQbkUPk8YsgroncEgu8ChMh/3ERsLV2zorchMANUq76max16mHrhtWIQxrb/STpSt4JuSlUzzBV/dcXjJe5gywZHe0jAutFhNqjHzHdgyaC4RAd3eYQo+Kl/JOgy2AZrnx+CiPmvOJKe9tAW4k4H087ng8aVE40v4HW/FEbnwIDAQAB
       S3_HOST: minio-public:9000
       S3_PRIVATE_HOST: minio-private:9001
       S3_PRIVATE_BUCKET: gwells
@@ -145,29 +192,52 @@ services:
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
       S3_USE_SECURE: 0
-    command: /bin/bash -c "
-      sleep 3 &&
-      set -x &&
-      cd /app/backend &&
-      mkdir -p .pip &&
-      python3 -m pip install --upgrade pip &&
-      python3 -m pip install ptvsd &&
-      python3 -m pip install --cache-dir=.pip -r requirements.txt &&
-      python3 manage.py migrate --noinput &&
-      ./load_fixtures.sh all &&
-      python3 manage.py createinitialrevisions &&
-      python3 manage.py collectstatic --noinput &&
-      python3 manage.py export --cleanup=1 --upload=1 &&
-      python3 manage.py runserver 0.0.0.0:8000"
+      EMAIL_NOTIFICATION_RECIPIENT: sustainment.team@gov.bc.ca
+      GEOCODER_ADDRESS_API_BASE: https://geocoder.api.gov.bc.ca/addresses.json?
+      LOCAL: True
+    command: ./scripts/backend-command-script.sh
     volumes:
       - type: bind
         source: ./app/backend
         target: /app/backend
         consistency: cached
+      - type: bind
+        source: ./app/scripts/backend-command-script.sh
+        target: /app/scripts/backend-command-script.sh
+        consistency: cached
     ports:
       - "8000:8000"
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    networks:
+      - gwells-network
+
+#############################################################################################
+###                                       Volumes                                         ###
+#############################################################################################
+  pgadmin:
+    container_name: gwells-pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@gwells.com
+    networks:
+      - gwells-network
+
+
+#############################################################################################
+###                                       Volumes                                         ###
+#############################################################################################
 volumes:
   pgdata-volume:
+
+#############################################################################################
+###                                       Network                                         ###
+#############################################################################################
+networks:
+  gwells-network:
+    driver: "bridge"

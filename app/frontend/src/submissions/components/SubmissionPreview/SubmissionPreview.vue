@@ -141,7 +141,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
         <b-col cols="12" lg="6" xl="6" offset-xl="2">
           <div>
-            <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false"/>
+            <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false" :drinking_water="form.drinking_water_protection_area_ind"/>
           </div>
           <div class="my-3">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
@@ -193,14 +193,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
             'water_bearing_estimated_flow',
             'observations'
           ]">
-          <template slot="description" slot-scope="data">{{data.item.lithology_raw_data}}</template>
-          <template slot="from" slot-scope="data">{{data.item.start}}</template>
-          <template slot="to" slot-scope="data">{{data.item.end}}</template>
-          <template slot="colour" slot-scope="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
-          <template slot="hardness" slot-scope="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
-          <template slot="moisture" slot-scope="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
-          <template slot="descriptor" slot-scope="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
-          <template slot="observations" slot-scope="data">{{ data.item.lithology_observation }}</template>
+          <template v-slot:cell(description)="data">{{data.item.lithology_raw_data}}</template>
+          <template v-slot:cell(from)="data">{{data.item.start}}</template>
+          <template v-slot:cell(to)="data">{{data.item.end}}</template>
+          <template v-slot:cell(colour)="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
+          <template v-slot:cell(hardness)="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
+          <template v-slot:cell(moisture)="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
+          <template v-slot:cell(descriptor)="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
+          <template v-slot:cell(observations)="data">{{ data.item.lithology_observation }}</template>
         </b-table>
       </div>
     </fieldset>
@@ -216,10 +216,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :fields="['start', 'end', 'material', 'observations']"
           show-empty
         >
-          <template slot="start" slot-scope="data">{{data.item.start}} ft</template>
-          <template slot="end" slot-scope="data">{{data.item.end}} ft</template>
-          <template slot="material" slot-scope="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
-          <template slot="observations" slot-scope="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
+          <template v-slot:cell(start)="data">{{data.item.start}} ft</template>
+          <template v-slot:cell(end)="data">{{data.item.end}} ft</template>
+          <template v-slot:cell(material)="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
+          <template v-slot:cell(observations)="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
         </b-table>
       </div>
     </fieldset>
@@ -235,11 +235,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe_status']"
             show-empty>
 
-          <template slot="from" slot-scope="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
-          <template slot="to" slot-scope="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
-          <template slot="casing_type" slot-scope="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
-          <template slot="casing_material" slot-scope="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
-          <template slot="drive_shoe_status" slot-scope="data">{{codeToDescription('drive_shoe_status', data.item.drive_shoe_status)}}</template>
+          <template v-slot:cell(from)="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
+          <template v-slot:cell(to)="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
+          <template v-slot:cell(casing_type)="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
+          <template v-slot:cell(casing_material)="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
+          <template v-slot:cell(drive_shoe_status)="data">{{codeToDescription('drive_shoe_status', data.item.drive_shoe_status)}}</template>
 
         </b-table>
       </div>
@@ -289,8 +289,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :fields="['from', 'to']"
               show-empty
           >
-            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
+            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
+            <template v-slot:cell(to)="data" >{{data.item.end}} ft</template>
           </b-table>
         </b-col>
       </b-row>
@@ -332,9 +332,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
               show-empty
               >
-            <template slot="from" slot-scope="data">{{data.item.start}} ft</template>
-            <template slot="to" slot-scope="data">{{data.item.end}} ft</template>
-            <template slot="assembly_type" slot-scope="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
+            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
+            <template v-slot:cell(to)="data">{{data.item.end}} ft</template>
+            <template v-slot:cell(assembly_type)="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
           </b-table>
         </b-col>
       </b-row>
@@ -437,6 +437,35 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </fieldset>
 
     <fieldset class="my-3 detail-section">
+      <legend>Pumping Test Information and Aquifer Parameters</legend>
+      <div class="table-responsive">
+        <b-table
+            striped
+            small
+            bordered
+            :items="filterBlankRows(form.aquifer_parameters_set)"
+            :fields="[
+                  'start_date_pumping_test',
+                  'pumping_test_description',
+                  { key: 'test_duration', label: 'Test Duration (min)' },
+                  'boundary_effect',
+                  'storativity',
+                  { key: 'transmissivity', label: 'Transmissivity (m²/day)' },
+                  { key: 'hydraulic_conductivity', label: 'Hydraulic Conductivity (m/day)' },
+                  'specific_yield',
+                  { key: 'specific_capacity', label: 'Specific Capacity (L/s/m)' },
+                  'analysis_method',
+                  'comments'
+                ]"
+            show-empty>
+            <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
+            <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
+            <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
+        </b-table>
+      </div>
+    </fieldset>
+
+    <fieldset class="my-3 detail-section">
       <legend>Comments</legend>
       <p>
         {{ form.comments ? form.comments : 'No comments submitted' }}
@@ -444,14 +473,29 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p>
         <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ form.alternative_specs_submitted | nullBooleanToYesNo }}
       </p>
+      <p>
+        <span class="font-weight-bold">Technical Report:</span> {{ form.technical_report | nullBooleanToYesNo }}
+      </p>
+      <p>
+        <span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ form.drinking_water_protection_area_ind | nullBooleanToYesNo }}
+      </p>
     </fieldset>
 
     <fieldset v-if="upload_files && upload_files.length > 0">
       <legend>Documents to Upload</legend>
       <b-row>
-        <b-col cols="12" lg="4">
+        <b-col cols="12" lg="8">
           <b-list-group>
-            <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+            <b-list-group-item v-for="(f, index) in upload_files" :key="index">
+              {{f.file ? f.file.name.replace('null', '{ASSIGNED_WELL_ID}') : f.name}}
+              <a
+                class="fa fa-trash fa-lg"
+                variant="primary"
+                style="margin-left: 0.5em"
+                href="#"
+                @click="handleDelete(index)"
+              ></a>
+            </b-list-group-item>
           </b-list-group>
         </b-col>
       </b-row>
@@ -483,16 +527,28 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>General Disclaimer</legend>
       <b-row>
         <b-col cols="12" lg="9">
-          This information is collected by the Ministry of Environment and Climate Change Strategy under section 26
-          (c) of the Freedom of Information and Protection of Privacy Act.<br><br>
-          Information, including personal information, will be used to determine well location and confirm that the
-          construction, alteration, or decommission of a well has been done in accordance with the Water Sustainability
-          Act (WSA) and Groundwater Protection Regulation (GWPR). Well reports submitted to the Comptroller, or
-          retained by the person responsible, as required under Sec 57 the WSA and Part 10 of the GWPR, shall be
-          considered part of the Provincial Government records. Documents or images uploaded as part of submission
-          and that contain personal information not covered under this legislation will be deleted.<br><br>
+          This information is collected by the Ministry of Water, Land and Resource Stewardship under section 26 (c)
+          of the Freedom of Information and Protection of Privacy Act and section 117 (1) of the
+          Water Sustainability Act (WSA).
+          <br><br>
+          The groundwater information (e.g. any notes and comments that are included in well reports
+          filed under WSA and its regulations) will be made available to the public by the government
+          in accordance with the Open Government License-British Columba (OGL-BC) which grants the
+          public a worldwide, royalty-free, perpetual, non-exclusive license to make use of the reports,
+          including for commercial purposes, but subject to the terms described in the OGL-BC:
+          <a href="https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc" target="_blank" rel="noopener noreferrer">
+            https://www2.gov.bc.ca/gov/content/data/open-data/open-government-licence-bc.
+          </a>
+          <br><br>
+          Information, including personal information, will be used to determine well location and confirm
+          that the construction, alteration, or decommission of a well has been done in accordance with the
+          WSA and Groundwater Protection Regulation (GWPR). Well reports submitted to the Comptroller, or
+          retained by the person responsible, as required under section 57 of the WSA and Part 10 of the GWPR,
+          shall be considered part of the Provincial Government records. Documents or images included as part
+          of submission and that contain personal information not covered under this legislation will be deleted.
+          <br><br>
           Should you have any questions about the collection or use of this information, please contact the
-          Groundwater Data Specialist: <br>phone: 778-698-4867 <br>email: groundwater@gov.bc.ca
+          Groundwater Data Specialist, email: <a href = "mailto: groundwater@gov.bc.ca">groundwater@gov.bc.ca.</a>
         </b-col>
       </b-row>
     </fieldset>
@@ -537,7 +593,10 @@ export default {
   methods: {
     fetchFiles () {
       this.$emit('fetchFiles')
-    }
+    },
+    handleDelete (index) {
+      this.upload_files.splice(index, 1);
+    },
   },
   created () {
     this.fetchFiles()
@@ -584,7 +643,7 @@ export default {
           zone: null
         }
       }
-    },
+    }
   }
 }
 </script>

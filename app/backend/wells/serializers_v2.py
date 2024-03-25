@@ -13,12 +13,12 @@
 """
 import logging
 from decimal import Decimal
-
+from django.db import connection
 from rest_framework import serializers
 from django.contrib.gis.geos import Point
 
 from gwells.utils import isPointInsideBC
-from wells.models import Well, DevelopmentMethodCode
+from wells.models import Well, DevelopmentMethodCode, ActivitySubmission
 from aquifers.models import VerticalAquiferExtent, Aquifer
 
 from aquifers.serializers_v2 import AquiferDetailSerializerV2
@@ -27,8 +27,15 @@ from wells.serializers import (
     LithologyDescriptionSummarySerializer,
     WellDetailSerializer as WellDetailSerializerV1
 )
+from wells.constants import (
+  WELL_ACTIVITY_CODE_STAFF_EDIT,
+  WELL_ACTIVITY_CODE_CONSTRUCTION,
+  WELL_ACTIVITY_CODE_DECOMMISSION,
+  WELL_ACTIVITY_CODE_ALTERATION,
+)
 
 from aquifers.serializers import HYDRAULIC_SUBTYPES
+COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD = 'company_of_person_responsible.name'
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +56,10 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
             'city',
             'ems',
             'artesian',
-            'aquifer_id'
+            'aquifer_id',
+            'storativity',
+            'transmissivity',
+            'hydraulic_conductivity'
         )
 
     def get_artesian(self, obj):
@@ -135,18 +145,17 @@ class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
         well = Well.objects.get(well_tag_number=well_tag_number)
         validated_data['well'] = well
         return super().create(validated_data)
-
-
+        
 class WellListSerializerV2(serializers.ModelSerializer):
     """Serializes a well record"""
-
+    licence_number = serializers.SerializerMethodField(source='get_licence_number')
     legal_pid = serializers.SerializerMethodField()
     drilling_company = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
     company_of_person_responsible = serializers.ReadOnlyField(
         source='company_of_person_responsible.org_guid')
     company_of_person_responsible_name = serializers.ReadOnlyField(
-        source='company_of_person_responsible.name')
+        source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
     person_responsible = serializers.ReadOnlyField(
         source='person_responsible.person_guid')
     person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
@@ -156,6 +165,10 @@ class WellListSerializerV2(serializers.ModelSerializer):
         if instance.legal_pid is None:
             return instance.legal_pid
         return "{0:0>9}".format(instance.legal_pid)
+    
+    def get_licence_number(self, instance):
+        licence_numbers = instance.licences.values_list('licence_number', flat=True).distinct()
+        return list(licence_numbers)
 
     class Meta:
         model = Well
@@ -282,8 +295,10 @@ class WellListSerializerV2(serializers.ModelSerializer):
             "well_disinfected_status",
             "static_water_level",
             "alternative_specs_submitted",
+            "technical_report",
+            "drinking_water_protection_area_ind",
+            "licence_number"
         )
-
 
 class WellListAdminSerializerV2(WellListSerializerV2):
     class Meta:
@@ -310,7 +325,7 @@ class WellExportSerializerV2(WellListSerializerV2):
     licenced_status = serializers.SlugRelatedField(read_only=True, slug_field='description')
     land_district = serializers.SlugRelatedField(read_only=True, slug_field='name')
     drilling_company = serializers.CharField(read_only=True,
-                                             source='company_of_person_responsible.name')
+                                             source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
     ground_elevation_method = serializers.SlugRelatedField(read_only=True,
                                                            slug_field='description')
     surface_seal_material = serializers.SlugRelatedField(read_only=True, slug_field='description')
@@ -450,3 +465,166 @@ class WellDetailSerializer(WellDetailSerializerV1):
 
     class Meta(WellDetailSerializerV1.Meta):
         ref_name = "well_detail_v2"
+
+
+class ActivitySubmissionMixin:
+    def get_last_activity(self, obj):
+        # Cache the last activity in the instance to avoid repeated queries.
+        if not hasattr(obj, '_last_activity'):
+            obj._last_activity = ActivitySubmission.objects.filter(
+                well=obj
+            ).exclude(
+                well_activity_type__code=WELL_ACTIVITY_CODE_STAFF_EDIT
+            ).order_by('-work_end_date').first()
+        return obj._last_activity
+
+    def get_well_activity_type(self, obj):
+        last_activity = self.get_last_activity(obj)
+        return last_activity.well_activity_type.code if last_activity else None
+
+    def get_work_start_date(self, obj):
+        activity_type = self.get_well_activity_type(obj)
+        if activity_type == WELL_ACTIVITY_CODE_CONSTRUCTION:
+            order_field = '-construction_start_date'
+        elif activity_type == WELL_ACTIVITY_CODE_ALTERATION:
+            order_field = '-alteration_start_date'
+        elif activity_type == WELL_ACTIVITY_CODE_DECOMMISSION:
+            order_field = '-decommission_start_date'
+        else:
+            order_field = '-work_start_date' # Default order field if none of the conditions are met
+
+        filter_field = order_field.strip('-')
+        last_activity = ActivitySubmission.objects.filter(
+            well=obj,
+            **{f'{filter_field}__isnull': False}
+        ).order_by(order_field).first()
+        return getattr(last_activity, order_field.strip('-'), None) if last_activity else None
+
+    def get_work_end_date(self, obj):
+        activity_type = self.get_well_activity_type(obj)
+        if activity_type == WELL_ACTIVITY_CODE_CONSTRUCTION:
+            order_field = '-construction_end_date'
+        elif activity_type == WELL_ACTIVITY_CODE_ALTERATION:
+            order_field = '-alteration_end_date'
+        elif activity_type == WELL_ACTIVITY_CODE_DECOMMISSION:
+            order_field = '-decommission_end_date'
+        else:
+            order_field = '-work_end_date' # Default order field if none of the conditions are met
+
+        filter_field = order_field.strip('-')
+        last_activity = ActivitySubmission.objects.filter(
+            well=obj,
+            **{f'{filter_field}__isnull': False}
+        ).order_by(order_field).first()
+        return getattr(last_activity, order_field.strip('-'), None) if last_activity else None
+
+
+class MislocatedWellsSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
+    company_of_person_responsible_name = serializers.ReadOnlyField(
+        source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
+    
+    well_activity_type = serializers.SerializerMethodField()
+    work_start_date = serializers.SerializerMethodField()
+    work_end_date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Well
+        fields = [
+            'well_tag_number',
+            'geocode_distance',
+            'distance_to_pid',
+            'score_address',
+            'score_city',
+            'well_activity_type',
+            'work_start_date',
+            'work_end_date',
+            'company_of_person_responsible_name',
+            'natural_resource_region',
+            'create_date',
+            'create_user',
+            'internal_comments'
+        ]
+
+
+class CrossReferencingSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
+    well_activity_type = serializers.SerializerMethodField()
+    work_start_date = serializers.SerializerMethodField()
+    work_end_date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Well
+        fields = [
+            'well_tag_number',
+            'well_activity_type',
+            'work_start_date',
+            'work_end_date',
+            'create_user',
+            'create_date',
+            'update_date',
+            'update_user',
+            'natural_resource_region',
+            'comments',
+            'internal_comments',
+            'cross_referenced',
+            'cross_referenced_date',
+            'cross_referenced_by'
+        ]
+
+
+class RecordComplianceSerializer(ActivitySubmissionMixin, serializers.ModelSerializer):
+    company_of_person_responsible_name = serializers.ReadOnlyField(
+        source=COMPANY_OF_PERSON_RESPONSIBLE_NAME_FIELD)
+    person_responsible_name = serializers.ReadOnlyField(source='person_responsible.name')
+
+    # Serializer methods for the last ActivitySubmission's work types
+    well_activity_type = serializers.SerializerMethodField()
+    work_start_date = serializers.SerializerMethodField()
+    work_end_date = serializers.SerializerMethodField()
+
+    # last_lithology_raw_data
+    aquifer_lithology = serializers.SerializerMethodField()
+    # Serializer method field for the last casing's diameter
+    diameter = serializers.SerializerMethodField()
+    # Expose well_subclass uuid to convert to string
+    well_subclass = serializers.SerializerMethodField()
+
+    def get_well_subclass(self, obj):
+        # This method will convert the UUID to a string
+        return str(obj.well_subclass) if obj.well_subclass else None
+
+    def get_aquifer_lithology(self, obj):
+      # Fetch the last LithologyDescription based on the sequence number
+      last_lithology = obj.lithologydescription_set.order_by('-end').first()
+      # Return the raw data if it exists, otherwise return None
+      return last_lithology.lithology_raw_data if last_lithology else None
+    
+    def get_diameter(self, obj):
+        # Fetch the last Casing based on the 'end' field
+        last_casing = obj.casing_set.order_by('-end').first()
+        # Return the diameter if it exists, otherwise return None
+        return last_casing.diameter if last_casing else None
+
+    class Meta:
+        model = Well
+        fields = [
+          'well_tag_number',
+          'identification_plate_number',
+          'well_subclass',
+          'well_class',
+          'latitude',
+          'longitude',
+          'finished_well_depth',
+          'diameter',
+          'surface_seal_depth',
+          'surface_seal_thickness',
+          'aquifer_lithology',
+          'well_activity_type',
+          'work_start_date',
+          'work_end_date',
+          'person_responsible_name',
+          'company_of_person_responsible_name',
+          'create_date',
+          'create_user',
+          'natural_resource_region',
+          'internal_comments'
+        ]

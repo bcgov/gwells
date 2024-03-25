@@ -29,9 +29,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :items="tableData"
         show-empty
         empty-text="There are currently no vertical aquifer extents for this well.">
-        <template slot="start" slot-scope="data">{{parseFloat(data.item.start).toFixed(2)}} m</template>
-        <template slot="end" slot-scope="data">{{parseFloat(data.item.end).toFixed(2)}} m</template>
-        <template slot="height" slot-scope="data">{{data.item.height.toFixed(2)}} m</template>
+        <template v-slot:cell(start)="data">{{parseFloat(data.item.start).toFixed(2)}} m</template>
+        <template v-slot:cell(end)="data">{{parseFloat(data.item.end).toFixed(2)}} m</template>
+        <template v-slot:cell(height)="data">{{data.item.height.toFixed(2)}} m</template>
       </b-table>
 
       <div>

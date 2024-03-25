@@ -53,91 +53,159 @@
       </b-card>
 
       <!-- Search options -->
-      <div class="p-3 mb-4">
-        <b-form @submit.prevent="drillerSearch" @reset.prevent="drillerSearchReset({clearDrillers: true})" id="drillerSearchForm">
-          <b-form-row>
-            <b-col cols="12">
-              <b-form-group label="Choose professional type:">
-                <b-form-radio-group v-model="searchParams.activity" name="activitySelector">
-                  <b-form-radio value="DRILL" id="activityDriller">Well Driller</b-form-radio>
-                  <b-form-radio value="PUMP" id="activityInstaller">Well Pump Installer</b-form-radio>
-                </b-form-radio-group>
-              </b-form-group>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col cols="12" md="6">
-              <b-form-group label="Community:" label-for="cityOptions">
-                <b-form-select
-                    multiple="multiple"
-                    id="cityOptions"
-                    v-model="searchParams.city"
-                    class="mb-3"
-                    :select-size="6">
-                    <option value="">All</option>
-                    <optgroup
-                      v-for="prov in cityList[formatActivityForCityList]"
-                      v-if="prov.cities && prov.cities.length"
-                      :key="prov.prov"
-                      :label="prov.prov"
-                    >
-                      <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
-                    </optgroup>
-                </b-form-select>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6" v-if="userRoles.registry.view" class="pl-md-5">
-              <b-form-group label="Registration status" label-for="registrationStatusSelect">
-                <b-form-select
-                    :options="regStatusOptions"
-                    v-model="searchParams.status"
-                    id="registrationStatusSelect"
-                    name="registryStatuses"/>
-              </b-form-group>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col cols="12" md="6">
-              <b-form-group label="Individual, company, or registration number" label-for="regTypeInput">
-                <b-form-input
-                    type="text"
-                    class="form-control"
-                    id="regTypeInput"
-                    placeholder="Search"
-                    v-model="searchParams.search"/>
-              </b-form-group>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col>
-              <b-form-group label="Entries:" label-for="registriesResultsNumberSelect">
-                <select
-                    v-model="searchParams.limit"
-                    id="registriesResultsNumberSelect">
-                  <option>10</option>
-                  <option>25</option>
-                </select>
-              </b-form-group>
-            </b-col>
-          </b-form-row>
-          <b-form-row>
-            <b-col>
-              <b-form-group>
-                <button
-                  type="submit"
-                  class="btn btn-primary registries-search-btn mr-md-1"
-                  :disabled="searchLoading">
-                  Search
-                </button>
-                <button type="reset" class="btn btn-default">Reset</button>
-              </b-form-group>
-            </b-col>
-          </b-form-row>
-        </b-form>
+      <div class="pr-3 mb-4">
+        <b-row class="mt-4">
+          <!-- Search form -->
+          <b-col cols="12" lg="6" xl="5">
+            <div class="mb-3">
+              Use the search function below to define your search criteria.
+              Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C.
+              Some well drillers and well pump installers may operate in multiple areas throughout B.C.
+              For a complete list refer to the results table below.
+            </div>
+            <b-form @submit.prevent="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm">
+              <b-form-row>
+                <b-col cols="12">
+                  <b-form-group label="Choose professional type:">
+                    <b-form-radio-group v-model="searchParams.activity" name="activitySelector">
+                      <b-form-radio value="DRILL" id="activityDriller">Well Driller</b-form-radio>
+                      <b-form-radio value="PUMP" id="activityInstaller">Well Pump Installer</b-form-radio>
+                    </b-form-radio-group>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row v-if="subactivities && subactivities.length > 1">
+                <b-col md="12">
+                  <b-form-group label="Choose classification(s):">
+                    <b-form-checkbox-group name="subactivitySelector"
+                      class="fixed-width font-weight-normal pt-2"
+                      :options="subactivities"
+                      v-model="searchParams.subactivities"></b-form-checkbox-group>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col cols="12" md="12">
+                  <b-form-group label="Community:" label-for="cityOptions">
+                    <b-form-select
+                        multiple="multiple"
+                        id="cityOptions"
+                        v-model="searchParams.city"
+                        class="mb-3"
+                        :select-size="6">
+                        <option value="">All</option>
+                        <optgroup
+                          v-for="prov in cityList[formatActivityForCityList]"
+                          v-if="prov.cities && prov.cities.length"
+                          :key="prov.prov"
+                          :label="prov.prov"
+                        >
+                          <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
+                        </optgroup>
+                    </b-form-select>
+                    <b-alert
+                      show
+                      variant="warning"
+                      class="container mb-3"
+                      v-if="limitSearchToCurrentMapBounds && isCommunitySelected">
+                    Caution: Your are filtering the search by community ({{searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure
+                    these two selections are consistent, or you won't get any search results.
+                  </b-alert>
+                  </b-form-group>
+                </b-col>
+                <b-col cols="12" md="6" v-if="userRoles.registry.view" class="md-5">
+                  <b-form-group label="Registration status:" label-for="registrationStatusSelect">
+                    <b-form-select
+                        :options="regStatusOptions"
+                        v-model="searchParams.status"
+                        id="registrationStatusSelect"
+                        name="registryStatuses"/>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col cols="12" md="12">
+                  <b-form-group label="Region:" label-for="regionOptions">
+                    <b-form-select
+                        multiple="multiple"
+                        id="regionOptions"
+                        v-model="searchParams.region"
+                        class="mb-3"
+                        :select-size="6">
+                        <option value="">All</option>
+                        <option v-for="region in regionOptions" :key="`${region.regional_area_guid}`" :value="region.regional_area_guid">{{ region.name }}</option>
+                    </b-form-select>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col cols="12" md="6">
+                  <b-form-group label="Individual, company, or registration number:" label-for="regTypeInput">
+                    <b-form-input
+                        type="text"
+                        class="form-control"
+                        id="regTypeInput"
+                        placeholder="Search"
+                        v-model="searchParams.search"/>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col>
+                  <b-form-group label="Entries:" label-for="registriesResultsNumberSelect">
+                    <select
+                        v-model="searchParams.limit"
+                        id="registriesResultsNumberSelect">
+                      <option>10</option>
+                      <option>25</option>
+                    </select>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col cols="12">
+                  <b-form-group label="Map options:">
+                    <b-form-radio-group v-model="limitSearchToCurrentMapBounds" name="limitSearchToCurrentMapBounds">
+                      <b-form-radio v-bind:value="false" id="dontLimitSearchToMap">Snap map to search results</b-form-radio><br/>
+                      <b-form-radio v-bind:value="true" id="limitSearchToMap">Limit search to map area</b-form-radio>
+                    </b-form-radio-group>
+                    <b-form-checkbox
+                      class="ml-4"
+                      v-model="refreshOnMapChange"
+                      id="refreshOnMapChange"
+                      :disabled="!limitSearchToCurrentMapBounds">
+                        Refresh search results when map area changes</b-form-checkbox>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+              <b-form-row>
+                <b-col>
+                  <b-form-group>
+                    <button
+                      type="submit"
+                      class="btn btn-primary registries-search-btn mr-md-1"
+                      :disabled="loading || isSearchInProgress">
+                      Search
+                      <i v-if="isSearchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
+                    </button>
+                    <button type="reset" class="btn btn-default">Reset</button>
+                  </b-form-group>
+                </b-col>
+              </b-form-row>
+            </b-form>
+          </b-col>
+
+          <!-- search map -->
+          <b-col>
+            <registry-map
+              ref="registryMap"
+              />
+          </b-col>
+        </b-row>
 
         <div id="registry-download" v-if="userRoles.registry.view">
           <h6 class="mt-3">Download everyone in registry</h6>
-          <ul>
+          <ul class="ml-3">
             <li><a href="drillers/xlsx" @click.prevent="downloadFile">Registries extract (XLSX)</a></li>
             <li><a href="drillers/csv" @click.prevent="downloadFile">Registries extract (CSV)</a></li>
           </ul>
@@ -146,7 +214,7 @@
 
       <!-- Search results table -->
       <div id="search-results-table">
-        <template v-if="!searchLoading">
+        <template v-if="!loading && !isSearchInProgress">
           <b-row>
             <b-col cols="12" v-if="!hasResults && hasSearched">
               No results were found.
@@ -182,20 +250,34 @@
 
 <script>
 import querystring from 'querystring'
-import { mapGetters, mapActions } from 'vuex'
-import smoothScroll from 'smoothscroll'
+import mapboxgl from 'mapbox-gl'
+import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 import { omit } from 'lodash'
+import axios from 'axios'
 
 import ApiService from '@/common/services/ApiService.js'
+import RegistryMap from '@/registry/components/search/RegistryMap.vue'
 import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
-import { FETCH_CITY_LIST, FETCH_DRILLER_LIST, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
-import { SET_DRILLER_LIST, SET_LAST_SEARCHED_ACTIVITY } from '@/registry/store/mutations.types'
+import {
+  FETCH_CITY_LIST,
+  SEARCH,
+  RESET_SEARCH,
+  FETCH_DRILLER_OPTIONS,
+  REQUEST_MAP_POSITION
+} from '@/registry/store/actions.types'
+import {
+  SET_LOADING,
+  SET_HAS_SEARCHED,
+  SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+  SET_DO_SEARCH_ON_BOUNDS_CHANGE
+} from '@/registry/store/mutations.types'
 
 export default {
   components: {
     'registry-table': SearchTable,
+    'registry-map': RegistryMap,
     'api-error': APIErrorMessage,
     'register-legal-text': LegalText
   },
@@ -207,18 +289,7 @@ export default {
         username: null,
         password: null
       },
-      searchParams: {
-        search: '',
-        city: [''],
-        activity: 'DRILL',
-        status: 'A',
-        limit: '10',
-        ordering: ''
-      },
-      searchLoading: false,
-      lastSearchedParams: {},
-      surveys: [],
-      hasSearched: false
+      surveys: []
     }
   },
   computed: {
@@ -253,55 +324,101 @@ export default {
       }
       return ''
     },
+    subactivities () {
+      if (!this.drillerOptions) {
+        return []
+      }
+      return this.drillerOptions[this.searchParams.activity].subactivity_codes.map((item) => { return { 'text': item.description, 'value': item.registries_subactivity_code } })
+    },
+    isCommunitySelected () {
+      return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c !== '').length > 0
+    },
+    /*
     apiSearchParams () {
       // bundles searchParams into fields compatible with API
       return {
         search: this.searchParams.search,
-        // prov: this.searchParams.city.split(',')[1],
-        city: this.searchParams.city.join(),
+        city: this.searchParams.city,
         status: this.searchParams.status,
         limit: this.searchParams.limit,
         activity: this.searchParams.activity,
+        subactivities: this.searchParams.subactivities,
         ordering: this.searchParams.ordering
       }
     },
+    */
     downloadLinkQS () {
-      return querystring.stringify(omit(this.lastSearchedParams, 'limit'))
+      return querystring.stringify(omit(this.lastSearchedParams.api, 'limit'))
     },
     hasResults () {
-      return this.drillers.results && this.drillers.results.length > 0
+      return this.searchResponse.results && this.searchResponse.results.length > 0
     },
-    ...mapGetters([
-      'userRoles',
+    refreshOnMapChange: {
+      get () { return this.doSearchOnBoundsChangeFromStore },
+      set (value) { this[SET_DO_SEARCH_ON_BOUNDS_CHANGE](value) }
+    },
+    limitSearchToCurrentMapBounds: {
+      get () { return this.limitSearchToCurrentMapBoundsFromStore },
+      set (value) { this[SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS](value) }
+    },
+    ...mapState('registriesStore', {
+      limitSearchToCurrentMapBoundsFromStore: 'limitSearchToCurrentMapBounds',
+      doSearchOnBoundsChangeFromStore: 'doSearchOnBoundsChange'
+    }),
+    ...mapGetters(['userRoles']),
+    ...mapGetters('registriesStore', [
       'drillerOptions',
       'loading',
       'listError',
       'cityList',
-      'drillers',
-      'activity'
+      'regionOptions',
+      'searchResponse',
+      'activity',
+      'searchParams',
+      'hasSearched',
+      'isSearchInProgress',
+      'lastSearchedParams'
     ])
   },
   watch: {
-    'searchParams.activity': function () {
+    'searchParams.activity': function (activity) {
       // get new city list when user changes activity (well driller or well pump installer)
       this.searchParams.city = ['']
-      this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
+      this.resetSelectedSubactivities(this.subactivities)
+      this.FETCH_CITY_LIST(this.formatActivityForCityList)
+    },
+    subactivities: function (subactivities) {
+      if (!this.searchParams.subactivities || !this.searchParams.subactivities.length) {
+        this.resetSelectedSubactivities(subactivities)
+      }
+    },
+    'searchParams.city': function (selectedCities) {
+      this.zoomToSelectedCities(selectedCities)
+    },
+    'searchParams.region': function (selectedRegions) {
+      // console.log(selectedRegions)
     },
     user: function () {
       // reset search when user changes (this happens every login or logout)
-      this.drillerSearchReset()
+      this.resetSearch()
     }
   },
   methods: {
+    resetSelectedSubactivities (subactivities) {
+      this.searchParams.subactivities = subactivities
+        ? subactivities.map(item => item.value)
+        : []
+    },
     drillerSearch () {
-      const params = this.apiSearchParams
+      const params = this.searchParams
 
-      // save the last searched activity in the store for reference by table components
-      // (e.g. for formatting table for pump installer searches)
-      this.$store.commit(SET_LAST_SEARCHED_ACTIVITY, this.searchParams.activity || 'DRILL')
+      // If the search parameters specify a page offset, disregard it.
+      // (This method always performs a fresh search and results should
+      // start at page 1.)
+      if (params.hasOwnProperty('offset')) {
+        delete params.offset
+      }
 
-      this.searchLoading = true
-      this.hasSearched = true
       if (window.ga) {
         window.ga('send', {
           hitType: 'event',
@@ -310,51 +427,101 @@ export default {
           eventLabel: querystring.stringify(params)
         })
       }
-      this.$store.dispatch(FETCH_DRILLER_LIST, params).then(() => {
-        smoothScroll(this.$el.querySelector('#search-results-table'), 100)
-        this.drillerSearchReset({ keepActivity: true, keepLimit: true })
-        this.searchLoading = false
-        this.lastSearchedParams = Object.assign({}, params)
-      }).catch(() => {
-        this.searchLoading = false
-      })
-    },
-    drillerSearchReset (options = {}) {
-      this.searchParams.search = ''
-      this.searchParams.city = ['']
-      this.searchParams.status = 'A'
-      this.searchParams.ordering = ''
-      if (options.clearDrillers) {
-        this.hasSearched = false
-        this.$store.commit(SET_DRILLER_LIST, [])
-      }
-      if (!options.keepActivity) {
-        this.searchParams.activity = 'DRILL'
-      }
-      if (!options.keepLimit) {
-        this.searchParams.limit = '10'
-      }
+      this.SEARCH(params)
     },
     sortTable (sortCode) {
-      if (this.lastSearchedParams.ordering[0] !== '-') {
-        this.lastSearchedParams['ordering'] = `-${sortCode}`
-      } else {
-        this.lastSearchedParams['ordering'] = `${sortCode}`
+      if (!this.lastSearchedParams) {
+        return
       }
-      this.$store.dispatch(FETCH_DRILLER_LIST, this.lastSearchedParams)
+      if (this.lastSearchedParams.raw.ordering[0] !== '-') {
+        this.lastSearchedParams.raw['ordering'] = `-${sortCode}`
+      } else {
+        this.lastSearchedParams.raw['ordering'] = `${sortCode}`
+      }
+      this.SEARCH(this.lastSearchedParams.raw)
     },
     downloadFile (e) {
       if (!e.ctrlKey) {
         ApiService.download(e.currentTarget.getAttribute('href'))
       }
     },
-    ...mapActions([
-      FETCH_DRILLER_OPTIONS
+    // returns a promise with results from BC Physical Address Geocoder API
+    geocodeCity (city) {
+      return axios.get(
+        'https://geocoder.api.gov.bc.ca/addresses.json',
+        { params: { maxResults: 1, provinceCode: 'BC', localities: city, matchPrecision: 'locality', addressString: city } }
+      )
+    },
+    zoomToSelectedCities (selectedCities) {
+      if (selectedCities && selectedCities !== '') {
+        const lngLats = [] // a list of {lat:..., lng:...} objects
+        let numResponses = 0
+        const onGeocodeSuccess = (resp) => {
+          numResponses++
+          // Although we can ask the geocoder to return only locations in BC, it doesn't
+          // respect this request.  We work around this limitation by filtering out non-BC
+          // feature from the response.
+          const featuresInBc = resp.data.features.filter(
+            f => f.properties.provinceCode === 'BC'
+          )
+          if (featuresInBc.length) {
+            const feature = featuresInBc[0]
+            lngLats.push(new mapboxgl.LngLat(feature.geometry.coordinates[0], feature.geometry.coordinates[1]))
+          }
+          checkAllGeocodesComplete()
+        }
+        const onGeocodeError = (err) => {
+          console.log(err)
+          numResponses++
+          checkAllGeocodesComplete()
+        }
+        const checkAllGeocodesComplete = () => {
+          if (numResponses === selectedCities.length) {
+            if (lngLats.length === 1) {
+              this.REQUEST_MAP_POSITION({ centre: lngLats[0] })
+            } else if (lngLats.length > 1) {
+              // Build a LngLatBounds object that contains the
+              // geocoded points representing all the selected cities
+              const bounds = new mapboxgl.LngLatBounds()
+              lngLats.forEach((lngLats) => {
+                bounds.extend(lngLats)
+              })
+              this.REQUEST_MAP_POSITION({ bounds: bounds })
+            } else {
+              // None of the selected cities could be geocoded, so don't adjust the
+              // map position
+            }
+          }
+        }
+        for (var i = 0; i < selectedCities.length; i++) {
+          const city = selectedCities[i]
+          this.geocodeCity(city).then(
+            onGeocodeSuccess,
+            onGeocodeError
+          )
+        }
+      }
+    },
+    resetSearch () {
+      this[RESET_SEARCH]()
+    },
+    ...mapMutations('registriesStore', [
+      SET_HAS_SEARCHED,
+      SET_LOADING,
+      SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+      SET_DO_SEARCH_ON_BOUNDS_CHANGE
+    ]),
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER_OPTIONS,
+      FETCH_CITY_LIST,
+      SEARCH,
+      RESET_SEARCH,
+      REQUEST_MAP_POSITION
     ])
   },
   created () {
     // send request for city list when app is loaded
-    this.$store.dispatch(FETCH_CITY_LIST, this.formatActivityForCityList)
+    this.FETCH_CITY_LIST(this.formatActivityForCityList)
     this.FETCH_DRILLER_OPTIONS()
 
     // Fetch current surveys and add 'registries' surveys (if any) to this.surveys to be displayed

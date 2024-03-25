@@ -250,7 +250,7 @@
               </div>
               <div class="row mb-2">
                 <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                  Email address:
+                  Email Address:
                 </div>
                 <div class="col-7 col-md-4">
                   {{ registration.organization.email }}
@@ -536,12 +536,14 @@ export default {
       }
       return notes
     },
-    ...mapGetters([
-      'loading',
-      'user',
+    ...mapGetters('registriesStore', [
       'error',
       'currentDriller',
-      'drillers',
+      'searchResponse',
+      'loading'
+    ]),
+    ...mapGetters([
+      'user',
       'userRoles'
     ]),
     ...mapState('documentState', [
@@ -558,8 +560,15 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER,
+      FETCH_DRILLER_OPTIONS
+    ]),
     ...mapMutations('documentState', [
       'setFiles'
+    ]),
+    ...mapMutations('registriesStore', [
+      SET_DRILLER
     ]),
     show (key) {
       return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))
@@ -573,7 +582,7 @@ export default {
       return null
     },
     updateRecord () {
-      this.$store.dispatch(FETCH_DRILLER, this.$route.params.person_guid)
+      this.FETCH_DRILLER(this.$route.params.person_guid)
       // update changeHistory when company is updated
       if (this.currentDriller && this.$refs.changeHistory) {
         this.$refs.changeHistory.update()
@@ -647,20 +656,20 @@ export default {
   created () {
     if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
       // reset the currentDriller object if another driller was previously loaded
-      this.$store.commit(SET_DRILLER, {})
-      if (this.drillers && this.drillers.results && this.drillers.results.length) {
+      this[SET_DRILLER]({})
+      if (this.searchResponse && this.searchResponse.results && this.searchResponse.results.length) {
         // use basic info (name etc) from driller list while complete record is being fetched from API
-        const driller = this.drillers.results.find((item) => {
+        const driller = this.searchResponse.results.find((item) => {
           return item.person_guid === this.$route.params.person_guid
         })
         if (driller) {
-          this.$store.commit(SET_DRILLER, driller)
+          this[SET_DRILLER](driller)
         }
       }
     }
     // always fetch up to date record from API when page loads
     this.updateRecord()
-    this.$store.dispatch(FETCH_DRILLER_OPTIONS)
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>

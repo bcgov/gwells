@@ -13,13 +13,15 @@
 """
 
 import reversion
+import re
 from collections import OrderedDict
-
-from django.db.models import Q, Prefetch
+import re
+from django.db.models import Q, Prefetch, Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import TemplateView
+from django.contrib.gis.geos import Polygon, GEOSException
 from django_filters import rest_framework as restfilters
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
@@ -50,7 +52,8 @@ from registries.models import (
     RegistriesApplication,
     RegistriesRemovalReason,
     SubactivityCode,
-    WellClassCode)
+    WellClassCode,
+    RegionalArea)
 from registries.permissions import RegistriesEditPermissions, RegistriesEditOrReadOnly
 from registries.serializers import (
     ApplicationAdminSerializer,
@@ -71,18 +74,18 @@ from registries.serializers import (
     WellClassCodeSerializer,
     AccreditedCertificateCodeSerializer,
     OrganizationNoteSerializer,
-    PersonNameSerializer)
+    PersonNameSerializer,
+    RegionalAreaSerializer)
 from gwells.change_history import generate_history_diff
 from gwells.views import AuditCreateMixin, AuditUpdateMixin
-
 
 class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all registered drilling organizations
+    Returns a list of all registered drilling organizations.
 
     post:
-    Creates a new drilling organization record
+    Creates a new drilling organization record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -113,16 +116,16 @@ class OrganizationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns the specified drilling organization
+    Returns the specified drilling organization.
 
     put:
-    Replaces the specified record with a new one
+    Replaces the specified record with a new one.
 
     patch:
-    Updates a drilling organization with the fields/values provided in the request body
+    Updates a drilling organization with the fields/values provided in the request body.
 
     delete:
-    Removes the specified drilling organization record
+    Removes the specified drilling organization record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -157,7 +160,22 @@ class OrganizationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
 
 
 class PersonOptionsView(APIView):
-
+    
+    def filterRegionalAreas(self, result):
+        """
+        Modify substrings shown in the registries search to move 'Regional District of' to the back
+        The search uses a uuid and not the name key, so this operation is safe
+        Args:
+            result (List): List of regions from the serializer
+        """
+        substring = '^Regional Districts? of'
+        for item in result:
+            match = re.match(substring, item['name'])
+            if match:
+                district = match.group(0)
+                item['name'] = item['name'].replace(match.group(0) + " ", "") + ", " + district
+        result.sort(key=lambda item: item['name'])
+        
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, format=None, **kwargs):
         result = {}
@@ -200,12 +218,28 @@ class PersonOptionsView(APIView):
         result['province_state_codes'] = \
             list(map(lambda item: ProvinceStateCodeSerializer(item).data,
                      ProvinceStateCode.objects.all().order_by('display_order')))
-
+        result['regional_areas'] = \
+            list(map(lambda item: RegionalAreaSerializer(item).data,
+                     RegionalArea.objects.all().order_by('name')))
+        self.filterRegionalAreas(result['regional_areas'])
+        
         return Response(result)
 
 
+
 def person_search_qs(request):
-    """ Returns Person queryset, removing non-active and unregistered drillers for anonymous users """
+    """ 
+    Returns Person queryset, removing non-active and unregistered 
+    drillers for anonymous users 
+    Implementation note: The returned queryset is actually three related 
+    querysets.  The first is the primary query set and is is a join 
+    across several tables.  The other two querysets are 
+    used to pre-fetch collections of related information (registrations 
+    and applications).  
+    Various filters can be requested (filter by 'activity', 'subactivity', 
+    'geographic area', etc). In general, when a filter is needed, it is applied
+    to each of the three querysets (or sometimes only two of them). 
+    """
     query = request.GET
     qs = Person.objects.filter(expiry_date__gt=timezone.now())
 
@@ -213,34 +247,73 @@ def person_search_qs(request):
     registrations_qs = Register.objects.all()
     applications_qs = RegistriesApplication.objects.all()
 
+    person_filters = Q()
+    reg_filters = Q()
+    appl_filters = Q()
+
+
     # Search for cities (split list and return all matches)
     # search comes in as a comma-separated querystring param e.g: ?city=Atlin,Lake Windermere,Duncan
     cities = query.get('city', None)
     if cities:
         cities = cities.split(',')
-        qs = qs.filter(registrations__organization__city__in=cities)
-        registrations_qs = registrations_qs.filter(
-            organization__city__in=cities)
+        person_filters = person_filters & Q(registrations__organization__city__in=cities)
+        reg_filters = reg_filters & Q(organization__city__in=cities)
+    
+    # regional areas
+    region_guids = query.get('region', None)
+    if region_guids:
+        region_guids = region_guids.split(',')
+        regional_areas = RegionalArea.objects.filter(regional_area_guid__in=region_guids)
+        person_filters &= Q(registrations__organization__regional_areas__in=regional_areas)
+        reg_filters &= Q(organization__regional_areas__in=regional_areas)
+
+    #bbox
+    sw_long = query.get('sw_long')
+    sw_lat = query.get('sw_lat')
+    ne_long = query.get('ne_long')
+    ne_lat = query.get('ne_lat')
+    if sw_long and sw_lat and ne_long and ne_lat:
+        try:
+            bbox = Polygon.from_bbox((sw_long, sw_lat, ne_long, ne_lat))
+            bbox.srid = 4326
+            person_filters = person_filters & Q(registrations__organization__geom__bboverlaps=bbox)
+            reg_filters = reg_filters & Q(organization__geom__bboverlaps=bbox)
+        except (ValueError, GEOSException):
+            pass
+
+    #Subactivities param comes as a csv list
+    subactivities = query.get('subactivities')
+    if subactivities is not None:      
+      subactivities = subactivities.split(",")
+      person_filters = person_filters & \
+            Q(registrations__applications__subactivity__registries_subactivity_code__in=subactivities)
+      reg_filters = reg_filters & \
+          Q(applications__subactivity__registries_subactivity_code__in=subactivities)
+      appl_filters = appl_filters & \
+          Q(subactivity__registries_subactivity_code__in=subactivities)
 
     activity = query.get('activity', None)
     status = query.get('status', None)
-
     user_is_staff = request.user.groups.filter(name=REGISTRIES_VIEWER_ROLE).exists()
 
     if activity:
         if (status == 'P' or not status) and user_is_staff:
             # We only allow staff to filter on status
             # For pending, or all, we also return search where there is no registration.
-            qs = qs.filter(Q(registrations__registries_activity__registries_activity_code=activity) |
-                            Q(registrations__isnull=True))
-            registrations_qs = registrations_qs.filter(
-                registries_activity__registries_activity_code=activity)
+            person_filters = person_filters & \
+                (
+                    Q(registrations__registries_activity__registries_activity_code=activity) |
+                    Q(registrations__isnull=True)
+                )
+            reg_filters = reg_filters & \
+                Q(registries_activity__registries_activity_code=activity)
         else:
             # For all other searches, we strictly filter on activity.
-            qs = qs.filter(
-                registrations__registries_activity__registries_activity_code=activity)
-            registrations_qs = registrations_qs.filter(
-                registries_activity__registries_activity_code=activity)
+            person_filters = person_filters & \
+                Q(registrations__registries_activity__registries_activity_code=activity)
+            reg_filters = reg_filters & \
+                Q(registries_activity__registries_activity_code=activity)
 
     if user_is_staff:
         # User is logged in
@@ -248,36 +321,76 @@ def person_search_qs(request):
             if status == 'Removed':
                 # Things are a bit more complicated if we're looking for removed, as the current
                 # status doesn't come in to play.
-                qs = qs.filter(
-                    registrations__applications__removal_date__isnull=False)
+                person_filters = person_filters & \
+                    Q(registrations__applications__removal_date__isnull=False)
+                reg_filters = reg_filters & \
+                    Q(applications__removal_date__isnull=False)
+                appl_filters = appl_filters & \
+                    Q(removal_date__isnull=False)
             else:
                 if status == 'P':
                     # If the status is pending, we also pull in any people without registrations
                     # or applications.
-                    qs = qs.filter(Q(registrations__applications__current_status__code=status) |
-                                    Q(registrations__isnull=True) |
-                                    Q(registrations__applications__isnull=True),
-                                    Q(registrations__applications__removal_date__isnull=True))
+                    person_filters = person_filters & \
+                        (
+                            Q(registrations__applications__current_status__code=status) |
+                            Q(registrations__isnull=True) |
+                            Q(registrations__applications__isnull=True)                            
+                        ) & \
+                        Q(registrations__applications__removal_date__isnull=True)
+                    reg_filters = reg_filters & \
+                        (
+                            Q(applications__current_status__code=status) |                                    
+                            Q(applications__isnull=True)                            
+                        ) & \
+                        Q(applications__removal_date__isnull=True)   
+                    appl_filters = appl_filters & \
+                        (
+                            Q(current_status__code=status)                                     
+                            #Q(isnull=True)                            
+                        ) & \
+                        Q(removal_date__isnull=True)                      
                 else:
-                    qs = qs.filter(
-                        Q(registrations__applications__current_status__code=status),
-                        Q(registrations__applications__removal_date__isnull=True))
+                    person_filters = person_filters & \
+                        (
+                            Q(registrations__applications__current_status__code=status) &
+                            Q(registrations__applications__removal_date__isnull=True)
+                        )
+                    reg_filters = reg_filters & \
+                        (
+                            Q(applications__current_status__code=status) &
+                            Q(applications__removal_date__isnull=True)
+                        )
+                    appl_filters = appl_filters & \
+                        (
+                            Q(current_status__code=status) &
+                            Q(removal_date__isnull=True)
+                        )
     else:
         # User is not logged in
         # Only show active drillers to non-admin users and public
-        qs = qs.filter(
-            Q(registrations__applications__current_status__code='A',
-                registrations__registries_activity=activity),
-            Q(registrations__applications__removal_date__isnull=True),
-            Q()
-        )
+        person_filters = person_filters & \
+            (
+              Q(registrations__applications__current_status__code='A') &
+              Q(registrations__applications__removal_date__isnull=True)
+            )
 
-        registrations_qs = registrations_qs.filter(
-            Q(applications__current_status__code='A'),
-            Q(applications__removal_date__isnull=True))
+        reg_filters = reg_filters & \
+            (
+                Q(applications__current_status__code='A') &
+                Q(applications__removal_date__isnull=True)
+            )
+        appl_filters= appl_filters & \
+            (
+                Q(current_status='A') & 
+                Q(removal_date__isnull=True)
+            )
 
-        applications_qs = applications_qs.filter(
-            current_status='A', removal_date__isnull=True)
+    #apply all the "main" and "registration" filters that were chosen above
+    qs = qs.filter(person_filters)
+    registrations_qs = registrations_qs.filter(reg_filters)
+    applications_qs = applications_qs.filter(appl_filters)
+
 
     # generate applications queryset
     applications_qs = applications_qs \
@@ -290,7 +403,7 @@ def person_search_qs(request):
         .prefetch_related(
             'subactivity__qualification_set',
             'subactivity__qualification_set__well_class'
-        ).distinct()
+        ).distinct()    
 
     # generate registrations queryset, inserting filtered applications queryset defined above
     registrations_qs = registrations_qs \
@@ -301,7 +414,7 @@ def person_search_qs(request):
         ) \
         .prefetch_related(
             Prefetch('applications', queryset=applications_qs)
-        ).distinct()
+        ).distinct()            
 
     # insert filtered registrations set
     qs = qs \
@@ -311,23 +424,50 @@ def person_search_qs(request):
 
     return qs.distinct()
 
+def exclude_persons_without_registrations(request, filtered_queryset, statuses_that_disallow_empty_registrations=['A']):
+    """
+    In the following cases perform additional filtering on the 'filtered_queryset'
+    to remove persons that have no registrations:
+    1. when the request asked for status of *Registered* ('A')
+    2. when the request asked to filter by bounding box (geographic area)
+    3. when the request asked to filter by city
+    Implementation note: Ideally we would rely on the queryset for this
+    filtering, but the queryset is very complex, and it relies on
+    multiple 'prefetches' (extra database queries).  It is most efficient to handle 
+    this filtering post database query.    
+    Returns an updated filtered_queryset
+    """
+    status_disallows_people_with_no_registrations = \
+        request.GET.get('status') in statuses_that_disallow_empty_registrations 
+    is_filtered_by_bbox = request.GET.get('sw_long') != None \
+        and request.GET.get('sw_lat') != None \
+        and request.GET.get('ne_long') != None\
+        and request.GET.get('ne_lat') != None
+    is_filtered_by_city = request.GET.get('city', "") != ""
+    if is_filtered_by_bbox or is_filtered_by_city or \
+        status_disallows_people_with_no_registrations:
+        filtered_queryset = [f for f in filtered_queryset if len(f.registrations.all()) > 0]
+    return filtered_queryset
 
 class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all person records
+    Returns a list of all person records.
 
     post:
-    Creates a new person record
+    Creates a new person record.
     """
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonAdminSerializer
     pagination_class = APILimitOffsetPagination
-
     # Allow searching on name fields, names of related companies, etc.
     filter_backends = (restfilters.DjangoFilterBackend,
-                       filters.SearchFilter, filters.OrderingFilter)
+                       filters.SearchFilter, 
+                       filters.OrderingFilter
+                       )
+
+                       
     ordering_fields = ('surname', 'registrations__organization__name')
     ordering = ('surname',)
     search_fields = (
@@ -355,6 +495,7 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
         """ List response using serializer with reduced number of fields """
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
+        filtered_queryset = exclude_persons_without_registrations(request, filtered_queryset) 
 
         page = self.paginate_queryset(filtered_queryset)
         if page is not None:
@@ -368,16 +509,16 @@ class PersonListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns the specified person
+    Returns the specified person.
 
     put:
-    Replaces the specified person record with a new one
+    Replaces the specified person record with a new one.
 
     patch:
-    Updates a person with the fields/values provided in the request body
+    Updates a person with the fields/values provided in the request body.
 
     delete:
-    Removes the specified person record
+    Removes the specified person record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -427,14 +568,14 @@ class PersonDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPI
 
 class CitiesListView(ListAPIView):
     """
-    List of cities with a qualified, registered operator (driller or installer)
+    List of cities with a qualified, registered operator (driller or installer).
 
-    get: returns a list of cities with a qualified, registered operator (driller or installer)
+    get:
+    Returns a list of cities with a qualified, registered operator (driller or installer).
     """
     serializer_class = CityListSerializer
     lookup_field = 'register_guid'
     pagination_class = None
-    swagger_schema = None
     permission_classes = (RegistriesEditOrReadOnly,)
     queryset = Register.objects \
         .exclude(organization__city__isnull=True) \
@@ -466,10 +607,10 @@ class CitiesListView(ListAPIView):
 class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    List all registration records
+    List all registration records.
 
     post:
-    Create a new well driller or well pump installer registration record for a person
+    Create a new well driller or well pump installer registration record for a person.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -493,16 +634,16 @@ class RegistrationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns a well driller or well pump installer registration record
+    Returns a well driller or well pump installer registration record.
 
     put:
-    Replaces a well driller or well pump installer registration record with a new one
+    Replaces a well driller or well pump installer registration record with a new one.
 
     patch:
-    Updates a registration record with new values
+    Updates a registration record with new values.
 
     delete:
-    Removes the specified registration record from the database
+    Removes the specified registration record from the database.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -527,10 +668,10 @@ class RegistrationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDest
 class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns a list of all registration applications
+    Returns a list of all registration applications.
 
     post:
-    Creates a new registries application
+    Creates a new registries application.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -545,16 +686,16 @@ class ApplicationListView(RevisionMixin, AuditCreateMixin, ListCreateAPIView):
 class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns the specified drilling application
+    Returns the specified drilling application.
 
     put:
-    Replaces the specified record with a new one
+    Replaces the specified record with a new one.
 
     patch:
-    Updates a drilling application with the set of values provided in the request body
+    Updates a drilling application with the set of values provided in the request body.
 
     delete:
-    Removes the specified drilling application record
+    Removes the specified drilling application record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
@@ -569,7 +710,7 @@ class ApplicationDetailView(RevisionMixin, AuditUpdateMixin, RetrieveUpdateDestr
 
 class OrganizationNameListView(ListAPIView):
     """
-    A list of organizations with only organization names
+    A list of organizations with only organization names.
     """
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = OrganizationNameListSerializer
@@ -585,15 +726,14 @@ class OrganizationNameListView(ListAPIView):
 class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns notes associated with a Person record
+    Returns notes associated with a Person record.
 
     post:
-    Adds a note record to the specified Person record
+    Adds a note record to the specified Person record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person_guid']
@@ -611,21 +751,20 @@ class PersonNoteListView(AuditCreateMixin, ListCreateAPIView):
 class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns a PersonNote record
+    Returns a PersonNote record.
 
     put:
-    Replaces a PersonNote record with a new one
+    Replaces a PersonNote record with a new one.
 
     patch:
-    Updates a PersonNote record with the set of fields provided in the request body
+    Updates a PersonNote record with the set of fields provided in the request body.
 
     delete:
-    Removes a PersonNote record
+    Removes a PersonNote record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = PersonNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         person = self.kwargs['person']
@@ -635,15 +774,14 @@ class PersonNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
 class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
     """
     get:
-    Returns notes associated with a Organization record
+    Returns notes associated with a Organization record.
 
     post:
-    Adds a note record to the specified Organization record
+    Adds a note record to the specified Organization record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -661,21 +799,20 @@ class OrganizationNoteListView(AuditCreateMixin, ListCreateAPIView):
 class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView):
     """
     get:
-    Returns a OrganizationNote record
+    Returns a OrganizationNote record.
 
     put:
-    Replaces a OrganizationNote record with a new one
+    Replaces a OrganizationNote record with a new one.
 
     patch:
-    Updates a OrganizationNote record with the set of fields provided in the request body
+    Updates a OrganizationNote record with the set of fields provided in the request body.
 
     delete:
-    Removes a OrganizationNote record
+    Removes a OrganizationNote record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
-    swagger_schema = None
 
     def get_queryset(self):
         org = self.kwargs['org_guid']
@@ -684,12 +821,12 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
 
 class OrganizationHistory(APIView):
     """
-    get: returns a history of changes to an Organization model record
+    get:
+    Returns a history of changes to an Organization model record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     queryset = Organization.objects.all()
-    swagger_schema = None
 
     def get(self, request, org_guid, **kwargs):
         try:
@@ -708,17 +845,17 @@ class OrganizationHistory(APIView):
 
 class PersonHistory(APIView):
     """
-    get: returns a history of changes to a Person model record
+    get:
+    Returns a history of changes to a Person model record.
     """
 
     permission_classes = (RegistriesEditPermissions,)
     queryset = Person.objects.all()
-    swagger_schema = None
 
     def get(self, request, person_guid, **kwargs):
         """
-        Retrieves version history for the specified Person record and creates a list of diffs
-        for each revision.
+        get:
+        Retrieves version history for the specified Person record and creates a list of diffs for each revision.
         """
 
         try:
@@ -763,7 +900,7 @@ class PersonHistory(APIView):
 
 
 class PersonNameSearch(ListAPIView):
-    """Search for a person in the Register"""
+    """Search for a person in the Register."""
 
     permission_classes = (RegistriesEditOrReadOnly,)
     serializer_class = PersonNameSerializer
@@ -780,29 +917,13 @@ class PersonNameSearch(ListAPIView):
 
 class ListFiles(APIView):
     """
-    List documents associated with an aquifer
+    List documents associated with a person in the Registry.
 
-    get: list files found for the aquifer identified in the uri
+    get:
+    Returns list of files found for the person identified in the URI.
     """
 
-    @swagger_auto_schema(responses={200: openapi.Response('OK',
-        openapi.Schema(type=openapi.TYPE_OBJECT, properties={
-            'public': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            )),
-            'private': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Schema(
-                type=openapi.TYPE_OBJECT,
-                properties={
-                    'url': openapi.Schema(type=openapi.TYPE_STRING),
-                    'name': openapi.Schema(type=openapi.TYPE_STRING)
-                }
-            ))
-        })
-    )})
+
     def get(self, request, person_guid, **kwargs):
         user_is_staff = self.request.user.groups.filter(
             Q(name=REGISTRIES_EDIT_ROLE) | Q(name=REGISTRIES_VIEWER_ROLE)).exists()
@@ -820,13 +941,13 @@ class PreSignedDocumentKey(APIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     queryset = Person.objects.all()
     permission_classes = (RegistriesEditPermissions,)
 
-    @swagger_auto_schema(auto_schema=None)
     def get(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(
@@ -845,15 +966,15 @@ class PreSignedDocumentKey(APIView):
 
 class DeleteDrillerDocument(APIView):
     """
-    Delete a document from a S3 compatible store
+    Delete a document from a S3 compatible store.
 
-    delete: remove the specified object from the S3 store
+    delete:
+    Remove the specified object from the S3 store.
     """
 
     queryset = Person.objects.all()
     permission_classes = (RegistriesEditPermissions,)
 
-    @swagger_auto_schema(auto_schema=None)
     def delete(self, request, person_guid, **kwargs):
         person = get_object_or_404(self.queryset, pk=person_guid)
         client = MinioClient(

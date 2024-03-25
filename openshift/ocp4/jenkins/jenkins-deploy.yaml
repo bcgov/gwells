@@ -264,7 +264,7 @@ objects:
           - name: JENKINS_MASTER_SERVICE
             value: ${NAME}-controller${SUFFIX}
           - name: JAVA_TOOL_OPTIONS
-            value: -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap
+            value: -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport
               -XX:MaxRAMFraction=5 -XX:MaxHeapFreeRatio=20 -XX:MinHeapFreeRatio=10
               -XX:+UseParallelGC -XX:ParallelGCThreads=2
           - name: ENV_NAME

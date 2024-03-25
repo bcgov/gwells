@@ -43,6 +43,7 @@ from wells.serializers import (
     LinerPerforationSerializer,
     LithologyDescriptionSerializer,
     ScreenSerializer,
+    AquiferParametersSerializer
 )
 from wells.models import (
     ActivitySubmission,
@@ -57,6 +58,8 @@ from wells.models import (
     WellDisinfectedCode,
     WellOrientationCode,
     BoundaryEffectCode,
+    PumpingTestDescriptionCode,
+    AnalysisMethodCode,
     DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
@@ -87,6 +90,7 @@ from wells.models import (
     YieldEstimationMethodCode,
     ObsWellStatusCode,
     AquiferLithologyCode,
+    AquiferParameters,
 )
 
 from .models import WellActivityCode
@@ -107,6 +111,8 @@ class WellSubmissionListSerializer(serializers.ModelSerializer):
     linerperforation_set = LinerPerforationSerializer(
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
+        many=True, required=False)
+    aquifer_parameters_set = AquiferParametersSerializer(
         many=True, required=False)
 
     class Meta:
@@ -344,6 +350,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
+    aquifer_parameters_set = AquiferParametersSerializer(
+        many=True, required=False)
 
     coordinate_acquisition_code = serializers.PrimaryKeyRelatedField(
         queryset=CoordinateAcquisitionCode.objects.all(),
@@ -361,6 +369,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
+            'aquifer_parameters_set': AquiferParameters,
         }
 
     def get_well_activity_type(self):
@@ -376,7 +385,7 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
                   'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
                   'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
-                  'well_orientation_status', 'lithologydescription_set', 'casing_set',
+                  'well_orientation_status', 'lithologydescription_set', 'casing_set', 'aquifer_parameters_set',
                   'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
                   'surface_seal_method', 'backfill_type', 'backfill_depth',
                   'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
@@ -394,8 +403,8 @@ class WellConstructionSubmissionSerializer(WellSubmissionSerializerBase):
                   'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
                   'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
                   'well_cap_type', 'well_disinfected_status',
-                  'comments', 'internal_comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
-                  'driller_name', 'person_responsible', 'company_of_person_responsible',
+                  'comments', 'internal_comments', 'alternative_specs_submitted', 'technical_report', 'drinking_water_protection_area_ind', 'consultant_company',
+                  'consultant_name', 'driller_name', 'person_responsible', 'company_of_person_responsible',
                   'coordinate_acquisition_code',
                   'create_user', 'create_date',
                   )
@@ -414,6 +423,8 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
+    aquifer_parameters_set = AquiferParametersSerializer(
+        many=True, required=False)
 
     def get_foreign_key_sets(self):
         return {
@@ -421,6 +432,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
+            'aquifer_parameters_set': AquiferParameters,
         }
 
     def get_well_activity_type(self):
@@ -471,6 +483,7 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
+            'aquifer_parameters_set',
             'surface_seal_material',
             'surface_seal_depth',
             'surface_seal_thickness',
@@ -529,6 +542,8 @@ class WellAlterationSubmissionSerializer(WellSubmissionSerializerBase):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
+            'drinking_water_protection_area_ind',
             'create_user', 'create_date',
         )
         extra_kwargs = {
@@ -548,6 +563,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
         many=True, required=False)
     lithologydescription_set = LithologyDescriptionSerializer(
         many=True, required=False)
+    aquifer_parameters_set = AquiferParametersSerializer(
+        many=True, required=False)
 
     # Sets person_responsible and company_of back to object, otherwise client view only gets guid
     def to_representation(self, instance):
@@ -566,7 +583,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'screen_set': Screen,
             'linerperforation_set': ActivitySubmissionLinerPerforation,
             'lithologydescription_set': LithologyDescription,
-            'decommission_description_set': DecommissionDescription
+            'decommission_description_set': DecommissionDescription,
+            'aquifer_parameters_set': AquiferParameters,
         }
 
     class Meta:
@@ -624,6 +642,7 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
+            'aquifer_parameters_set',
             'surface_seal_material',
             'surface_seal_depth',
             'surface_seal_thickness',
@@ -688,6 +707,8 @@ class WellStaffEditSubmissionSerializer(WellSubmissionSerializerBase):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
+            'drinking_water_protection_area_ind',
             'decommission_description_set',
             'observation_well_number',
             'observation_well_status',
@@ -712,6 +733,8 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
     casing_set = CasingSerializer(many=True, required=False)
     decommission_description_set = DecommissionDescriptionSerializer(
         many=True, required=False)
+    aquifer_parameters_set = AquiferParametersSerializer(
+        many=True, required=False)
 
     def get_well_activity_type(self):
         return WellActivityCode.types.decommission()
@@ -720,6 +743,7 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
         return {
             'casing_set': Casing,
             'decommission_description_set': DecommissionDescription,
+            'aquifer_parameters_set': AquiferParameters,
         }
 
     class Meta:
@@ -770,10 +794,13 @@ class WellDecommissionSubmissionSerializer(WellSubmissionSerializerBase):
             'decommission_backfill_material',
             'decommission_details',
             'casing_set',
+            'aquifer_parameters_set',
             'decommission_description_set',
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
+            'drinking_water_protection_area_ind',
             'create_user', 'create_date',
         )
         extra_kwargs = {
@@ -829,6 +856,22 @@ class BoundaryEffectCodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoundaryEffectCode
         fields = ('boundary_effect_code', 'description')
+
+
+class PumpingTestDescriptionCodeSerializer(serializers.ModelSerializer):
+    """Serializes Aquifer Testing Description Codes/descriptions"""
+
+    class Meta:
+        model = PumpingTestDescriptionCode
+        fields = ('pumping_test_description_code', 'description')
+
+
+class AnalysisMethodCodeSerializer(serializers.ModelSerializer):
+    """Serializes Analysis Method Codes/descriptions"""
+
+    class Meta:
+        model = AnalysisMethodCode
+        fields = ('analysis_method_code', 'description')
 
 
 class DriveShoeCodeSerializer(serializers.ModelSerializer):
@@ -1165,7 +1208,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'legal_lot', 'legal_plan', 'legal_district_lot', 'legal_block', 'legal_section',
             'legal_township', 'legal_range', 'land_district', 'legal_pid', 'well_location_description',
             'latitude', 'longitude', 'ground_elevation', 'ground_elevation_method', 'drilling_methods',
-            'well_orientation_status', 'lithologydescription_set', 'casing_set',
+            'well_orientation_status', 'lithologydescription_set', 'casing_set', 'aquifer_parameters_set',
             'surface_seal_material', 'surface_seal_depth', 'surface_seal_thickness',
             'surface_seal_method', 'backfill_type', 'backfill_depth',
             'liner_material', 'liner_diameter', 'liner_thickness', 'liner_from', 'liner_to',
@@ -1182,7 +1225,7 @@ class ConstructionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'finished_well_depth', 'final_casing_stick_up', 'bedrock_depth', 'static_water_level',
             'well_yield', 'artesian_flow', 'artesian_pressure', 'artesian_pressure_head', 'artesian_conditions',
             'well_cap_type', 'well_disinfected_status',
-            'comments', 'alternative_specs_submitted', 'consultant_company', 'consultant_name',
+            'comments', 'alternative_specs_submitted', 'technical_report', 'drinking_water_protection_area_ind', 'consultant_company', 'consultant_name',
             'driller_name', 'person_responsible', 'company_of_person_responsible',
             'coordinate_acquisition_code',
             'create_user', 'create_date',
@@ -1285,6 +1328,7 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'well_orientation_status',
             'lithologydescription_set',
             'casing_set',
+            'aquifer_parameters_set',
             'surface_seal_material',
             'surface_seal_depth',
             'surface_seal_thickness',
@@ -1342,6 +1386,8 @@ class AlterationSubmissionDisplaySerializer(serializers.ModelSerializer):
             'well_disinfected_status',
             'comments',
             'alternative_specs_submitted',
+            'technical_report',
+            'drinking_water_protection_area_ind',
             'create_user', 'create_date',
         )
 
@@ -1416,9 +1462,12 @@ class DecommissionSubmissionDisplaySerializer(serializers.ModelSerializer):
             'decommission_backfill_material',
             'decommission_details',
             'casing_set',
+            'aquifer_parameters_set',
             'decommission_description_set',
             'comments',
             'alternative_specs_submitted',
+            'technical_report',
+            'drinking_water_protection_area_ind',
             'create_user', 'create_date',
         )
 
@@ -1609,6 +1658,8 @@ class LegacyWellDisplaySerializer(serializers.ModelSerializer):
             'comments',
             'internal_comments',
             'alternative_specs_submitted',
+            'technical_report',
+            'drinking_water_protection_area_ind',
             'decommission_description_set',
             'observation_well_number',
             'observation_well_status',

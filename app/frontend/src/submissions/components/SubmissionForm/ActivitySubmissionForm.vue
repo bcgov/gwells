@@ -50,6 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-col>
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
+      <p>All form fields marked with a trailing asterisk are mandatory fields.</p>
 
       <!-- Form load/save -->
       <b-row v-if="!isStaffEdit">
@@ -99,6 +100,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <well-type class="my-5"
       v-if="showSection('wellType')"
       id="wellType"
+      :startDateOfWorkLabel.sync="this.startDateOfWorkLabel"
+      :endDateOfWorkLabel.sync="this.endDateOfWorkLabel"
+      :wellIdentificationPlateNumberLabel.sync="this.wellIdentificationPlateNumberLabel"
+      :wellIdentificationPlateAttachedLabel.sync="this.wellIdentificationPlateAttachedLabel"
       :wellTagNumber.sync="form.well"
       :wellStatusCode.sync="form.well_status"
       :wellActivityType.sync="activityType"
@@ -118,6 +123,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"
+      :handleDateInput="handleDateInput"
     />
 
       <!-- Type of well -->
@@ -204,19 +210,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <coords class="my-5"
         v-if="showSection('wellCoords')"
         id="wellCoords"
+        ref="wellCoords"
         :latitude.sync="form.latitude"
         :longitude.sync="form.longitude"
+        :drinking_water="form.drinking_water_protection_area_ind"
         :coordinateAcquisitionCode.sync="form.coordinate_acquisition_code"
         :isStaffEdit="isStaffEdit"
         :errors="errors"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
+        v-on:editWater="editWater"
       />
 
       <!-- Method of Drilling -->
       <method-of-drilling class="my-5"
         v-if="showSection('method')"
         id="method"
+        :drillingMethodsLabel.sync="this.drillingMethodsLabel"
         :groundElevation.sync="form.ground_elevation"
         :groundElevationMethod.sync="form.ground_elevation_method"
         :drillingMethod.sync="form.drilling_methods"
@@ -370,6 +380,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <completion class="my-5"
         v-if="showSection('wellCompletion')"
         id="wellCompletion"
+        :totalDepthDrilledLabel.sync="this.totalDepthDrilledLabel"
+        :finishedWellDepthLabel.sync="this.finishedWellDepthLabel"
         :totalDepthDrilled.sync="form.total_depth_drilled"
         :finishedWellDepth.sync="form.finished_well_depth"
         :finalCasingStickUp.sync="form.final_casing_stick_up"
@@ -382,6 +394,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :artesianPressurePSI.sync="form.artesian_pressure"
         :wellCapType.sync="form.well_cap_type"
         :wellDisinfected.sync="form.well_disinfected_status"
+        :errors="errors"
+        :isStaffEdit="isStaffEdit"
+        :saveDisabled="editSaveDisabled"
+        v-on:save="$emit('submit_edit')"
+      />
+
+      <!-- Aquifer Data -->
+      <aquifer-data class="my-5"
+        v-if="showSection('aquiferData')"
+        id="aquiferData"
+        :aquifer.sync="form.aquifer"
+        :aquiferLithology.sync="form.aquifer_lithology"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -435,6 +459,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :comments.sync="form.comments"
         :internalComments.sync="form.internal_comments"
         :alternativeSpecsSubmitted.sync="form.alternative_specs_submitted"
+        :technicalReport.sync="form.technical_report"
+        :drinkingWaterProtectionArea.sync="form.drinking_water_protection_area_ind"
         :errors="errors"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -446,6 +472,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <documents class="my-5"
         v-if="showSection('documents')"
         id="documents"
+        :wellTagNumber="wellTagNumber"
         :uploadedFiles="uploadedFiles"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
@@ -456,31 +483,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:fetchFiles="fetchFiles"
       />
 
-      <!-- aquifer -->
-      <aquifer-data class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
-        :aquifer.sync="form.aquifer"
-        :aquiferVulnerabilityIndex.sync="form.aquifer_vulnerability_index"
-        :storativity.sync="form.storativity"
-        :transmissivity.sync="form.transmissivity"
-        :hydraulicConductivity.sync="form.hydraulic_conductivity"
-        :specificStorage.sync="form.specific_storage"
-        :specificYield.sync="form.specific_yield"
-        :testingMethod.sync="form.testing_method"
-        :testingDuration.sync="form.testing_duration"
-        :analyticSolutionType.sync="form.analytic_solution_type"
-        :boundaryEffect.sync="form.boundary_effect"
-        :aquiferLithology.sync="form.aquifer_lithology"
+      <!-- Aquifer Parameters -->
+      <aquifer-parameters class="my-5"
+        :key="`aquiferParametersComponent${componentUpdateTrigger}`"
+        v-if="showSection('aquiferParameters')"
+        id="aquiferParameters"
+        :aquiferParameters.sync="form.aquifer_parameters_set"
         :errors="errors"
+        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
       />
 
       <vertical-aquifer-extents class="my-5"
-        v-if="showSection('aquiferData')"
-        id="aquiferData"
+        v-if="showSection('aquiferParameters')"
+        id="vertical-aquifer-extents"
         :wellTagNumber="wellTagNumber"
       />
 
@@ -558,6 +576,13 @@ import SubmissionHistory from './SubmissionHistory.vue'
 import EditHistory from './EditHistory.vue'
 import WorkDates from './WorkDates.vue'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import AquiferParameters from './AquiferParameters.vue'
+import { 
+  WELL_SUBMISSION_STRINGS, 
+  MANDATORY_WELL_SUBMISSION_STRINGS, 
+  DATE_INPUT_TYPE,
+  NEW_WELL_CONSTRUCTION_VALIDATION_DATE
+ } from '@/common/constants.js'
 
 export default {
   name: 'SubmissionsForm',
@@ -618,7 +643,7 @@ export default {
     isPublished: {
       type: Boolean,
       isInput: false
-    }
+    },
   },
   components: {
     WorkDates,
@@ -648,7 +673,8 @@ export default {
     DecommissionInformation,
     ObservationWellInfo,
     SubmissionHistory,
-    EditHistory
+    EditHistory,
+    AquiferParameters
   },
   data () {
     return {
@@ -676,6 +702,7 @@ export default {
         'closureDescription': 'Decommission description',
         'lithology': 'Lithology',
         'casings': 'Casing details',
+        'aquiferParameters': 'Pumping Test Information and Aquifer Parameters',
         'backfill': 'Surface seal and backfill information',
         'liner': 'Liner information',
         'screens': 'Screen information',
@@ -691,7 +718,20 @@ export default {
         'submissionHistory': 'Activity report history',
         'documents': 'Attachments',
         'editHistory': 'Edit history'
-      }
+      },
+      initLong: null,
+      initLat: null,
+      workStartDate: '',
+      workEndDate: '',
+      // Labelling "Start Date of Work" and "End Date of Work" as mandatory.
+      // To push users to input dates but to allow for empty dates.
+      startDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.START_DATE_OF_WORK,
+      endDateOfWorkLabel: MANDATORY_WELL_SUBMISSION_STRINGS.END_DATE_OF_WORK,
+      wellIdentificationPlateNumberLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER,
+      wellIdentificationPlateAttachedLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
+      totalDepthDrilledLabel:WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED,
+      finishedWellDepthLabel: WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH,
+      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS,
     }
   },
   watch: {
@@ -811,7 +851,57 @@ export default {
       // Only set the route hash on a multi-step form
       const hash = this.formIsFlat ? '' : `#${this.stepCodes[step - 1]}`
       this.$router.push({ hash })
-    }
+    },
+    editWater (coords) {
+      this.$emit('editWater', coords)
+    },
+    checkNewWellConstructionDates(dateString, dateInputType) {
+      const newWellConstructionDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
+
+      if (dateString === '' && dateInputType === DATE_INPUT_TYPE.START_DATE) {
+        if (this.workEndDate > newWellConstructionDate) {
+          return true
+        }
+      }
+      if (dateString === '' && dateInputType === DATE_INPUT_TYPE.END_DATE) {
+        if (this.workStartDate > newWellConstructionDate) {
+          return true
+        }
+      }
+      if (dateString < newWellConstructionDate && ((this.workStartDate < newWellConstructionDate) && this.workEndDate < newWellConstructionDate)) {
+        return false
+      }
+      return true;
+    },
+    handleNewWellConstruction (isNewWellConstruction) {
+      if (isNewWellConstruction === undefined) return;
+      if (isNewWellConstruction === false) {
+        this.wellIdentificationPlateNumberLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
+        this.wellIdentificationPlateAttachedLabel = WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
+        this.totalDepthDrilledLabel = WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
+        this.finishedWellDepthLabel = WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
+        this.drillingMethodsLabel = WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
+        return;
+      } 
+      this.wellIdentificationPlateNumberLabel = MANDATORY_WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_NUMBER;
+      this.wellIdentificationPlateAttachedLabel = MANDATORY_WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED;
+      this.totalDepthDrilledLabel = MANDATORY_WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED;
+      this.finishedWellDepthLabel = MANDATORY_WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH;
+      this.drillingMethodsLabel = MANDATORY_WELL_SUBMISSION_STRINGS.DRILLING_METHODS;
+    },
+    handleDateInput(event, dateInputType) {
+      if (dateInputType === DATE_INPUT_TYPE.START_DATE) {
+        this.workStartDate = event;
+      }
+
+      if (dateInputType === DATE_INPUT_TYPE.END_DATE) {
+        this.workEndDate = event;
+      }
+
+      const dateString = event;
+      const isNewWellConstruction = this.checkNewWellConstructionDates(dateString, dateInputType)
+      this.handleNewWellConstruction(isNewWellConstruction)
+    },
   },
   created () {
     // When the form is saved, reset the formValueChanged variable.

@@ -11,10 +11,10 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+from django.core.mail import send_mail
 import logging
 import sys
 from posixpath import join as urljoin
-
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
@@ -25,7 +25,6 @@ from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveAPIView
 from rest_framework.views import APIView
-
 from gwells.documents import MinioClient
 from gwells.urls import app_root
 from gwells.pagination import APILimitOffsetPagination
@@ -50,6 +49,8 @@ from wells.models import (
     WellDisinfectedCode,
     WellOrientationCode,
     BoundaryEffectCode,
+    PumpingTestDescriptionCode,
+    AnalysisMethodCode,
     DriveShoeCode,
     FilterPackMaterialCode,
     FilterPackMaterialSizeCode,
@@ -95,6 +96,8 @@ from submissions.serializers import (
     WellDisinfectedCodeSerializer,
     WellOrientationCodeSerializer,
     BoundaryEffectCodeSerializer,
+    PumpingTestDescriptionCodeSerializer,
+    AnalysisMethodCodeSerializer,
     DriveShoeCodeSerializer,
     FilterPackMaterialCodeSerializer,
     FilterPackMaterialSizeCodeSerializer,
@@ -132,7 +135,7 @@ from submissions.serializers import (
     YieldEstimationMethodCodeSerializer,
     WellStaffEditSubmissionSerializer,
     AquiferLithologySerializer,
-    LicencedStatusCodeSerializer,
+    LicencedStatusCodeSerializer
 )
 
 
@@ -157,15 +160,68 @@ def get_submission_queryset(qs):
                 "lithologydescription_set",
                 "linerperforation_set",
                 "casing_set",
+                "aquifer_parameters_set",
                 "screen_set",
                 "decommission_description_set",
                 "drilling_methods"
             ) \
             .order_by("filing_number")
 
+def propagate_submission_comments(request, separator="."):
+    """  
+    This method modifies the values of two attributes in the given request 
+    object ('comments' and 'internal comments').
+    For both attributes the new value is set to be the concatenation of a 
+    previous value (from the well record) with the value provided in the request 
+    parameter.
+    :param request: The Django request object to modify 
+    :param separator: A string to insert between the previous value 
+    and the provided value.
+    :return: Nothing (but the 'request' parameter object may be modified) 
+    """
+
+    # no well tag number specified, so do nothing
+    if not "well" in request.data:
+        return
+
+    attributes_to_propagate = ["comments", "internal_comments"]
+    well_tag_number = request.data['well']
+    
+    # Lookup an existing well record to copy attribute values from
+    record_to_copy_from = None
+    try:
+        record_to_copy_from = Well.objects\
+            .get(well_tag_number=well_tag_number)  
+    except Well.DoesNotExist:
+        #no well found.
+        pass
+
+    # If found a Well record to propagate attribute values from,
+    # then override the values of the target attributes in the request object
+    # to be the concatenation of [previous value] + [separator] + [space] 
+    #  + [new value]
+    if record_to_copy_from:
+        separator_ends_with_whitespace = separator != separator.rstrip()
+        # iterate over all the attributes that will be copied from the previous
+        # submission
+        for attr_name in attributes_to_propagate:
+            attr_value = getattr(record_to_copy_from, attr_name)
+            if attr_value:
+                updated_value = attr_value.strip()
+                if attr_name in request.data and request.data[attr_name]:
+                    # concacatenate [previous value] + [separator] + 
+                    #   [space] + [new value]
+                    if not updated_value.endswith(separator):
+                        updated_value += f"{separator}"
+                    if not separator_ends_with_whitespace:
+                        updated_value += " "
+                    updated_value += request.data[attr_name]
+                # update the attribute value in the request object
+                request.data[attr_name] = updated_value
+
 
 class SubmissionGetAPIView(RetrieveAPIView):
-    """Get a submission"""
+    """Get a submission."""
 
     permission_classes = (WellsSubmissionViewerPermissions,)
     queryset = ActivitySubmission.objects.all()
@@ -200,7 +256,8 @@ class SubmissionGetAPIView(RetrieveAPIView):
 class SubmissionListAPIView(ListAPIView):
     """List submissions
 
-    get: returns a list of well activity submissions
+    get:
+    Returns a list of well activity submissions.
     """
 
     permission_classes = (WellsSubmissionViewerPermissions,)
@@ -262,7 +319,7 @@ class SubmissionBase(AuditCreateMixin, ListCreateAPIView):
 
 
 class SubmissionConstructionAPIView(SubmissionBase):
-    """Create a construction submission"""
+    """Create a construction submission."""
 
     model = ActivitySubmission
     serializer_class = WellConstructionSubmissionSerializer
@@ -282,18 +339,32 @@ class SubmissionAlterationAPIView(SubmissionBase):
     permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        # modify the request: copy the values of 'comments' and 'internal_comments'
+        # from the previous Submission into the current Submission (plus add any
+        # newly submitted comments).
+        propagate_submission_comments(request)
+        return super().post(request, *args, **kwargs)
+
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
             .filter(well_activity_type=WellActivityCode.types.alteration())
 
 
 class SubmissionDecommissionAPIView(SubmissionBase):
-    """Create a decommission submission"""
+    """Create a decommission submission."""
 
     model = ActivitySubmission
     serializer_class = WellDecommissionSubmissionSerializer
     permission_classes = (WellsSubmissionPermissions,)
     queryset = ActivitySubmission.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        # modify the request: copy the values of 'comments' and 'internal_comments'
+        # from the previous Submission into the current Submission (plus add any
+        # newly submitted comments).
+        propagate_submission_comments(request)
+        return super().post(request, *args, **kwargs)
 
     def get_queryset(self):
         return get_submission_queryset(self.queryset)\
@@ -301,7 +372,7 @@ class SubmissionDecommissionAPIView(SubmissionBase):
 
 
 class SubmissionStaffEditAPIView(SubmissionBase):
-    """ Create a staff edit submission"""
+    """ Create a staff edit submission."""
     model = ActivitySubmission
     serializer_class = WellStaffEditSubmissionSerializer
     permission_classes = (WellsEditPermissions,)
@@ -320,9 +391,7 @@ class SubmissionStaffEditAPIView(SubmissionBase):
 
 
 class SubmissionsOptions(APIView):
-    """Options required for submitting activity report forms"""
-
-    swagger_schema = None
+    """Options required for submitting activity report forms."""
 
     def get(self, request, **kwargs):
         options = {}
@@ -352,6 +421,10 @@ class SubmissionsOptions(APIView):
             instance=WellOrientationCode.objects.all(), many=True)
         boundary_effect_codes = BoundaryEffectCodeSerializer(
             instance=BoundaryEffectCode.objects.all(), many=True)
+        pumping_test_description_codes = PumpingTestDescriptionCodeSerializer(
+            instance=PumpingTestDescriptionCode.objects.all(), many=True)
+        analysis_method_codes = AnalysisMethodCodeSerializer(
+            instance=AnalysisMethodCode.objects.all(), many=True)
         drive_shoe_codes = DriveShoeCodeSerializer(
             instance=DriveShoeCode.objects.all(), many=True)
         filter_pack_material = FilterPackMaterialCodeSerializer(
@@ -412,11 +485,11 @@ class SubmissionsOptions(APIView):
             instance=LithologyDescriptionCode.objects.all(), many=True)
         licenced_status_codes = LicencedStatusCodeSerializer(
             instance=LicencedStatusCode.objects.all(), many=True)
-
+        
         root = urljoin('/', app_root, 'api/v2/')
         for item in activity_codes.data:
             if item['code'] not in ('LEGACY'):
-                item['path'] = reverse(item['code'], request=request)[len(root):]
+                item['path'] = reverse(item['code'], kwargs={'version': 'v2'})[len(root):]
 
         options["province_codes"] = province_codes.data
         options["activity_types"] = activity_codes.data
@@ -430,6 +503,8 @@ class SubmissionsOptions(APIView):
         options["well_disinfected_codes"] = well_disinfected_codes.data
         options["well_orientation_codes"] = well_orientation_codes.data
         options["boundary_effect_codes"] = boundary_effect_codes.data
+        options["pumping_test_description_codes"] = pumping_test_description_codes.data
+        options["analysis_method_codes"] = analysis_method_codes.data
         options["drive_shoe_codes"] = drive_shoe_codes.data
         options["filter_pack_material"] = filter_pack_material.data
         options["filter_pack_material_size"] = filter_pack_material_size.data
@@ -468,7 +543,8 @@ class PreSignedDocumentKey(RetrieveAPIView):
     """
     Get a pre-signed document key to upload into an S3 compatible document store
 
-    post: obtain a URL that is pre-signed to allow client-side uploads
+    post:
+    Obtain a URL that is pre-signed to allow client-side uploads.
     """
 
     queryset = ActivitySubmission.objects.all()
@@ -493,3 +569,63 @@ class PreSignedDocumentKey(RetrieveAPIView):
             filename, bucket_name=bucket_name, private=is_private)
 
         return JsonResponse({"object_name": object_name, "url": url})
+
+
+
+class EmailNotification(APIView):
+    """
+    Send GWELLS team notification of anyone changing the GPS COORDS of a well flagged for drinking water.
+    """
+    permission_classes = (WellsSubmissionPermissions,)
+
+    def post(self, request, *args, **kwargs):
+        well_tag_number = request.query_params.get('well_tag_number')
+        latitude = request.query_params.get('latitude')
+        longitude = request.query_params.get('longitude')
+        initial_latitude = request.query_params.get('initialLatitude')
+        initial_longitude = request.query_params.get('initialLongitude')
+        test_env = request.query_params.get('testEnv')
+
+        recipient = get_env_variable("EMAIL_NOTIFICATION_RECIPIENT")
+        subject = f'Warning: drinking water well location updated for well {well_tag_number}'
+        well_link = f'https://apps.nrs.gov.bc.ca/gwells/well/{well_tag_number}'
+
+        test_env_message = ''
+        link_message = 'Link to well: ' + well_link
+
+        # Instead of showing the different local/dev/test URLs, we just remove the link to the well unless it's prod
+        # Show a warning that this is from a test environment just to be clear
+        if test_env == 'true':
+            test_env_message = '**NOTE: THIS IS FROM A TEST ENVIRONMENT**'
+            link_message = ''
+
+        # multiply longitude by -1 to get a positive value, as most people don't expect negative longitudes
+        # this matches what is done in the frontend (Coords.vue)
+        message = f'''
+        This is a warning: there has been a change in coordinates for well {well_tag_number}. This well has been marked as a source of drinking water.
+
+        {test_env_message}
+        
+        {link_message}
+
+        Previous Coordinates:
+        Latitude: {initial_latitude}
+        Longitude: {float(initial_longitude)*-1}
+
+        New Coordinates:
+        Latitude: {latitude}
+        Longitude: {float(longitude)*-1}
+
+        {test_env_message}
+        '''
+
+        try:
+            logger.info("Attempting to send mail")
+            send_mail(subject, message, "Sustainment.Team@gov.bc.ca", [recipient])
+            logger.info("Email has been sent")
+            return JsonResponse({'message': 'Email sent successfully'})
+
+        except Exception as e:
+            logger.error(str(e))
+            logger.error(request)
+            return JsonResponse({'error': str(e)}, status=500)

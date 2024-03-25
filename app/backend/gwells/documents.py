@@ -14,9 +14,10 @@
 import sys
 import os
 import logging
+import re
 from datetime import timedelta
 from django.urls import reverse
-from urllib.parse import quote
+from urllib.parse import quote, unquote_plus
 from minio import Minio
 from gwells.settings.base import get_env_variable
 
@@ -92,7 +93,7 @@ class MinioClient():
         """ Generates a link to a private document with name "object_name" (name includes prefixes) """
         return self.private_client.presigned_get_object(
             bucket_name,
-            object_name,
+            unquote_plus(object_name),
             expires=timedelta(minutes=12))
 
     def create_url(self, obj, host, bucket_name, private=False):
@@ -111,7 +112,7 @@ class MinioClient():
         return 'https://{}/{}/{}'.format(
             host,
             quote(obj.bucket_name),
-            quote(obj.object_name)
+            quote(unquote_plus(obj.object_name))
         )
 
     def create_url_list(self, objects, host, bucket_name, private=False):
@@ -122,11 +123,39 @@ class MinioClient():
                     'url': self.create_url(document, host, bucket_name, private),
 
                     # split on last occurrence of '/' and return last item (supports any or no prefixes)
-                    'name': document.object_name.rsplit('/', 1)[-1]
+                    'name': unquote_plus(document.object_name).rsplit('/', 1)[-1],
+                    "well_number": self.extract_well_number(document.object_name),
+                    "date_of_upload": self.extract_date_of_upload(document.object_name),
+                    "document_type": self.extract_well_label(document.object_name),
+                    "document_status": private
                 }, objects)
         )
         return urls
 
+    def extract_well_number(self, object_name):
+        try:
+            return re.findall(r'\d+', unquote_plus(object_name).rsplit('/', 1)[-1].split("_")[0])[0]
+        except Exception:
+            return "Unknown"
+
+    def extract_date_of_upload(self, object_name):
+        try:
+            split_file_name = unquote_plus(object_name).rsplit('/', 1)[-1].split("_")
+            split_val = 2 if len(split_file_name) == 3 else 3
+            return int(split_file_name[split_val].split(".")[0].strip())
+        except Exception:
+            return -1
+
+    def extract_well_label(self, object_name):
+        try:
+            split_file_name = unquote_plus(object_name).rsplit('/', 1)[-1].split("_")
+            if(len(split_file_name) == 3):
+                return split_file_name[1]
+            elif(len(split_file_name) == 4):
+                return split_file_name[1] + "_" + split_file_name[2]
+        except Exception:
+            return ""
+        
     def get_bucket_folder(self, document_id, resource='well'):
         """Helper function to determine the folder for a given resource"""
         if resource == 'well':
@@ -161,7 +190,7 @@ class MinioClient():
 
     def get_documents(self, document_id: int, resource='well', include_private=False):
         """Retrieves a list of available documents for a well or aquifer"""
-
+        logger.info('Get Documents for: document_id:%s, resource: %s, include_private: %s ', document_id, resource, include_private)
         # prefix well tag numbers with a 6 digit "folder" id
         # e.g. WTA 23456 goes into prefix 020000/
         prefix = self.get_prefix(document_id, resource)
@@ -183,9 +212,9 @@ class MinioClient():
                     self.public_client.list_objects(
                         public_bucket, prefix=prefix, recursive=True),
                     self.public_host, public_bucket)
-            except:
+            except Exception as e:
                 logger.error(
-                    "Could not retrieve files from public file server")
+                    "Could not retrieve files from public file server", exc_info=e)
 
             objects['public'] = pub_objects
 

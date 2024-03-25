@@ -140,6 +140,25 @@ COLUMN_LABELS = {
     "artesian_pressure_head": "Artesian Pressure head",
     "artesian_conditions": "Artesian Conditions",
     "alternative_specs_submitted": "Alt specs submitted",
+    "technical_report": "Technical Report",
+    "drinking_water_protection_area_ind": "Drinking Water Protection Area",
+    "well_activity_type": "Work/Report Type",
+    "work_start_date": "Work Start Date",
+    "work_end_date": "Work End Date",
+    "create_user": "Created By",
+    "create_date": "Created Date",
+    "update_date": "Updated Date",
+    "update_user": "Updated By",
+    "natural_resource_region": "Natural Resource Region",
+    "comments": "Comments",
+    "internal_comments": "Internal Comments",
+    "cross_referenced": "Cross Referenced",
+    "cross_referenced_date": "Cross Referenced Date",
+    "cross_referenced_by": "Cross Referenced By",
+    "geocode_distance": "Geocode Distance",
+    "distance_to_pid": "Distance to Matching PID",
+    "score_address": "Score Address",
+    "score_city": "Score City"
 }
 
 

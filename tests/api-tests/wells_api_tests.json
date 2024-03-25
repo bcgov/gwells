@@ -1,8 +1,9 @@
 {
 	"info": {
-		"_postman_id": "cd39eefb-e356-4d4c-9cbb-2b77f49dfdb3",
-		"name": "GWELLS Well API copy",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"_postman_id": "75a9c50b-6664-4075-9ab5-9004df093c8d",
+		"name": "GWELLS Well API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33152761"
 	},
 	"item": [
 		{
@@ -14,7 +15,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "46c51db8-8a25-45d5-941f-f55f682ab9b6",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json()",
@@ -36,7 +36,19 @@
 					],
 					"request": {
 						"auth": {
-							"type": "noauth"
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
 						},
 						"method": "POST",
 						"header": [
@@ -49,28 +61,8 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "username",
-									"value": "{{test_user}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{test_password}}",
-									"type": "text"
-								},
-								{
 									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "client_id",
-									"value": "{{client_id}}",
-									"type": "text"
-								},
-								{
-									"key": "client_secret",
-									"value": "{{client_secret}}",
+									"value": "client_credentials",
 									"type": "text"
 								}
 							]
@@ -91,18 +83,365 @@
 			"name": "Wells",
 			"item": [
 				{
-					"name": "Well list",
+					"name": "General Well Search",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "20837dbe-0390-4709-b8dc-4ac3b22153f4",
+								"exec": [
+									"// Set limit to 5 to shrink response size for test",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"",
+									"pm.test(\"Response Object correct\", () => {",
+									"    let response = pm.response.json();",
+									"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('offset')).to.be.true;",
+									"    pm.expect(response.results.length).to.be.ok;",
+									"})",
+									"",
+									"pm.environment.set('well_tag_number', pm.response.json().results[0].well_tag_number);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells?limit=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lithology Curated Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"",
+									"pm.test(\"Response Object correct\", () => {",
+									"    let response = pm.response.json();",
+									"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+									"    pm.expect(response.results.length).to.be.ok;",
+									"    response.results.forEach((result) => {",
+									"        pm.expect(result.hasOwnProperty('lithologydescription_set')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('well_tag_number')).to.be.true;",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/lithology",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"lithology"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subsurface Curated Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"",
+									"pm.test(\"Response Object correct\", () => {",
+									"    let response = pm.response.json();",
+									"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+									"    pm.expect(response.results.length).to.be.ok;",
+									"    response.results.forEach((result) => {",
+									"        pm.expect(result.hasOwnProperty('lithologydescription_set')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('screen_set')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('well_tag_number')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('static_water_level')).to.be.true;",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/subsurface",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"subsurface"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Well Tags Curated Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"pm.test(\"Response Object correct\", () => {",
+									"    let response = pm.response.json();",
+									"    response.forEach((result) => {",
+									"        pm.expect(result.well_tag_number).to.be.a('number');",
+									"        pm.expect(result.hasOwnProperty('owner_full_name')).to.be.true;",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/tags",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"tags"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Screen sets Curated Search",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"",
+									"pm.test(\"Response Object correct\", () => {",
+									"    let response = pm.response.json();",
+									"    pm.expect(response.hasOwnProperty('count')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('next')).to.be.true;",
+									"    pm.expect(response.hasOwnProperty('previous')).to.be.true;",
+									"    pm.expect(response.results.length).to.be.ok;",
+									"    response.results.forEach((result) => {",
+									"        pm.expect(result.hasOwnProperty('screen_set')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('well_yield')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('diameter')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('aquifer')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('well_yield_unit')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('finished_well_depth')).to.be.true;",
+									"        pm.expect(result.hasOwnProperty('intended_water_use')).to.be.true;",
+									"    })",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/screens",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"screens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Well Get Files - Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
 								"exec": [
 									"var jsonData = pm.response.json()",
 									"",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.expect(pm.response.code).to.equal(200);",
 									"})",
+									"",
+									"pm.test(\"Response has public/private\", () => {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response.public).to.be.an('array')",
+									"    pm.expect(response.private).to.be.an('array')",
+									"})",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/files",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}",
+								"files"
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Well Single Instance Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}"
+							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Wells Get PUT_URL",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json()",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"",
+									"pm.test(\"Response contains URL with signature\", function() {",
+									"    var jsonData = pm.response.json()",
+									"    pm.expect(jsonData.url).to.not.eql(null)",
+									"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
 									""
 								],
 								"type": "text/javascript"
@@ -117,28 +456,25 @@
 								"value": "JWT {{token}}"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells?format=json",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/presigned_put_url?filename=file.pdf",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"wells"
+								"wells",
+								"{{well_tag_number}}",
+								"presigned_put_url"
 							],
 							"query": [
 								{
-									"key": "format",
-									"value": "json"
+									"key": "filename",
+									"value": "file.pdf"
 								}
 							]
-						},
-						"description": "Request a list of wells"
+						}
 					},
 					"response": []
 				},
@@ -148,7 +484,6 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "7a45223c-da07-49be-adc9-95919a90e263",
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
@@ -203,21 +538,24 @@
 					"response": []
 				},
 				{
-					"name": "Well Single Instance Get",
+					"name": "Well History Search",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "ebc2262c-3d93-4e5f-aa48-4904501c525a",
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.test(\"Response 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200);",
+									"})",
+									"pm.test(\"History Object returned\", () => {",
+									"    pm.expect(jsonData.hasOwnProperty('history')).to.be.true;",
+									"    pm.expect(jsonData.hasOwnProperty('create_user')).to.be.true;",
+									"    pm.expect(jsonData.hasOwnProperty('create_date')).to.be.true;",
+									"})"
+								],
 								"type": "text/javascript",
-								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									""
-								]
+								"packages": {}
 							}
 						}
 					],
@@ -226,78 +564,12 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "JWT {{token}}"
+								"value": "JWT {{token}}",
+								"type": "text"
 							}
 						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
 						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"wells",
-								"{{well_tag_number}}"
-							]
-						},
-						"description": "Request a list of wells"
-					},
-					"response": []
-				},
-				{
-					"name": "Wells Get PUT_URL",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "768133b0-7dd6-4197-97ca-ddca5cb1743f",
-								"exec": [
-									"var jsonData = pm.response.json()",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.equal(200);",
-									"})",
-									"",
-									"pm.test(\"Response contains URL with signature\", function() {",
-									"    var jsonData = pm.response.json()",
-									"    pm.expect(jsonData.url).to.not.eql(null)",
-									"    pm.expect(jsonData.url).to.include(\"X-Amz-Signature\")",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "4d7ea87d-32ab-4696-9176-b041b6673698",
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Authorization",
-								"value": "JWT {{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/presigned_put_url?filename=file.pdf",
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/history",
 							"host": [
 								"{{base_url}}"
 							],
@@ -306,15 +578,65 @@
 								"v1",
 								"wells",
 								"{{well_tag_number}}",
-								"presigned_put_url"
-							],
-							"query": [
-								{
-									"key": "filename",
-									"value": "file.pdf"
-								}
+								"history"
 							]
+						},
+						"description": "Request a list of wells"
+					},
+					"response": []
+				},
+				{
+					"name": "Well History Search Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();",
+									"pm.test(\"Status 200\", () => {",
+									"    pm.expect(pm.response.code).to.equal(200)",
+									"})",
+									"",
+									"pm.test(\"Results returned Search Object\", () => {",
+									"    pm.expect(jsonData.hasOwnProperty('count')).to.be.true;",
+									"    pm.expect(jsonData.hasOwnProperty('next')).to.be.true;",
+									"    pm.expect(jsonData.hasOwnProperty('previous')).to.be.true;",
+									"    pm.expect(jsonData.results).to.be.an('array');",
+									"})",
+									"",
+									"pm.test(\"Results match well_tag_number\", () => {",
+									"    const well_tag_number = pm.environment.get('well_tag_number');",
+									"    pm.expect(jsonData.results[0].well).to.equal(well_tag_number);",
+									"})"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "JWT {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/wells/{{well_tag_number}}/submissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"wells",
+								"{{well_tag_number}}",
+								"submissions"
+							]
+						},
+						"description": "Request a list of wells"
 					},
 					"response": []
 				}

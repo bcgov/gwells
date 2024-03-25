@@ -28,7 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="totalDepthDrilled"
-            label="Total Depth Drilled"
+            :label="totalDepthDrilledLabel"
             v-model="totalDepthDrilledInput"
             type="number"
             hint="ft (bgl)"
@@ -39,7 +39,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-col cols="12" md="6" lg="4">
         <form-input
             id="finishedWellDepth"
-            label="Finished Well Depth"
+            :label="finishedWellDepthLabel"
             v-model="finishedWellDepthInput"
             type="number"
             hint="ft (bgl)"
@@ -196,6 +196,8 @@ export default {
     artesianPressureHead: String,
     artesianConditions: Boolean,
     wellCapType: String,
+    totalDepthDrilledLabel: String,
+    finishedWellDepthLabel: String,
     wellDisinfected: null,
     errors: {
       type: Object,

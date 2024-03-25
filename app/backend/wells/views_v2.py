@@ -20,8 +20,8 @@ from django.http import FileResponse, StreamingHttpResponse
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
 from django.contrib.gis.gdal import GDALException
-from django.db.models import FloatField
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Lower
+from django.db.models import FloatField, Q, Case, When, F, Value, DateField
 
 from rest_framework import status, filters
 from rest_framework.exceptions import PermissionDenied, NotFound, ValidationError
@@ -36,9 +36,11 @@ from wells.filters import (
     WellListFilterBackend,
     WellListOrderingFilter,
     GeometryFilterBackend,
-    RadiusFilterBackend
+    RadiusFilterBackend,
+    WellQaQcFilterBackend
 )
-from wells.models import Well
+from wells.models import Well, WellAttachment, \
+  WELL_STATUS_CODE_ALTERATION, WELL_STATUS_CODE_CONSTRUCTION, WELL_STATUS_CODE_DECOMMISSION
 from wells.serializers_v2 import (
     WellLocationSerializerV2,
     WellVerticalAquiferExtentSerializerV2,
@@ -47,7 +49,10 @@ from wells.serializers_v2 import (
     WellExportSerializerV2,
     WellExportAdminSerializerV2,
     WellSubsurfaceSerializer,
-    WellDetailSerializer
+    WellDetailSerializer,
+    MislocatedWellsSerializer,
+    CrossReferencingSerializer,
+    RecordComplianceSerializer
 )
 from wells.permissions import WellsEditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
@@ -65,11 +70,11 @@ logger = logging.getLogger(__name__)
 
 
 class WellLocationListV2APIView(ListAPIView):
-    """ returns well locations for a given search
+    """ Returns well locations for a given search.
 
-        get: returns a list of wells with locations only
+        get:
+        Returns a list of wells with locations only.
     """
-    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = apiLimitedPagination(MAX_LOCATION_COUNT)
@@ -151,6 +156,9 @@ class WellLocationListV2APIView(ListAPIView):
             "street_address",
             "city",
             "artesian_conditions",
+            "storativity",
+            "transmissivity",
+            "hydraulic_conductivity"
         ]
 
         locations = self.filter_queryset(qs)
@@ -176,9 +184,8 @@ class WellLocationListV2APIView(ListAPIView):
 
 class WellAquiferListV2APIView(ListAPIView):
     """
-    Returns a list of aquifers with depth information for a well
+    Returns a list of aquifers with depth information for a well.
     """
-    swagger_schema = None
     permission_classes = (HasAquiferEditRole,)
     ordering = ('start',)
     serializer_class = WellVerticalAquiferExtentSerializerV2
@@ -317,10 +324,10 @@ class WellAquiferListV2APIView(ListAPIView):
 class WellListAPIViewV2(ListAPIView):
     """List and create wells
 
-    get: returns a list of wells
+    get:
+    Returns a list of wells.
     """
 
-    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
     pagination_class = APILimitOffsetPagination
@@ -363,7 +370,6 @@ class WellListAPIViewV2(ListAPIView):
 class WellExportListAPIViewV2(ListAPIView):
     """Returns CSV or Excel data for wells.
     """
-    swagger_schema = None
     permission_classes = (WellsEditOrReadOnly,)
     model = Well
 
@@ -512,13 +518,16 @@ class WellExportListAPIViewV2(ListAPIView):
 
 
 class WellSubsurface(ListAPIView):
-    """ Returns well subsurface info within a gemoetry or a list of wells """
-    """ This replaces WellScreen with the additional aquifer and lithology info"""
+    """
+    This replaces WellScreen with the additional aquifer and lithology info
+    
+    get:
+    Returns well subsurface info within a geometry or a list of wells.
+    """
 
     model = Well
     serializer_class = WellSubsurfaceSerializer
     filter_backends = (GeometryFilterBackend, RadiusFilterBackend)
-    swagger_schema = None
 
     def get_queryset(self):
         qs = Well.objects.all() \
@@ -568,5 +577,110 @@ class WellDetail(WellDetailV1):
     """
     Return well detail.
     This view is open to all, and has no permissions.
+
+    get:
+    Returns details for a given well matching the well_tag_number.
     """
     serializer_class = WellDetailSerializer
+
+# QaQc Views
+
+class MislocatedWellsListView(ListAPIView):
+    """
+    API view to retrieve mislocated wells.
+    """
+    serializer_class = MislocatedWellsSerializer
+
+    swagger_schema = None
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend,
+                       filters.SearchFilter)
+
+    ordering = ('well_tag_number',)
+
+    def get_queryset(self):
+        """
+        This view should return a list of all mislocated wells
+        for the currently authenticated user.
+        """
+        queryset = Well.objects.all()
+
+        return queryset
+
+
+class RecordComplianceListView(ListAPIView):
+    serializer_class = RecordComplianceSerializer
+
+    swagger_schema = None
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, 
+                       filters.SearchFilter)
+    ordering = ('well_tag_number',)
+
+    def get_queryset(self):
+        queryset = Well.objects.all()
+
+        return queryset
+    
+
+class CrossReferencingListView(ListAPIView):
+    serializer_class = CrossReferencingSerializer
+
+    swagger_schema = None
+    permission_classes = (WellsEditOrReadOnly,)
+    model = Well
+    pagination_class = APILimitOffsetPagination
+
+    # Allow searching on name fields, names of related companies, etc.
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend,
+                       filters.SearchFilter)
+    ordering = ('well_tag_number',)
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned wells to those that have certain keywords like 'x-ref'd' or 'cross-ref'
+        in their internal_comments.
+        """
+        queryset = Well.objects.filter(cross_referenced=True)
+
+        return queryset
+
+# Download Views for QaQc
+
+class MislocatedWellsDownloadView(WellExportListAPIViewV2):
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
+
+    def get_queryset(self):
+        return Well.objects.all()
+
+    def get_serializer_class(self):
+        return MislocatedWellsSerializer
+    
+
+class RecordComplianceDownloadView(WellExportListAPIViewV2):
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
+
+    def get_queryset(self):
+        return Well.objects.all()
+
+    def get_serializer_class(self):
+        return RecordComplianceSerializer
+    
+
+class CrossReferencingDownloadView(WellExportListAPIViewV2):
+    filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
+
+    def get_queryset(self):
+        # Return wells that have been cross-referenced
+        return Well.objects.filter(cross_referenced=True)
+
+    def get_serializer_class(self):
+        return CrossReferencingSerializer

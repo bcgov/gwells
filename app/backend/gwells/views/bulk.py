@@ -22,10 +22,10 @@ from drf_yasg.utils import swagger_auto_schema
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.gis.geos import Point
-
 from aquifers.constants import AQUIFER_ID_FOR_UNCORRELATED_WELLS
 from aquifers.models import Aquifer, VerticalAquiferExtent, VerticalAquiferExtentsHistory
-from wells.models import Well
+from wells.models import Well, ActivitySubmission, FieldsProvided
+from submissions.models import WellActivityCode
 from gwells.models.bulk import BulkWellAquiferCorrelationHistory
 from gwells.permissions import (
     HasBulkWellAquiferCorrelationUploadRole,
@@ -45,6 +45,7 @@ class BulkWellAquiferCorrelation(APIView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.change_log = []
+        self.change_log_activity_submission = []
         self.create_date = timezone.now()
         self.unknown_well_tag_numbers = set()
         self.unknown_aquifer_ids = set()
@@ -96,27 +97,51 @@ class BulkWellAquiferCorrelation(APIView):
                     # If the correlation is changing — check if the well is inside the aquifer
                     self.check_well_in_aquifer(well, aquifer)
 
-                if existing_aquifer_id == aquifer_id: # this well correlation is unchanged
+                #NOTE: This represents the intended behavior but it is temporarilly blocking a fix
+                # if existing_aquifer_id == aquifer_id: # this well correlation is unchanged
+                #     change = {
+                #         'action': 'same'
+                #     }
+                # else:
+                #     if existing_aquifer_id is None:
+                #         # No existing aquifer for this well? Must be a new correlation
+                #         self.append_to_change_log(well_tag_number, aquifer_id, None)
+                #         change = {
+                #             'action': 'new',
+                #             'aquiferId': aquifer_id
+                #         }
+                #         wells_to_update.append(well)
+                #         self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                #     elif existing_aquifer_id != aquifer_id: # existing ids don't match - must be a change
+                #         self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
+                #         change = {
+                #             'action': 'update',
+                #             'existingAquiferId': existing_aquifer_id,
+                #             'newAquiferId': aquifer_id
+                #         }
+                #         self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                #         wells_to_update.append(well)
+
+                #START: Temporary fix for aquifer reversion from bulk updates
+                if existing_aquifer_id is None:
+                    # No existing aquifer for this well? Must be a new correlation
+                    self.append_to_change_log(well_tag_number, aquifer_id, None)
                     change = {
-                        'action': 'same'
+                        'action': 'new',
+                        'aquiferId': aquifer_id
                     }
-                else:
-                    if existing_aquifer_id is None:
-                        # No existing aquifer for this well? Must be a new correlation
-                        self.append_to_change_log(well_tag_number, aquifer_id, None)
-                        change = {
-                            'action': 'new',
-                            'aquiferId': aquifer_id
-                        }
-                        wells_to_update.append(well)
-                    elif existing_aquifer_id != aquifer_id: # existing ids don't match - must be a change
-                        self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
-                        change = {
-                            'action': 'update',
-                            'existingAquiferId': existing_aquifer_id,
-                            'newAquiferId': aquifer_id
-                        }
-                        wells_to_update.append(well)
+                    wells_to_update.append(well)
+                    self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                else: 
+                    self.append_to_change_log(well_tag_number, aquifer_id, existing_aquifer_id)
+                    change = {
+                        'action': 'update',
+                        'existingAquiferId': existing_aquifer_id,
+                        'newAquiferId': aquifer_id
+                    }
+                    self.append_to_change_log_activity_submission(well_tag_number, aquifer_id)
+                    wells_to_update.append(well)
+                #END: Temporary fix
 
                 if change:
                     changes[well_tag_number] = change
@@ -217,6 +242,16 @@ class BulkWellAquiferCorrelation(APIView):
         Well.objects.bulk_update(wells, ['aquifer'])
         # save the BulkWellAquiferCorrelation records
         BulkWellAquiferCorrelationHistory.objects.bulk_create(self.change_log)
+        # create a new row in activity submission table for each item in the array
+        for item in self.change_log_activity_submission:
+            activity_submission_object = ActivitySubmission.objects.create(create_user=item.create_user,
+            update_user=item.update_user,
+            create_date=item.create_date,
+            update_date=item.update_date,
+            well=item.well,
+            aquifer = item.aquifer,
+            well_activity_type=item.well_activity_type);
+            FieldsProvided.objects.create(activity_submission=activity_submission_object)
 
     def append_to_change_log(self, well_tag_number, to_aquifer_id, from_aquifer_id):
         bulk_history_item = BulkWellAquiferCorrelationHistory(
@@ -227,7 +262,23 @@ class BulkWellAquiferCorrelation(APIView):
             create_date=self.create_date
         )
         self.change_log.append(bulk_history_item)
-
+        
+    # add activity submission objects to the array
+    def append_to_change_log_activity_submission(self, well_tag_number, to_aquifer_id):
+        well_instance = Well.objects.get(pk=well_tag_number)
+        aquifer_instance = Aquifer.objects.get(pk=to_aquifer_id)
+        well_activity_code_instance = WellActivityCode.objects.get(pk=WellActivityCode.types.staff_edit().code)
+        activity_submission_item = ActivitySubmission(
+            create_user=self.request.user.profile.username,
+            update_user=self.request.user.profile.username,
+            create_date=self.create_date,
+            update_date=self.create_date,
+            well=well_instance,
+            aquifer = aquifer_instance,
+            well_activity_type=well_activity_code_instance
+        )
+        self.change_log_activity_submission.append(activity_submission_item)
+        
 
 class BulkVerticalAquiferExtents(APIView):
     """

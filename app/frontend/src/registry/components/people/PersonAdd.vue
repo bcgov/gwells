@@ -379,7 +379,7 @@ export default {
         this.setPrivate(value)
       }
     },
-    ...mapGetters([
+    ...mapGetters('registriesStore', [
       'loading',
       'error'
     ]),
@@ -513,7 +513,7 @@ export default {
       })
     },
     addApplication (collection) {
-      collection.push({id: new Date().getUTCMilliseconds(), data: null})
+      collection.push({ id: new Date().getUTCMilliseconds(), data: null })
     },
     closeApplication (collection, id) {
       collection.splice(collection.findIndex((item) => item.id === id))

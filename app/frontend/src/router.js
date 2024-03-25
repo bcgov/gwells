@@ -40,6 +40,9 @@ import PageNotFound from '@/common/components/PageNotFound.vue'
 // Surveys
 import Surveys from '@/surveys/views/Surveys.vue'
 
+// QaQc
+import QaQcDashboard from '@/qaqc/views/QaQcDashboard.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -228,6 +231,11 @@ const router = new Router({
         edit: true,
         app: 'surveys'
       }
+    },
+    {
+      path: '/qaqc',
+      name: 'qaqc',
+      component: QaQcDashboard
     },
     { path: '/search', redirect: '/' },
     {

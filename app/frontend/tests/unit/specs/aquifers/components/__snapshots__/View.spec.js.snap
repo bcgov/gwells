@@ -15,22 +15,24 @@ exports[`View Component Edit mode matches the snapshot 1`] = `
       <li
         class="breadcrumb-item"
       >
-        <router-link-stub
+        <a
           class=""
+          href="#"
           target="_self"
         >
           Aquifer Search
-        </router-link-stub>
+        </a>
       </li>
       <li
         class="breadcrumb-item"
       >
-        <router-link-stub
+        <a
           class=""
+          href="#"
           target="_self"
         >
           Aquifer 4 Summary
-        </router-link-stub>
+        </a>
       </li>
       <li
         class="breadcrumb-item active"
@@ -170,12 +172,13 @@ exports[`View Component View mode matches the snapshot 1`] = `
       <li
         class="breadcrumb-item"
       >
-        <router-link-stub
+        <a
           class=""
+          href="#"
           target="_self"
         >
           Aquifer Search
-        </router-link-stub>
+        </a>
       </li>
       <li
         class="breadcrumb-item active"
@@ -341,7 +344,20 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Vulnerability
+                      
+                    Vulnerability
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="vulnerability-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants."
+                        target="vulnerability-info"
+                        triggers="hover focus"
+                      />
                     </div>
                      
                     <div
@@ -369,7 +385,33 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Subtype
+                      
+                    Subtype
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-subtype-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        target="aquifer-subtype-info"
+                        triggers="hover focus"
+                      >
+                        
+                      There are different types of aquifers, depending on the geologic materials in which they occur. Subtype descriptions can be
+                      
+                        <a
+                          class="d-print-url"
+                          href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/understanding-aquifers/aquifer-subtype-code-description"
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          found here
+                        </a>
+                        .
+                    
+                      </b-popover-stub>
                     </div>
                      
                     <div
@@ -385,7 +427,33 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Quality concerns
+                      
+                    Quality concerns
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="aquifer-quality-concerns"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        target="aquifer-quality-concerns"
+                        triggers="hover focus"
+                      >
+                        
+                      Classified as unknown/none, isolated, local, or regional. For details see page 16 of the Guide to Using the
+                      
+                        <a
+                          class="d-print-url"
+                          href="https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/science-data/aquifer_maps_guide.pdf"
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          BC Aquifer Classification System
+                        </a>
+                        .
+                    
+                      </b-popover-stub>
                     </div>
                      
                     <div
@@ -397,7 +465,20 @@ exports[`View Component View mode matches the snapshot 1`] = `
                     <div
                       class="col-md-3 col-lg-6 col-6"
                     >
-                      Productivity
+                      
+                    Productivity
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="productivity-info"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high."
+                        target="productivity-info"
+                        triggers="hover focus"
+                      />
                     </div>
                      
                     <div
@@ -459,6 +540,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                
               <single-aquifer-map-stub
                 aquiferid="4"
+                aquifernotations=""
               />
             </div>
           </div>
@@ -483,72 +565,102 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 />
                  
                 <li>
-                  <dt>
-                    Number of wells correlated to the aquifer
-                  </dt>
-                   
-                  <dd
-                    class="m-0"
-                  >
-                    <router-link-stub
-                      to="[object Object]"
-                    >
-                      
-                    4
-                  
-                    </router-link-stub>
-                  </dd>
-                </li>
-                 
-                <li>
-                  <dt>
+                  <dl>
+                    <dt>
+                      Number of wells correlated to the aquifer
                     
-                  Number of uncorrelated wells within mapped aquifer extent
-                  
-                    <i
-                      class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
-                      id="uncorrelated-wells-count"
-                      tabindex="0"
-                    />
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="correlated-wells-count"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer."
+                        target="correlated-wells-count"
+                        triggers="hover focus"
+                      />
+                    </dt>
                      
-                    <b-popover-stub
-                      content="The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth."
-                      target="uncorrelated-wells-count"
-                      triggers="hover focus"
-                    />
-                  </dt>
-                   
-                  <dd
-                    class="m-0"
-                  >
+                    <dd
+                      class="m-0"
+                    >
+                      <router-link-stub
+                        to="[object Object]"
+                      >
+                        
+                      4
                     
-                  0
-                
-                  </dd>
+                      </router-link-stub>
+                    </dd>
+                  </dl>
                 </li>
                  
                 <li>
-                  <dt>
-                    Artesian wells
-                  </dt>
-                   
-                  <dd
-                    class="m-0"
-                  >
-                    <router-link-stub
-                      to="[object Object]"
+                  <dl>
+                    <dt>
+                      
+                    Number of uncorrelated wells within mapped aquifer extent
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="uncorrelated-wells-count"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth."
+                        target="uncorrelated-wells-count"
+                        triggers="hover focus"
+                      />
+                    </dt>
+                     
+                    <dd
+                      class="m-0"
                     >
                       
-                    4 artesian wells in aquifer
+                    0
                   
-                    </router-link-stub>
-                  </dd>
+                    </dd>
+                  </dl>
+                </li>
+                 
+                <li>
+                  <dl>
+                    <dt>
+                      Flowing artesian wells
+                    
+                      <i
+                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                        id="artesian-wells"
+                        tabindex="0"
+                      />
+                       
+                      <b-popover-stub
+                        content="A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump."
+                        target="artesian-wells"
+                        triggers="hover focus"
+                      />
+                    </dt>
+                     
+                    <dd
+                      class="m-0"
+                    >
+                      <router-link-stub
+                        to="[object Object]"
+                      >
+                        
+                      4 artesian wells in aquifer
+                    
+                      </router-link-stub>
+                    </dd>
+                  </dl>
                 </li>
               </ul>
                
               <p>
                 <i>
-                  Well info last updated 1/9/2016
+                  Well info last updated 2/9/2016
                 </i>
               </p>
                
@@ -579,8 +691,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
               <div>
                 <p>
                   
-                The licensing summaries should be considered estimates. Due to complexities in the structure
-                of the licensing data, reported values should be confirmed through the
+                The licensing summaries should be considered estimates. Total volume is likely more than what is indicated in charts due to
+                domestic use and unprocessed licence applications. Due to complexities in the structure of the licensing data,
+                reported values should be confirmed through the
                 
                   <a
                     class="d-print-url"
@@ -682,6 +795,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 aria-colcount="2"
                 class="table b-table table-striped"
                 id="licenses"
+                role="table"
               >
                 <!---->
                 <!---->
@@ -691,6 +805,7 @@ exports[`View Component View mode matches the snapshot 1`] = `
                 >
                   <!---->
                   <tr
+                    class=""
                     role="row"
                   >
                     <th
@@ -699,7 +814,9 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       role="columnheader"
                       scope="col"
                     >
-                      Licence Number
+                      <div>
+                        Licence Number
+                      </div>
                     </th>
                     <th
                       aria-colindex="2"
@@ -707,13 +824,13 @@ exports[`View Component View mode matches the snapshot 1`] = `
                       role="columnheader"
                       scope="col"
                     >
-                      Well Tag Numbers In Licence
+                      <div>
+                        Well Tag Numbers In Licence
+                      </div>
                     </th>
                   </tr>
                 </thead>
-                <!---->
                 <tbody
-                  class=""
                   role="rowgroup"
                 >
                   <!---->
@@ -864,11 +981,12 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   <!---->
                   <!---->
                 </tbody>
+                <!---->
               </table>
                
               <p>
                 <i>
-                  Licence info last updated 10/4/2019
+                  Licence info last updated 11/4/2019
                 </i>
               </p>
                
@@ -955,229 +1073,349 @@ exports[`View Component View mode matches the snapshot 1`] = `
                   </div>
                 </li>
                 <li>
-                  <div>
-                    <dt
-                      class="text-right"
-                    >
-                      Artesian advisory
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
+                  <div
+                    class="aquifer-artesian-advisory"
+                  >
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Drilling & operation advisory
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferArtesianAdvisory"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          content="Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions."
+                          target="aquiferArtesianAdvisory"
+                          triggers="hover focus"
+                        />
+                      </dt>
                        
-                      <p
+                      <dd
                         class="m-0"
                       >
-                        No information available.
-                      </p>
-                    </dd>
+                         
+                        <p
+                          class="m-0"
+                        >
+                          No information available.
+                        </p>
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>
                   <div
                     class="observational-wells"
                   >
-                    <dt
-                      class="text-right"
-                    >
-                      Observation wells
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                      <div>
-                        <h6
-                          class="border-bottom"
-                        >
-                          Active
-                        </h6>
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Observation wells
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquifer-observation-wells"
+                          tabindex="0"
+                        />
                          
-                        <ul
-                          class="p-0 m-0"
+                        <b-popover-stub
+                          content="Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time."
+                          target="aquifer-observation-wells"
+                          triggers="hover focus"
+                        />
+                      </dt>
+                       
+                      <dd
+                        class="m-0"
+                      >
+                        <div>
+                          <h6
+                            class="border-bottom"
+                          >
+                            Active
+                          </h6>
+                           
+                          <ul
+                            class="p-0 m-0"
+                          >
+                            <li
+                              class=""
+                            >
+                              <span
+                                class="observation-well"
+                              >
+                                <a
+                                  class="d-print-url"
+                                  href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                                  target="_blank"
+                                >
+                                  
+    2
+  
+                                </a>
+                                 
+                                <!---->
+                                 
+                                <!---->
+                              </span>
+                            </li>
+                            <li
+                              class=""
+                            >
+                              <span
+                                class="observation-well"
+                              >
+                                <a
+                                  class="d-print-url"
+                                  href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
+                                  target="_blank"
+                                >
+                                  
+    2
+  
+                                </a>
+                                 
+                                <!---->
+                                 
+                                <!---->
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                         
+                        <!---->
+                         
+                        <!---->
+                      </dd>
+                    </dl>
+                  </div>
+                </li>
+                <li>
+                  <div
+                    class="aquifer-numerical-model"
+                  >
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Numerical Model
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferNumericalModel"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          content="Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies."
+                          target="aquiferNumericalModel"
+                          triggers="hover focus"
+                        />
+                      </dt>
+                       
+                      <dd
+                        class="m-0"
+                      >
+                         
+                        <p
+                          class="m-0"
                         >
-                          <li
-                            class=""
-                          >
-                            <span
-                              class="observation-well"
+                          No information available.
+                        </p>
+                      </dd>
+                    </dl>
+                  </div>
+                </li>
+                <li>
+                  <div
+                    class="aquifer-notations"
+                  >
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Aquifer notations
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferNotations"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          target="aquiferNotations"
+                          triggers="hover focus"
+                        >
+                          <p>
+                            Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source. For details click 
+                            <a
+                              href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-allocation-notations"
                             >
-                              <a
-                                class="d-print-url"
-                                href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
-                                target="_blank"
-                              >
-                                
-    2
-  
-                              </a>
-                               
-                              <!---->
-                               
-                              <!---->
-                            </span>
-                          </li>
-                          <li
-                            class=""
-                          >
-                            <span
-                              class="observation-well"
-                            >
-                              <a
-                                class="d-print-url"
-                                href="https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS WELL 2"
-                                target="_blank"
-                              >
-                                
-    2
-  
-                              </a>
-                               
-                              <!---->
-                               
-                              <!---->
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
+                              here
+                            </a>
+                            .
+                          </p>
+                        </b-popover-stub>
+                      </dt>
                        
-                      <!---->
-                       
-                      <!---->
-                    </dd>
+                      <dd
+                        class="m-0"
+                      >
+                        No notation currently assigned.
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>
-                  <div>
-                    <dt
-                      class="text-right"
-                    >
-                      Numerical model
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
+                  <div
+                    class="aquifer-water-budget"
+                  >
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Water Budget
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferWaterBudget"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          content="Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time."
+                          target="aquiferWaterBudget"
+                          triggers="hover focus"
+                        />
+                      </dt>
                        
-                      <p
+                      <dd
                         class="m-0"
                       >
-                        No information available.
-                      </p>
-                    </dd>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <dt
-                      class="text-right"
-                    >
-                      Pumping stress index
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                       
-                      <p
-                        class="m-0"
-                      >
-                        No information available.
-                      </p>
-                    </dd>
-                  </div>
-                </li>
-                <li>
-                  <div>
-                    <dt
-                      class="text-right"
-                    >
-                      Water budget
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                       
-                      <p
-                        class="m-0"
-                      >
-                        No information available.
-                      </p>
-                    </dd>
+                         
+                        <p
+                          class="m-0"
+                        >
+                          No information available.
+                        </p>
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>
                   <div
                     class="water-quality-information"
                   >
-                    <dt
-                      class="text-right"
-                    >
-                      Water quality information
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                      <router-link-stub
-                        to="[object Object]"
+                    <dl>
+                      <dt
+                        class="text-right"
                       >
-                        
-                      3 wells with an EMS ID
-                    
-                      </router-link-stub>
-                    </dd>
+                        Water quality information
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferWaterQualityInformation"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          content="Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database."
+                          target="aquiferWaterQualityInformation"
+                          triggers="hover focus"
+                        />
+                      </dt>
+                       
+                      <dd
+                        class="m-0"
+                      >
+                        <router-link-stub
+                          to="[object Object]"
+                        >
+                          
+                        3 wells with an EMS ID
+                      
+                        </router-link-stub>
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>
                   <div
                     class="aquifer-connected"
                   >
-                    <dt
-                      class="text-right"
-                    >
-                      Hydraulically connected (screening level)
-                    
-                      <i
-                        class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
-                        id="aquiferConnectedInfo"
-                        tabindex="0"
-                      />
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Hydraulically connected (screening level)
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferConnectedInfo"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          content="Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement. "
+                          target="aquiferConnectedInfo"
+                          triggers="hover focus"
+                        />
+                      </dt>
                        
-                      <b-popover-stub
-                        content="Inferred based on aquifer subtype - not field verified."
-                        target="aquiferConnectedInfo"
-                        triggers="hover focus"
-                      />
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
-                      More likely
-                    </dd>
+                      <dd
+                        class="m-0"
+                      >
+                        <a
+                          href="http://a100.gov.bc.ca/appsdata/acat/documents/r50832/HydraulicConnectMW3_1474311684426_4310694949.pdf"
+                          rel="noopener noreferrer"
+                          target="_blank"
+                        >
+                          See Guidance on Determining Likelihood of Hydraulic Connection
+                        </a>
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>
-                  <div>
-                    <dt
-                      class="text-right"
-                    >
-                      Groundwater Surface Water Interactions
-                    </dt>
-                     
-                    <dd
-                      class="m-0"
-                    >
+                  <div
+                    class="aquifer-groundwater-surface-interactions"
+                  >
+                    <dl>
+                      <dt
+                        class="text-right"
+                      >
+                        Groundwater Surface Water Interactions
+                      
+                        <i
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          id="aquiferGroundwaterSurfaceInteractions"
+                          tabindex="0"
+                        />
+                         
+                        <b-popover-stub
+                          content="Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface."
+                          target="aquiferGroundwaterSurfaceInteractions"
+                          triggers="hover focus"
+                        />
+                      </dt>
                        
-                      <p
+                      <dd
                         class="m-0"
                       >
-                        No information available.
-                      </p>
-                    </dd>
+                         
+                        <p
+                          class="m-0"
+                        >
+                          No information available.
+                        </p>
+                      </dd>
+                    </dl>
                   </div>
                 </li>
                 <li>

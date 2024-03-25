@@ -28,11 +28,13 @@ from wells.models import (
     LithologyDescription,
     Screen,
     Well,
-    WellStatusCode
+    WellStatusCode,
+    AquiferParameters
 )
 from submissions.models import (
     WellActivityCode,
-    WELL_ACTIVITY_CODE_STAFF_EDIT, WELL_ACTIVITY_CODE_LEGACY, WELL_ACTIVITY_CODE_ALTERATION)
+    WELL_ACTIVITY_CODE_STAFF_EDIT, WELL_ACTIVITY_CODE_LEGACY, WELL_ACTIVITY_CODE_ALTERATION, \
+      WELL_ACTIVITY_CODE_CONSTRUCTION)
 from gwells.models import DATALOAD_USER
 
 
@@ -217,6 +219,30 @@ class TestConstruction(TestSubmissionsBase):
         casing = well.casing_set.all()[0]
         self.assertEqual(casing.create_user, self.user.username)
         self.assertEqual(casing.update_user, self.user.username)
+
+    def test_aquifer_parameters_well_create_user_update_user(self):
+        """
+        Test that the well created by a construction submission, has aquifer parameters records with the
+        create user and update user set correctly.
+        """
+        # Data for the construction submission.
+        data = {
+            'aquifer_parameters_set': [
+                {
+                    'storativity': 0.25,
+                    'testing_comments': 'Test comment for aquifer parameters.'
+                }
+            ]
+        }
+        # Post an construction submissions.
+        response = self.client.post(reverse('CON', kwargs={'version': 'v1'}), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Get the well back.
+        well = Well.objects.get(well_tag_number=response.data['well'])
+        # Get the resultant lithology record
+        aquifer_parameters = well.aquifer_parameters_set.all()[0]
+        self.assertEqual(aquifer_parameters.create_user, self.user.username)
+        self.assertEqual(aquifer_parameters.update_user, self.user.username)
 
     def test_perforations_create_user_update_user(self):
         """
@@ -749,6 +775,272 @@ class TestAlteration(TestSubmissionsBase):
         # We expect a liner has been created for the submission.
         self.assertIsNotNone(liner)
 
+    def test_comments_propagated_with_alteration_1(self):
+        """
+        Tests that the 'comments' and 'internal_comments' submitted with 
+        an alteration report are concatenated onto pre-existing values
+        from the well record.                  
+        In this test, comments from a previous construction report
+        are included in the following alteration report.
+        """
+        # submit a construction report
+        construction_data = {
+            'comments': "original comments",
+            'internal_comments': "original internal comments"
+        }
+        construction_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_CONSTRUCTION, kwargs={'version': 'v1'}), construction_data, format='json')
+
+        well_tag_number = construction_response.data['well']
+
+        # submit an alteration report
+        alteration_data = {
+            'well': well_tag_number,
+            'comments': 'alteration comments',
+            'internal_comments': 'alteration internal comments'
+        }
+        alteration_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data, format='json')
+        self.assertEqual(alteration_response.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the 'comments' and 'internal comments' in the alteration submission
+        # are the concatenation of the values from the construction submission with the
+        # newly submitted values
+        alteration = ActivitySubmission.objects.get(
+            filing_number=alteration_response.data['filing_number'])
+
+        self.assertTrue(alteration.comments.startswith(
+            construction_data.get("comments")))
+        self.assertTrue(alteration.comments.endswith(
+            alteration_data.get("comments")))
+        self.assertTrue(alteration.internal_comments.startswith(
+            construction_data.get("internal_comments")))
+        self.assertTrue(alteration.internal_comments.endswith(
+            alteration_data.get("internal_comments")))
+
+    def test_comments_propagated_with_alteration_2(self):
+        """
+        Tests that the 'comments' and 'internal_comments' submitted with 
+        an alteration report are concatenated onto pre-existing values
+        from the well record.        
+        """
+        well = Well.objects.create(
+            create_user=self.user.username,
+            update_user=self.user.username,
+            comments="original comments",
+            internal_comments="original internal comments"
+        )
+        well_tag_number = well.well_tag_number
+
+        # submit an alteration report
+        alteration_data = {
+            'well': well_tag_number,
+            'comments': 'alteration comments',
+            'internal_comments': 'alteration internal comments'
+        }
+        alteration_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data, format='json')
+        self.assertEqual(alteration_response.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the 'comments' and 'internal comments' in the alteration submission
+        # are the concatenation of the values from the construction submission with the
+        # newly submitted values
+        alteration = ActivitySubmission.objects.get(
+            filing_number=alteration_response.data['filing_number'])
+
+        self.assertTrue(alteration.comments.startswith(
+            "original comments"))
+        self.assertTrue(alteration.comments.endswith(
+            alteration_data.get("comments")))
+        self.assertTrue(alteration.internal_comments.startswith(
+            "original internal comments"))
+        self.assertTrue(alteration.internal_comments.endswith(
+            alteration_data.get("internal_comments")))            
+
+    def test_comments_propagated_with_alteration_3(self):
+        """
+        Tests that the 'comments' and 'internal_comments' submitted with 
+        an alteration report are concatenated onto pre-existing values
+        from the well record.        
+        In this test, there is an original well record and two alteration 
+        reports.  Comments from the original record should be copied to the first
+        alteration report, and comments from both the original record and the first
+        alteration report should be present in the second report.
+        """
+        well = Well.objects.create(
+            create_user=self.user.username,
+            update_user=self.user.username,
+            comments="original comments",
+            internal_comments="original internal comments"
+        )
+        well_tag_number = well.well_tag_number
+
+        # submit alteration report #1
+        alteration_data_1 = {
+            'well': well_tag_number,
+            'comments': 'alteration comments 1',
+            'internal_comments': 'alteration internal comments 1'
+        }
+        alteration_response_1 = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data_1, format='json')
+        self.assertEqual(alteration_response_1.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the comments in the first alteration report are correct
+        alteration_1 = ActivitySubmission.objects.get(
+            filing_number=alteration_response_1.data['filing_number'])
+
+        self.assertTrue(alteration_1.comments.startswith(
+            "original comments"))
+        self.assertTrue(alteration_1.comments.endswith(
+            alteration_data_1.get("comments")))
+        self.assertTrue(alteration_1.internal_comments.startswith(
+            "original internal comments"))
+        self.assertTrue(alteration_1.internal_comments.endswith(
+            alteration_data_1.get("internal_comments")))   
+
+        # submit alteration report #2
+        alteration_data_2 = {
+            'well': well_tag_number,
+            'comments': 'alteration comments 2',
+            'internal_comments': 'alteration internal comments 2'
+        }
+        alteration_response_2 = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data_2, format='json')
+        self.assertEqual(alteration_response_2.status_code,
+                         status.HTTP_201_CREATED)
+ 
+        # confirm that the comments in the second alteration report are correct
+        alteration_2 = ActivitySubmission.objects.get(
+            filing_number=alteration_response_2.data['filing_number'])
+
+        self.assertTrue(alteration_2.comments.startswith(
+            alteration_1.comments))
+        self.assertTrue(alteration_2.comments.endswith(
+            alteration_data_2.get("comments")))
+        self.assertTrue(alteration_2.internal_comments.startswith(
+            alteration_1.internal_comments))
+        self.assertTrue(alteration_2.internal_comments.endswith(
+            alteration_data_2.get("internal_comments")))   
+
+    def test_no_comments_propagated_with_alteration_of_unknown_well(self):
+        """
+        Tests that an alteration report with no well_tag_number
+        will succeed, and the alteration comments will be saved 
+        exactly as they appeared in the request.
+        """
+        # submit an alteration report
+        alteration_data = {
+            'comments': 'alteration comments',
+            'internal_comments': 'alteration internal comments'
+        }
+        alteration_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), alteration_data, format='json')
+        self.assertEqual(alteration_response.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the 'comments' and 'internal comments' in the alteration submission
+        # are the concatenation of the values from the construction submission with the
+        # newly submitted values
+        alteration = ActivitySubmission.objects.get(
+            filing_number=alteration_response.data['filing_number'])
+
+        self.assertEquals(alteration.comments, alteration_data.get("comments"))
+        self.assertEquals(alteration.internal_comments, alteration_data.get("internal_comments"))
+        
+
+    def test_comments_propagated_with_decommission(self):
+        """
+        Tests that the 'comments' and 'internal_comments' submitted with 
+        a decommission report are concatenated onto pre-existing values
+        from an earlier submission (or from the well record if no previous
+        submission exists).        
+        In this test, comments from a previous staff edit
+        are included in the following decommission report.
+        """
+        well = Well.objects.create(
+            create_user=self.user.username,
+            update_user=self.user.username,
+            comments="original comments",
+            internal_comments="original internal comments"
+        )
+        well_tag_number = well.well_tag_number
+
+        # submit a staff edit
+        staff_edit_data = {
+            'well': well_tag_number,
+            'comments': "staff edit comments",
+            'internal_comments': "staff edit internal comments"
+        }
+        staff_edit_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_STAFF_EDIT, kwargs={'version': 'v1'}), staff_edit_data, format='json')
+
+        # submit a decommission report
+        decommission_data = {
+            'well': well_tag_number,
+            'comments': 'decommission comments',
+            'internal_comments': 'decommission internal comments'
+        }
+        decommission_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_ALTERATION, kwargs={'version': 'v1'}), decommission_data, format='json')
+        self.assertEqual(decommission_response.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the 'comments' and 'internal comments' in the alteration submission
+        # are the concatenation of the values from the construction submission with the
+        # newly submitted values
+        decommission = ActivitySubmission.objects.get(
+            filing_number=decommission_response.data['filing_number'])
+
+        self.assertTrue(decommission.comments.startswith(
+            staff_edit_data.get("comments")))
+        self.assertTrue(decommission.comments.endswith(
+            decommission_data.get("comments")))
+        self.assertTrue(decommission.internal_comments.startswith(
+            staff_edit_data.get("internal_comments")))
+        self.assertTrue(decommission.internal_comments.endswith(
+            decommission_data.get("internal_comments")))
+
+    def test_comments_not_propagated_with_staff_edit(self):
+        """
+        Tests that the 'comments' and 'internal_comments' included with 
+        a STAFF_EDIT submission are saved "as is", and not concatenated
+        with any previous comments (as happens with alteration and decommission
+        submissions)
+        """
+        # submit a construction report
+        construction_data = {
+            'comments': "original comments",
+            'internal_comments': "original internal comments"
+        }
+        construction_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_CONSTRUCTION, kwargs={'version': 'v1'}), construction_data, format='json')
+
+        well_tag_number = construction_response.data['well']
+
+        # submit a staff edit
+        staff_edit_data = {
+            'well': well_tag_number,
+            'comments': "staff edit comments",
+            'internal_comments': "staff edit internal comments"
+        }
+        staff_edit_response = self.client.post(
+            reverse(WELL_ACTIVITY_CODE_STAFF_EDIT, kwargs={'version': 'v1'}), staff_edit_data, format='json')
+        self.assertEqual(staff_edit_response.status_code,
+                         status.HTTP_201_CREATED)
+
+        # confirm that the 'comments' and 'internal comments' in the
+        # staff edit submission match the submitted values
+        staff_edit = ActivitySubmission.objects.get(
+            well=well_tag_number,
+            well_activity_type=WELL_ACTIVITY_CODE_STAFF_EDIT)
+
+        self.assertEquals(staff_edit.comments,
+                          staff_edit_data.get("comments"))
+        self.assertEquals(staff_edit.internal_comments,
+                          staff_edit_data.get("internal_comments"))
 
 class TestPermissionsViewRights(APITestCase):
 
