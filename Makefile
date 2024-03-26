@@ -18,6 +18,12 @@ prep:
 	docker-compose pull
 	docker-compose build
 
+docker:
+	docker-compose up -d
+
+docker-staging:
+	docker-compose --env-file ./.env.test up
+
 down:
 	docker-compose down --volumes
 
