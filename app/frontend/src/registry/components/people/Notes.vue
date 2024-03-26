@@ -25,7 +25,7 @@
               @shown="focusSubmitModal"
               :return-focus="$refs.noteInputSaveBtn">
             Are you sure you want to save this note?
-            <div slot="modal-footer">
+            <div slot="modal-footer" class="buttons">
               <b-btn variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn">
                 Save
               </b-btn>
@@ -39,14 +39,41 @@
               centered
               title="Confirm cancel"
               @shown="focusCancelModal"
-              :return-focus="$refs.noteInputCancelBtn">
+              :return-focus="$refs.noteInputCancelBtn"
+            >
             Your note is not saved. Are you sure you want to discard your changes?
-            <div slot="modal-footer">
+            <div slot="modal-footer" class="buttons">
               <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
                 Cancel
               </b-btn>
               <b-btn variant="danger" @click="confirmCancelModal=false;noteReset()">
                 Discard
+              </b-btn>
+            </div>
+          </b-modal>
+          <b-modal
+              v-model="confirmDeleteModal"
+              centered
+              title="Confirm Deletion"
+              @shown="focusDeleteModal"
+              :return-focus="$refs.noteInputCancelBtn">
+              <p>Are you sure you want to delete this note?</p>
+              <div v-if="activeNote" >
+                <p class="font-weight-bold">"{{activeNote.note}}"</p>
+              </div>
+            <div slot="modal-footer" class="buttons">
+              <b-btn
+                variant="secondary"
+                @click="confirmDeleteModal=false"
+                ref="cancelDeleteBtn"
+              >
+                Cancel
+              </b-btn>
+              <b-btn
+                variant="danger"
+                @click="confirmDeleteModal=false;deleteNote()"
+              >
+                Delete
               </b-btn>
             </div>
           </b-modal>
@@ -56,10 +83,30 @@
         <div class="mt-5" v-if="!notes || !notes.length">
           <b-row><b-col>No notes for this record.</b-col></b-row>
         </div>
-        <div class="mt-5" v-if="notes && notes.length">
-          <div class="mt-3" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">
+        <div class="mt-5 note-container" v-if="notes && notes.length">
+          <div class="note" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">
+            <p>
               <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
+            </p>
+            <div class="crud-options">
+              <b-btn
+                :disabled="keycloak.idTokenParsed.display_name !== note.author" 
+                size="sm"
+                variant="primary"
+              >
+                <i class="fa fa-edit"></i>
+                Edit
+              </b-btn>
+              <b-btn
+                :disabled="!userRoles.registry.admin && keycloak.idTokenParsed.display_name !== note.author"
+                @click="noteDeleteHandler(note)"
+                size="sm"
+                variant="danger"
+              >
+                &#x2715;
+              </b-btn>
+            </div>
           </div>
         </div>
       </div>
@@ -91,7 +138,9 @@ export default {
       submitSuccess: false,
       submitError: false,
       confirmSubmitModal: false,
-      confirmCancelModal: false
+      confirmCancelModal: false,
+      confirmDeleteModal: false,
+      activeNote: null
     }
   },
   computed: {
@@ -110,9 +159,16 @@ export default {
       }
       return typeMap[this.type]
     },
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles', 'keycloak'])
   },
   methods: {
+    deleteNote() {
+      ApiService.delete(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid)
+      .then(() => {
+        this.activeNote = null;
+        this.$emit('updated')
+      })
+    },
     noteSubmit () {
       // submit the note as a post request, triggered after confirming via popup
       this.submitSuccess = false
@@ -143,6 +199,13 @@ export default {
       // trigger popup to confirm submit
       this.confirmSubmitModal = true
     },
+    noteDeleteHandler (note) {
+      this.activeNote = note;
+      this.confirmDeleteModal = true;
+    },
+    noteCancelDeleteHandler () {
+      this.activeNote = null;
+    },
     noteCancelHandler () {
       // trigger popup to confirm discard note
       this.confirmCancelModal = true
@@ -150,6 +213,9 @@ export default {
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
       this.$refs.cancelSubmitCancelBtn.focus()
+    },
+    focusDeleteModal () {
+      this.$refs.cancelDeleteBtn.focus()
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup
@@ -159,6 +225,33 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss">
+.crud-options {
+  display: flex;
+  margin-left: 0.5em;
+  width: auto;
+}
+.crud-options button:last-child {
+  margin-left: 0.5em;
+}
+.note {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5em;
+  border-radius: 4pt;
+}
+.note:hover {
+  transition: 0.2s;
+  background-color: #F8F8F8;
+}
+.note p {
+  padding: 0;
+  margin: 0;
+}
+.buttons button:last-child {
+  margin-left: 0.5em;
+}
 </style>
