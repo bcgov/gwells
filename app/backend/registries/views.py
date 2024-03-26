@@ -814,10 +814,49 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
 
-    def get_queryset(self):
-        org = self.kwargs['org_guid']
-        return OrganizationNote.objects.filter(organization=org)
+    def isAuth(self, author):
+        """Checks if user has permission to change Notes
+           Notes can only be edited by Admins and the note's creator
 
+        Args:
+            author (string): Creator of the note
+
+        Returns:
+            boolean: User meets criteria to edit or delete
+        """
+        return self.request.user.groups.filter(name="gwells_admin").exists() or \
+            self.request.user.groups.filter(name="admin").exists() or \
+            author == self.request.user
+         
+            
+    def get_queryset(self, request, org_guid, note_guid, **kwargs):
+        print("Get")
+        if OrganizationNote.objects.filter(org_note_guid=note_guid, organization=org_guid).exists():
+            return OrganizationNote.objects.get(organization=org_guid, org_note_guid=note_guid)
+
+    def delete(self, request, org_guid, note_guid, **kwargs):
+        """Handles deletion for Organization Notes.
+
+        Args:
+            org_guid (string): UUID for Organization
+            note_guid (string): UUID for Note
+
+        Returns:
+            HttpResponse
+        """
+        print("Delete")
+        if OrganizationNote.objects.filter(org_note_guid=note_guid, organization=org_guid).exists():
+            note = OrganizationNote.objects.get(org_note_guid=note_guid, organization=org_guid)
+            if self.isAuth(note.author):
+                note.delete()
+                return HttpResponse(status=204)
+            return HttpResponse(status=401)
+        return HttpResponse(status=404)
+    
+    def patch(self, request, org_guid, note_guid, **kwargs):
+        print("Patch")
+        print(org_guid, note_guid)
+        return HttpResponse(200)
 
 class OrganizationHistory(APIView):
     """
