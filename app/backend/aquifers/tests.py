@@ -11,6 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
+import reversion
 from django.contrib.gis.geos import GEOSGeometry
 from django.test import TestCase
 from django.core.exceptions import ValidationError
@@ -20,10 +21,16 @@ from rest_framework.test import APITestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from aquifers.models import Aquifer
+from aquifers.models import Aquifer, AquiferDemand, AquiferMaterial, AquiferProductivity, AquiferSubtype, AquiferVulnerabilityCode, QualityConcern, WaterUse
 from gwells.settings import REST_FRAMEWORK
 from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE, AQUIFERS_VIEWER_ROLE
 
+from aquifers.models.vertical_aquifer_extents import VerticalAquiferExtent, VerticalAquiferExtentsHistory
+from aquifers.change_history import get_aquifer_history_diff, get_vertical_aquifer_extents_history
+from aquifers.data_migrations import aquifer_vulnerability_codes
+from dateutil.parser import parse
+from wells.models import Well
+from django.contrib.gis.geos import MultiPolygon
 # Create your tests here.
 
 
@@ -116,3 +123,136 @@ class TestAquifersSpatial(APITestCase):
                 'realtime': 'true', 'sw_lat': 49, 'sw_long': -125, 'ne_lat': 49, 'ne_long': -124
             })
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class TestAquiferHistoryDiff(TestCase):
+    def setUp(self):
+        # Set up test data here
+        self.aquifer_demand_code = AquiferDemand.objects.create(
+            code='Z',
+            description='Low',
+            display_order=1
+        )
+        self.water_use = WaterUse.objects.create(
+            code='Z',
+            description='Municipal',
+            display_order=1
+        )
+        self.aquifer_productivity_code = AquiferProductivity.objects.create(
+            code='Z',
+            description='Moderate',
+            display_order=1
+        )
+        self.quality_concern_code = QualityConcern.objects.create(
+            code='Z',
+            description='Low',
+            display_order=1
+        )
+        self.aquifer_material_code = AquiferMaterial.objects.create(
+            code='Z',
+            description='Bedrock',
+            display_order=1
+        )
+        self.aquifer_subtype_code = AquiferSubtype.objects.create(
+            code='Za',
+            description='6a',
+            display_order=1
+        )
+        self.aquifer_vulnerability_code = AquiferVulnerabilityCode.objects.create(
+            code='Z',
+            description='Moderate',
+            display_order=1
+        )
+
+        self.aquifer = Aquifer.objects.create(
+            aquifer_id=303,
+            aquifer_name='Test Aquifer',
+            location_description='Test Description',
+            area=3.5,
+            litho_stratographic_unit='Cenozoic, Tertiary, Miocene and/or Pliocene Epochs',
+            mapping_year=2017,
+            notes='TestNotes',
+            demand=self.aquifer_demand_code,
+            known_water_use=self.water_use,
+            material=self.aquifer_material_code,
+            productivity=self.aquifer_productivity_code,
+            quality_concern=self.quality_concern_code,
+            subtype=self.aquifer_subtype_code,
+            vulnerability=self.aquifer_vulnerability_code,
+            geom='0106000020BD0B00000100000001030000000100000006000000FB6591A3052432413E2A8975A7B31D41090C44ACDC273241C45A56B278B21D411AA46EC6F728324150C702C1BBA11D411A0A643CA22732410100ADA5658E1D4133B184D563203241FCF2C2DF13961D41FB6591A3052432413E2A8975A7B31D41',
+            geom_simplified='0106000020E61000000100000001030000000100000006000000A4522AFEADD95EC07D7F8003B3AE4840A4522A36D1D85EC07731580B92AE4840A5522A5E9AD85EC07274404E53AD4840A4522A8EF1D85EC06A25DB5BEAAB4840A4522AFE8EDA5EC02320B7448FAC4840A4522AFEADD95EC07D7F8003B3AE4840',
+            effective_date=parse('2024-03-19 23:26:25.117394+00'),
+            expiry_date=parse('9999-03-19 23:26:25.117394+00'),
+            retire_date=parse('9999-03-19 23:26:25.117394+00')
+        )
+        
+        with reversion.create_revision():
+            self.aquifer.save()
+
+        with reversion.create_revision():
+            self.aquifer.aquifer_name = 'Updated Aquifer Name'
+            self.aquifer.save()
+
+        with reversion.create_revision():
+            self.aquifer.location_description = 'Updated Location Description'
+            self.aquifer.save()
+
+    def test_get_aquifer_history_diff(self):
+        # Test the get_aquifer_history_diff function
+        history = get_aquifer_history_diff(self.aquifer)
+        # Add assertions to check the output of the function
+        self.assertIsNotNone(history)
+        self.assertEqual(len(history), 3)
+
+class TestVerticalAquiferHistoryDiffTest(TestCase):
+    def setUp(self):
+        # Foreign keys for vertical aquifer
+        self.well = Well.objects.create(
+            well_tag_number=304
+        )
+        self.aquifer = Aquifer.objects.create(
+            aquifer_id=303,
+            aquifer_name='Test Aquifer',
+            location_description='Test Description',
+            area=3.5,
+            litho_stratographic_unit='Cenozoic, Tertiary, Miocene and/or Pliocene Epochs',
+            mapping_year=2017,
+            notes='TestNotes',
+            geom='0106000020BD0B00000100000001030000000100000006000000FB6591A3052432413E2A8975A7B31D41090C44ACDC273241C45A56B278B21D411AA46EC6F728324150C702C1BBA11D411A0A643CA22732410100ADA5658E1D4133B184D563203241FCF2C2DF13961D41FB6591A3052432413E2A8975A7B31D41',
+            geom_simplified='0106000020E61000000100000001030000000100000006000000A4522AFEADD95EC07D7F8003B3AE4840A4522A36D1D85EC07731580B92AE4840A5522A5E9AD85EC07274404E53AD4840A4522A8EF1D85EC06A25DB5BEAAB4840A4522AFE8EDA5EC02320B7448FAC4840A4522AFEADD95EC07D7F8003B3AE4840',
+            effective_date=parse('2024-03-19 23:26:25.117394+00'),
+            expiry_date=parse('9999-03-19 23:26:25.117394+00'),
+            retire_date=parse('9999-03-19 23:26:25.117394+00')
+        )
+
+        # Create the vertical aquifer for testing
+        self.vertical_aquifer = VerticalAquiferExtent.objects.create(
+            id=302,
+            aquifer_id=303,
+            well=self.well,
+            geom='0101000020E6100000EC866D8B32D95EC0A72215C616AE4840',
+            start=1.0,
+            end=144.00,
+        )
+
+        # Register two changes to the aquifer in the vertical aquifer history table
+        self.vertical_aquifer_history = VerticalAquiferExtentsHistory.objects.create(
+            id=1,
+            aquifer_id=303,
+            well_tag_number=304,
+            geom='0101000020E6100000EC866D8B32D95EC0A72215C616AE4840',
+            start=2.0,
+            end=144.00,
+        )
+        self.vertical_aquifer_history = VerticalAquiferExtentsHistory.objects.create(
+            id=2,
+            aquifer_id=303,
+            well_tag_number=304,
+            geom='0101000020E6100000EC866D8B32D95EC0A72215C616AE4840',
+            start=2.0,
+            end=146.00,
+        )
+        
+    def test_get_vertical_aquifer_extents_history(self):
+        history = get_vertical_aquifer_extents_history(self.vertical_aquifer)
+        self.assertIsNotNone(history)
+        self.assertEqual(len(history), 2)
