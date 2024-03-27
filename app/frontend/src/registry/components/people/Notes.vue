@@ -13,18 +13,22 @@
           <b-button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</b-button>
           <b-button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</b-button>
           <b-alert
-              class="mt-3"
-              variant="success"
-              dismissible
-              :show="submitSuccess"
-              @dismissed="submitSuccess=false">Note added.</b-alert>
+            class="mt-3"
+            variant="success"
+            dismissible
+            :show="submitSuccess"
+            @dismissed="submitSuccess=false"
+          >
+            {{ alertText }}
+          </b-alert>
           <b-modal
               v-model="confirmSubmitModal"
               centered
               title="Confirm save"
               @shown="focusSubmitModal"
-              :return-focus="$refs.noteInputSaveBtn">
-            Are you sure you want to save this note?
+              :return-focus="$refs.noteInputSaveBtn"
+            >
+              Are you sure you want to save this note?
             <div slot="modal-footer" class="buttons">
               <b-btn variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn">
                 Save
@@ -63,7 +67,7 @@
               </div>
             <div slot="modal-footer" class="buttons">
               <b-btn
-                variant="secondary"
+                variant="light"
                 @click="confirmDeleteModal=false"
                 ref="cancelDeleteBtn"
               >
@@ -74,6 +78,31 @@
                 @click="confirmDeleteModal=false;deleteNote()"
               >
                 Delete
+              </b-btn>
+            </div>
+          </b-modal>
+          <b-modal
+              v-model="confirmEditNoteModal"
+              centered
+              title="Editing Note"
+              @shown="focusEditNoteModal"
+              :return-focus="$refs.noteInputCancelBtn"
+            >
+            <div>
+              <b-form-textarea
+                id="editNoteTextArea"
+                v-model="noteContentEdit"
+                placeholder="Edit Note..."
+                rows="4"
+                max-rows="6"
+              />
+            </div>
+            <div slot="modal-footer" class="buttons">
+              <b-btn variant="light" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn">
+                Cancel
+              </b-btn>
+              <b-btn variant="primary" @click="notePatchHandle()">
+                Submit
               </b-btn>
             </div>
           </b-modal>
@@ -92,6 +121,7 @@
             <div class="crud-options">
               <b-btn
                 :disabled="keycloak.idTokenParsed.display_name !== note.author" 
+                @click="noteEditHandler(note)"
                 size="sm"
                 variant="primary"
               >
@@ -134,12 +164,15 @@ export default {
   data () {
     return {
       noteInput: '',
+      alertText: '',
       submitLoading: false,
       submitSuccess: false,
       submitError: false,
+      confirmEditNoteModal: false,
       confirmSubmitModal: false,
       confirmCancelModal: false,
       confirmDeleteModal: false,
+      noteContentEdit: "",
       activeNote: null
     }
   },
@@ -166,34 +199,49 @@ export default {
       ApiService.delete(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid)
       .then(() => {
         this.activeNote = null;
-        this.$emit('updated')
+        this.alertText = "Note deleted.";
+        this.submitSuccess = true;
+        this.$emit('updated');
       })
     },
     noteSubmit () {
       // submit the note as a post request, triggered after confirming via popup
-      this.submitSuccess = false
-      this.submitError = false
-      this.submitLoading = true
+      this.submitSuccess = false;
+      this.submitError = false;
+      this.submitLoading = true;
       ApiService.post(`${this.resourceType}/${this.guid}/notes`, { note: this.noteInput })
-        .then((response) => {
-          const notes = this.$refs.noteSection
-
+        .then(() => {
+          const notes = this.$refs.noteSection;
           // Note submitted, set loading/success indicators and scroll down to the new note
           this.noteReset()
-          this.submitLoading = false
-          this.submitSuccess = true
-          smoothScroll(notes, 1000)
-          this.$emit('updated')
+          this.alertText = "Note added.";
+          this.submitLoading = false;
+          this.submitSuccess = true;
+          smoothScroll(notes, 1000);
+          this.$emit('updated');;
         }).catch((e) => {
-          this.submitLoading = false
-          this.submitError = e.response.data
+          this.submitLoading = false;
+          this.submitError = e.response.data;
         })
     },
+    notePatchHandle() {
+      const updatedNote = `(Edited ${new Date().toLocaleString()}) ` + this.noteContentEdit;
+      ApiService.patch(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid, {note: updatedNote})
+        .then(() => {
+          this.activeNote = null;
+          this.noteContentEdit = null;
+          this.confirmEditNoteModal = false;
+          this.alertText = "Note updated."
+          this.submitSuccess = true;
+          this.$emit('updated');
+        })
+
+    },
     noteReset () {
-      this.submitSuccess = false
-      this.submitError = false
-      this.submitLoading = false
-      this.noteInput = ''
+      this.submitSuccess = false;
+      this.submitError = false;
+      this.submitLoading = false;
+      this.noteInput = '';
     },
     noteSubmitHandler () {
       // trigger popup to confirm submit
@@ -206,20 +254,33 @@ export default {
     noteCancelDeleteHandler () {
       this.activeNote = null;
     },
+    /**
+     * @desc Handler for note editing, prepends an Edited field to mark the content as changed
+     * @param {Object} note Note currently being edited
+     */
+    noteEditHandler (note) {
+      const editRegex = /^\(Edited \d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} (AM|PM)\)\s/;
+      this.noteContentEdit = note.note.replace(editRegex, "");
+      this.activeNote = note;
+      this.confirmEditNoteModal = true;
+    },
     noteCancelHandler () {
       // trigger popup to confirm discard note
-      this.confirmCancelModal = true
+      this.confirmCancelModal = true;
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus()
+      this.$refs.cancelSubmitCancelBtn.focus();
     },
     focusDeleteModal () {
-      this.$refs.cancelDeleteBtn.focus()
+      this.$refs.cancelDeleteBtn.focus();
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup
       this.$refs.confirmSubmitConfirmBtn.focus()
+    },
+    focusEditNoteModal () {
+      this.$refs.cancelEditNoteCancelBtn.focus()
     }
   }
 }
