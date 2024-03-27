@@ -13,13 +13,13 @@
 """
 
 import reversion
-import re
+import re, json
 from collections import OrderedDict
-import re
 from django.db.models import Q, Prefetch, Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.forms.models import model_to_dict
 from django.views.generic import TemplateView
 from django.contrib.gis.geos import Polygon, GEOSException
 from django_filters import rest_framework as restfilters
@@ -801,9 +801,6 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     get:
     Returns a OrganizationNote record.
 
-    put:
-    Replaces a OrganizationNote record with a new one.
-
     patch:
     Updates a OrganizationNote record with the set of fields provided in the request body.
 
@@ -814,10 +811,51 @@ class OrganizationNoteDetailView(AuditUpdateMixin, RetrieveUpdateDestroyAPIView)
     permission_classes = (RegistriesEditPermissions,)
     serializer_class = OrganizationNoteSerializer
 
-    def get_queryset(self):
-        org = self.kwargs['org_guid']
-        return OrganizationNote.objects.filter(organization=org)
-
+    def canDelete(self, author):
+        """Checks if user has permission to change Notes.
+           Notes can only be edited by Admins and the note's creator
+        """
+        return self.request.user.groups.filter(name="gwells_admin").exists() or \
+            self.request.user.groups.filter(name="admin").exists() or \
+            author == self.request.user
+    
+    def get_organization_note(self, org_guid, note_guid):
+        """Fetches the note requested"""
+        if OrganizationNote.objects.filter(org_note_guid=note_guid, organization=org_guid).exists():
+            return OrganizationNote.objects.get(org_note_guid=note_guid, organization=org_guid)
+        return None
+    
+    def get(self, request, org_guid, note_guid, **kwargs):
+        note = self.get_organization_note(org_guid, note_guid)
+        if note:
+            return Response(model_to_dict(note))
+        return HttpResponse(status=404)
+    
+    def delete(self, request, org_guid, note_guid, **kwargs):
+        """Handles deletion for Organization Notes."""
+        note = self.get_organization_note(org_guid, note_guid)
+        if note:
+            if self.canDelete(note.author):
+                note.delete()
+                return HttpResponse(status=204)
+            return HttpResponse(status=401)
+        return HttpResponse(status=404)
+    
+    def patch(self, request, org_guid, note_guid, **kwargs):
+        """Updates a Note with new content information.
+           Notes can only be updated by the user who created them
+        """
+        note = self.get_organization_note(org_guid, note_guid)
+        new_note_content = json.loads(request.body.decode('utf-8')).get("note", None)
+        if note:
+            if note.author == self.request.user:
+                if new_note_content:
+                    note.note = new_note_content
+                    note.save()
+                    return HttpResponse(status=200)
+                return HttpResponse(status=400)
+            return HttpResponse(status=403)
+        return HttpResponse(status=404)
 
 class OrganizationHistory(APIView):
     """

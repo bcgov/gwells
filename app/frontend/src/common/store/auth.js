@@ -31,7 +31,8 @@ const auth = {
           registry: {
             view: clientRoles.includes('registries_viewer'),
             edit: clientRoles.includes('registries_edit'),
-            approve: clientRoles.includes('registries_approve')
+            approve: clientRoles.includes('registries_approve'),
+            admin: clientRoles.includes('gwells_admin') || clientRoles.includes('admin') // Prod v. Dev
           },
           wells: {
             view: clientRoles.includes('wells_viewer'),
