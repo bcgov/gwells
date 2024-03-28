@@ -17,11 +17,11 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
-from rest_framework.test import APITestCase
+from rest_framework.test import APITestCase, APIClient
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from aquifers.models import Aquifer, AquiferDemand, AquiferMaterial, AquiferProductivity, AquiferSubtype, AquiferVulnerabilityCode, QualityConcern, WaterUse
+from aquifers.models import Aquifer, AquiferDemand, AquiferMaterial, AquiferProductivity, AquiferResource, AquiferResourceSection, AquiferSubtype, AquiferVulnerabilityCode, QualityConcern, WaterUse
 from gwells.settings import REST_FRAMEWORK
 from gwells.roles import roles_to_groups, AQUIFERS_EDIT_ROLE, AQUIFERS_VIEWER_ROLE
 
@@ -30,7 +30,10 @@ from aquifers.change_history import get_aquifer_history_diff, get_vertical_aquif
 from aquifers.data_migrations import aquifer_vulnerability_codes
 from dateutil.parser import parse
 from wells.models import Well
-from django.contrib.gis.geos import MultiPolygon
+
+from aquifers.serializers_v2 import AquiferDetailSerializerV2
+
+
 # Create your tests here.
 
 
@@ -256,3 +259,99 @@ class TestVerticalAquiferHistoryDiffTest(TestCase):
         history = get_vertical_aquifer_extents_history(self.vertical_aquifer)
         self.assertIsNotNone(history)
         self.assertEqual(len(history), 2)
+
+class TestAquiferDetailSerializerV2(TestCase):
+    def setUp(self):
+        self.aquifer = Aquifer.objects.create(
+            aquifer_id=303,
+            aquifer_name='Test Aquifer',
+            location_description='Test Description',
+            area=3.5,
+            litho_stratographic_unit='Cenozoic, Tertiary, Miocene and/or Pliocene Epochs',
+            mapping_year=2017,
+            notes='TestNotes',
+            geom='0106000020BD0B00000100000001030000000100000006000000FB6591A3052432413E2A8975A7B31D41090C44ACDC273241C45A56B278B21D411AA46EC6F728324150C702C1BBA11D411A0A643CA22732410100ADA5658E1D4133B184D563203241FCF2C2DF13961D41FB6591A3052432413E2A8975A7B31D41',
+            geom_simplified='0106000020E61000000100000001030000000100000006000000A4522AFEADD95EC07D7F8003B3AE4840A4522A36D1D85EC07731580B92AE4840A5522A5E9AD85EC07274404E53AD4840A4522A8EF1D85EC06A25DB5BEAAB4840A4522AFE8EDA5EC02320B7448FAC4840A4522AFEADD95EC07D7F8003B3AE4840',
+            effective_date=parse('2024-03-19 23:26:25.117394+00'),
+            expiry_date=parse('9999-03-19 23:26:25.117394+00'),
+            retire_date=parse('9999-03-19 23:26:25.117394+00')
+        )
+        self.aquifer_resource_section = AquiferResourceSection.objects.create(code='Z')
+        self.aquifer_resource = AquiferResource.objects.create(
+            name='Resource 1',
+            url='http://example.com',
+            section=self.aquifer_resource_section,
+            aquifer=self.aquifer
+        )
+        self.client = APIClient()
+
+    def test_create_aquifer_with_resources(self):
+        data = {
+            'aquifer_id': 304,
+            'aquifer_name': 'New Aquifer',
+            'resources': [
+                {
+                    'url': 'http://example.com',
+                    'name': 'New Resource',
+                    'section_code': self.aquifer_resource_section.code
+                }
+            ]
+        }
+        serializer = AquiferDetailSerializerV2(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        aquifer = serializer.save()
+        self.assertEqual(aquifer.aquifer_name, 'New Aquifer')
+        self.assertEqual(aquifer.resources.count(), 1)
+        self.assertEqual(aquifer.resources.first().url, 'http://example.com')
+
+
+    def test_update_aquifer_with_resources(self):
+        data = {
+            'aquifer_id': 303,
+            'aquifer_name': 'Updated Aquifer',
+            'resources': [
+                {
+                    'id': self.aquifer_resource.id,
+                    'url': 'http://updatedresource.com',
+                    'name': 'Updated Resource',
+                    'section_code': self.aquifer_resource_section.code
+                }
+            ]
+        }
+        serializer = AquiferDetailSerializerV2(instance=self.aquifer, data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        updated_aquifer = serializer.save()
+        self.assertEqual(updated_aquifer.aquifer_id, 303)
+        self.assertEqual(updated_aquifer.aquifer_name, 'Updated Aquifer')
+        self.assertEqual(updated_aquifer.resources.count(), 1)
+        self.assertEqual(updated_aquifer.resources.first().url, 'http://updatedresource.com')
+
+
+    def test_invalid_data(self):
+        data = {
+            'aquifer_id': 303,
+            'aquifer_name': 'Test Aquifer',
+            'resources': [
+                {
+                    'url': 'http://example.com',
+                    'name': 'Resource 1',
+                    'section_id': 1,
+                }
+            ]
+        }
+        serializer = AquiferDetailSerializerV2(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('resources', serializer.errors)
+
+    def test_create_aquifer_without_resources(self):
+        data = {
+            'aquifer_id': 305,
+            'aquifer_name': 'Aquifer Without Resources',
+        }
+        serializer = AquiferDetailSerializerV2(data=data)
+        self.assertTrue(serializer.is_valid())
+        aquifer = serializer.save()
+        self.assertEqual(aquifer.aquifer_name, 'Aquifer Without Resources')
+        self.assertEqual(aquifer.resources.count(), 0)
+
+
