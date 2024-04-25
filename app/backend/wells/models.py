@@ -1258,7 +1258,6 @@ class Well(AuditModelStructure):
         "internal_comments":"Staff only comments and information related to the well, and for internal use only, not to be made public.",
         "land_district_code":"Codes used to identify legal land district used to help identify the property where the well is located. E.g. Alberni, Barclay, Cariboo.",
         "legal_pid":"A Parcel Identifier or PID is a nine-digit number that uniquely identifies a parcel in the land title register of in BC. The Registrar of Land Titles assigns PID numbers to parcels for which a title is being entered in the land title register as a registered title. The Land Title Act refers to the PID as “the permanent parcel identifier”.",
-        "licenced_status_code":"Valid licensing options granted to a well under the Water Sustainability Act. This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.",
         "liner_diameter":"Diameter of the liner placed inside the well.  Measured in inches.",
         "liner_from":"Depth below ground level at which the liner starts inside the well. Measured in feet.",
         "liner_material_code":"Code that describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,",
