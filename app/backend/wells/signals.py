@@ -30,7 +30,7 @@ def _generate_utm_point(utm_zone, geom):
 
     point = ogr.Geometry(ogr.wkbPoint)
 
-    point.AddPoint(geom.y, geom.x)  # Longitude, Latitude
+    point.AddPoint(geom.y, geom.x)
 
     point.Transform(transform)
 

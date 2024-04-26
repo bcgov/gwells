@@ -27,3 +27,10 @@ openpyxl==2.5.11
 djangorestframework-csv==2.1.0
 coverage>=4.4.2
 MarkupSafe>=2.0.1
+
+gunicorn==19.9.0
+gevent==1.2.2
+django-settings-export>=1.2.1
+lxml==4.6.3
+urllib3>=1.24,<1.25
+pyjwt>=2.0,<=2.4.0
