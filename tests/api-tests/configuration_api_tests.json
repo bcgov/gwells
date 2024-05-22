@@ -7,45 +7,6 @@
 	},
 	"item": [
 		{
-			"name": "Analytic Config",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let response = pm.response.json();",
-							"",
-							"pm.test(\"Response status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Analytic Object returns a boolean value\", () => {",
-							"    pm.expect(response.enable_google_analytics).to.be.a('boolean');",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{base_url}}/api/v1/analytics",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"analytics"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "Keycloak Configuration",
 			"event": [
 				{

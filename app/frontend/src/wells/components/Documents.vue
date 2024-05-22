@@ -38,7 +38,7 @@
               {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
             </template>
             <template v-slot:cell(uploaded_document)="data">
-              <a :href="data.item.url" :download="data.item.name" target="_blank" @click="handleDownloadEvent(data.item.name)">{{ data.item.name }}</a>
+              <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
             </template>
             <template v-slot:cell(document_status)="data">
               <p v-if="data.item.document_status">Private Document</p>
@@ -119,17 +119,6 @@ export default {
     ...mapActions('documentState',
       ['removeFileFromStore']
     ),
-    handleDownloadEvent (file) {
-      if (window.ga) {
-        // ga('send', 'event', 'Attachment', 'Accessed', 'Original Well Record')
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Attachment',
-          eventAction: 'Accessed',
-          eventLabel: `Original Well Record ${file}`
-        })
-      }
-    },
     callLongFormLabel(shortFormLabel) {
       return getLongFormLabel(shortFormLabel);
     },

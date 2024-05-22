@@ -84,8 +84,6 @@ urlpatterns = [
         api.KeycloakConfig.as_view(), name='keycloak'),
     url(r'^' + app_root_slash + api_path_prefix() + r'/config',
         api.GeneralConfig.as_view(), name='configuration'),
-    url(r'^' + app_root_slash + api_path_prefix() + r'/analytics',
-        api.AnalyticsConfig.as_view(), name='analytics'),
     url(r'^' + app_root_slash + api_path_prefix() + r'/gis/insidebc',
         api.InsideBC.as_view(), name='insidebc'),
     url(r'^' + app_root_slash + api_path_prefix() + r'/geocoding/v\d/.+\.places/(?P<query>.+)\.json$',

@@ -129,7 +129,6 @@
                 "DB_REPLICATE": null,
                 "DJANGO_DEBUG":  null,
                 "ENABLE_ADDITIONAL_DOCUMENTS":  null,
-                "ENABLE_GOOGLE_ANALYTICS": null,
                 "E_LICENSING_URL": null,
                 "S3_PRIVATE_BUCKET": null,
                 "S3_PRIVATE_HOST": null,
@@ -454,15 +453,6 @@
                                         "valueFrom": {
                                             "configMapKeyRef": {
                                                 "key": "GEOS_LIBRARY_PATH",
-                                                "name": "gwells-global-config${NAME_SUFFIX}"
-                                            }
-                                        }
-                                    },
-                                    {
-                                        "name": "ENABLE_GOOGLE_ANALYTICS",
-                                        "valueFrom": {
-                                            "configMapKeyRef": {
-                                                "key": "ENABLE_GOOGLE_ANALYTICS",
                                                 "name": "gwells-global-config${NAME_SUFFIX}"
                                             }
                                         }

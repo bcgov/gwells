@@ -323,7 +323,7 @@
               <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ licenceDetails.licences_updated.update_date__max|formatDate }}</i></p>
               <p>
                 Licensing information is obtained from
-                the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" @click="handleOutboundLinkClicks('https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public')" target="_blank" class="d-print-url">
+                the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" target="_blank" class="d-print-url">
                   Water Rights Licence - Public data layer
                 </a>.
               </p>
@@ -351,7 +351,7 @@
                     </dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
@@ -442,7 +442,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -459,7 +459,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -476,7 +476,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -493,7 +493,7 @@
                       </dt>
                       <dd class="m-0">
                         <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                          <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                          <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                         </ul>
                         <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                       </dd>
@@ -516,7 +516,7 @@
                     <dt class="text-right">{{ section.name }}</dt>
                     <dd class="m-0">
                       <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="sanitizeResourceUrl(resource.url)" @click="handleExternalResourceClicks" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
                       </ul>
                       <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
                     </dd>
@@ -981,27 +981,6 @@ export default {
     setWaterVolume (details) {
       if (details.usage && details.usage.constructor === Array && details.usage.length > 0) {
         this.waterWithdrawlVolume = sumBy(details.usage, 'total_qty')
-      }
-    },
-    // log a google analytics event when clicking on links to other sites
-    handleOutboundLinkClicks (link) {
-      if (window.ga) {
-        window.ga('send', 'event', {
-          eventCategory: 'Outbound Link',
-          eventAction: 'click',
-          eventLabel: link
-        })
-      }
-    },
-    // log a google analytics event when clicking on external aquifer resources
-    // (e.g. PDFS or other files)
-    handleExternalResourceClicks () {
-      if (window.ga) {
-        window.ga('send', 'event', {
-          eventCategory: 'Attachment',
-          eventAction: 'Accessed',
-          eventLabel: 'Aquifer Factsheet'
-        })
       }
     },
     sanitizeResourceUrl (url) {

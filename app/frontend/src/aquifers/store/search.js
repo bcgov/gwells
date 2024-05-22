@@ -12,7 +12,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
-import querystring from 'querystring'
 
 import ApiService from '@/common/services/ApiService.js'
 
@@ -128,17 +127,6 @@ const aquiferSearchStore = {
       commit(SET_SEARCH_QUERY, query)
       commit(SET_SELECTED_SECTIONS, selectedSections)
       commit(SET_MATCH_ANY, Boolean(matchAny))
-
-      // trigger the Google Analytics search event
-      // trigger the search event, sending along the search params as a string
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'AquiferSearch',
-          eventLabel: querystring.stringify(state.searchQuery)
-        })
-      }
 
       if (state.pendingSearch) {
         state.pendingSearch.cancel()

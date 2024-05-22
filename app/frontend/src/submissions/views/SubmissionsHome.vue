@@ -721,7 +721,7 @@ export default {
         validateWellClassAndIntendedWaterUse = false
       }
 
-      if (this.$refs.activitySubmissionForm) {
+      if (this.$refs.activitySubmissionForm && this.$refs.activitySubmissionForm.$refs.wellCoords) {
         const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
         const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
         //

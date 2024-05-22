@@ -5,6 +5,7 @@ if [ "$ENVIRONMENT" = "local" ]; then
   set -x &&
   cd /app/backend &&
   mkdir -p .pip &&
+  curl -s -o get-pip.py https://bootstrap.pypa.io/pip/3.5/get-pip.py && python3 get-pip.py && 
   python3 -m pip install --upgrade pip &&
   python3 -m pip install ptvsd &&
   python3 -m pip install --cache-dir=.pip -r requirements.txt &&

@@ -31,7 +31,6 @@
     "proj4": "^2.4.4",
     "smoothscroll": "^0.4.0",
     "vue": "~2.6.10",
-    "vue-analytics": "^5.16.4",
     "vue-chartjs": "^3.4.2",
     "vue-matomo": "^4.0.1",
     "vue-moment": "^4.1.0",

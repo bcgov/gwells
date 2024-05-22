@@ -100,25 +100,13 @@ export default {
     },
     /**
      * @desc    Gets the correctly formatted export URL given the filetype and leverages users Auth to send download request
-     *          then sends Google Analytics request
      * @summary Downloads search data for file format.
      * @param   {string} format Filetype: "csv", "xlsx"
      */
     exportHandler(format) {
       const exportUrl = this.getExportUrl(format);
       ApiService.download(exportUrl);
-      this.sendAnalytics(format);
     },
-    sendAnalytics (format) {
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'WellSearchResultsExtract',
-          eventLabel: format
-        })
-      }
-    }
   }
 }
 </script>

@@ -89,19 +89,7 @@ export default {
       }
       return url;
     },
-    sendAnalyticsEvent(format) {
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'WellSearchResultsExtract',
-          eventLabel: format,
-        });
-      }
-    },
     async handleExportClickEvent(format) {
-      // Send the analytics event
-      this.sendAnalyticsEvent(format);
 
       // Generate the URL for the file download
       const url = this.getExportUrl(format);

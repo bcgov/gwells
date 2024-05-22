@@ -116,7 +116,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
         </p>
         <p>
-          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" @click="handleOutboundLinkClicks('www.frontcounterbc.gov.bc.ca/Start/surface-water/')" target="_blank">
+          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" target="_blank">
             Learn about and submit water license applications
           </a> with FrontCounterBC.
         </p>
@@ -291,15 +291,6 @@ export default {
       // to a few matching well they are looking for. We also want the count to show the user
       // how many wells outside of their current map view match their search criteria.
       this.searchWellsInBC({ limit: 10 })
-
-      // send the analytic event when triggering search by the search button
-      this.triggerAnalyticsSearchEvent(
-        Object.assign(
-          {},
-          this.searchParams,
-          columnsRequested
-        )
-      )
     },
     handleReset () {
       this.$emit('reset')
@@ -414,27 +405,6 @@ export default {
       }
 
       return query
-    },
-    handleOutboundLinkClicks (link) {
-      if (window.ga) {
-        window.ga('send', 'event', {
-          eventCategory: 'Outbound Link',
-          eventAction: 'click',
-          eventLabel: link
-        })
-      }
-    },
-    triggerAnalyticsSearchEvent (params) {
-      // trigger the search event, sending along the search params as a string
-
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'WellSearch',
-          eventLabel: querystring.stringify(params)
-        })
-      }
     },
     fetchSurveys () {
       ApiService.query('surveys').then((response) => {

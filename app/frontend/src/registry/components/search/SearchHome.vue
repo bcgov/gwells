@@ -418,15 +418,6 @@ export default {
       if (params.hasOwnProperty('offset')) {
         delete params.offset
       }
-
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'RegistrySearch',
-          eventLabel: querystring.stringify(params)
-        })
-      }
       this.SEARCH(params)
     },
     sortTable (sortCode) {

@@ -37,17 +37,6 @@ class GeneralConfig(APIView):
         }
         return Response(config)
 
-
-class AnalyticsConfig(APIView):
-    """ Serves configuration object for Google analytics. """  
-    
-    def get(self, request, **kwargs):
-        config = {
-            "enable_google_analytics": get_env_variable("ENABLE_GOOGLE_ANALYTICS") == "True"
-        }
-        return Response(config)
-
-
 class InsideBC(APIView):
     """ Check if a given Latitude/Longitude are inside BC """
     @swagger_auto_schema(

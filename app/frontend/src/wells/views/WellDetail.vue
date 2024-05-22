@@ -646,9 +646,6 @@ export default {
     errorNotFound () {
       return this.error && this.error.status === 404
     },
-    analytics () {
-      return !!window.ga
-    },
     show () {
       return {
         edit: !!this.config && this.userRoles.wells.edit === true
@@ -680,9 +677,6 @@ export default {
   },
   methods: {
     handlePrint () {
-      if (window.ga) {
-        window.ga('send', 'event', 'Button', 'print', 'Wells Summary Print')
-      }
       window.print()
     },
     fetchWellData () {

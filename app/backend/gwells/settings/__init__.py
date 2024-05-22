@@ -49,10 +49,6 @@ SESSION_COOKIE_HTTPONLY = True
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_env_variable('DJANGO_DEBUG', 'False') == 'True'
 
-# Controls availability of Google Analytics
-ENABLE_GOOGLE_ANALYTICS = get_env_variable(
-    'ENABLE_GOOGLE_ANALYTICS', 'False', strict=True) == 'True'
-
 # Additional Documents Feature Flag
 ENABLE_ADDITIONAL_DOCUMENTS = get_env_variable(
     'ENABLE_ADDITIONAL_DOCUMENTS', 'False', strict=True) == 'True'
@@ -77,7 +73,6 @@ if get_env_variable('CUSTOM_GDAL_GEOS', 'True', strict=False, warn=False) == 'Tr
 # django-settings-export lets us make these variables available in the templates.
 # This eleminate the need for setting the context for each and every view.
 SETTINGS_EXPORT = [
-    'ENABLE_GOOGLE_ANALYTICS',      # This is only enabled for production
     # To temporarily disable additional documents feature
     'ENABLE_ADDITIONAL_DOCUMENTS',
     # This allows for moving the app around without code changes

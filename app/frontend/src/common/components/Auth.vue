@@ -69,6 +69,9 @@ export default {
   watch: {
     keycloak (kc) {
       if (kc) {
+        if (window._paq && this.authenticated) {
+          window._paq.push(["setCustomVariable", 1, "userType", this.keycloak.tokenParsed.identity_provider]);
+        }
         this.ready = true
       }
     }

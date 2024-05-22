@@ -17,7 +17,7 @@
     <p class="font-weight-bold">Download all wells</p>
     <ul>
       <li v-for="file in files" :key="file.name">
-        <a :href="file.url" v-on:click="handleDownloadClick(file)" target="_blank">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}
+        <a :href="file.url" target="_blank">Well extract ({{file.description}})</a> ({{format_size(file.size)}}) - {{format_date(file.last_modified)}}
       </li>
     </ul>
   </div>
@@ -46,16 +46,6 @@ export default {
       // If the size is really small, this would go to zero if rounded down - so we rather round up.
       return `${Math.ceil(size / 1024 / 1024)} MB`
     },
-    handleDownloadClick (file) {
-      if (window.ga) {
-        window.ga('send', {
-          hitType: 'event',
-          eventCategory: 'Button',
-          eventAction: 'WellExtract',
-          eventLabel: file.description
-        })
-      }
-    }
   }
 }
 </script>
