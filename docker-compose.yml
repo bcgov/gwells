@@ -152,6 +152,7 @@ services:
       APP_CONTEXT_ROOT: gwells
       CSRF_COOKIE_SECURE: "False"
       CUSTOM_GDAL_GEOS: "False"
+      DATA_LOADED: "False"
       DATABASE_NAME: gwells
       DATABASE_USER: "${DATABASE_USER:-gwells}"
       DATABASE_PASSWORD: "${DATABASE_PASSWORD:-test1}"

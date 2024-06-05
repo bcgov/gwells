@@ -41,9 +41,9 @@ if [ "${COMMAND}" == "all" ]
 then
 	for f in ${FIXTURES[@]}
 	do
-		echo python3 manage.py loaddata $f
-		python3 manage.py loaddata $f
+		echo python manage.py loaddata $f
+		python manage.py loaddata $f
 	done
 else
-	python3 manage.py loaddata "${COMMAND}"
+	python manage.py loaddata "${COMMAND}"
 fi
