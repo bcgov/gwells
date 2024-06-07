@@ -1,5 +1,4 @@
-# TODO: we need to bump python version up once we get Django bumped up
-FROM python:3.6-slim
+FROM python:3.7-slim
 
 RUN apt-get -y update
 
