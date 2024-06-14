@@ -54,12 +54,12 @@
     "jest-transform-stub": "^2.0.0",
     "jquery": "^3.4.1",
     "moxios": "^0.4.0",
-    "node-sass": "^4.9.0",
+    "sass": "1.77.5",
     "sass-loader": "^7.1.0",
-    "vue-template-compiler": "2.7.16"  // No longer needed for Vue 3 due to introduction of Composition API: define components using JS functions rather than objects, supports jsx now
+    "vue-template-compiler": "2.7.16"
   },
   "engines": {
-    "node": ">= 6",
-    "npm": ">= 5.6"
+    "node": "16.20.2",
+    "npm": "8.19.4"
   }
 }
