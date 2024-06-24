@@ -56,7 +56,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   </tr>
                 </thead>
                 <tbody>
-                  <template v-for="(row, index) in tableData">
+                  <template v-for="(row, index) in tableData" :key="`aquifer-${index}`">
                     <tr :key="`non-aquifer${index}`" v-if="row.isNonAquifer" class="non-aquifer">
                       <td colspan="5" class="py-3">
                         Non Aquifer {{ row.nonAquiferStart.toFixed(2) }}m to
@@ -64,7 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                         ({{ (row.nonAquiferSize).toFixed(2) }}m)
                       </td>
                     </tr>
-                    <tr :key="`aquifer-${index}`">
+                    <tr>
                       <td class="input-width-small py-0 pl-0">
                         <form-input
                           group-class="my-1"

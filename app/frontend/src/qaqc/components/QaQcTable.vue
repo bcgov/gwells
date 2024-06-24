@@ -118,8 +118,8 @@
                 {{ row | streetAddressFormat }}
               </template>
               <template v-else-if="column.type === 'select' && Array.isArray(row[column.param])">
-                <template v-for="(value, index) in row[column.param]">
-                  <span :key="`${row.well_tag_number}-${column.param}-${index}`">
+                <template v-for="(value, index) in row[column.param]" :key="`${row.well_tag_number}-${column.param}-${index}`">
+                  <span>
                     {{ value | selectOptionFormat(column, filterSelectOptions[column.id]) }}<span v-if="index < row[column.param].length - 1">, </span>
                   </span>
                 </template>

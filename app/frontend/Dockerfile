@@ -13,8 +13,8 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install  --legacy-peer-deps
 
 COPY . /app
 
-RUN npm i && npm run build
+RUN npm i --legacy-peer-deps && npm run build --legacy-peer-deps

@@ -2,6 +2,9 @@ if (process.env.API_TARGET) {
   console.log(`Targetting the API ${process.env.API_TARGET}`)
 }
 
+const { VueLoaderPlugin } = require('vue-loader')
+const webpack = require('webpack');
+
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: true,
@@ -10,9 +13,32 @@ module.exports = {
     resolve: {
       alias: {
         moment: 'moment/src/moment',
-        lodash: 'lodash-es'
+        lodash: 'lodash-es',
+        vue$: '@vue/compat'
+      },
+      fallback: {
+        'querystring': require.resolve('querystring-es3')
       }
     },
+    // module: {
+    //   rules: [
+    //     {
+    //       test: /\.vue$/,
+    //       loader: 'vue-loader',
+    //       options: {
+    //         compilerOptions: {
+    //           compatConfig: {
+    //             MODE: 2 // Enable Vue 2 compat mode
+    //           }
+    //         }
+    //       }
+    //     }
+    //   ]
+    // },
+    plugins: [
+      new VueLoaderPlugin(),
+      new webpack.ProgressPlugin()
+    ],
     devServer: {
       watchOptions: {
         ignored: /node_modules/,
@@ -20,15 +46,29 @@ module.exports = {
       }
     }
   },
-  transpileDependencies: [
-    '@geolonia/mbgl-gesture-handling'
-  ],
+  chainWebpack: config => {
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .loader('vue-loader')
+      .tap(options => {
+        return {
+          ...options,
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2 // Enable Vue 2 compat mode
+            }
+          }
+        }
+      })
+  },
+  transpileDependencies: ['@geolonia/mbgl-gesture-handling'],
   devServer: {
     proxy: {
       '^/api/': {
         target: process.env.API_TARGET || 'http://localhost:8000/',
         pathRewrite: {
-          '^/api': '/gwells/api/v2'
+          '^/api': '/gwells/api/v2',
         }
       },
       '^/tiles/': {
