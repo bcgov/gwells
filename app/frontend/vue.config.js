@@ -2,8 +2,8 @@ if (process.env.API_TARGET) {
   console.log(`Targetting the API ${process.env.API_TARGET}`)
 }
 
-const { VueLoaderPlugin } = require('vue-loader')
-const webpack = require('webpack');
+// const { VueLoaderPlugin } = require('vue-loader')
+// const webpack = require('webpack');
 
 module.exports = {
   lintOnSave: false,
@@ -35,10 +35,10 @@ module.exports = {
     //     }
     //   ]
     // },
-    plugins: [
-      new VueLoaderPlugin(),
-      new webpack.ProgressPlugin()
-    ],
+    // plugins: [
+    //   // new VueLoaderPlugin(),
+    //   // new webpack.ProgressPlugin()
+    // ],
     devServer: {
       watchOptions: {
         ignored: /node_modules/,
@@ -47,10 +47,10 @@ module.exports = {
     }
   },
   chainWebpack: config => {
+    config.resolve.alias.set('vue', '@vue/compat')
     config.module
       .rule('vue')
       .use('vue-loader')
-      .loader('vue-loader')
       .tap(options => {
         return {
           ...options,
@@ -68,7 +68,7 @@ module.exports = {
       '^/api/': {
         target: process.env.API_TARGET || 'http://localhost:8000/',
         pathRewrite: {
-          '^/api': '/gwells/api/v2',
+          '^/api': '/gwells/api/v2'
         }
       },
       '^/tiles/': {
