@@ -4,6 +4,7 @@ if (process.env.API_TARGET) {
 
 // const { VueLoaderPlugin } = require('vue-loader')
 // const webpack = require('webpack');
+process.env.VUE_CLI_TEST = false
 
 module.exports = {
   lintOnSave: false,
@@ -18,31 +19,6 @@ module.exports = {
       },
       fallback: {
         'querystring': require.resolve('querystring-es3')
-      }
-    },
-    // module: {
-    //   rules: [
-    //     {
-    //       test: /\.vue$/,
-    //       loader: 'vue-loader',
-    //       options: {
-    //         compilerOptions: {
-    //           compatConfig: {
-    //             MODE: 2 // Enable Vue 2 compat mode
-    //           }
-    //         }
-    //       }
-    //     }
-    //   ]
-    // },
-    // plugins: [
-    //   // new VueLoaderPlugin(),
-    //   // new webpack.ProgressPlugin()
-    // ],
-    devServer: {
-      watchOptions: {
-        ignored: /node_modules/,
-        poll: 1000
       }
     }
   },
