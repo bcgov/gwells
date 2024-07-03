@@ -17,7 +17,6 @@ export const FOCUSED_WELLS_LAYER_ID = 'focused-wells'
 export const FOCUSED_WELLS_ARTESIAN_LAYER_ID = 'focused-wells-artesian'
 export const FOCUSED_WELL_IMAGE_ID = 'focused-well-image'
 export const FOCUSED_WELL_ARTESIAN_IMAGE_ID = 'focused-artesian-well-image'
-
 export const SEARCHED_REGISTRIES_SOURCE_ID = 'searched-registries-source'
 export const SEARCHED_REGISTRIES_LAYER_ID = 'searched-registries-layer'
 

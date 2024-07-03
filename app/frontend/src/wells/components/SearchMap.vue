@@ -41,7 +41,7 @@ import {
   FOCUSED_WELL_ARTESIAN_IMAGE_ID,
   wellLayerFilter,
   SEARCHED_WELLS_LAYER_ID,
-  WELLS_SOURCE,
+  WELLS_SOURCE
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { createWellPopupElement } from '../popup'
@@ -92,7 +92,7 @@ export default {
             {
               imageSrc: wellsClosedLegendSrc,
               label: 'decommissioned'
-            },
+            }
           ]
         }
       ],
