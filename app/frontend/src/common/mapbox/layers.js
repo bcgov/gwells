@@ -277,12 +277,14 @@ export function wellsBaseAndArtesianLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
+      ['==', ['get', 'well_status'], 'CLOSURE'], '#302d57',
       ['to-boolean', ['get', 'artesian']], '#1099FE',
       '#0162FE'
     ],
     'circle-radius': 3,
     'circle-stroke-color': [
       'case',
+      ['==', ['get', 'well_status'], 'CLOSURE'], 'transparent',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
@@ -315,12 +317,14 @@ export function searchedWellsLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
+      ['==', ['get', 'well_status'], 'CLOSURE'], '#302d57',
       ['to-boolean', ['get', 'artesian_conditions']], '#1099FE',
       '#0162FE'
     ],
     'circle-radius': 5,
     'circle-stroke-color': [
       'case',
+      ['==', ['get', 'well_status'], 'CLOSURE'], 'transparent',
       ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],
