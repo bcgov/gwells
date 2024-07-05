@@ -58,9 +58,7 @@ import {
   WELLS_SOURCE,
   AQUIFERS_SOURCE,
   observationWellsLayer,
-  WELLS_OBSERVATION_LAYER_ID,
-  
-
+  WELLS_OBSERVATION_LAYER_ID
 } from '../../common/mapbox/layers'
 import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
 import { LayersControl, LegendControl } from '../../common/mapbox/controls'
@@ -77,6 +75,7 @@ import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import uncorrelatedWellsIconSrc from '../../common/assets/images/wells-uncorrelated.svg'
 import emsWellsIconSrc from '../../common/assets/images/wells-ems.svg'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
@@ -138,13 +137,17 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsClosedLegendSrc,
+              label: 'decommissioned'
             }
           ]
         },
         {
           show: true,
           id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
-          label: 'Wells - aquifer parameters', 
+          label: 'Wells - aquifer parameters',
           imageSrc: wellsHydraulicLegendSrc
         },
         {
@@ -514,13 +517,13 @@ export default {
       const endEvents = ['zoomend', 'moveend']
       endEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          this.updateMapLegendBasedOnVisibleElements();        
+          this.updateMapLegendBasedOnVisibleElements();
 
         })
       })
     }
   },
-  
+
   watch: {
     aquiferId (newAquiferId, oldAquiferId) {
       this.setSelectedAquifer(oldAquiferId, false)
