@@ -289,7 +289,7 @@ export function wellsBaseAndArtesianLayer (options = {}) {
       ['==', ['get', 'well_status'], 'CLOSURE'], 'transparent',
       ['==', ['get', 'well_status'], 'ABANDONED'], 'transparent',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
-      'black'
+      'transparent'
     ],
     'circle-stroke-width': 2.5
   })
