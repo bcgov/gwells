@@ -702,7 +702,8 @@ export default {
       const locationAddressValidate = !!street_address && !!city;
       // for legalDescription a user is only required to fill in a minimum one field
       const legalDescriptionValidate = legalDescriptionFields.some((item) => !!item);
-      const pidAddressValidate = legal_pid > 0;
+      const pidNum = legal_pid.replace(/-/g, '');
+      const pidAddressValidate = Number(pidNum) > 0;
 
       if(locationAddressValidate || legalDescriptionValidate || pidAddressValidate) { return; }
       errors.well_location_section = ['Well location not filled out'];

@@ -569,7 +569,7 @@ class WellListFilter(AnyOrAllFilterSet):
         # Check if we have a positive integer before querying the
         # legal_pid field.
         try:
-            int_value = int(value.replace("-",""))
+            int_value = int(value.replace("-", ""))
         except (TypeError, ValueError):
             pass
         else:
