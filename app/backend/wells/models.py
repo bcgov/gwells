@@ -1912,6 +1912,9 @@ class ActivitySubmission(AuditModelStructure):
             if not self.create_date:
                 self.create_date = timezone.now()
 
+        if self.legal_pid:
+            self.legal_pid = self.legal_pid.replace('-', '')
+
         return super().save(*args, **kwargs)
 
 
