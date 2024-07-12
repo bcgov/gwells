@@ -5,7 +5,7 @@ import ClosureDescription from '@/submissions/components/SubmissionForm/ClosureD
 
 const localVue = createLocalVue()
 const defaultRows = 10
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('ClosureDescription.vue', () => {
   let store

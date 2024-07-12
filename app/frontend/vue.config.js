@@ -11,6 +11,7 @@ module.exports = {
   runtimeCompiler: true,
   publicPath: process.env.NODE_ENV === 'production' ? '/gwells/' : '/',
   configureWebpack: {
+    devtool: 'source-map',
     resolve: {
       alias: {
         moment: 'moment/src/moment',

@@ -110,7 +110,7 @@ services:
   ###                                       Frontend                                        ###
   #############################################################################################
   frontend:
-    image: node:14.21.3
+    image: node:18.12.0
     build:
       context: ./app/frontend
       dockerfile: Dockerfile
@@ -125,8 +125,8 @@ services:
     command: /bin/bash -c "
       set -x &&
       cd /app/frontend &&
-      npm install &&
-      npm run serve"
+      npm install --legacy-peer-deps &&
+      npm run serve --legacy-peer-deps"
     ports:
       - "8080:8080"
     volumes:

@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import Coords from '@/submissions/components/SubmissionForm/Coords.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Coords.vue', () => {
   let store

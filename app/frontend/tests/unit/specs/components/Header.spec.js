@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import Header from '@/common/components/Header.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Header.vue', () => {
   let getters

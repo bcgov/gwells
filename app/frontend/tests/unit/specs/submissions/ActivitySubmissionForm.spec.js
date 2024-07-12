@@ -6,7 +6,7 @@ import ActivitySubmissionForm from '@/submissions/components/SubmissionForm/Acti
 import Lithology from '@/submissions/components/SubmissionForm/Lithology'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueRouter)
 
 const router = new VueRouter()

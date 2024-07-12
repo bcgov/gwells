@@ -12,7 +12,7 @@
     limitations under the License.
 */
 import "@/common/helpers/browserUpdate";
-import Vue from "vue";
+import Vue, {createApp} from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
 import Vuex, { mapActions } from "vuex";
@@ -77,53 +77,73 @@ Vue.use(VueNoty, {
   timeout: 1800,
 });
 Vue.use(BootstrapVue);
-Vue.use(VueMoment);
+// Vue.use(VueMoment);
 Vue.use(filters);
-Vue.component("v-select", vSelect);
-Vue.component("form-input", FormInput);
+// Vue.component("v-select", vSelect);
+// Vue.component("form-input", FormInput);
 
 // set baseURL and default headers
 ApiService.init();
 
-if (isProduction()) {
-  Vue.use(VueMatomo, {
-    host: PRODUCTION_MATOMO_HOST,
-    siteId: 2,
-    router: router,
-    domains: "apps.nrs.gov.bc.ca",
-  });
-} else if (isStaging()) {
-  Vue.use(VueMatomo, {
-    host: TEST_MATOMO_HOST,
-    siteId: 1,
-    router: router,
-    domains: STAGING_GWELLS_URLS,
-  });
-} else {
-  //Local & DEV and anything else
-  Vue.use(VueMatomo, {
-    host: TEST_MATOMO_HOST,
-    siteId: 3,
-    router: router,
-  });
-}
+// if (isProduction()) {
+//   Vue.use(VueMatomo, {
+//     host: PRODUCTION_MATOMO_HOST,
+//     siteId: 2,
+//     router: router,
+//     domains: "apps.nrs.gov.bc.ca",
+//   });
+// } else if (isStaging()) {
+//   Vue.use(VueMatomo, {
+//     host: TEST_MATOMO_HOST,
+//     siteId: 1,
+//     router: router,
+//     domains: STAGING_GWELLS_URLS,
+//   });
+// } else {
+//   //Local & DEV and anything else
+//   // Vue.use(VueMatomo, {
+//   //   host: TEST_MATOMO_HOST,
+//   //   siteId: 3,
+//   //   router: router,
+//   // });
+// }
 
-Vue.config.productionTip = false;
-Vue.config.devtools = process.env.NODE_ENV !== "production";
-Vue.config.performance = process.env.NODE_ENV !== "production";
+// Vue.config.productionTip = false;
+// Vue.config.devtools = process.env.NODE_ENV !== "production";
+// Vue.config.performance = process.env.NODE_ENV !== "production";
 
 /* eslint-disable no-new */
-new Vue({
-  el: "#app",
-  router,
-  store,
-  components: { App },
-  template: "<App/>",
+// new Vue({
+//   el: "#app",
+//   router,
+//   store,
+//   components: { App },
+//   template: "<App/>",
+//   // methods: {
+//   //   ...mapActions([FETCH_CONFIG]),
+//   // },
+//   // created() {
+//   //   // this.FETCH_CONFIG();
+//   //   // window._paq.push(["trackPageView"]); //To track pageview - Matomo
+//   // },
+// });
+
+const app = createApp(App);
+
+app.component('my-component', vSelect);
+app.component('my-component', FormInput);
+
+app.use(router);
+app.use(store);
+
+app.mixin({
   methods: {
-    ...mapActions([FETCH_CONFIG]),
+    ...store.dispatch,
   },
   created() {
-    this.FETCH_CONFIG();
-    window._paq.push(["trackPageView"]); //To track pageview - Matomo
+    // this.FETCH_CONFIG(); // Ensure FETCH_CONFIG is correctly defined in actions
+    // window._paq.push(["trackPageView"]); // Example of tracking pageview
   },
 });
+
+app.mount('#app');

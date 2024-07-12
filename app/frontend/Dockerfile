@@ -1,4 +1,4 @@
-FROM node:14.21.3-slim
+FROM node:18.12.0-slim
 
 # RUN apt-get -y update
 
@@ -13,7 +13,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install  --legacy-peer-deps
+RUN npm install  --legacy-peer-deps 
 
 COPY . /app
 

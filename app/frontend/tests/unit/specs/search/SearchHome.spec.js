@@ -17,7 +17,7 @@ import { SET_SEARCH_RESPONSE, SET_LAST_SEARCHED_PARAMS } from '@/registry/store/
 import fakePersonList from '../fakePersonList.js'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 const DEFAULT_REGISTRIES_STORE_GETTERS = {
   drillerOptions: jest.fn().mockReturnValue(fakeDrillerOptions),

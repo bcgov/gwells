@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import Router, { createRouter, createWebHistory } from 'vue-router'
 import * as Sentry from '@sentry/browser'
 
 import authenticate from '@/common/authenticate.js'
@@ -43,242 +43,252 @@ import Surveys from '@/surveys/views/Surveys.vue'
 // QaQc
 import QaQcDashboard from '@/qaqc/views/QaQcDashboard.vue'
 
-Vue.use(Router)
+const Test = {
+  template: '<div style={{borderColor: "red";}}>Test!</div>'
+}
 
-const router = new Router({
-  mode: 'history',
-  base: '/gwells/',
-  routes: [
-    // aquifers routes
-    {
-      path: '/aquifers/',
-      name: 'aquifers-home',
-      component: AquiferSearch
-    },
-    {
-      path: '/aquifers/:id(\\d+)',
-      component: AquiferView,
-      name: 'aquifers-view'
-    },
-    {
-      path: '/aquifers/:id/edit',
-      component: AquiferView,
-      name: 'aquifers-edit',
-      beforeEnter: AuthGuard,
-      props: { edit: true },
-      meta: {
-        edit: true,
-        app: 'aquifers'
-      }
-    },
-    {
-      path: '/bulk/',
-      component: BulkHome,
-      name: 'bulk-home'
-    },
-    {
-      path: '/bulk/well-aquifer-correlation',
-      component: BulkWellAquiferCorrelation,
-      name: 'bulk-well-aquifer-correlation'
-    },
-    {
-      path: '/bulk/well-documents',
-      component: BulkWellDocuments,
-      name: 'bulk-well-documents'
-    },
-    {
-      path: '/bulk/aquifer-documents',
-      component: BulkAquiferDocuments,
-      name: 'bulk-aquifer-documents'
-    },
-    {
-      path: '/bulk/vertical-aquifer-extents',
-      component: BulkVerticalAquiferExtents,
-      name: 'bulk-vertical-aquifer-extents'
-    },
-    {
-      path: '/new',
-      component: AquiferNew,
-      name: 'new',
-      meta: {
-        edit: true,
-        app: 'aquifers'
-      }
-    },
-
-    // Submissions routes
-    {
-      path: '/submissions/:id/edit',
-      name: 'SubmissionsEdit',
-      component: SubmissionsHome,
-      meta: {
-        edit: true,
-        app: 'submissions'
-      }
-    },
-    {
-      path: '/submissions/:id/submissions/:submissionId',
-      name: 'SubmissionDetail',
-      component: SubmissionDetail,
-      meta: {
-        edit: true
-      }
-    },
-    {
-      path: '/submissions/',
-      name: 'SubmissionsHome',
-      component: SubmissionsHome,
-      meta: {
-        edit: true,
-        app: 'submissions'
-      }
-    },
-
-    // Registries routes
-    {
-      path: '/registries/people/edit/:person_guid',
-      name: 'PersonDetailEdit',
-      component: PersonEdit,
-      beforeEnter: AuthGuard,
-      meta: {
-        // list of required permissions (e.g. "edit: true" means user needs edit permission)
-        edit: true,
-        app: 'registry'
-      }
-    },
-    {
-      path: '/registries/people/add',
-      name: 'PersonAdd',
-      component: PersonAdd,
-      beforeEnter: AuthGuard,
-      meta: {
-        edit: true,
-        app: 'registry'
-      }
-    },
-    {
-      path: '/registries/people/:person_guid/registrations/:registration_guid/applications/:application_guid',
-      name: 'ApplicationDetail',
-      component: ApplicationDetail,
-      beforeEnter: AuthGuard,
-      meta: {
-        view: true,
-        app: 'registry'
-      }
-    },
-    {
-      path: '/registries/people/:person_guid',
-      name: 'PersonDetail',
-      component: PersonDetail,
-      beforeEnter: AuthGuard,
-      meta: {
-        view: true,
-        app: 'registry'
-      }
-    },
-    {
-      path: '/registries/organizations/manage',
-      name: 'OrganizationEdit',
-      component: OrganizationEdit,
-      beforeEnter: AuthGuard,
-      meta: {
-        edit: true,
-        app: 'registry'
-      }
-    },
-    {
-      path: '/registries/organizations/add',
-      name: 'OrganizationAdd',
-      component: OrganizationAdd,
-      beforeEnter: AuthGuard,
-      meta: {
-        edit: true,
-        app: 'registry'
-      }
-    },
-    {
-      path: '/registries/',
-      name: 'SearchHome',
-      component: SearchHome
-    },
-    // Wells routes
-    {
-      path: '/groundwater-information',
-      name: 'groundwater-information',
-      component: GroundwaterInformation
-    },
-    {
-      path: '/well/:id',
-      name: 'wells-detail',
-      component: WellDetail
-    },
-    {
-      path: '/well/:wellTagNumber/aquifers',
-      name: 'well-aquifers',
-      component: EditWellAquifers,
-      beforeEnter: AuthGuard,
-      meta: {
-        edit: true,
-        app: 'aquifers'
-      }
-    },
-    {
-      path: '/surveys',
-      name: 'Surveys',
-      component: Surveys,
-      beforeEnter: AuthGuard,
-      meta: {
-        edit: true,
-        app: 'surveys'
-      }
-    },
-    {
-      path: '/qaqc',
-      name: 'qaqc',
-      component: QaQcDashboard
-    },
-    { path: '/search', redirect: '/' },
-    {
-      path: '/',
-      name: 'wells-home',
-      component: WellSearch
-    },
-    {
-      path: '*',
-      name: 'page-not-found',
-      component: PageNotFound
+// Vue.use(Router)
+const routes = [
+  // aquifers routes
+  {
+    path: '/aquifers/',
+    name: 'aquifers-home',
+    component: AquiferSearch
+  },
+  {
+    path: '/aquifers/:id(\\d+)',
+    component: AquiferView,
+    name: 'aquifers-view'
+  },
+  {
+    path: '/aquifers/:id/edit',
+    component: AquiferView,
+    name: 'aquifers-edit',
+    beforeEnter: AuthGuard,
+    props: { edit: true },
+    meta: {
+      edit: true,
+      app: 'aquifers'
     }
+  },
+  {
+    path: '/bulk/',
+    component: BulkHome,
+    name: 'bulk-home'
+  },
+  {
+    path: '/bulk/well-aquifer-correlation',
+    component: BulkWellAquiferCorrelation,
+    name: 'bulk-well-aquifer-correlation'
+  },
+  {
+    path: '/bulk/well-documents',
+    component: BulkWellDocuments,
+    name: 'bulk-well-documents'
+  },
+  {
+    path: '/bulk/aquifer-documents',
+    component: BulkAquiferDocuments,
+    name: 'bulk-aquifer-documents'
+  },
+  {
+    path: '/bulk/vertical-aquifer-extents',
+    component: BulkVerticalAquiferExtents,
+    name: 'bulk-vertical-aquifer-extents'
+  },
+  {
+    path: '/new',
+    component: AquiferNew,
+    name: 'new',
+    meta: {
+      edit: true,
+      app: 'aquifers'
+    }
+  },
 
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (about.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    // }
-  ],
-  scrollBehavior (to, from, savedPosition) {
+  // Submissions routes
+  {
+    path: '/submissions/:id/edit',
+    name: 'SubmissionsEdit',
+    component: SubmissionsHome,
+    meta: {
+      edit: true,
+      app: 'submissions'
+    }
+  },
+  {
+    path: '/submissions/:id/submissions/:submissionId',
+    name: 'SubmissionDetail',
+    component: SubmissionDetail,
+    meta: {
+      edit: true
+    }
+  },
+  {
+    path: '/submissions/',
+    name: 'SubmissionsHome',
+    component: SubmissionsHome,
+    meta: {
+      edit: true,
+      app: 'submissions'
+    }
+  },
+
+  // Registries routes
+  {
+    path: '/registries/people/edit/:person_guid',
+    name: 'PersonDetailEdit',
+    component: PersonEdit,
+    beforeEnter: AuthGuard,
+    meta: {
+      // list of required permissions (e.g. "edit: true" means user needs edit permission)
+      edit: true,
+      app: 'registry'
+    }
+  },
+  {
+    path: '/registries/people/add',
+    name: 'PersonAdd',
+    component: PersonAdd,
+    beforeEnter: AuthGuard,
+    meta: {
+      edit: true,
+      app: 'registry'
+    }
+  },
+  {
+    path: '/registries/people/:person_guid/registrations/:registration_guid/applications/:application_guid',
+    name: 'ApplicationDetail',
+    component: ApplicationDetail,
+    beforeEnter: AuthGuard,
+    meta: {
+      view: true,
+      app: 'registry'
+    }
+  },
+  {
+    path: '/registries/people/:person_guid',
+    name: 'PersonDetail',
+    component: PersonDetail,
+    beforeEnter: AuthGuard,
+    meta: {
+      view: true,
+      app: 'registry'
+    }
+  },
+  {
+    path:'/registries/organizations/manage',
+    name: 'OrganizationEdit',
+    component: OrganizationEdit,
+    beforeEnter: AuthGuard,
+    meta: {
+      edit: true,
+      app: 'registry'
+    }
+  },
+  {
+    path: '/registries/organizations/add',
+    name: 'OrganizationAdd',
+    component: OrganizationAdd,
+    beforeEnter: AuthGuard,
+    meta: {
+      edit: true,
+      app: 'registry'
+    }
+  },
+  {
+    path: '/registries/',
+    name: 'SearchHome',
+    component: SearchHome
+  },
+  // Wells routes
+  {
+    path: '/groundwater-information',
+    name: 'groundwater-information',
+    component: GroundwaterInformation
+  },
+  {
+    path: '/well/:id',
+    name: 'wells-detail',
+    component: WellDetail
+  },
+  {
+    path: '/well/:wellTagNumber/aquifers',
+    name: 'well-aquifers',
+    component: EditWellAquifers,
+    beforeEnter: AuthGuard,
+    meta: {
+      edit: true,
+      app: 'aquifers'
+    }
+  },
+  {
+    path: '/surveys',
+    name: 'Surveys',
+    component: Surveys,
+    beforeEnter: AuthGuard,
+    meta: {
+      edit: true,
+      app: 'surveys'
+    }
+  },
+  {
+    path: '/qaqc',
+    name: 'qaqc',
+    component: QaQcDashboard
+  },
+  { path: '/search', redirect: '/' },
+  {
+    path: '/',
+    name: 'wells-home',
+    component: WellSearch
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: 'page-not-found',
+    component: PageNotFound
+  }
+
+  // {
+  //   path: '/about',
+  //   name: 'about',
+  //   // route level code-splitting
+  //   // this generates a separate chunk (about.[hash].js) for this route
+  //   // which is lazy-loaded when the route is visited.
+  //   component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
+  // }
+];
+
+const router = createRouter({
+  history: createWebHistory('/gwells/'),
+  routes,
+  scrollBehavior(to, from, savedPosition) {
     if (to.name !== from.name) {
-      return { x: 0, y: 0 }
+      return { x: 0, y: 0 };
     }
   }
-})
+});
 
-router.beforeEach((to, from, next) => {
-  if (!router.app.$keycloak) {
-    authenticate.authenticate(store).then((keycloak) => {
-      if (keycloak.authenticated) {
-        Sentry.setUser({ username: keycloak.tokenParsed.preferred_username })
-      }
+const isAuthenticated = () => router.app?.$keycloak?.authenticated ?? false;
 
-      next()
-    }).catch((e) => {
-      next({ name: 'wells-home' })
-    })
-  } else {
+const authenciateUser = (next) => {
+  authenticate.authenticate(store).then((keycloak) => {
+    if (keycloak.authenticated) {
+      Sentry.setUser({ username: keycloak.tokenParsed.preferred_username })
+    }
+
     next()
-  }
-})
+  }).catch((e) => {
+    next({ name: 'wells-home' })
+  })
+}
+
+// router.beforeEach((to, from, next) => {
+//   if (!isAuthenticated) {
+//     authenciateUser(next)
+//   } else {
+//     next()
+//   }
+// })
 
 export default router

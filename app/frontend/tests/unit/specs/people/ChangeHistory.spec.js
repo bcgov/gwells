@@ -5,7 +5,7 @@ import moxios from 'moxios'
 import ChangeHistory from '@/common/components/ChangeHistory'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueMoment)
 
 describe('Notes.vue', () => {

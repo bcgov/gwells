@@ -5,7 +5,7 @@ import PersonNotes from '@/registry/components/people/PersonNotes'
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueMoment)
 
 const GET_DEFAULT_STORE_MODULES = () => {

@@ -23,7 +23,7 @@ import wellsStore from '@/wells/store/index.js'
 import documentState from '@/common/store/documents.js'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('WellSearch.vue', () => {
   const component = (options, storeState = {}) => {

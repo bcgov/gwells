@@ -38,7 +38,7 @@ import {
   SET_QAQC_SELECTED_TAB
 } from './mutations.types.js'
 
-Vue.use(Vuex)
+// Vue.use(Vuex)
 
 const cleanParams = (payload) => {
   // Clear any null or empty string values, to keep URLs clean.

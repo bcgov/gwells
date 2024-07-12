@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import Casings from '@/submissions/components/SubmissionForm/Casings.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Casings.vue', () => {
   let store
