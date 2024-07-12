@@ -43,10 +43,6 @@ import Surveys from '@/surveys/views/Surveys.vue'
 // QaQc
 import QaQcDashboard from '@/qaqc/views/QaQcDashboard.vue'
 
-const Test = {
-  template: '<div style={{borderColor: "red";}}>Test!</div>'
-}
-
 // Vue.use(Router)
 const routes = [
   // aquifers routes
@@ -269,7 +265,9 @@ const router = createRouter({
   }
 });
 
-const isAuthenticated = () => router.app?.$keycloak?.authenticated ?? false;
+const isAuthenticated = () => {
+  return router.app?.$keycloak?.authenticated ?? false;
+}
 
 const authenciateUser = (next) => {
   authenticate.authenticate(store).then((keycloak) => {
@@ -283,12 +281,12 @@ const authenciateUser = (next) => {
   })
 }
 
-// router.beforeEach((to, from, next) => {
-//   if (!isAuthenticated) {
-//     authenciateUser(next)
-//   } else {
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  if (!isAuthenticated()) {
+    authenciateUser(next)
+  } else {
+    next()
+  }
+})
 
-export default router
+export default router 

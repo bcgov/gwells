@@ -69,6 +69,7 @@ export default {
   computed: {
     ...mapGetters(['userRoles', 'config']),
     hasConfig () {
+      console.log("has config: ", Boolean(this.config))
       return Boolean(this.config)
     },
     getEnvironmentMessage () {

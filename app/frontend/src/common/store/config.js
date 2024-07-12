@@ -14,22 +14,21 @@ const config = {
   },
   getters: {
     config (state) {
+      console.log("config: ", state)
       return state.config
     }
   },
   actions: {
-    [FETCH_CONFIG] ({ commit }, params) {
+    async [FETCH_CONFIG] ({ commit }, params) {
       // We only fetch config if we don't have a copy cached
-      if (this.getters.config === null) {
-        return new Promise((resolve, reject) => {
-          ApiService.query('config', params)
-            .then((response) => {
-              commit(SET_CONFIG, response.data)
-            })
-            .catch((error) => {
-              reject(error)
-            })
-        })
+      if (getters.config === null) {
+        try {
+            const response = await ApiService.query('config', params)
+            console.log("config response", response)
+            commit(SET_CONFIG, response.data)
+        } catch (error) {
+          console.log("Error: ", error)
+        }
       }
     }
   }
