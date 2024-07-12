@@ -365,7 +365,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-row>
               <b-row>
                 <b-col cols="12" md="6"><span class="font-weight-bold">Liner Diameter:</span> {{ excludeZeroDecimals(well.liner_diameter) }} {{ well.liner_diameter ? 'inches':'' }}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ wexcludeZeroDecimals(ell.liner_thickness) }} {{ well.liner_thickness ? 'inches':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ excludeZeroDecimals(well.liner_thickness) }} {{ well.liner_thickness ? 'inches':'' }}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="12" md="6"><span class="font-weight-bold">Liner from:</span> {{ excludeZeroDecimals(well.liner_from) }} {{ well.liner_from ? '(ft bgl)':'' }}</b-col>
@@ -585,6 +585,7 @@ import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 import { TOOLTIP_TEXT } from '@/common/constants.js';
+import { nullBooleanToYesNo, excludeZeroDecimals } from '@/common/helpers/utils.js';
 
 export default {
   name: 'WellDetail',
@@ -676,6 +677,12 @@ export default {
     ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId', 'codes'])
   },
   methods: {
+    nullBooleanToYesNo(value) {
+      return nullBooleanToYesNo(value)
+    },
+    excludeZeroDecimals(value) {
+      return excludeZeroDecimals(value)
+    },
     handlePrint () {
       window.print()
     },

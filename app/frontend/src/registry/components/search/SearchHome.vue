@@ -94,13 +94,13 @@
                         class="mb-3"
                         :select-size="6">
                         <option value="">All</option>
+                        <!-- TODO: why isn't the cityList populated here: -->
                         <optgroup
                           v-for="prov in cityList[formatActivityForCityList]"
-                          v-if="prov.cities && prov.cities.length"
                           :key="prov.prov"
                           :label="prov.prov"
                         >
-                          <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
+                          <option v-for="city in prov?.cities" :key="`${city} ${prov?.prov}`" :value="city">{{ city }}</option>
                         </optgroup>
                     </b-form-select>
                     <b-alert
@@ -404,6 +404,9 @@ export default {
     }
   },
   methods: {
+    getCityList () {
+      return 
+    },
     resetSelectedSubactivities (subactivities) {
       this.searchParams.subactivities = subactivities
         ? subactivities.map(item => item.value)

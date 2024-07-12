@@ -197,7 +197,6 @@ const registriesStore = {
           const list = Object.assign({}, this.state.cityList)
           const data = response.data
           const listByProvince = []
-
           /**
            * iterate through each item in the response data and filter cities into
            * an array of provinces. e.g.:
@@ -230,6 +229,7 @@ const registriesStore = {
 
           // set the list for the activity (driller or well installer) to the list of provinces/cities
           list[activity] = listByProvince
+
           commit(SET_CITY_LIST, list)
         })
         .catch((error) => {

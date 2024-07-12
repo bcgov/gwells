@@ -571,6 +571,7 @@ import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'
 import codeToDescription from '@/common/codeToDescription.js'
+import { nullBooleanToYesNo } from '@/common/helpers/utils.js';
 
 export default {
   name: 'SubmissionPreview',
@@ -591,6 +592,9 @@ export default {
     }
   },
   methods: {
+    nullBooleanToYesNo(value) {
+      return nullBooleanToYesNo(value)
+    },
     fetchFiles () {
       this.$emit('fetchFiles')
     },
