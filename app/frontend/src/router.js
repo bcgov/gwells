@@ -266,7 +266,9 @@ const router = createRouter({
 });
 
 const isAuthenticated = () => {
-  return router.app?.$keycloak?.authenticated ?? false;
+  if (!router?.app || !router?.app?.$keycloack) return false;
+
+  return router.app.$keycloak;
 }
 
 const authenciateUser = (next) => {
@@ -281,9 +283,22 @@ const authenciateUser = (next) => {
   })
 }
 
-router.beforeEach((to, from, next) => {
-  if (!isAuthenticated()) {
-    authenciateUser(next)
+router.beforeEach(async (to, from, next) => {
+  if (!router?.app?.$keycloack) {
+    try {
+      const isAuthenticated = await authenticate.authenticate(store);
+
+      console.log("isAuthenticated: ", isAuthenticated);
+
+      if (keycloak?.authenticated) {
+        Sentry.setUser({ username: keycloak.tokenParsed.preferred_username })
+      }
+      next()
+    } catch (error) {
+      console.log("Keycloak Authentication ERROR: ", error);
+      next()
+    }
+
   } else {
     next()
   }

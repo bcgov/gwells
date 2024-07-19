@@ -40,10 +40,8 @@ export default {
     keyCloakLogin () {
       this.keycloak.init()
         .then(() => {
-          console.log("Keycloak initialized successfully", this);
           return this.keycloak.login({ idpHint: this.config.sso_idp_hint });
         }).then((authenticated) => {
-          console.log("keycloack login authenticated")
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
             if (window.localStorage) {
@@ -53,7 +51,6 @@ export default {
             }
           }
         }).catch((error) => {
-          console.error("Keycloak login failed", error);
           this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' });
       });
     },
@@ -72,7 +69,6 @@ export default {
   },
   watch: {
     keycloak (kc) {
-      console.log("keycloack watch: ", kc)
       if (kc) {
         if (window._paq && this.authenticated) {
           window._paq.push(["setCustomVariable", 1, "userType", this.keycloak.tokenParsed.identity_provider]);

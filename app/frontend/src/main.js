@@ -136,12 +136,12 @@ app.use(store);
 
 app.mixin({
   methods: {
-    ...store.dispatch,
+    ...mapActions([FETCH_CONFIG])
   },
   created() {
-    // this.FETCH_CONFIG(); // Ensure FETCH_CONFIG is correctly defined in actions
-    // window._paq.push(["trackPageView"]); // Example of tracking pageview
-  },
+    this.FETCH_CONFIG()
+    // window._paq.push(["trackPageView"]);
+  }
 });
 
 app.mount('#app');
