@@ -286,16 +286,13 @@ const authenciateUser = (next) => {
 router.beforeEach(async (to, from, next) => {
   if (!router?.app?.$keycloack) {
     try {
-      const isAuthenticated = await authenticate.authenticate(store);
-
-      console.log("isAuthenticated: ", isAuthenticated);
+      const keycloak = await authenticate.authenticate(store);
 
       if (keycloak?.authenticated) {
         Sentry.setUser({ username: keycloak.tokenParsed.preferred_username })
       }
       next()
     } catch (error) {
-      console.log("Keycloak Authentication ERROR: ", error);
       next()
     }
 
