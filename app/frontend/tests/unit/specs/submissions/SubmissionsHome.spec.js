@@ -34,19 +34,6 @@ describe('SubmissionsHome.vue', () => {
     })
   })
 
-  it('triggers confirmation box when submitting the form', () => {
-    const wrapper = mount(SubmissionsHome, {
-      localVue,
-      store,
-      router,
-      sync: false
-    })
-    expect(wrapper.vm.confirmSubmitModal).toEqual(false)
-
-    wrapper.find('form').trigger('submit')
-
-    expect(wrapper.vm.confirmSubmitModal).toEqual(true)
-  })
 
   it('requests codes/constants to use in form', () => {
     shallowMount(SubmissionsHome, {

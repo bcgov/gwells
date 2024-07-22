@@ -855,7 +855,7 @@ export default {
         // that the data will be available by the time those components render.
         this.$store.dispatch(FETCH_WELL_TAGS)
         this.activityType = 'CON'
-        this.formIsFlat = false
+        this.formIsFlat = true
       }
       this.fetchFiles()
       // Set initial form fields for comparison with user input changes
