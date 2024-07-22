@@ -286,8 +286,6 @@ export function wellsBaseAndArtesianLayer (options = {}) {
     'circle-radius': 3,
     'circle-stroke-color': [
       'case',
-      ['==', ['get', 'well_status'], 'CLOSURE'], 'transparent',
-      ['==', ['get', 'well_status'], 'ABANDONED'], 'transparent',
       ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'transparent'
     ],
@@ -328,8 +326,6 @@ export function searchedWellsLayer (options = {}) {
     'circle-radius': 5,
     'circle-stroke-color': [
       'case',
-      ['==', ['get', 'well_status'], 'CLOSURE'], 'transparent',
-      ['==', ['get', 'well_status'], 'ABANDONED'], 'transparent',
       ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
       'black'
     ],
