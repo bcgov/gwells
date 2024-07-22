@@ -59,29 +59,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <h1>Not Found</h1>
                 <p>The page you are looking for was not found.</p>
               </div>
+              <!-- removed :events="events" from below - this is the event emitter for the well history TODO: do we need this initially? -->
               <activity-submission-form
-                v-else
                 ref="activitySubmissionForm"
                 :form="form"
-                :events="events"
-                :submissionsHistory="submissionsHistory"
-                :isPublished="isPublished"
-                :activityType.sync="activityType"
-                :sections="displayFormSection"
                 :formSteps="formSteps"
+                :submissionsHistory="submissionsHistory"
+                :isStaffEdit="isStaffEdit"
+                :sections="displayFormSection"
+                :isPublished="isPublished"
                 :errors="errors"
-                :formIsFlat.sync="formIsFlat"
                 :trackValueChanges="trackValueChanges"
                 :formSubmitLoading="formSubmitLoading"
-                :isStaffEdit="isStaffEdit"
                 :loading="loading"
                 :uploadedFiles="uploadedFiles"
                 :formChanges="formChanges"
-                v-on:preview="handlePreviewButton"
+                v-model:formIsFlat="formIsFlat"
+                v-model:activityType="activityType"
                 v-on:submit_edit="formSubmit"
-                v-on:resetForm="resetForm"
-                v-on:fetchFiles="fetchFiles"
-                v-on:editWater="editWater"
                 />
             </div>
 
@@ -855,7 +850,7 @@ export default {
         // that the data will be available by the time those components render.
         this.$store.dispatch(FETCH_WELL_TAGS)
         this.activityType = 'CON'
-        this.formIsFlat = true
+        this.formIsFlat = false
       }
       this.fetchFiles()
       // Set initial form fields for comparison with user input changes
