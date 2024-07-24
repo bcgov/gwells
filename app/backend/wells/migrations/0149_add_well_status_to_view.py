@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
     a different well icon on the well search map if this data exists.
     """
     dependencies = [
-        ('wells', '0145_auto_20231127_2105'),
+        ('wells', '0148_auto_20240105_qaqc_data'),
     ]
 
     operations = [

@@ -8,7 +8,6 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
             well_tag_number,
             aquifer_id,
             artesian_conditions AS artesian,
-            well_status,
             COALESCE
               (hydraulic_conductivity::text, transmissivity::text, storativity::text)
               IS NOT NULL 
