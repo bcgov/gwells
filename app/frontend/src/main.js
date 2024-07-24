@@ -128,8 +128,8 @@ ApiService.init();
 
 const app = createApp(App);
 
-app.component('my-component', vSelect);
-app.component('my-component', FormInput);
+app.component('v-select', vSelect);
+app.component('form-input', FormInput);
 
 app.use(router);
 app.use(store);

@@ -13,21 +13,6 @@
       ],
       "port": 3000,
       "host": "localhost"
-    },
-    {
-      "type": "chrome",
-      "request": "launch",
-      "name": "Launch Chrome against localhost",
-      "url": "http://localhost:8080",
-      "webRoot": "${workspaceFolder}/app/frontend",
-      "sourceMaps": true,
-      "trace": true,
-      "sourceMapPathOverrides": {
-        "webpack:///src/*": "${webRoot}/*",
-        "webpack:///*": "*",
-        "webpack:///./~/*": "${workspaceFolder}/app/frontend/node_modules/*",
-        "meteor://💻app/*": "${webRoot}/*"
-      }
     }
   ]
 }

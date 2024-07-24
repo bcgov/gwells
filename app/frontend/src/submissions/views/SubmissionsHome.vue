@@ -61,6 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
               <!-- removed :events="events" from below - this is the event emitter for the well history TODO: do we need this initially? -->
               <activity-submission-form
+                v-else
                 ref="activitySubmissionForm"
                 :form="form"
                 :formSteps="formSteps"
@@ -77,9 +78,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-model:formIsFlat="formIsFlat"
                 v-model:activityType="activityType"
                 v-on:submit_edit="formSubmit"
+                v-on:preview="handlePreviewButton"
+                v-on:resetForm="resetForm"
+                v-on:fetchFiles="fetchFiles"
+                v-on:editWater="editWater" 
                 />
             </div>
-
+            <!--TODO: :events="events" are breaking the Submit Report page. Need to bring in new event emitter? -->
             <!-- Form submission confirmation -->
             <b-modal
                 v-model="confirmSubmitModal"
@@ -850,7 +855,7 @@ export default {
         // that the data will be available by the time those components render.
         this.$store.dispatch(FETCH_WELL_TAGS)
         this.activityType = 'CON'
-        this.formIsFlat = false
+        this.formIsFlat = true
       }
       this.fetchFiles()
       // Set initial form fields for comparison with user input changes

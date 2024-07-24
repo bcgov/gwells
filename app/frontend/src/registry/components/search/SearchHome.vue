@@ -94,7 +94,6 @@
                         class="mb-3"
                         :select-size="6">
                         <option value="">All</option>
-                        <!-- TODO: why isn't the cityList populated here: -->
                         <optgroup
                           v-for="prov in cityList[formatActivityForCityList]"
                           :key="prov.prov"
