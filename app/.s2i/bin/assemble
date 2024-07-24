@@ -56,6 +56,15 @@ fi
 
 cd ..
 cd frontend
+
+export NVM_DIR="$HOME/.nvm"
+mkdir -p $NVM_DIR
+curl -o- https://github.com/nvm-sh/nvm/releases/tag/v0.39.7/install.sh | bash
+
+source $NVM_DIR/nvm.sh
+nvm install 18
+nvm use 18
+
 npm install
 # Run unit tests in build stage with the code below
 echo "--> testing and building frontend files"
