@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "e90dc2af-da89-4df4-a49c-71d29b09c874",
+		"_postman_id": "8f8fdc37-50fd-4fe6-a3b4-e51a83c1c108",
 		"name": "GWELLS Submissions API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "33152761"
+		"_exporter_id": "37028467"
 	},
 	"item": [
 		{
@@ -391,7 +391,6 @@
 									},
 									{
 										"key": "Content-Type",
-										"name": "Content-Type",
 										"value": "application/json",
 										"type": "text"
 									}
@@ -2018,6 +2017,74 @@
 					"name": "Decommission",
 					"item": [
 						{
+							"name": "Log in Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"pm.environment.set(\"token\", jsonData.access_token);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"A token was returned\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+											"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{client_secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{client_id}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{auth_server}}",
+									"host": [
+										"{{auth_server}}"
+									]
+								},
+								"description": "Get token (log in)"
+							},
+							"response": []
+						},
+						{
 							"name": "Decommission well",
 							"event": [
 								{
@@ -2598,6 +2665,74 @@
 							]
 						},
 						{
+							"name": "Log in Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json()",
+											"pm.environment.set(\"token\", jsonData.access_token);",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.expect(pm.response.code, \"Login was not successful\").to.equal(200);",
+											"})",
+											"",
+											"pm.test(\"A token was returned\", function () {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData.access_token, \"a token was not returned\").to.be.ok;",
+											"    pm.expect(jsonData.access_token.length).to.be.above(36);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{client_secret}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{client_id}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/x-www-form-urlencoded"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "client_credentials",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{auth_server}}",
+									"host": [
+										"{{auth_server}}"
+									]
+								},
+								"description": "Get token (log in)"
+							},
+							"response": []
+						},
+						{
 							"name": "staff_edit Get",
 							"event": [
 								{
@@ -2945,7 +3080,6 @@
 									},
 									{
 										"key": "Content-Type",
-										"name": "Content-Type",
 										"value": "application/json",
 										"type": "text"
 									}
@@ -3080,7 +3214,6 @@
 									},
 									{
 										"key": "Content-Type",
-										"name": "Content-Type",
 										"value": "application/x-www-form-urlencoded",
 										"type": "text"
 									}

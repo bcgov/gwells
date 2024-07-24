@@ -191,7 +191,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <p class="font-weight-bold">3) Parcel Identifier (PID)</p>
           <form-input
               id="legalPID"
-              type="number"
+              type="text"
               hint="*Input a 9 digit number (including leading zeroes, if necessary)"
               v-model="legalPIDInput"
               :errors="errors['legal_pid']"

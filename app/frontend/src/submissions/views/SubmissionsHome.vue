@@ -275,6 +275,10 @@ export default {
         data.well = data.well.well_tag_number
       }
 
+      if (data.legal_pid) {
+        data.legal_pid = data.legal_pid.replace(/-/g, '');
+      }
+
       if (!this.isStaffEdit) {
         let skipKeys = []
         // we need both ground elevation and its method to be sent for validation on submission
@@ -322,7 +326,7 @@ export default {
         if (window.location.href.indexOf('localhost:8080') > -1 ||
             window.location.href.indexOf('gwells-dev-pr') > -1 ||
             window.location.href.indexOf('gwells-staging') > -1
-        ) { 
+        ) {
           testEnv = true
         }
 
@@ -587,7 +591,7 @@ export default {
     },
     groundwaterProtectionRegulationValidation(errors) {
       const {
-        owner_full_name, 
+        owner_full_name,
         owner_mailing_address,
         owner_city,
         owner_province_state,
@@ -614,7 +618,7 @@ export default {
       }
     },
     validateWellIdentificationPlateFields(errors) {
-      const { 
+      const {
         well_class,
         identification_plate_number,
         well_identification_plate_attached,
@@ -622,7 +626,7 @@ export default {
 
       const validateWellClasses = [WELL_CLASS.WATER_SUPPLY, WELL_CLASS.INJECTION, WELL_CLASS.RECHARGE]
       const isWellIdentificationPlateToBeVerified = validateWellClasses.includes(well_class)
-      
+
       if (isWellIdentificationPlateToBeVerified == false) { return; }
 
       if (!identification_plate_number) {
@@ -633,11 +637,11 @@ export default {
       }
     },
     validateWellFields(errors) {
-      const { 
-        work_start_date, 
-        work_end_date, 
-        drilling_methods, 
-        total_depth_drilled, 
+      const {
+        work_start_date,
+        work_end_date,
+        drilling_methods,
+        total_depth_drilled,
         finished_well_depth
       } = this.form;
 
@@ -650,19 +654,19 @@ export default {
       if (drilling_methods.length === 0) {
         errors.drilling_methods = ['Drilling Methods Required.'];
       }
-      if (!total_depth_drilled) { 
-        errors.total_depth_drilled = ['Total Depth Drilled Required.']; 
+      if (!total_depth_drilled) {
+        errors.total_depth_drilled = ['Total Depth Drilled Required.'];
       }
-      if (!finished_well_depth) { 
-        errors.finished_well_depth = ['Finished Well Depth Required.']; 
+      if (!finished_well_depth) {
+        errors.finished_well_depth = ['Finished Well Depth Required.'];
       }
     },
     newlyConstructedWellValidation(errors) {
-      const { 
+      const {
         work_start_date,
         work_end_date,
       } = this.form
-      
+
       const mandatoryLicensingDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
 
       const workStartDatePastWorkEndDate = ((work_start_date !== '' && work_end_date !== '') && work_start_date > work_end_date);
@@ -702,7 +706,8 @@ export default {
       const locationAddressValidate = !!street_address && !!city;
       // for legalDescription a user is only required to fill in a minimum one field
       const legalDescriptionValidate = legalDescriptionFields.some((item) => !!item);
-      const pidAddressValidate = legal_pid > 0;
+      const pidNum = legal_pid.replace(/-/g, '');
+      const pidAddressValidate = Number(pidNum) > 0;
 
       if(locationAddressValidate || legalDescriptionValidate || pidAddressValidate) { return; }
       errors.well_location_section = ['Well location not filled out'];
@@ -729,14 +734,14 @@ export default {
           if (!this.form.latitude){
             errors.latitude = ['Valid Latitude Required'];
           }
-          if (!this.form.longitude) { 
+          if (!this.form.longitude) {
             errors.longitude = ['Valid Longitude Required']
           }
         } else if (wellCoordsNotWithinBC) {
           errors.position = ['Coordinates not within BC']
         }
       }
-      
+
       // Always validate well_class and intended_water_use except for ALT or DEC submissions with a
       // well_tag_number specified
       if (validateWellClassAndIntendedWaterUse) {
