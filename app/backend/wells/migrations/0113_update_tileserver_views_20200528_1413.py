@@ -10,6 +10,7 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
             well_tag_number,
             aquifer_id,
             artesian_flow > 0 AS artesian,
+            well_status,
             street_address,
             identification_plate_number,
             ems,

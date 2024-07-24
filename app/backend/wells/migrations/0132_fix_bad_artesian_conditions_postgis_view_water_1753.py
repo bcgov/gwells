@@ -9,6 +9,7 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
             well_tag_number,
             aquifer_id,
             artesian_conditions AS artesian,
+            well_status,
             street_address,
             identification_plate_number,
             observation_well_number,
