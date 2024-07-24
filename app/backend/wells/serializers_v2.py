@@ -44,6 +44,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
     """ serializes well locations """
 
     artesian = serializers.SerializerMethodField()
+    well_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Well
@@ -56,6 +57,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
             'city',
             'ems',
             'artesian',
+            "well_status",
             'aquifer_id',
             'storativity',
             'transmissivity',
@@ -64,6 +66,9 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
 
     def get_artesian(self, obj):
         return obj.artesian_conditions
+
+    def get_well_status(self, obj):
+        return obj.well_status.description
 
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):

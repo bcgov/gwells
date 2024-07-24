@@ -115,8 +115,8 @@ export class PulsingClosedWellImage extends PulsingDotImage {
     super(map, {
       size: 90,
       dotColour: 'rgba(48, 45, 87, 1)',
-      dotStrokeColour: 'rgba(0, 0, 0, 1)',
-      pulseColour: 'rgba(173, 171, 199, %d)'
+      dotStrokeColour: 'rgba(48, 45, 87, 1)',
+      pulseColour: 'rgba(48, 45, 87, %d)'
     })
   }
 }
