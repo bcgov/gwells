@@ -57,7 +57,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
             'city',
             'ems',
             'artesian',
-            "well_status",
+            'well_status',
             'aquifer_id',
             'storativity',
             'transmissivity',
@@ -68,8 +68,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
         return obj.artesian_conditions
 
     def get_well_status(self, obj):
-        return obj.well_status.description
-
+        return obj.well_status_code.description
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
     aquifer_id = serializers.IntegerField()

@@ -247,7 +247,7 @@ export default {
           DATABC_CADASTREL_LAYER,
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
-          focusedWellsLayer(),
+          focusedWellsLayer()
         ]
       }
     },

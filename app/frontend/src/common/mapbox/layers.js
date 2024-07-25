@@ -278,8 +278,8 @@ export function wellsBaseAndArtesianLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
-      ['==', ['get', 'well_status'], 'CLOSURE'], '#302d57',
-      ['==', ['get', 'well_status'], 'ABANDONED'], '#302d57',
+      ['==', ['get', 'well_status_code'], 'CLOSURE'], '#302d57',
+      ['==', ['get', 'well_status_code'], 'ABANDONED'], '#302d57',
       ['to-boolean', ['get', 'artesian']], '#1099FE',
       '#0162FE'
     ],
