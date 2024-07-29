@@ -26,6 +26,7 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
                 WHERE aquifer_parameters.well_tag_number = well.well_tag_number
             ) as has_aquifer_parameters
         FROM well
+        left join well_status_code on well_status_code.well_status_code = well.well_status_code
         WHERE geom IS NOT NULL;
         GRANT SELECT ON postgis_ftw.gwells_well_view TO ftw_reader;
 """
