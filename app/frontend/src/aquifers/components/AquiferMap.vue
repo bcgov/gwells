@@ -83,6 +83,7 @@ import observationWellInactiveLegendSrc from '../../common/assets/images/owells-
 import observationWellActiveLegendSrc from '../../common/assets/images/owells-active.svg'
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import wellsHydraulicLegendSrc from '../../common/assets/images/wells-hydraulic.svg'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
@@ -149,13 +150,17 @@ export default {
             {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
+            },
+            {
+              imageSrc: wellsClosedLegendSrc,
+              label: 'decommissioned'
             }
           ]
         },
         {
           show: false,
           id: WELLS_AQUIFER_PARAMETER_LAYER_ID,
-          label: 'Wells - aquifer parameters', 
+          label: 'Wells - aquifer parameters',
           imageSrc: wellsHydraulicLegendSrc
         },
         {

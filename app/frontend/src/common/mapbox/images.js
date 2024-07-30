@@ -110,6 +110,17 @@ export class PulsingArtesianWellImage extends PulsingDotImage {
   }
 }
 
+export class PulsingClosedWellImage extends PulsingDotImage {
+  constructor (map) {
+    super(map, {
+      size: 90,
+      dotColour: 'rgba(48, 45, 87, 1)',
+      dotStrokeColour: 'rgba(48, 45, 87, 1)',
+      pulseColour: 'rgba(48, 45, 87, %d)'
+    })
+  }
+}
+
 export function buildLeafletStyleMarker (longitude, latitude, options = {}) {
   const element = document.createElement('div')
   element.className = 'map-pin'

@@ -1,4 +1,4 @@
-version: '3.7'
+# version: '3.7'
 # NOTE For Red Hat or other images on the internal registry please login as follows:
 #     1. Be logged into the BC Gov OpenShift Console
 #          https://console.pathfinder.gov.bc.ca:8443/console/catalog)

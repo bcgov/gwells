@@ -39,19 +39,21 @@ import {
   focusedWellsLayer,
   FOCUSED_WELL_IMAGE_ID,
   FOCUSED_WELL_ARTESIAN_IMAGE_ID,
+  FOCUSED_WELL_CLOSED_IMAGE_ID,
   wellLayerFilter,
   SEARCHED_WELLS_LAYER_ID,
-  WELLS_SOURCE,
+  WELLS_SOURCE
 } from '../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl, SearchOnMoveControl, ClearSearchCriteriaControl } from '../../common/mapbox/controls'
 import { createWellPopupElement } from '../popup'
-import { PulsingWellImage, PulsingArtesianWellImage } from '../../common/mapbox/images'
+import { PulsingWellImage, PulsingArtesianWellImage, PulsingClosedWellImage } from '../../common/mapbox/images'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, buildWellsGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../common/mapbox/geometry'
 
 import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.types'
 
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
+import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import { mapGetters } from 'vuex'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
@@ -61,7 +63,7 @@ const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
   'street_address',
   'is_published'
 ]
-const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_conditions'])
+const FOCUSED_WELL_PROPERTIES = WELL_FEATURE_PROPERTIES_FOR_POPUP.concat(['artesian_conditions', 'well_status'])
 
 export default {
   name: 'SearchMap',
@@ -88,6 +90,10 @@ export default {
               imageSrc: wellsArtesianLegendSrc,
               label: 'artesian'
             },
+            {
+              imageSrc: wellsClosedLegendSrc,
+              label: 'decommissioned'
+            }
           ]
         }
       ],
@@ -200,6 +206,7 @@ export default {
       this.map.on('load', () => {
         this.map.addImage(FOCUSED_WELL_ARTESIAN_IMAGE_ID, new PulsingArtesianWellImage(this.map), { pixelRatio: 2 })
         this.map.addImage(FOCUSED_WELL_IMAGE_ID, new PulsingWellImage(this.map), { pixelRatio: 2 })
+        this.map.addImage(FOCUSED_WELL_CLOSED_IMAGE_ID, new PulsingClosedWellImage(this.map), { pixelRatio: 2 })
 
         const tooltipLayers = {
           [WELLS_BASE_AND_ARTESIAN_LAYER_ID]: {
@@ -240,7 +247,7 @@ export default {
           DATABC_CADASTREL_LAYER,
           wellsBaseAndArtesianLayer({ filter: wellLayerFilter(this.showUnpublished) }),
           searchedWellsLayer(),
-          focusedWellsLayer(),
+          focusedWellsLayer()
         ]
       }
     },

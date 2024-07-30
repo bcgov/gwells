@@ -17,7 +17,7 @@ export const FOCUSED_WELLS_LAYER_ID = 'focused-wells'
 export const FOCUSED_WELLS_ARTESIAN_LAYER_ID = 'focused-wells-artesian'
 export const FOCUSED_WELL_IMAGE_ID = 'focused-well-image'
 export const FOCUSED_WELL_ARTESIAN_IMAGE_ID = 'focused-artesian-well-image'
-
+export const FOCUSED_WELL_CLOSED_IMAGE_ID = 'focused-closed-well-image'
 export const SEARCHED_REGISTRIES_SOURCE_ID = 'searched-registries-source'
 export const SEARCHED_REGISTRIES_LAYER_ID = 'searched-registries-layer'
 
@@ -278,6 +278,8 @@ export function wellsBaseAndArtesianLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
+      ['==', ['get', 'well_status_code'], 'CLOSURE'], '#302d57',
+      ['==', ['get', 'well_status_code'], 'ABANDONED'], '#302d57',
       ['to-boolean', ['get', 'artesian']], '#1099FE',
       '#0162FE'
     ],
@@ -316,6 +318,8 @@ export function searchedWellsLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
+      ['==', ['get', 'well_status'], 'CLOSURE'], '#302d57',
+      ['==', ['get', 'well_status'], 'ABANDONED'], '#302d57',
       ['to-boolean', ['get', 'artesian_conditions']], '#1099FE',
       '#0162FE'
     ],
@@ -337,6 +341,8 @@ export function focusedWellsLayer (options = {}) {
   const layout = defaultsDeep(options.layout, {
     'icon-image': [
       'case',
+      ['==', ['get', 'well_status'], 'CLOSURE'], FOCUSED_WELL_CLOSED_IMAGE_ID,
+      ['==', ['get', 'well_status'], 'ABANDONED'], FOCUSED_WELL_CLOSED_IMAGE_ID,
       ['to-boolean', ['get', 'artesian_conditions']], FOCUSED_WELL_ARTESIAN_IMAGE_ID,
       FOCUSED_WELL_IMAGE_ID
     ]

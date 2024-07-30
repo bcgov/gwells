@@ -155,6 +155,7 @@ class WellLocationListV2APIView(ListAPIView):
             "identification_plate_number",
             "street_address",
             "city",
+            "well_status",
             "artesian_conditions",
             "storativity",
             "transmissivity",
