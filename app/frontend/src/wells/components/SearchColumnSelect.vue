@@ -229,7 +229,6 @@ export default {
   methods: {
     handleReset () {
       this.$emit('reset')
-      this.localSelectedColumnIds = [...DEFAULT_COLUMNS]
     },
     showModal () {
       this.$refs['column-select-modal'].show()
