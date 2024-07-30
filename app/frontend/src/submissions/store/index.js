@@ -16,7 +16,7 @@ import ApiService from '@/common/services/ApiService.js'
 import { FETCH_CODES, FETCH_WELL_TAGS } from './actions.types.js'
 import { SET_CODES, SET_ERROR, SET_WELLS } from './mutations.types.js'
 
-Vue.use(Vuex)
+// Vue.use(Vuex)
 
 const submissionStore = {
   state: {

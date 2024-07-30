@@ -124,7 +124,7 @@
         <div class="mt-5 note-container" v-if="notes && notes.length">
           <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
             <p>
-              <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
+              <span class="font-weight-bold">{{ note.author }}</span> ({{ formatDate(note.date) }}):
               {{ note.note }}
             </p>
             <div class="crud-options">

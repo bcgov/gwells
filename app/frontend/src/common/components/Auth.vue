@@ -38,8 +38,10 @@ export default {
       }
     },
     keyCloakLogin () {
-      this.keycloak.init().success(() => {
-        this.keycloak.login({ idpHint: this.config.sso_idp_hint }).success((authenticated) => {
+      this.keycloak.init()
+        .then(() => {
+          return this.keycloak.login({ idpHint: this.config.sso_idp_hint });
+        }).then((authenticated) => {
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
             if (window.localStorage) {
@@ -48,10 +50,9 @@ export default {
               localStorage.setItem('idToken', this.keycloak.idToken)
             }
           }
-        }).error((e) => {
-          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
-        })
-      })
+        }).catch((error) => {
+          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' });
+      });
     },
     keyCloakLogout () {
       // This should log the user out, but unfortunately does not delete the cookie storing the user

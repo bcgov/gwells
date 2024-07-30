@@ -123,7 +123,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               @search="onWellTagSearch"
               ref="wellTagNumber"
               @search:blur="handleSearchBlur">
-              <template slot="no-options">
+              <template #no-options>
                   Search by well tag number or owner name
               </template>
               <template v-slot:cell(option)="option">

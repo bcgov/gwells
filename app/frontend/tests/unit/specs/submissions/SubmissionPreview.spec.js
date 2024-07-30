@@ -5,7 +5,7 @@ import SubmissionPreview from '@/submissions/components/SubmissionPreview/Submis
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('filterBlankRows', () => {
   let store

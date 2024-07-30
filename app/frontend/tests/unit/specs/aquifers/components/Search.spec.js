@@ -24,7 +24,7 @@ import aquiferStore from '@/aquifers/store/index.js'
 jest.mock('axios')
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueMoment)
 
 const aquiferFixture = {

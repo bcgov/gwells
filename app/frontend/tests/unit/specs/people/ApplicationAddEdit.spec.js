@@ -5,7 +5,7 @@ import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import fakeOptions from '../fakeDrillerOptions'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('ApplicationAddEdit.vue', () => {
   describe('When loaded', () => {

@@ -11,7 +11,7 @@ import ApiService from '@/common/services/ApiService.js'
 jest.mock('@/common/services/ApiService.js')
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 const GET_DEFAULT_STORE_MODULES = () => {
   return {

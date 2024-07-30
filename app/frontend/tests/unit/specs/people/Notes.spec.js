@@ -5,7 +5,7 @@ import Notes from '@/registry/components/people/Notes'
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueMoment)
 
 describe('Notes.vue', () => {

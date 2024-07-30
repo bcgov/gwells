@@ -200,14 +200,14 @@ export default {
       'searchMapZoom',
       'constrainSearch',
       'searchInProgress',
-      'searchQueryParams'
+      // 'searchQueryParams'
     ]),
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
     },
-    hasSearchParams (state) {
-      return Object.keys(this.searchQueryParams).length > 0
-    }
+    // hasSearchParams (state) {
+    //   return Object.keys(this.searchQueryParams).length > 0
+    // }
   },
   methods: {
     handleScroll () {
@@ -439,7 +439,7 @@ export default {
       }
       cancelSource = axios.CancelToken.source()
       const params = {
-        ...this.searchQueryParams,
+        // ...this.searchQueryParams,
         ...options
       }
       this.searchBCInProgress = true

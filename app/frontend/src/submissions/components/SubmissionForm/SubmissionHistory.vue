@@ -42,7 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
           <template v-slot:cell(date_entered)="data">
             <div>
-              <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
+              <span v-if="data.item.create_date">{{ formatDate(data.item.create_date) }}</span>
             </div>
           </template>
           <template v-slot:cell(entered_by)="data">
@@ -114,6 +114,11 @@ export default {
       })
     },
     ...mapGetters(['codes'])
+  },
+  methods: {
+    formatDate(date) {
+      moment(date).format("MMMM Do YYYY [at] LT")
+    }
   }
 }
 </script>

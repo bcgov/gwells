@@ -1,6 +1,6 @@
-import { excludeZeroDecimals } from '@/common/filters'
+import { excludeZeroDecimals } from '@/common/helps/utils.js'
 
-const excludeZeroDecimalsFixture = [
+const excludeZeroDecimalsUtil = [
   { was: 1.500, should: 1.5 },
   { was: 1.000, should: 1 },
   { was: 1.006, should: 1.006 },
@@ -18,9 +18,9 @@ const excludeZeroDecimalsFixture = [
   { was: ' ', should: ' ' }
 ]
 
-describe('filters', () => {
+describe('utils', () => {
   it('prove excludeZeroDecimals', () => {
-    excludeZeroDecimalsFixture.forEach(c => {
+    excludeZeroDecimalsUtil.forEach(c => {
       expect(excludeZeroDecimals(c.was)).toEqual(c.should)
     })
   })

@@ -29,7 +29,7 @@ import ViewComponent from '@/aquifers/components/View.vue'
 jest.mock('axios')
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 const aquiferFixture = {
   aquifer_id: '4',

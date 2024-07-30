@@ -129,7 +129,7 @@ export default {
               token,
               refreshToken,
               idToken }
-            ).success((result) => {
+            ).then((result) => {
               if (instance.authenticated) {
                 // We may have been authenticated, but the token could be expired.
                 instance.updateToken(60).success(() => {
@@ -156,7 +156,7 @@ export default {
                 store.commit('SET_KEYCLOAK', instance)
                 resolve(instance)
               }
-            }).error((e) => {
+            }).catch((e) => {
               reject(e)
             })
           }

@@ -22,7 +22,7 @@ import wellsStore from '@/wells/store/index.js'
 import documentState from '@/common/store/documents.js'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('WellDetail.vue', () => {
   const id = 113169

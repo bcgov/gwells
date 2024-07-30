@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import Screens from '@/submissions/components/SubmissionForm/Screens.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Screens.vue', () => {
   let store

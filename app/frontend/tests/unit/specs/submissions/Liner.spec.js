@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import Liner from '@/submissions/components/SubmissionForm/Liner.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Liner.vue', () => {
   let store

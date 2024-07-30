@@ -2,27 +2,44 @@ if (process.env.API_TARGET) {
   console.log(`Targetting the API ${process.env.API_TARGET}`)
 }
 
+// const { VueLoaderPlugin } = require('vue-loader')
+// const webpack = require('webpack');
+process.env.VUE_CLI_TEST = false
+
 module.exports = {
   lintOnSave: false,
   runtimeCompiler: true,
   publicPath: process.env.NODE_ENV === 'production' ? '/gwells/' : '/',
   configureWebpack: {
+    devtool: 'source-map',
     resolve: {
       alias: {
         moment: 'moment/src/moment',
-        lodash: 'lodash-es'
-      }
-    },
-    devServer: {
-      watchOptions: {
-        ignored: /node_modules/,
-        poll: 1000
+        lodash: 'lodash-es',
+        vue$: '@vue/compat'
+      },
+      fallback: {
+        'querystring': require.resolve('querystring-es3')
       }
     }
   },
-  transpileDependencies: [
-    '@geolonia/mbgl-gesture-handling'
-  ],
+  chainWebpack: config => {
+    config.resolve.alias.set('vue', '@vue/compat')
+    config.module
+      .rule('vue')
+      .use('vue-loader')
+      .tap(options => {
+        return {
+          ...options,
+          compilerOptions: {
+            compatConfig: {
+              MODE: 2 // Enable Vue 2 compat mode
+            }
+          }
+        }
+      })
+  },
+  transpileDependencies: ['@geolonia/mbgl-gesture-handling'],
   devServer: {
     proxy: {
       '^/api/': {

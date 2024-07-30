@@ -115,23 +115,23 @@
                 {{ removeRegionSuffix(row[column.param]) }}
               </template>
               <template v-else-if="column.param === 'street_address'">
-                {{ row | streetAddressFormat }}
+                streetAddressFormat(row)
               </template>
               <template v-else-if="column.type === 'select' && Array.isArray(row[column.param])">
-                <template v-for="(value, index) in row[column.param]">
-                  <span :key="`${row.well_tag_number}-${column.param}-${index}`">
-                    {{ value | selectOptionFormat(column, filterSelectOptions[column.id]) }}<span v-if="index < row[column.param].length - 1">, </span>
+                <template v-for="(value, index) in row[column.param]" :key="`${row.well_tag_number}-${column.param}-${index}`">
+                  <span>
+                    {{ selectOptionFormat(value, column, filterSelectOptions[column.id]) }}<span v-if="index < row[column.param].length - 1">, </span>
                   </span>
                 </template>
               </template>
               <template v-else-if="column.type === 'select' || column.type === 'radio'">
-                {{ row[column.param] | selectOptionFormat(column, filterSelectOptions[column.id]) }}
+                {{ selectOptionFormat(row[column.param], column, filterSelectOptions[column.id]) }}
               </template>
               <template v-else-if="column.param === 'legal_pid'">
                 {{ row[column.param] }}
               </template>
               <template v-else>
-                {{ row[column.param] | defaultFormat }}
+                {{ defaultFormat(row[column.param]) }}
               </template>
             </td>
           </tr>

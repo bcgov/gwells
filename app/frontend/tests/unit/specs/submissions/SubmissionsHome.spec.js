@@ -8,7 +8,7 @@ import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 import { FETCH_CODES, FETCH_WELL_TAGS } from '@/submissions/store/actions.types.js'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueRouter)
 
 const router = new VueRouter()

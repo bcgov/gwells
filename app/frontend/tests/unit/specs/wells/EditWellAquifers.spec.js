@@ -19,7 +19,7 @@ import EditWellAquifers from '@/wells/views/EditWellAquifers.vue'
 import auth from '@/common/store/auth.js'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('EditWellAquifers.vue', () => {
   const component = (options, storeState = {}) => {

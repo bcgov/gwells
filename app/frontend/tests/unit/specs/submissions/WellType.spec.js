@@ -4,7 +4,7 @@ import Vuex from 'vuex'
 import WellType from '@/submissions/components/SubmissionForm/WellType.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('WellType.vue', () => {
   let store

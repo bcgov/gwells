@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import Lithology from '@/submissions/components/SubmissionForm/Lithology.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Lithology.vue', () => {
   let store

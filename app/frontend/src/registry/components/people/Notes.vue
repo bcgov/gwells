@@ -141,7 +141,7 @@
         <div class="mt-5 note-container" v-if="notes && notes.length">
           <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">
             <p>
-              <span class="font-weight-bold">{{ note.author }}</span> ({{ note.date | moment("MMMM Do YYYY [at] LT") }}):
+              <span class="font-weight-bold">{{ note.author }}</span> ({{ formatDate(note.date) }}):
               {{ note.note }}
             </p>
             <div class="crud-options">
@@ -224,6 +224,9 @@ export default {
     ...mapGetters(['userRoles', 'keycloak'])
   },
   methods: {
+    formatDate(date) {
+      return moment(date).format("MMMM Do YYYY [at] LT")
+    },
     deleteNote() {
       ApiService.delete(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid)
       .then(() => {

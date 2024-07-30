@@ -4,7 +4,7 @@ import APIErrorMessage from '@/common/components/APIErrorMessage'
 import { SET_ERROR } from '@/registry/store/mutations.types'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('APIErrorMessage.vue', () => {
   let mutations

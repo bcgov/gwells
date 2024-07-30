@@ -131,8 +131,8 @@
             :fields="aquiferListFields"
             :items="resultsTableData"
             :show-empty="emptyResults"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
+            v-model:sortBy="sortBy"
+            v-model:sortDesc="sortDesc"
             empty-text="No aquifers could be found"
             striped
             outlined
@@ -147,7 +147,7 @@
               {{row.item.name}}
             </template>
             <template v-slot:cell(retire_date)="row">
-              <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
+              <span :title="row.item.retire_date">{{ formatDate(row.item.retire_date) }}</span>
             </template>
             <template v-slot:table-busy>
               <div class="text-center my-2">
@@ -174,6 +174,7 @@
 
 <script>
 import mapboxgl from 'mapbox-gl'
+import moment from 'moment'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
@@ -321,6 +322,9 @@ export default {
     })
   },
   methods: {
+    formatDate (date) {
+      return moment(date).format('MMMM Do YYYY [at] LT')
+    },
     ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
     ...mapMutations('aquiferStore/search', [
       SET_CONSTRAIN_SEARCH,

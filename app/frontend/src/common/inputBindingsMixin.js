@@ -44,7 +44,7 @@ const inputBindingsMixin = {
       // If you haven't specified fields, then just iterate through the props
       const props = Object.keys(this.$options.props)
       props.forEach(key => {
-        if (this.$options.props[key].isInput !== false) {
+        if (this.$options.props[key]?.isInput !== false) {
           const inputKey = `${key}Input`
           this.$options.computed[inputKey] = {
             get () {

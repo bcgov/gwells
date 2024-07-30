@@ -39,7 +39,7 @@ import {
 const AQUIFER_NOTATION_CODE = 'Notations'
 const UNPUBLISHED_AQUIFERS = 'Unpublished'
 
-Vue.use(Vuex)
+// Vue.use(Vuex)
 
 const aquiferSearchStore = {
   namespaced: true,

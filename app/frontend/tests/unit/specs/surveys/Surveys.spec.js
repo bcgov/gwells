@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import Surveys from '@/surveys/views/Surveys.vue'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 
 describe('Surveys.vue', () => {
   let store

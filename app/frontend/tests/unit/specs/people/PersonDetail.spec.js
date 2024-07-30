@@ -10,7 +10,7 @@ import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.t
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueMoment)
 
 const GET_DEFAULT_STORE_MODULES = () => {

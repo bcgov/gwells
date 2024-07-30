@@ -15,7 +15,7 @@ import {
 import fakePersonList from '../fakePersonList.js'
 
 const localVue = createLocalVue()
-localVue.use(Vuex)
+// localVue.use(Vuex)
 localVue.use(VueRouter)
 
 const DEFAULT_AUTH_STORE_GETTERS = () => {

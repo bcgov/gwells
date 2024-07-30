@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 # NOTE For Red Hat or other images on the internal registry please login as follows:
 #     1. Be logged into the BC Gov OpenShift Console
 #          https://console.pathfinder.gov.bc.ca:8443/console/catalog)
@@ -8,17 +8,17 @@ version: '3.7'
 #        For example:
 #          docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
 services:
-#############################################################################################
-###                                       Minio-Pub                                       ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Minio-Pub                                       ###
+  #############################################################################################
   minio-public:
     build:
       context: ./openshift/docker/minio/
     hostname: minio
     ports:
-    - "9000:9000"
+      - "9000:9000"
     volumes:
-    - /data
+      - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -27,17 +27,17 @@ services:
     command: server /data
     networks:
       - gwells-network
-#############################################################################################
-###                                       Minio-Priv                                      ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Minio-Priv                                      ###
+  #############################################################################################
   minio-private:
     build:
       context: ./openshift/docker/minio/
     hostname: minio
     ports:
-    - "9001:9001"
+      - "9001:9001"
     volumes:
-    - /data
+      - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -46,9 +46,9 @@ services:
     command: server --address :9001 /data
     networks:
       - gwells-network
-#############################################################################################
-###                                       CrunchyDB                                       ###
-#############################################################################################
+  #############################################################################################
+  ###                                       CrunchyDB                                       ###
+  #############################################################################################
   db:
     platform: linux/x86_64
     image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
@@ -72,7 +72,7 @@ services:
       TILESERVER_USER: ftw_reader
       TILESERVER_PASSWORD: test1
     ports:
-    - "5432:5432"
+      - "5432:5432"
     volumes:
       - pgdata-volume:/pgdata:z
       - type: bind
@@ -87,9 +87,9 @@ services:
       start_period: 120s
     networks:
       - gwells-network
-#############################################################################################
-###                                       Tileserv                                        ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Tileserv                                        ###
+  #############################################################################################
   tileserv:
     hostname: tileserv
     depends_on:
@@ -97,8 +97,8 @@ services:
     platform: linux/x86_64
     image: pramsey/pg_tileserv:20231005
     env_file:
-    - path: ./.env.test
-      required: false
+      - path: ./.env.test
+        required: false
     environment:
       DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD:-test1}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
     ports:
@@ -106,11 +106,14 @@ services:
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
     networks:
       - gwells-network
-#############################################################################################
-###                                       Frontend                                        ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Frontend                                        ###
+  #############################################################################################
   frontend:
-    image: node:14.21.3
+    image: node:18.12.0
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
     hostname: frontend
     working_dir: /app/frontend
     environment:
@@ -120,10 +123,10 @@ services:
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
     command: /bin/bash -c "
-        set -x &&
-        cd /app/frontend &&
-        npm install &&
-        npm run serve"
+      set -x &&
+      cd /app/frontend &&
+      npm install --legacy-peer-deps &&
+      npm run serve --legacy-peer-deps"
     ports:
       - "8080:8080"
     volumes:
@@ -135,9 +138,9 @@ services:
       - backend
     networks:
       - gwells-network
-#############################################################################################
-###                                       Backend                                         ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Backend                                         ###
+  #############################################################################################
   backend:
     platform: linux/x86_64
     build:
@@ -145,8 +148,8 @@ services:
       dockerfile: Dockerfile.dev
     hostname: backend
     env_file:
-    - path: ./.env.test
-      required: false
+      - path: ./.env.test
+        required: false
     environment:
       ENVIRONMENT: "${ENVIRONMENT:-local}"
       APP_CONTEXT_ROOT: gwells
@@ -179,7 +182,7 @@ services:
       S3_HOST: minio-public:9000
       S3_PRIVATE_HOST: minio-private:9001
       S3_PRIVATE_BUCKET: gwells
-      S3_PRIVATE_ROOT_BUCKET:  gwells
+      S3_PRIVATE_ROOT_BUCKET: gwells
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
       S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
@@ -187,7 +190,7 @@ services:
       S3_PUBLIC_SECRET_KEY: minio1234
       S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
-      S3_ROOT_BUCKET:  gwells
+      S3_ROOT_BUCKET: gwells
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
       S3_USE_SECURE: 0
@@ -213,9 +216,9 @@ services:
     networks:
       - gwells-network
 
-#############################################################################################
-###                                       Volumes                                         ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Volumes                                         ###
+  #############################################################################################
   pgadmin:
     container_name: gwells-pgadmin
     image: dpage/pgadmin4
@@ -226,7 +229,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@gwells.com
     networks:
       - gwells-network
-
 
 #############################################################################################
 ###                                       Volumes                                         ###
