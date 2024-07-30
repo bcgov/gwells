@@ -68,7 +68,7 @@ class WellLocationSerializerV2(serializers.ModelSerializer):
         return obj.artesian_conditions
 
     def get_well_status(self, obj):
-        return obj.well_status_code.description
+        return obj.well_status_code.description if obj.well_status_code else None
 
 class WellVerticalAquiferExtentSerializerV2(serializers.ModelSerializer):
     aquifer_id = serializers.IntegerField()
