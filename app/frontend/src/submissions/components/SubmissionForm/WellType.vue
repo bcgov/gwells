@@ -357,7 +357,11 @@ export default {
     wellClass (val, prev) {
       // WATER-1589, now that watr_spply and cls lp geo only have retired subclass codes we always default to NA
       if (val !== null && (val === 'WATR_SPPLY' || val === 'CLS_LP_GEO')) {
-        this.wellSubclassInput = this.subclasses.find(c => c.well_subclass_code === 'NA').well_subclass_guid
+        const subclasses = this.subclasses.find(c => c.well_subclass_code === 'NA')
+        if (subclasses) {
+          this.wellSubclassInput = subclasses?.well_subclass_guid
+        }
+        
       } else {
         // reset wellSubClass when wellClass changes
         this.wellSubclassInput = null

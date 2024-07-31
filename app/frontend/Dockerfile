@@ -5,7 +5,8 @@ FROM node:18.12.0-slim
 # RUN apt-get -y install git build-essential
 
 RUN apt-get update && apt-get install -y \
-    python \
+    python3 \
+    python3-pip \
     make \
     g++
 
@@ -13,7 +14,7 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install  --legacy-peer-deps 
+RUN npm install --legacy-peer-deps 
 
 COPY . /app
 

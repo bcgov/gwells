@@ -102,7 +102,7 @@ export default {
   methods: {
     fetchAquifersForWell () {
       this.loading = true
-      return ApiService.query(`wells/${this.wellTagNumber}/vertical-aquifer-extents`)
+      return ApiService.query(`wells/${this.wellTagNumber.well_tag_number}/vertical-aquifer-extents`)
         .then((response) => {
           this.loading = false
           this.aquifers = response.data
