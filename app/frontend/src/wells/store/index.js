@@ -239,6 +239,9 @@ const wellsStore = {
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
       }
+      if(!localStorage.getItem('userColumnPreferences')){
+          commit(SET_SEARCH_RESULT_COLUMNS, DEFAULT_COLUMNS)
+      }
 
       commit(SET_PENDING_LOCATION_SEARCH, null)
       commit(SET_HAS_SEARCHED, false)
@@ -253,7 +256,6 @@ const wellsStore = {
       commit(SET_SEARCH_RESULTS, null)
       commit(SET_SEARCH_RESULT_COUNT, 0)
       commit(SET_LOCATION_SEARCH_RESULTS, [])
-      commit(SET_SEARCH_RESULT_COLUMNS, DEFAULT_COLUMNS)
       commit(SET_SEARCH_RESULT_FILTERS, {})
       commit(SET_SEARCH_MAP_CENTRE, null)
       commit(SET_SEARCH_MAP_ZOOM, null)
