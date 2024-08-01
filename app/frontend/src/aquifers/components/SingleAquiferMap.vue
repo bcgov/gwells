@@ -140,7 +140,7 @@ export default {
             },
             {
               imageSrc: wellsClosedLegendSrc,
-              label: 'decommissioned'
+              label: 'closed/abandoned'
             }
           ]
         },
