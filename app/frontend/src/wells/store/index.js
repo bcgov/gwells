@@ -382,9 +382,9 @@ const wellsStore = {
     wellFileDownloads (state) {
       return state.downloads
     },
-    // searchQueryParams (state) {
-    //   return buildSearchParams(state)
-    // }
+    searchQueryParams (state) {
+      return buildSearchParams(state)
+    }
   }
 }
 

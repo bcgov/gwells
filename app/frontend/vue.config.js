@@ -2,8 +2,6 @@ if (process.env.API_TARGET) {
   console.log(`Targetting the API ${process.env.API_TARGET}`)
 }
 
-// const { VueLoaderPlugin } = require('vue-loader')
-// const webpack = require('webpack');
 process.env.VUE_CLI_TEST = false
 
 module.exports = {
