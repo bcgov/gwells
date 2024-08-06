@@ -26,7 +26,7 @@
     </b-row>
     <div class="table-responsive">
       <table id="searchResultsTable" class="table table-striped">
-        <thead>
+        <thead class="sticky-header">
           <tr>
             <th
               v-for="column in columns"
@@ -397,5 +397,21 @@ $spinner-border-width-sm: .2em !default;
   width: $spinner-width-sm;
   height: $spinner-height-sm;
   border-width: $spinner-border-width-sm;
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 2;
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
+}
+
+.sticky-header tr {
+  width: 100%;
+  background-color: white; /* Ensure the background color matches the table */
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
 }
 </style>
