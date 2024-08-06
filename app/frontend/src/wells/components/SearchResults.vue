@@ -404,14 +404,5 @@ $spinner-border-width-sm: .2em !default;
   top: 0;
   background-color: white;
   z-index: 2;
-  margin: 0; /* Remove any margin */
-  padding: 0; /* Remove any padding */
-}
-
-.sticky-header tr {
-  width: 100%;
-  background-color: white; /* Ensure the background color matches the table */
-  margin: 0; /* Remove any margin */
-  padding: 0; /* Remove any padding */
 }
 </style>
