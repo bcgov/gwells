@@ -414,7 +414,7 @@ export function aquifersLineLayer (options = {}) {
       ['boolean', ['feature-state', 'focused'], false], 'purple',
       ['boolean', ['feature-state', 'selected'], false], 'green',
       ['boolean', ['feature-state', 'searchResult'], false], 'purple',
-      '#FF6500'
+      '#38A800'
     ],
     'line-width': [
       'case',
@@ -438,7 +438,7 @@ export function aquifersFillLayer (options = {}) {
       ['boolean', ['feature-state', 'focused'], false], 'purple',
       ['boolean', ['feature-state', 'selected'], false], 'green',
       ['boolean', ['feature-state', 'searchResult'], false], 'purple',
-      '#FF6500'
+      '#38A800'
     ],
     'fill-opacity': [
       'case',
