@@ -33,7 +33,7 @@ export default {
             const keyCloakScript = document.createElement('script')
             keyCloakScript.onload = () => {
               // Construct the Keycloak object and resolve the promise.
-              Vue.prototype.$keycloak = window.Keycloak(response.data)
+              Vue.prototype.$keycloak = new Keycloak(response.data)
               resolve(Vue.prototype.$keycloak)
             }
             keyCloakScript.onerror = (e) => {
