@@ -37,9 +37,13 @@ export default {
         this.keyCloakLogin()
       }
     },
-    async keyCloakLogin () {
-      this.keycloak.init().then(() => {
+    keyCloakLogin () {
+      this.keycloak.init({
+        checkLoginIframe: false
+      }).then(() => {
+        console.log(".then after button click")
         this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+          console.log("after login")
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
             if (window.localStorage) {
@@ -49,6 +53,7 @@ export default {
             }
           }
         }).catch((e) => {
+          console.error("keyCloakLogin: ", e)
           this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
         })
       })

@@ -20,37 +20,77 @@ export default {
      */
     return new Promise((resolve, reject) => {
       if (!Vue.prototype.$keycloak) {
+
+        // try {
+        //   Vue.prototype.$keycloak =  new Keycloak()
+
+        //   return Vue.prototype.$keycloak;
+  
+        // } catch (error) {
+        //   console.error("Keycloak Instance ERROR: ", error);
+        // }
         // Keycloak has not yet been loaded, get Keycloak configuration from the server.
         ApiService.query('keycloak', {})
           .then(response => {
+
+            console.log("Keycloak Config Data: ", response.data)
+
+            const { 
+              url, 
+              'ssl-required': sslRequired , 
+              resource, 
+              realm, 
+              'public-client': publicClient,
+              'confidential-port': confidentialPort,
+              clientId,
+              'auth-server-url': authServerUrl
+            } = response.data;
             /*
             "A best practice is to load the JavaScript adapter directly from Keycloak Server as it will
             automatically be updated when you upgrade the server. If you copy the adapter to your web
             application instead, make sure you upgrade the adapter only after you have upgraded the server.";
             source : https://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter:
             */
-            const jsUrl = `${response.data['auth-server-url']}/js/keycloak.js`
+            // const jsUrl = `${response.data['auth-server-url']}/js/keycloak.js`
+            // const jsUrl = "https://unpkg.com/keycloak-js@24.0.0/dist/keycloak.min.js"
+
             // Inject the Keycloak javascript into the DOM.
-            const keyCloakScript = document.createElement('script')
-            keyCloakScript.onload = () => {
-              // Construct the Keycloak object and resolve the promise.
-              Vue.prototype.$keycloak =  new Keycloak(response.data)
-              resolve(Vue.prototype.$keycloak)
-            }
-            keyCloakScript.onerror = (e) => {
-              // This is pretty bad - keycloak didn't load - this should never ever happen.
-              // There's not much we can do, so we set keycloak to a random empty object and resolve.
-              console.error(e)
-              Vue.prototype.$keycloak = {}
-              resolve(Vue.prototype.$keycloak)
-            }
-            keyCloakScript.async = true
-            keyCloakScript.setAttribute('src', jsUrl)
-            document.head.appendChild(keyCloakScript)
+            // const keyCloakScript = document.createElement('script')
+
+            // keyCloakScript.onload = () => {
+            //   // Construct the Keycloak object and resolve the promise.
+            //   Vue.prototype.$keycloak =  new Keycloak(response.data)
+            //   resolve(Vue.prototype.$keycloak)
+            // }
+            Vue.prototype.$keycloak =  new Keycloak({
+              url: authServerUrl,
+              realm,
+              clientId,
+              sslRequired,
+              resource,
+              publicClient,
+              confidentialPort,
+            })
+
+            resolve(Vue.prototype.$keycloak)
+
+            // keyCloakScript.onerror = (e) => {
+            //   // This is pretty bad - keycloak didn't load - this should never ever happen.
+            //   // There's not much we can do, so we set keycloak to a random empty object and resolve.
+            //   console.error(e)
+            //   Vue.prototype.$keycloak = {}
+            //   resolve(Vue.prototype.$keycloak)
+            // }
+
+            // keyCloakScript.async = true
+            // keyCloakScript.setAttribute('src', jsUrl)
+            // document.head.appendChild(keyCloakScript)
           })
           .catch(error => {
+            console.error(error)
             Vue.prototype.$keycloak = {}
-            reject(error)
+            resolve(Vue.prototype.$keycloak)
+            // reject(error)
           })
       } else {
         // Keycloak has already been loaded, so just resolve the object.
@@ -112,26 +152,36 @@ export default {
      */
     return new Promise((resolve, reject) => {
       this.getInstance()
-        .then((instance) => {
+        .then(async (instance) => {
+          console.log("INSTANCE: ", instance.authenticated)
           if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
             // We've already authenticated, have a header, and we've not expired.
             resolve(instance)
           } else {
-            // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
-            const token = localStorage.getItem('token')
-            const refreshToken = localStorage.getItem('refreshToken')
-            const idToken = localStorage.getItem('idToken')
-            instance.init({
-              pkceMethod: 'S256',
-              onLoad: 'check-sso',
-              checkLoginIframe: true,
-              timeSkew: 10, // Allow for some deviation
-              token,
-              refreshToken,
-              idToken,
-            }
-            ).then((result) => {
+
+            // this.removeLocalToken()
+            // instance.clearToken()
+            // // We update the store reference only after wiring up the API. (Someone might be waiting
+            // // for login to complete before taking some action. )
+            // store.commit('SET_KEYCLOAK', instance)
+            // resolve(instance)
+
+            try {
+              console.log("before auth")
+              const authed = await instance.init({
+                pkceMethod: 'S256',
+                onLoad: 'check-sso',
+                timeSkew: 10,
+                checkLoginIframe: false,
+                token,
+                refreshToken,
+                idToken,
+              })
+
+              console.log(`User is ${authed ? 'authenticated' : 'not authenticated'}`);
+
               if (instance.authenticated) {
+                console.log("authenticated")
                 // We may have been authenticated, but the token could be expired.
                 instance.updateToken(60).then(() => {
                   // Store the token to avoid future round trips, and wire up the API
@@ -157,9 +207,45 @@ export default {
                 store.commit('SET_KEYCLOAK', instance)
                 resolve(instance)
               }
-            }).then((e) => {
-              reject(e)
-            })
+
+            } catch (error) {
+              console.error('Failed to initialize adapter:', error);
+            }
+            // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
+            const token = localStorage.getItem('token')
+            const refreshToken = localStorage.getItem('refreshToken')
+            const idToken = localStorage.getItem('idToken')
+
+            // ).then((result) => {
+            //   if (instance.authenticated) {
+            //     // We may have been authenticated, but the token could be expired.
+            //     instance.updateToken(60).then(() => {
+            //       // Store the token to avoid future round trips, and wire up the API
+            //       this.setLocalToken(instance)
+            //       // We update the store reference only after wiring up the API. (Someone might be waiting
+            //       // for login to complete before taking some action. )
+            //       // Assumes that store passed in includes a 'SET_KEYCLOAK' mutation!
+            //       store.commit('SET_KEYCLOAK', instance)
+            //       this.scheduleRenewal(instance)
+            //       resolve(instance)
+            //     }).error(() => {
+            //       // The refresh token is expired or was rejected
+            //       this.removeLocalToken()
+            //       instance.clearToken()
+            //       // We update the store reference only after wiring up the API. (Someone might be waiting
+            //       // for login to complete before taking some action. )
+            //       store.commit('SET_KEYCLOAK', instance)
+            //       resolve(instance)
+            //     })
+            //   } else {
+            //     // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
+            //     // or have an expired token.
+            //     store.commit('SET_KEYCLOAK', instance)
+            //     resolve(instance)
+            //   }
+            // }).then((e) => {
+            //   reject(e)
+            // })
           }
         })
         .catch((error) => {
