@@ -86,12 +86,12 @@ export default {
   renewToken (instance, retries = 0) {
     const maxRetries = 2
 
-    instance.updateToken(1800).success((refreshed) => {
+    instance.updateToken(1800).then((refreshed) => {
       if (refreshed) {
         this.setLocalToken(instance)
       }
       this.scheduleRenewal(instance)
-    }).error((e) => {
+    }).catch((e) => {
       console.log(e)
       // The refresh token is expired or was rejected
       // we will retry after 60 sec (up to the count defined by maxRetries)
@@ -113,52 +113,61 @@ export default {
     return new Promise((resolve, reject) => {
       this.getInstance()
         .then((instance) => {
+          console.log("INSTANCE: ", instance)
           if (instance.authenticated && ApiService.hasAuthHeader() && !instance.isTokenExpired(0)) {
             // We've already authenticated, have a header, and we've not expired.
             resolve(instance)
           } else {
+
+            this.removeLocalToken()
+            instance.clearToken()
+            // We update the store reference only after wiring up the API. (Someone might be waiting
+            // for login to complete before taking some action. )
+            store.commit('SET_KEYCLOAK', instance)
+            resolve(instance)
             // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
-            const token = localStorage.getItem('token')
-            const refreshToken = localStorage.getItem('refreshToken')
-            const idToken = localStorage.getItem('idToken')
-            instance.init({
-              pkceMethod: 'S256',
-              onLoad: 'check-sso',
-              checkLoginIframe: true,
-              timeSkew: 10, // Allow for some deviation
-              token,
-              refreshToken,
-              idToken }
-            ).success((result) => {
-              if (instance.authenticated) {
-                // We may have been authenticated, but the token could be expired.
-                instance.updateToken(60).success(() => {
-                  // Store the token to avoid future round trips, and wire up the API
-                  this.setLocalToken(instance)
-                  // We update the store reference only after wiring up the API. (Someone might be waiting
-                  // for login to complete before taking some action. )
-                  // Assumes that store passed in includes a 'SET_KEYCLOAK' mutation!
-                  store.commit('SET_KEYCLOAK', instance)
-                  this.scheduleRenewal(instance)
-                  resolve(instance)
-                }).error(() => {
-                  // The refresh token is expired or was rejected
-                  this.removeLocalToken()
-                  instance.clearToken()
-                  // We update the store reference only after wiring up the API. (Someone might be waiting
-                  // for login to complete before taking some action. )
-                  store.commit('SET_KEYCLOAK', instance)
-                  resolve(instance)
-                })
-              } else {
-                // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
-                // or have an expired token.
-                store.commit('SET_KEYCLOAK', instance)
-                resolve(instance)
-              }
-            }).error((e) => {
-              reject(e)
-            })
+            // const token = localStorage.getItem('token')
+            // const refreshToken = localStorage.getItem('refreshToken')
+            // const idToken = localStorage.getItem('idToken')
+            // instance.init({
+            //   pkceMethod: 'S256',
+            //   onLoad: 'check-sso',
+            //   checkLoginIframe: true,
+            //   timeSkew: 10, // Allow for some deviation
+            //   token,
+            //   refreshToken,
+            //   idToken,
+            // }
+            // ).then((result) => {
+            //   if (instance.authenticated) {
+            //     // We may have been authenticated, but the token could be expired.
+            //     instance.updateToken(60).then(() => {
+            //       // Store the token to avoid future round trips, and wire up the API
+            //       this.setLocalToken(instance)
+            //       // We update the store reference only after wiring up the API. (Someone might be waiting
+            //       // for login to complete before taking some action. )
+            //       // Assumes that store passed in includes a 'SET_KEYCLOAK' mutation!
+            //       store.commit('SET_KEYCLOAK', instance)
+            //       this.scheduleRenewal(instance)
+            //       resolve(instance)
+            //     }).error(() => {
+            //       // The refresh token is expired or was rejected
+            //       this.removeLocalToken()
+            //       instance.clearToken()
+            //       // We update the store reference only after wiring up the API. (Someone might be waiting
+            //       // for login to complete before taking some action. )
+            //       store.commit('SET_KEYCLOAK', instance)
+            //       resolve(instance)
+            //     })
+            //   } else {
+            //     // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
+            //     // or have an expired token.
+            //     store.commit('SET_KEYCLOAK', instance)
+            //     resolve(instance)
+            //   }
+            // }).then((e) => {
+            //   reject(e)
+            // })
           }
         })
         .catch((error) => {

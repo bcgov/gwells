@@ -37,21 +37,37 @@ export default {
         this.keyCloakLogin()
       }
     },
-    keyCloakLogin () {
-      this.keycloak.init().success(() => {
-        this.keycloak.login({ idpHint: this.config.sso_idp_hint }).success((authenticated) => {
-          if (authenticated) {
-            ApiService.authHeader('JWT', this.keycloak.token)
-            if (window.localStorage) {
-              localStorage.setItem('token', this.keycloak.token)
-              localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-              localStorage.setItem('idToken', this.keycloak.idToken)
-            }
-          }
-        }).error((e) => {
-          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+    async keyCloakLogin () {
+
+      try {
+        const authenticated = await this.keycloak.init({
+          flow: 'standard'
         })
-      })
+        console.log("Authenticated: ", authenticated)
+      } catch(error) {
+        console.error("Failed to initialize Keycloak: ", error);
+      }
+
+      // console.log("before init")
+      // this.keycloak.init({
+      //   adapter: 'default',
+      //   flow: 'implicit'
+      // }).then(() => {
+      //   console.log("keyCloakLogin .then()")
+      //   this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+      //     if (authenticated) {
+      //       ApiService.authHeader('JWT', this.keycloak.token)
+      //       if (window.localStorage) {
+      //         localStorage.setItem('token', this.keycloak.token)
+      //         localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+      //         localStorage.setItem('idToken', this.keycloak.idToken)
+      //       }
+      //     }
+      //   }).catch((e) => {
+      //     console.log("keyCloakLogin ERROR: ", e)
+      //     this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+        // })
+      // })
     },
     keyCloakLogout () {
       // This should log the user out, but unfortunately does not delete the cookie storing the user
