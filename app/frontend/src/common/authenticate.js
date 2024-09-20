@@ -25,9 +25,9 @@ export default {
           .then(response => {
 
             const { 
-              'ssl-required': sslRequired , 
-              resource, 
-              realm, 
+              'ssl-required': sslRequired, 
+              resource,
+              realm,
               'public-client': publicClient,
               'confidential-port': confidentialPort,
               clientId,
