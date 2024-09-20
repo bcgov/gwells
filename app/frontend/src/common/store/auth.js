@@ -11,7 +11,6 @@ const auth = {
   },
   getters: {
     keycloak (state) {
-      console.log("state keycloak", state.keycloak)
       return state.keycloak
     },
     userRoles (state) {

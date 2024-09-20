@@ -41,9 +41,7 @@ export default {
       this.keycloak.init({
         checkLoginIframe: false
       }).then(() => {
-        console.log(".then after button click")
         this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
-          console.log("after login")
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
             if (window.localStorage) {

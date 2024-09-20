@@ -8,20 +8,10 @@ module.exports = {
   publicPath: process.env.NODE_ENV === 'production' ? '/gwells/' : '/',
   configureWebpack: {
     resolve: {
-      extensions: ['.mjs', '.js', '.vue', '.json'],
       alias: {
         moment: 'moment/src/moment',
         lodash: 'lodash-es'
       }
-    },
-    module: {
-      rules: [
-        {
-          test: /\.mjs$/,  // Target .mjs files
-          include: /node_modules/,  // Include node_modules (where Keycloak might reside)
-          type: 'javascript/auto'  // Treat .mjs as a JavaScript module
-        }
-      ]
     },
     devServer: {
       watchOptions: {
