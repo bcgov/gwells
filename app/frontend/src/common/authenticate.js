@@ -18,6 +18,7 @@ export default {
     /**
      * Returns a promise that resolves to an instance of Keycloak.
      */
+    
     return new Promise((resolve, reject) => {
       if (!Vue.prototype.$keycloak) {
 
