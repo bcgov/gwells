@@ -140,7 +140,7 @@ const router = new Router({
 
     // Cross section tool routes
     {
-      path: '/CrossHome',
+      path: '/crosssection',
       name: 'CrossHome',
       component: CrossHome,
       beforeEnter: AuthGuard,
