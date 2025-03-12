@@ -547,7 +547,7 @@ pipeline {
         // for pods/containers to report back as ready.
         stage('DEV - Deploy') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'release' }
             }
             steps {
                 script {
@@ -677,7 +677,7 @@ pipeline {
         // created and destroyed afterwards.
         stage('DEV - Django Unit Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'release' }
             }
             steps {
                 script {
@@ -689,7 +689,7 @@ pipeline {
 
         stage('DEV - Load Fixtures') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'release' }
             }
             steps {
                 script {
@@ -724,7 +724,7 @@ pipeline {
 
         stage('DEV - API Tests') {
             when {
-                expression { env.CHANGE_TARGET != 'master' }
+                expression { env.CHANGE_TARGET != 'release' }
             }
             steps {
                 script {
