@@ -31,7 +31,6 @@ import FormInput from '@/common/components/FormInput.vue'
 import { FETCH_CONFIG } from '@/common/store/config.js'
 import filters from '@/common/filters'
 
-// Test pipleine comment
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
