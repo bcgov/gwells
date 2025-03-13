@@ -110,7 +110,7 @@ services:
 ###                                       Frontend                                        ###
 #############################################################################################
   frontend:
-    image: node:14.21.3
+    image: node:22.0.0
     hostname: frontend
     working_dir: /app/frontend
     environment:
@@ -142,7 +142,7 @@ services:
     platform: linux/x86_64
     build:
       context: ./openshift/docker/backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     hostname: backend
     env_file:
     - path: ./.env.test

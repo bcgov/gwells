@@ -57,16 +57,22 @@ export default {
       })
     },
     keyCloakLogout () {
-      // This should log the user out, but unfortunately does not delete the cookie storing the user
-      // token.
-      this.keycloak.clearToken()
-      ApiService.authHeader()
+      // Clear local storage and other session data
       if (window.localStorage) {
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('idToken')
       }
-      this.keycloak.logout() // This redirects the user to a logout screen.
+
+      // Optionally, clear cookies if the tokens are stored there
+      // Example of clearing cookies (depending on how they are stored)
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;'
+
+      // Logout from Keycloak
+      this.keycloak.logout({
+        id_token_hint: this.keycloak.token,  // Include the token hint to indicate the session to logout
+        post_logout_redirect_uri: "<your-redirect-uri>"  // Redirect to a page after logout
+      })
     }
   },
   watch: {
