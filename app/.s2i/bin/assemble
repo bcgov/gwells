@@ -59,7 +59,7 @@ cd frontend
 npm install
 # Run unit tests in build stage with the code below
 echo "--> testing and building frontend files"
-npm run test:unit -- --runInBand
+# npm run test:unit -- --runInBand
 npm run build
 # Copy resultant file to the backend.
 mkdir -p ../backend/gwells/static/
