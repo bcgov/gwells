@@ -91,7 +91,7 @@ spec:
     type: Docker
     dockerStrategy:
       dockerfilePath: "Dockerfile"
-      contextDir: "app"
+      contextDir: "app/frontend"
       env:
         - name: BUILD_LOGLEVEL
           value: '4'
