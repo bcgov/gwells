@@ -110,20 +110,16 @@ services:
 ###                                       Frontend                                        ###
 #############################################################################################
   frontend:
-    image: node:14.21.3
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
     hostname: frontend
-    working_dir: /app/frontend
     environment:
       DEBUG: "True"
       VUE_APP_AXIOS_BASE_URL: /api/
       VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
-    command: /bin/bash -c "
-        set -x &&
-        cd /app/frontend &&
-        npm install &&
-        npm run serve"
     ports:
       - "8080:8080"
     volumes:
