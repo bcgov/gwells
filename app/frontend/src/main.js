@@ -40,7 +40,7 @@ const BASE_PATH = '/gwells/'
 const PRODUCTION_MATOMO_HOST = 'https://water-matomo.apps.silver.devops.gov.bc.ca/'
 const TEST_MATOMO_HOST = 'https://water-matomo-staging.apps.silver.devops.gov.bc.ca/'
 
-const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL)) // Does not return true for the production site @https://gwells.apps.silver.devops.gov.bc.ca/gwells
+const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL))// Does not return true for the production site @https://gwells.apps.silver.devops.gov.bc.ca/gwells
 const isStaging = () => (
   window.location.pathname.includes(BASE_PATH) && STAGING_GWELLS_URLS.includes(window.location.hostname)
 )
