@@ -29,7 +29,12 @@ import 'vue-select/dist/vue-select.css'
 import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
 import { FETCH_CONFIG } from '@/common/store/config.js'
+<<<<<<< HEAD
 import * as filters from './common/filters'
+=======
+import filters from '@/common/filters'
+// Test
+>>>>>>> c01a09134 (Test commit)
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
@@ -108,7 +113,6 @@ new Vue({
   },
   created () {
     this.FETCH_CONFIG()
-    window._paq = window._paq || []
     window._paq.push(['trackPageView']) // To track pageview - Matomo
   }
 })
