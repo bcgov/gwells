@@ -24,9 +24,8 @@ from gwells.models import Profile
 from gwells.roles import roles_to_groups
 from gwells.settings.base import get_env_variable
 
-KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
-# KEYCLOAK_GOLD_REALM_URL = 'https://dev.loginproxy.gov.bc.ca/auth'
-
+# KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
+KEYCLOAK_GOLD_REALM_URL = 'https://dev.loginproxy.gov.bc.ca/auth'
 
 class JwtOidcAuthentication(JWTTokenUserAuthentication):
     """
