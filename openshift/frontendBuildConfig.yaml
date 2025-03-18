@@ -88,11 +88,10 @@ spec:
   successfulBuildsHistoryLimit: 3
   failedBuildsHistoryLimit: 3
   strategy:
-    type: Source
-    sourceStrategy:
-      from:
-        kind: ImageStreamTag
-        name: 'gwells-python:v3'
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: "Dockerfile"
+      contextDir: "app"
       env:
         - name: BUILD_LOGLEVEL
           value: '4'
