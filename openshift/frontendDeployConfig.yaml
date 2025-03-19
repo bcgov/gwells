@@ -536,7 +536,6 @@ spec:
         execNewPod:
           command:
             - /usr/bin/container-entrypoint
-            - /opt/app-root/src/scripts/pre-deploy.sh
           env:
             - name: PGDATABASE
               valueFrom:

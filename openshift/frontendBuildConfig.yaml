@@ -107,7 +107,7 @@ spec:
     type: Git
     git:
       uri: 'https://www.github.com/bcgov/gwells.git'
-      ref: pull/2364/head
+      ref: release
     contextDir: app
   triggers:
     - type: ConfigChange
