@@ -10,6 +10,7 @@ RUN set -x
 RUN cd /app/frontend
 RUN npm install
 RUN npm run build
+RUN npm install -g serve
 
 EXPOSE 8080
-CMD ["npm", "run", "serve"]
+CMD ["serve", "-s", "dist"]
