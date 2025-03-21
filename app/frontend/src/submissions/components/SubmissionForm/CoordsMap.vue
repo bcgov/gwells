@@ -264,7 +264,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "~mapbox-gl/dist/mapbox-gl.css";
+@import "mapbox-gl/dist/mapbox-gl.css";
 
 #coords-map {
   width: 550px;

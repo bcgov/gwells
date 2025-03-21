@@ -11,9 +11,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Header from '@/common/components/Header'
-import Footer from '@/common/components/Footer'
-import BackToTop from '@/common/components/BackToTop'
+import Header from './common/components/Header.vue'
+import Footer from './common/components/Footer.vue'
+import BackToTop from './common/components/BackToTop.vue'
 export default {
   name: 'App',
   components: {

@@ -172,7 +172,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {

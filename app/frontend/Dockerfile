@@ -24,6 +24,7 @@ CMD ["serve", "-s", "dist", "-l", "8080"]
 # CMD ["npm", "run", "serve"]
 
 # We got to the point where the frontend is completely separate from the backend build and deploy and it runs locally. However, we need to fix the vite build
+
 # Do some reading on setting up a vite vue project
 # Create backend dockerfile with docker compose pointing
 # Create new branch and try to get frontend to run locally

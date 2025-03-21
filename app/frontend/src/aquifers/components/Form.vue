@@ -352,7 +352,7 @@
 
 <script>
 // import AquiferResources from './AquiferResources.vue'
-import { isEmpty, mapValues, cloneDeep } from 'lodash'
+import { isEmpty, mapValues, cloneDeep } from 'lodash-es'
 import { mapMutations, mapState } from 'vuex'
 
 import ApiService from '@/common/services/ApiService.js'

@@ -1092,7 +1092,7 @@ function initialState () {
 </script>
 
 <style lang="scss">
-@import '~vuejs-noty/dist/vuejs-noty.css';
+@import 'vuejs-noty/dist/vuejs-noty.css';
 
   .slide-leave-active,
   .slide-enter-active {

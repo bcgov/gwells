@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import WellHistory from './WellHistory'
+import WellHistory from './WellHistory.vue'
 
 export default {
   name: 'StaffEditHistory',

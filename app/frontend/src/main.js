@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import '@/common/helpers/browserUpdate'
+import '@/common/helpers/browserUpdate.js'
 import Vue from 'vue'
 import * as Sentry from '@sentry/browser'
 import * as Integrations from '@sentry/integrations'
@@ -19,9 +19,9 @@ import Vuex, { mapActions } from 'vuex'
 import VueNoty from 'vuejs-noty'
 import BootstrapVue from 'bootstrap-vue'
 import VueMatomo from 'vue-matomo'
-import App from './App'
+import App from './App.vue'
 import router from './router.js'
-import { store } from './store'
+import { store } from './store/index.js'
 import '@/common/assets/css/bootstrap-theme.min.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vSelect from 'vue-select'
@@ -29,7 +29,7 @@ import 'vue-select/dist/vue-select.css'
 import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
 import { FETCH_CONFIG } from '@/common/store/config.js'
-import filters from '@/common/filters'
+import * as filters from './common/filters'
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
@@ -39,7 +39,7 @@ const BASE_PATH = '/gwells/'
 const PRODUCTION_MATOMO_HOST = 'https://water-matomo.apps.silver.devops.gov.bc.ca/'
 const TEST_MATOMO_HOST = 'https://water-matomo-staging.apps.silver.devops.gov.bc.ca/'
 
-const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL))// Does not return true for the production site @https://gwells.apps.silver.devops.gov.bc.ca/gwells
+const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL))
 const isStaging = () => (
   window.location.pathname.includes(BASE_PATH) && STAGING_GWELLS_URLS.includes(window.location.hostname)
 )
@@ -48,8 +48,6 @@ if (isProduction()) {
     dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
     integrations: [new Integrations.Vue({ Vue, attachProps: true, logError: true })],
     beforeSend (event) {
-      // The `msCrypto` property was only ever implemented in IE 11. Ignore logging IE 11 errors.
-      // See: https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto
       if (window.msCrypto) { return null }
       return event
     }
@@ -94,16 +92,15 @@ if (isProduction()) {
 }
 
 Vue.config.productionTip = false
-Vue.config.devtools = process.env.NODE_ENV !== 'production'
-Vue.config.performance = process.env.NODE_ENV !== 'production'
+Vue.config.devtools = import.meta.env.MODE !== 'production'
+Vue.config.performance = import.meta.env.MODE !== 'production'
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   store,
-  components: { App },
-  template: '<App/>',
+  render: h => h(App),  // Replace components/template with render function
   methods: {
     ...mapActions([
       FETCH_CONFIG
@@ -111,6 +108,7 @@ new Vue({
   },
   created () {
     this.FETCH_CONFIG()
+    window._paq = window._paq || []
     window._paq.push(['trackPageView']) // To track pageview - Matomo
   }
 })

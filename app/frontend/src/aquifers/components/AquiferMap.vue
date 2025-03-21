@@ -18,10 +18,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
-import { difference, uniq } from 'lodash'
+import { difference, uniq } from 'lodash-es'
 import { mapGetters, mapActions } from 'vuex'
 
-import { SEARCH_AQUIFERS } from '../store/actions.types'
+import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 import {
   DATABC_ROADS_SOURCE,
   DATABC_CADASTREL_SOURCE,
@@ -55,24 +55,24 @@ import {
   observationWellsLayer,
   WELLS_OBSERVATION_LAYER_ID,
   WELLS_AQUIFER_PARAMETER_LAYER_ID,
-  wellsAquiferParameters,
-} from '../../common/mapbox/layers'
+  wellsAquiferParameters
+} from '../../common/mapbox/layers.js'
 import {
   LayersControl,
   LegendControl,
   BoxZoomControl,
   SearchAreaControl,
   DataBCGeocoder
-} from '../../common/mapbox/controls'
-import features from '../../common/features'
-import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC } from '../../common/mapbox/geometry'
+} from '../../common/mapbox/controls.js'
+import features from '../../common/features.js'
+import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC } from '../../common/mapbox/geometry.js'
 import {
   createAquiferPopupElement,
   createWellPopupElement,
   createEcocatPopupElement,
-  createWaterLicencePopupElement,
-  createWellAquiferParametersPopupElement
-} from '../popup'
+  createWaterLicencePopupElement
+  // createWellAquiferParametersPopupElement
+} from '../popup.js'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
@@ -486,12 +486,12 @@ export default {
         wellLayerIds: [ WELLS_BASE_AND_ARTESIAN_LAYER_ID, WELLS_OBSERVATION_LAYER_ID, WELLS_AQUIFER_PARAMETER_LAYER_ID ]
       })
     },
-    createWellAquiferParametersPopupElement (features, { canInteract }) {
-      return createWellAquiferParametersPopupElement(features, this.map, this.$router, {
-        canInteract,
-        wellLayerIds: [ WELLS_AQUIFER_PARAMETER_LAYER_ID]
-      })
-    },
+    // createWellAquiferParametersPopupElement (features, { canInteract }) {
+    //   return createWellAquiferParametersPopupElement(features, this.map, this.$router, {
+    //     canInteract,
+    //     wellLayerIds: [ WELLS_AQUIFER_PARAMETER_LAYER_ID ]
+    //   })
+    // },
     createEcocatPopupElement (features, { canInteract }) {
       return createEcocatPopupElement(features, this.map, {
         canInteract,
@@ -546,8 +546,8 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "~mapbox-gl/dist/mapbox-gl.css";
-@import "~@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+@import "mapbox-gl/dist/mapbox-gl.css";
+@import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 #aquifer-search-map {
   height: 600px;

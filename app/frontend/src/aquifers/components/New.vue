@@ -36,8 +36,8 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
-import AquiferForm from './Form'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
+import AquiferForm from './Form.vue'
 import { mapActions, mapState } from 'vuex'
 
 export default {

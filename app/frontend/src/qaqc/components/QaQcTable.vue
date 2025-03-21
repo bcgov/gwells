@@ -53,7 +53,7 @@
                 @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
                 {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
               </b-button>
-              <div 
+              <div
                 v-if="column.sortParam === 'latitude' || column.sortParam === 'longitude'"
                 class="py-1 px-0"
               ></div>
@@ -345,30 +345,30 @@ export default {
     searchResultsRowClicked (data) {
       this.$emit('rowClicked', data)
     },
-    getTooltipContent(columnId) {
+    getTooltipContent (columnId) {
       // Return the tooltip content if it exists, or null if it doesn't
-      return this.tooltipContent[columnId] || null;
+      return this.tooltipContent[columnId] || null
     },
-    removeRegionSuffix(value) {
-      if (!value || typeof value !== 'string') return '';
+    removeRegionSuffix (value) {
+      if (!value || typeof value !== 'string') return ''
       // Define the suffixes to check for and remove, ordered by specificity and length
-      const suffixes = [' Natural Resource Region', ' Region', ' region'];
+      const suffixes = [' Natural Resource Region', ' Region', ' region']
       // Check each suffix to see if the value ends with it
       for (const suffix of suffixes) {
         if (value.endsWith(suffix)) {
           // If value ends with suffix, remove it and return
-          return value.substring(0, value.length - suffix.length);
+          return value.substring(0, value.length - suffix.length)
         }
       }
       // If no suffix matches, return the original value
-      return value;
+      return value
     },
-    openInNewTab(wellTagNumber) {
+    openInNewTab (wellTagNumber) {
       const path = sanitizeUrl(`/well/${wellTagNumber}`)
-      const { href } = this.$router.resolve(path);
-      window.open(href, '_blank');
+      const { href } = this.$router.resolve(path)
+      window.open(href, '_blank')
     },
-    safeUrl(wellTagNumber) {
+    safeUrl (wellTagNumber) {
       const url = sanitizeUrl(`/gwells/well/${wellTagNumber}`)
       return encodeURI(url)
     }

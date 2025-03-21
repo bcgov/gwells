@@ -17,7 +17,7 @@
 
 <script>
 import { Pie } from 'vue-chartjs'
-import { merge } from 'lodash'
+import { merge } from 'lodash-es'
 
 export default {
   extends: Pie,

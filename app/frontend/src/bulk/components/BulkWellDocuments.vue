@@ -173,11 +173,11 @@
 
 <script>
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
-import { difference } from 'lodash'
+import { difference } from 'lodash-es'
 
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
-import Plural from '@/common/components/Plural'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
+import Plural from '@/common/components/Plural.vue'
 
 const WELL_ID_RE = /WTN\s+(\d+)[\s_-]+/i
 

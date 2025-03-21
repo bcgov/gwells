@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 
 export default {
   props: {

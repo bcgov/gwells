@@ -364,7 +364,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "~mapbox-gl/dist/mapbox-gl.css";
+@import "mapbox-gl/dist/mapbox-gl.css";
 
 .mapboxgl-popup {
   min-width: 275px !important;

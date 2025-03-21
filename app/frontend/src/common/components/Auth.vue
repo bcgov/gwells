@@ -51,7 +51,7 @@ export default {
             }
           }
         }).catch((e) => {
-          console.error("keyCloakLogin: ", e)
+          console.error('keyCloakLogin: ', e)
           this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
         })
       })
@@ -73,7 +73,7 @@ export default {
     keycloak (kc) {
       if (kc) {
         if (window._paq && this.authenticated) {
-          window._paq.push(["setCustomVariable", 1, "userType", this.keycloak.tokenParsed.identity_provider]);
+          window._paq.push(['setCustomVariable', 1, 'userType', this.keycloak.tokenParsed.identity_provider])
         }
         this.ready = true
       }

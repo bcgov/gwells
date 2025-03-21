@@ -6,7 +6,7 @@ import {
   AQUIFERS_FILL_LAYER_ID,
   DATABC_ECOCAT_LAYER_ID,
   DATABC_GROUND_WATER_LICENCES_LAYER_ID,
-  DATABC_SURFACE_WATER_LICENCES_LAYER_ID,
+  DATABC_SURFACE_WATER_LICENCES_LAYER_ID
 } from '../common/mapbox/layers'
 import { popupItems, popupItem } from '../common/mapbox/popup'
 
