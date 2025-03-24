@@ -12,7 +12,7 @@ RUN npm install
 RUN npm install -g serve
 RUN npm run build
 
-EXPOSE 5174
+EXPOSE 8080
 CMD ["npm", "run", "preview"]
 
 # RUN set -x

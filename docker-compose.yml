@@ -121,7 +121,7 @@ services:
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
     ports:
-      - "5174:5174"
+      - "8080:8080"
     volumes:
       - type: bind
         source: ./app/frontend
