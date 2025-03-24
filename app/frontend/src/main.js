@@ -100,7 +100,7 @@ new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App),  // Replace components/template with render function
+  render: h => h(App), // Replace components/template with render function
   methods: {
     ...mapActions([
       FETCH_CONFIG
