@@ -13,7 +13,7 @@ RUN npm install -g serve
 RUN npm run build
 
 EXPOSE 8080
-CMD ["npm", "run", "preview"]
+CMD ["npm", "run", "preview", "--", "--port", "8080"]
 
 # RUN set -x
 # RUN cd /app/frontend
