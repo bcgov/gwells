@@ -6,14 +6,13 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "OldBuild": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
     "coverage:test": "vue-cli-service test:unit --coverage",
     "test:unit:update": "vue-cli-service test:unit -u",
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@braintree/sanitize-url": "^6.0.2",
