@@ -115,7 +115,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "~mapbox-gl/dist/mapbox-gl.css";
+@import "mapbox-gl/dist/mapbox-gl.css";
 
 #single-well-map {
   height: 500px;

@@ -3,13 +3,13 @@ import Router from 'vue-router'
 import * as Sentry from '@sentry/browser'
 
 import authenticate from '@/common/authenticate.js'
-import AuthGuard from './authGuard'
+import AuthGuard from './authGuard.js'
 import { store } from './store/index.js'
 
 // Aquifers components
-import AquiferSearch from '@/aquifers/components/Search'
-import AquiferView from '@/aquifers/components/View'
-import AquiferNew from '@/aquifers/components/New'
+import AquiferSearch from '@/aquifers/components/Search.vue'
+import AquiferView from '@/aquifers/components/View.vue'
+import AquiferNew from '@/aquifers/components/New.vue'
 import BulkHome from '@/bulk/components/BulkHome.vue'
 import BulkWellAquiferCorrelation from '@/bulk/components/BulkWellAquiferCorrelation.vue'
 import BulkWellDocuments from '@/bulk/components/BulkWellDocuments.vue'

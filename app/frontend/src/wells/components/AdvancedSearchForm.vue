@@ -105,7 +105,7 @@ const ADDITIONAL_FILTER_SECTIONS = [
        'ownerCity',
        'ownerProvince',
        'ownerPostalCode' ] },
-  { header: "Licence Information",
+  { header: 'Licence Information',
     fields:
      [ 'licenceNumber'] },
   { header: 'Well location',

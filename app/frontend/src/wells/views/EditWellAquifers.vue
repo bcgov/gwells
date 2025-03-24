@@ -165,13 +165,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 
-import { debounce, uniq } from 'lodash'
+import { debounce, uniq } from 'lodash-es'
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
+import FormInput from '@/common/components/FormInput.vue'
+import vSelect from 'vue-select'
 
 export default {
   components: {
-    'api-error': APIErrorMessage
+    'api-error': APIErrorMessage,
+    'form-input': FormInput,
+    'v-select': vSelect
   },
   data () {
     return {

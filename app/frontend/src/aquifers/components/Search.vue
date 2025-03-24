@@ -175,7 +175,7 @@
 <script>
 import mapboxgl from 'mapbox-gl'
 import querystring from 'querystring'
-import { isEqual, pick } from 'lodash'
+import { isEqual, pick } from 'lodash-es'
 import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 import smoothScroll from 'smoothscroll'
 
@@ -193,8 +193,8 @@ import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
 import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
-import features from '../../common/features'
-import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry'
+import features from '../../common/features.js'
+import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry.js'
 
 const SEARCH_RESULTS_PER_PAGE = 10
 const AQUIFER_NOTATION_CODE = 'Notations'

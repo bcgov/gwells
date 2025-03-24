@@ -44,7 +44,7 @@ spec:
             httpGet:
               path: /gwells
               port: 8080
-              scheme: HTTPS
+              scheme: HTTP
             initialDelaySeconds: 5
             timeoutSeconds: 1
             periodSeconds: 3
@@ -56,7 +56,7 @@ spec:
             httpGet:
               path: /gwells
               port: 8080
-              scheme: HTTPS
+              scheme: HTTP
             timeoutSeconds: 90
             periodSeconds: 30
             successThreshold: 1
@@ -69,7 +69,7 @@ spec:
             httpGet:
               path: /gwells
               port: 8080
-              scheme: HTTPS
+              scheme: HTTP
             timeoutSeconds: 1
             periodSeconds: 2
             successThreshold: 1

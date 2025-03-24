@@ -407,16 +407,16 @@
 </template>
 
 <script>
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
-import { SET_DRILLER } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
-import PersonDocuments from './PersonDocuments'
+import { SET_DRILLER } from '@/registry/store/mutations.types.js'
+import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types.js'
+import PersonDocuments from './PersonDocuments.vue'
 
 export default {
   name: 'person-detail',

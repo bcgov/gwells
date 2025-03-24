@@ -202,7 +202,7 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import Papa from 'papaparse'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import { mapGetters } from 'vuex'
 
 const MAX_NUMBER_OF_ROWS = 4000

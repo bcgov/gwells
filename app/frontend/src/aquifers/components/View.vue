@@ -533,20 +533,20 @@
 
 <script>
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
-import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash'
+import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash-es'
 import * as Sentry from '@sentry/browser'
 
 import ApiService from '@/common/services/ApiService.js'
 
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import MapLoadingSpinner from '@/common/components/MapLoadingSpinner.vue'
-import AquiferForm from './Form'
+import AquiferForm from './Form.vue'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
-import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
+import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants.js'
 import { sanitizeUrl } from '@braintree/sanitize-url'
 
 const ONE_MILLION = 1 * 1000 * 1000

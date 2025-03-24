@@ -185,9 +185,9 @@ import { mapGetters } from 'vuex'
 import Papa from 'papaparse'
 
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage'
+import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 
-import { AQUIFER_ID_FOR_UNCORRELATED_WELLS } from '@/common/constants'
+import { AQUIFER_ID_FOR_UNCORRELATED_WELLS } from '@/common/constants.js'
 
 const MAX_NUMBER_OF_ROWS = 4000
 

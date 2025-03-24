@@ -75,7 +75,7 @@ export default {
       error: null,
       file: '',
       fileType: '',
-      splitFiles: [],
+      splitFiles: []
     }
   },
   watch: {
@@ -119,8 +119,8 @@ export default {
     ...mapActions('documentState',
       ['removeFileFromStore']
     ),
-    callLongFormLabel(shortFormLabel) {
-      return getLongFormLabel(shortFormLabel);
+    callLongFormLabel (shortFormLabel) {
+      return getLongFormLabel(shortFormLabel)
     },
     showModal () {
       this.$refs.deleteModal.show()
@@ -135,7 +135,6 @@ export default {
       this.showModal()
     },
     deleteFile () {
-      
       const isPrivate = this.fileType === 'private'
 
       ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)

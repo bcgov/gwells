@@ -239,8 +239,8 @@ const wellsStore = {
       if (state.pendingSearch !== null) {
         state.pendingSearch.cancel()
       }
-      if(!localStorage.getItem('userColumnPreferences')){
-          commit(SET_SEARCH_RESULT_COLUMNS, DEFAULT_COLUMNS)
+      if (!localStorage.getItem('userColumnPreferences')) {
+        commit(SET_SEARCH_RESULT_COLUMNS, DEFAULT_COLUMNS)
       }
 
       commit(SET_PENDING_LOCATION_SEARCH, null)
@@ -383,10 +383,10 @@ const wellsStore = {
     },
     wellFileDownloads (state) {
       return state.downloads
-    },
-    searchQueryParams (state) {
-      return buildSearchParams(state)
     }
+    // searchQueryParams (state) {
+    //   return buildSearchParams(state)
+    // }
   }
 }
 

@@ -27,23 +27,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <b-row>
       <b-col cols="12" md="6">
-        <form-input 
-          id="ownerFullName" 
-          label="Well Owner Name *" 
-          v-model="ownerFullNameInput" 
-          :errors="errors['owner_full_name']" 
+        <form-input
+          id="ownerFullName"
+          label="Well Owner Name *"
+          v-model="ownerFullNameInput"
+          :errors="errors['owner_full_name']"
           :loaded="fieldsLoaded['owner_full_name']"
-        ></form-input>       
+        ></form-input>
       </b-col>
       <b-col cols="12" md="6">
-        <form-input 
-          id="ownerMailingAddress" 
-          label="Owner Mailing Address *" 
-          v-model="ownerAddressInput" 
-          @input="fetchAddressSuggestions" 
-          v-on:focus="showList(true)" 
-          v-on:blur="showList(false)" 
-          :errors="errors['owner_mailing_address']" 
+        <form-input
+          id="ownerMailingAddress"
+          label="Owner Mailing Address *"
+          v-model="ownerAddressInput"
+          @input="fetchAddressSuggestions"
+          v-on:focus="showList(true)"
+          v-on:blur="showList(false)"
+          :errors="errors['owner_mailing_address']"
           :loaded="fieldsLoaded['owner_mailing_address']">
         </form-input>
         <!-- Display the address suggestions -->
@@ -175,43 +175,43 @@ export default {
      * On failure, it logs the error and clears the current suggestions.
      * Finally, sets the loading state to false.
      */
-    async fetchAddressSuggestions() {
-      const MIN_QUERY_LENGTH = 3;
+    async fetchAddressSuggestions () {
+      const MIN_QUERY_LENGTH = 3
       if (!this.ownerAddressInput || this.ownerAddressInput.length < MIN_QUERY_LENGTH) {
-        this.addressSuggestions = [];
-        return;
-      } 
-        this.isLoadingSuggestions = true;
-        const params = {
-          minScore: 50, //accuracy score of results compared to input
-          maxResults: 5,
-          echo: 'false',
-          brief: true,
-          autoComplete: true,
-          matchPrecision: 'CIVIC_NUMBER', //forced minimum level of specificity for return values. will only return addresses that contain at least contain a street number
-          addressString: this.ownerAddressInput
-        };
+        this.addressSuggestions = []
+        return
+      }
+      this.isLoadingSuggestions = true
+      const params = {
+        minScore: 50, // accuracy score of results compared to input
+        maxResults: 5,
+        echo: 'false',
+        brief: true,
+        autoComplete: true,
+        matchPrecision: 'CIVIC_NUMBER', // forced minimum level of specificity for return values. will only return addresses that contain at least contain a street number
+        addressString: this.ownerAddressInput
+      }
 
-        const querystring = require('querystring');
-        const searchParams = querystring.stringify(params);
-        try {
-          ApiService.getAddresses(searchParams).then((response) => {
-        if (response.data) {
-          const data = response.data;
-          if (data && data.features) {
-            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-          } else {
-            this.addressSuggestions = [];
+      const querystring = require('querystring')
+      const searchParams = querystring.stringify(params)
+      try {
+        ApiService.getAddresses(searchParams).then((response) => {
+          if (response.data) {
+            const data = response.data
+            if (data && data.features) {
+              this.addressSuggestions = data.features.map(item => item.properties.fullAddress)
+            } else {
+              this.addressSuggestions = []
+            }
           }
         }
+        )
+      } catch (error) {
+        console.error(error)
+        this.addressSuggestions = []
+      } finally {
+        this.isLoadingSuggestions = false
       }
-      )
-        } catch (error) {
-          console.error(error);
-          this.addressSuggestions = [];
-        } finally {
-          this.isLoadingSuggestions = false;
-        }
     },
 
     /**
@@ -220,40 +220,39 @@ export default {
      * Clears the address suggestions afterward.
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
      */
-    selectAddressSuggestion(suggestion) {
-      const ownerAddressArray = suggestion.split(',');
-      const PROV_ARRAY_INDEX = 2;
-      const CITY_ARRAY_INDEX = 1;
-      const STREET_ARRAY_INDEX = 0;
-      let province = ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim();
-      if(province === 'BC' || province === 'BRITISH COLUMBIA'){
-        this.ownerProvinceInput = this.codes.province_codes[0].province_state_code;
+    selectAddressSuggestion (suggestion) {
+      const ownerAddressArray = suggestion.split(',')
+      const PROV_ARRAY_INDEX = 2
+      const CITY_ARRAY_INDEX = 1
+      const STREET_ARRAY_INDEX = 0
+      let province = ownerAddressArray[PROV_ARRAY_INDEX].toUpperCase().trim()
+      if (province === 'BC' || province === 'BRITISH COLUMBIA') {
+        this.ownerProvinceInput = this.codes.province_codes[0].province_state_code
+      } else {
+        this.ownerProvinceInput = ''
       }
-      else {
-      this.ownerProvinceInput = "";
-      }
-      this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX].trim();
-      this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX];
-    
-    this.clearAddressSuggestions();
+      this.ownerCityInput = ownerAddressArray[CITY_ARRAY_INDEX].trim()
+      this.ownerAddressInput = ownerAddressArray[STREET_ARRAY_INDEX]
+
+      this.clearAddressSuggestions()
     },
 
     /**
      * @desc Clears the current list of address suggestions.
      */
     clearAddressSuggestions () {
-      this.addressSuggestions = [];
+      this.addressSuggestions = []
     },
 
     /**
      * @desc Shows or hides the address suggestions list in the UI.
      * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
-     showList(show) {
-      if(document.getElementById('owner-address-suggestions-list')){
-        document.getElementById('owner-address-suggestions-list').style.display =  show? 'block' : 'none';
+    showList (show) {
+      if (document.getElementById('owner-address-suggestions-list')) {
+        document.getElementById('owner-address-suggestions-list').style.display = show ? 'block' : 'none'
       }
-    }        
+    }
   }
 }
 </script>

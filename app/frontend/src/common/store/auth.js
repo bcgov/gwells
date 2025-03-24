@@ -16,7 +16,7 @@ const auth = {
     userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
         // map SSO roles to web app permissions
-        // IMPORTANT: One should be relying on SSO composite roles (which can be found alongside all of the 
+        // IMPORTANT: One should be relying on SSO composite roles (which can be found alongside all of the
         // granular roles on Common Hosted SSO) to assign the appropriate roles.
         // e.g. We don't need to understand what a Statutory Authority is here, we should
         // only be concerned if the right to edit/approve is set. It's up to keycloak to associate some
@@ -27,7 +27,7 @@ const auth = {
         // even if the user does have that role.
         // Instead, we have to look at the "raw" list of roles contained inside the keycloak instance.
         const clientRoles = state.keycloak.idTokenParsed['client_roles']
-        return {          
+        return {
           registry: {
             view: clientRoles.includes('registries_viewer'),
             edit: clientRoles.includes('registries_edit'),

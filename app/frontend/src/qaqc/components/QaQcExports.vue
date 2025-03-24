@@ -22,8 +22,7 @@
 </template>
 
 <script>
-import querystring from 'querystring'
-
+import querystring from 'querystring-es3' // Using ES module compatible version
 import { mapGetters } from 'vuex'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
@@ -67,50 +66,48 @@ export default {
     excelExportUrl () {
       return this.getExportUrl('xlsx')
     },
-    exportBaseUrl() {
+    exportBaseUrl () {
       // Dynamically set the base URL based on the activeTable prop
       switch (this.selectedTab) {
         case 0: // record compliance
-          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/recordcompliance/download`;
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/recordcompliance/download`
         case 1: // mislocated wells
-          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/mislocatedwells/download`;
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/mislocatedwells/download`
         case 2: // cross referencing
-          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/crossreferencing/download`;
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}qaqc/crossreferencing/download`
         default:
-          return `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export`; // Default or fallback URL
+          return `${process.env.VUE_APP_AXIOS_BASE_URL}wells/export` // Default or fallback URL
       }
-  },
+    }
   },
   methods: {
-    getExportUrl(format) {
-      let url = `${this.exportBaseUrl}?format=${format}`;
+    getExportUrl (format) {
+      let url = `${this.exportBaseUrl}?format=${format}`
       if (this.fullQueryString) {
-        url = `${url}&${this.fullQueryString}`;
+        url = `${url}&${this.fullQueryString}`
       }
-      return url;
+      return url
     },
-    async handleExportClickEvent(format) {
-
+    async handleExportClickEvent (format) {
       // Generate the URL for the file download
-      const url = this.getExportUrl(format);
+      const url = this.getExportUrl(format)
       try {
-        const response = await fetch(url);
+        const response = await fetch(url)
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Network response was not ok')
         }
-        const data = await response.blob();
+        const data = await response.blob()
 
-        const downloadUrl = window.URL.createObjectURL(data);
+        const downloadUrl = window.URL.createObjectURL(data)
 
-        const link = document.createElement('a');
-        link.href = downloadUrl;
-        link.setAttribute('download', `search-results.${format}`);
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-
+        const link = document.createElement('a')
+        link.href = downloadUrl
+        link.setAttribute('download', `search-results.${format}`)
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
       } catch (error) {
-        console.error('There was a problem with the fetch operation:', error);
+        console.error('There was a problem with the fetch operation:', error)
       }
     }
   }

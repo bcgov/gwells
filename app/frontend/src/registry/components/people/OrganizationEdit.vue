@@ -517,13 +517,13 @@ export default {
       // plus all notes for that company
       ApiService.get('organizations', this.selectedCompany.org_guid)
         .then((response) => {
-          this.companyRegistrants = [];
+          this.companyRegistrants = []
           this.companyDetails = response.data
           // Fetch data on Registrants
           ApiService.query(`drillers?search=${encodeURIComponent(this.companyDetails.name)}`)
-            .then(({data}) => {
-              this.companyRegistrants = data.results;
-            });
+            .then(({ data }) => {
+              this.companyRegistrants = data.results
+            })
         }).catch((e) => {
           this.companyListError = e.response.data
         })

@@ -59,10 +59,10 @@ import {
   AQUIFERS_SOURCE,
   observationWellsLayer,
   WELLS_OBSERVATION_LAYER_ID
-} from '../../common/mapbox/layers'
-import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry'
-import { LayersControl, LegendControl } from '../../common/mapbox/controls'
-import { createAquiferPopupElement, createWellPopupElement, createEcocatPopupElement, createWaterLicencePopupElement } from '../popup'
+} from '../../common/mapbox/layers.js'
+import { computeBoundsFromMultiPolygon } from '../../common/mapbox/geometry.js'
+import { LayersControl, LegendControl } from '../../common/mapbox/controls.js'
+import { createAquiferPopupElement, createWellPopupElement, createEcocatPopupElement, createWaterLicencePopupElement } from '../popup.js'
 
 import cadastralLegendSrc from '../../common/assets/images/cadastral.png'
 import ecoCatWaterLegendSrc from '../../common/assets/images/ecocat-water.svg'
@@ -78,7 +78,7 @@ import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.sv
 import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import uncorrelatedWellsIconSrc from '../../common/assets/images/wells-uncorrelated.svg'
 import emsWellsIconSrc from '../../common/assets/images/wells-ems.svg'
-import { setupFeatureTooltips } from '../../common/mapbox/popup'
+import { setupFeatureTooltips } from '../../common/mapbox/popup.js'
 
 const CURRENT_AQUIFER_FILL_LAYER_ID = 'cur-aquifer-fill'
 const CURRENT_AQUIFER_LINE_LAYER_ID = 'cur-aquifer-line'
@@ -306,7 +306,7 @@ export default {
 
         this.$emit('mapLoaded')
       })
-      this.listenForMapMovement();
+      this.listenForMapMovement()
     },
     buildMapStyle () {
       return {
@@ -351,19 +351,18 @@ export default {
       return filter
     },
 
-    async layersChanged(layerId, show) {
-
+    async layersChanged (layerId, show) {
       // Turn the layer's visibility on / off
-      this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none');
+      this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none')
       try {
         // Wait for the layer change to be rendered/removed
-        await this.waitForLayerRenderChange(layerId, show);
+        await this.waitForLayerRenderChange(layerId, show)
 
         // Update the legend based on visible elements
-        this.updateMapLegendBasedOnVisibleElements();
+        this.updateMapLegendBasedOnVisibleElements()
       } catch (error) {
-        console.error('Error in layersChanged:', error);
-        throw error;
+        console.error('Error in layersChanged:', error)
+        throw error
       }
     },
 
@@ -375,32 +374,32 @@ export default {
      * @returns {Promise<void>} - A promise that resolves when the layer change has been rendered or the maximum attempts are reached.
      * @throws {Error} - Throws an error if the maximum number of attempts is reached without the expected layer change.
      */
-    async waitForLayerRenderChange(layerId, show) {//waits for layer with layerId to appear or be removed based on value of show
+    async waitForLayerRenderChange (layerId, show) { // waits for layer with layerId to appear or be removed based on value of show
       // Number of attempts before giving up
-      const maxAttempts = 10;
+      const maxAttempts = 10
 
       // Counter for attempts
-      let attempts = 0;
+      let attempts = 0
 
       // Flag indicating whether the layer change has been rendered
-      let hasChangeBeenRendered = false;
+      let hasChangeBeenRendered = false
 
       // Continue the loop until the layer change is rendered or maxAttempts is reached
       while (!hasChangeBeenRendered && attempts < maxAttempts) {
         // Get the currently visible layer IDs
-        const visibleLayerIds = this.getRenderedLayerIds();
+        const visibleLayerIds = this.getRenderedLayerIds()
 
         // Check if the layer change has been rendered/removed based on the 'show' parameter
         if (show) {
-          hasChangeBeenRendered = visibleLayerIds.has(layerId);
+          hasChangeBeenRendered = visibleLayerIds.has(layerId)
         } else {
-          hasChangeBeenRendered = !visibleLayerIds.has(layerId);
+          hasChangeBeenRendered = !visibleLayerIds.has(layerId)
         }
 
         // If the layer change has not been noticed, add a delay before checking again
         if (!hasChangeBeenRendered) {
-          await new Promise(resolve => setTimeout(resolve, 100));
-          attempts++;
+          await new Promise(resolve => setTimeout(resolve, 100))
+          attempts++
         }
       }
     },
@@ -468,28 +467,27 @@ export default {
      * It retrieves a list of rendered objects and updates the legend to display entries
      * only for items that are currently rendered.
      */
-    updateMapLegendBasedOnVisibleElements() {
-
-      const uniqueRenderedLayerIds = this.getRenderedLayerIds();
+    updateMapLegendBasedOnVisibleElements () {
+      const uniqueRenderedLayerIds = this.getRenderedLayerIds()
 
       // Iterates through map layers to update their visibility status based on rendering
       // cadastral layer is checked later due to special handling being needed
       this.mapLayers.forEach(layerObj => {
         if (uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id !== DATABC_CADASTREL_LAYER_ID) {
-          this.mapLayers.find((layer) => layer.id === layerObj.id).show = true;
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = true
         } else if (!uniqueRenderedLayerIds.has(layerObj.id) && layerObj.id !== DATABC_CADASTREL_LAYER_ID) {
-          this.mapLayers.find((layer) => layer.id === layerObj.id).show = false;
+          this.mapLayers.find((layer) => layer.id === layerObj.id).show = false
         }
-      });
+      })
 
       // Checks cadastral layer visibility based on zoom level and checkbox status
       if (this.map.getZoom() > CADASTRAL_LAYER_MIN_ZOOM &&
-          this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') !== "none") {
-        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true;
+          this.map.getLayoutProperty(DATABC_CADASTREL_LAYER_ID, 'visibility') !== 'none') {
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = true
       } else {
-        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false;
+        this.mapLayers.find((layer) => layer.id === DATABC_CADASTREL_LAYER_ID).show = false
       }
-      this.legendControl.update();
+      this.legendControl.update()
     },
 
     /**
@@ -497,15 +495,15 @@ export default {
      *
      * @returns {Set<string>} - A Set of unique layer IDs representing the currently rendered layers.
      */
-    getRenderedLayerIds(){
-      const visibleFeatures = (this.map.queryRenderedFeatures());
-      const uniqueRenderedLayerIds = new Set();
+    getRenderedLayerIds () {
+      const visibleFeatures = (this.map.queryRenderedFeatures())
+      const uniqueRenderedLayerIds = new Set()
       visibleFeatures.forEach(item => {
-        if (item.layer.id){
-          uniqueRenderedLayerIds.add(item.layer.id);
+        if (item.layer.id) {
+          uniqueRenderedLayerIds.add(item.layer.id)
         }
-      });
-      return uniqueRenderedLayerIds;
+      })
+      return uniqueRenderedLayerIds
     },
     listenForMapMovement () {
       const startEvents = ['zoomstart', 'movestart']
@@ -517,8 +515,7 @@ export default {
       const endEvents = ['zoomend', 'moveend']
       endEvents.forEach(eventName => {
         this.map.on(eventName, (e) => {
-          this.updateMapLegendBasedOnVisibleElements();
-
+          this.updateMapLegendBasedOnVisibleElements()
         })
       })
     }
@@ -546,7 +543,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "~mapbox-gl/dist/mapbox-gl.css";
+@import "mapbox-gl/dist/mapbox-gl.css";
 
 #single-aquifer-map {
   height: 600px;

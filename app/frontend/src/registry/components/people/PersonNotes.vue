@@ -129,7 +129,7 @@
             </p>
             <div class="crud-options">
               <b-btn
-                :disabled="keycloak.idTokenParsed.display_name !== note.author" 
+                :disabled="keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteEditHandler(note)"
                 size="sm"
                 variant="primary"
@@ -171,7 +171,7 @@ export default {
       confirmSubmitModal: false,
       confirmCancelModal: false,
       confirmDeleteModal: false,
-      noteContentEdit: "",
+      noteContentEdit: '',
       activeNote: null,
       maxNoteLength: 900
     }
@@ -184,7 +184,7 @@ export default {
       return []
     },
     invalidNewNoteLength () { return this.noteInput.length > this.maxNoteLength },
-    invalidEditNoteLength () { return this.noteContentEdit.length > this.maxNoteLength; },
+    invalidEditNoteLength () { return this.noteContentEdit.length > this.maxNoteLength },
     ...mapGetters([
       'userRoles',
       'keycloak'
@@ -214,59 +214,58 @@ export default {
         })
     },
     noteEditHandler (note) {
-      const editRegexChromium = /^\(Edited \d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} (AM|PM)\)\s/;
-      const editRegexFirefox =  /^\(Edited \d{4}-\d{1,2}-\d{1,2}, \d{1,2}:\d{2}:\d{2} (a.m.|p.m.)\)\s/;
-      this.noteContentEdit = note.note.replace(editRegexChromium, "");
-      this.noteContentEdit = this.noteContentEdit.replace(editRegexFirefox, "");
-      this.activeNote = note;
-      this.confirmEditNoteModal = true;
+      const editRegexChromium = /^\(Edited \d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} (AM|PM)\)\s/
+      const editRegexFirefox = /^\(Edited \d{4}-\d{1,2}-\d{1,2}, \d{1,2}:\d{2}:\d{2} (a.m.|p.m.)\)\s/
+      this.noteContentEdit = note.note.replace(editRegexChromium, '')
+      this.noteContentEdit = this.noteContentEdit.replace(editRegexFirefox, '')
+      this.activeNote = note
+      this.confirmEditNoteModal = true
     },
     noteDeleteHandler (note) {
-      this.activeNote = note;
-      this.confirmDeleteModal = true;
+      this.activeNote = note
+      this.confirmDeleteModal = true
     },
     noteCancelDeleteHandler () {
-      this.activeNote = null;
+      this.activeNote = null
     },
     focusEditNoteModal () {
       this.$refs.cancelEditNoteCancelBtn.focus()
     },
     focusDeleteModal () {
-      this.$refs.cancelDeleteBtn.focus();
+      this.$refs.cancelDeleteBtn.focus()
     },
-    deleteNote() {
+    deleteNote () {
       ApiService.delete(`drillers/${this.currentDriller.person_guid}/notes`, this.activeNote.person_note_guid)
-      .then(() => {
-        this.activeNote = null;
-        this.alertText = "Note deleted.";
-        this.submitSuccess = true;
-        this.$emit('updated');
-      })
-      .catch((e) => {
-        this.errorHandler(e);
-      })
-    },
-    notePatchHandle() {
-      const updatedNote = `(Edited ${new Date().toLocaleString()}) ` + this.noteContentEdit;
-      ApiService.patch(`drillers/${this.currentDriller.person_guid}/notes`, this.activeNote.person_note_guid, {note: updatedNote})
         .then(() => {
-          this.noteReset();
-          this.activeNote = null;
-          this.noteContentEdit = "";
-          this.confirmEditNoteModal = false;
-          this.alertText = "Note updated."
-          this.submitSuccess = true;
-          this.$emit('updated');
+          this.activeNote = null
+          this.alertText = 'Note deleted.'
+          this.submitSuccess = true
+          this.$emit('updated')
         })
         .catch((e) => {
-          this.errorHandler(e);
+          this.errorHandler(e)
         })
     },
-    errorHandler(e){
-      this.submitLoading = false;
-      if (e.response.status === 500) { this.submitError = "Service unavailable - try again later"; }
-      else { this.submitError = e.response.data; }
-      alert(`An error has occured:\n\n${this.submitError}`);
+    notePatchHandle () {
+      const updatedNote = `(Edited ${new Date().toLocaleString()}) ` + this.noteContentEdit
+      ApiService.patch(`drillers/${this.currentDriller.person_guid}/notes`, this.activeNote.person_note_guid, { note: updatedNote })
+        .then(() => {
+          this.noteReset()
+          this.activeNote = null
+          this.noteContentEdit = ''
+          this.confirmEditNoteModal = false
+          this.alertText = 'Note updated.'
+          this.submitSuccess = true
+          this.$emit('updated')
+        })
+        .catch((e) => {
+          this.errorHandler(e)
+        })
+    },
+    errorHandler (e) {
+      this.submitLoading = false
+      if (e.response.status === 500) { this.submitError = 'Service unavailable - try again later' } else { this.submitError = e.response.data }
+      alert(`An error has occured:\n\n${this.submitError}`)
     },
     noteReset () {
       this.submitSuccess = false

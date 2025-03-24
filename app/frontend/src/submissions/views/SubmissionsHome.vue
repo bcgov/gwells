@@ -217,7 +217,7 @@ export default {
     ]),
     ...mapActions([ RESET_WELL_DATA ]),
 
-    editWater(coords){
+    editWater (coords) {
       this.initialLatitude = coords.lat
       this.initialLongitude = coords.lng
       this.editedWater = true
@@ -276,7 +276,7 @@ export default {
       }
 
       if (data.legal_pid) {
-        data.legal_pid = data.legal_pid.replace(/-/g, '');
+        data.legal_pid = data.legal_pid.replace(/-/g, '')
       }
 
       if (!this.isStaffEdit) {
@@ -297,10 +297,10 @@ export default {
         }
       })
       data.aquifer_parameters_set = data.aquifer_parameters_set.map((item, index) => {
-    // Create a copy of the object without the "testing_number" and "well" property
-    const { testing_number,well, ...newItem } = item;
-    return newItem;
-});
+        // Create a copy of the object without the "testing_number" and "well" property
+        const { testing_number, well, ...newItem } = item
+        return newItem
+      })
       // Check to see if we are currently saving this form. If so - don't try to POST again
       if (this.formSubmitLoading) { return }
 
@@ -330,7 +330,7 @@ export default {
           testEnv = true
         }
 
-        if(this.editedWater){
+        if (this.editedWater) {
           ApiService.post(`/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}&testEnv=${testEnv}`).then((response) => {})
         }
         this.formSubmitSuccess = true
@@ -589,100 +589,100 @@ export default {
       }
       this.componentUpdateTrigger = Date.now()
     },
-    groundwaterProtectionRegulationValidation(errors) {
+    groundwaterProtectionRegulationValidation (errors) {
       const {
         owner_full_name,
         owner_mailing_address,
         owner_city,
         owner_province_state,
-        owner_postal_code,
+        owner_postal_code
       } = this.form
-      this.isWellLocationFilled(errors);
+      this.isWellLocationFilled(errors)
       if (!owner_full_name) {
-        errors.owner_full_name = ['Owners Full Name Required.'];
+        errors.owner_full_name = ['Owners Full Name Required.']
       }
       if (!owner_mailing_address) {
-        errors.owner_mailing_address = ['Owners Mailing Address Required.'];
+        errors.owner_mailing_address = ['Owners Mailing Address Required.']
       }
       if (!owner_city) {
-        errors.owner_city = ['Owners City Required.'];
+        errors.owner_city = ['Owners City Required.']
       }
       if (!owner_province_state) {
-        errors.owner_province_state = ['Owners Province or State Required.'];
+        errors.owner_province_state = ['Owners Province or State Required.']
       }
       if (!owner_postal_code) {
-        errors.owner_postal_code = ['Owners Postal Code Required.'];
+        errors.owner_postal_code = ['Owners Postal Code Required.']
       }
       if (owner_postal_code && !isValidPostalCodeOrZipCode(owner_postal_code)) {
-        errors.owner_postal_code = ['Invalid Postal Code or ZIP Code.'];
+        errors.owner_postal_code = ['Invalid Postal Code or ZIP Code.']
       }
     },
-    validateWellIdentificationPlateFields(errors) {
+    validateWellIdentificationPlateFields (errors) {
       const {
         well_class,
         identification_plate_number,
-        well_identification_plate_attached,
+        well_identification_plate_attached
       } = this.form
 
       const validateWellClasses = [WELL_CLASS.WATER_SUPPLY, WELL_CLASS.INJECTION, WELL_CLASS.RECHARGE]
       const isWellIdentificationPlateToBeVerified = validateWellClasses.includes(well_class)
 
-      if (isWellIdentificationPlateToBeVerified == false) { return; }
+      if (isWellIdentificationPlateToBeVerified == false) { return }
 
       if (!identification_plate_number) {
-        errors.identification_plate_number = ['Identification Plate Number Required.'];
+        errors.identification_plate_number = ['Identification Plate Number Required.']
       }
       if (!well_identification_plate_attached) {
-        errors.well_identification_plate_attached = ['Where Identification Plate Attached Required.'];
+        errors.well_identification_plate_attached = ['Where Identification Plate Attached Required.']
       }
     },
-    validateWellFields(errors) {
+    validateWellFields (errors) {
       const {
         work_start_date,
         work_end_date,
         drilling_methods,
         total_depth_drilled,
         finished_well_depth
-      } = this.form;
-
-      if (!work_start_date) {
-        errors.work_start_date = ['Start Date of Work Required.'];
-      }
-      if (!work_end_date) {
-        errors.work_end_date = ['End Date of Work Required.'];
-      }
-      if (drilling_methods.length === 0) {
-        errors.drilling_methods = ['Drilling Methods Required.'];
-      }
-      if (!total_depth_drilled) {
-        errors.total_depth_drilled = ['Total Depth Drilled Required.'];
-      }
-      if (!finished_well_depth) {
-        errors.finished_well_depth = ['Finished Well Depth Required.'];
-      }
-    },
-    newlyConstructedWellValidation(errors) {
-      const {
-        work_start_date,
-        work_end_date,
       } = this.form
 
-      const mandatoryLicensingDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE;
+      if (!work_start_date) {
+        errors.work_start_date = ['Start Date of Work Required.']
+      }
+      if (!work_end_date) {
+        errors.work_end_date = ['End Date of Work Required.']
+      }
+      if (drilling_methods.length === 0) {
+        errors.drilling_methods = ['Drilling Methods Required.']
+      }
+      if (!total_depth_drilled) {
+        errors.total_depth_drilled = ['Total Depth Drilled Required.']
+      }
+      if (!finished_well_depth) {
+        errors.finished_well_depth = ['Finished Well Depth Required.']
+      }
+    },
+    newlyConstructedWellValidation (errors) {
+      const {
+        work_start_date,
+        work_end_date
+      } = this.form
 
-      const workStartDatePastWorkEndDate = ((work_start_date !== '' && work_end_date !== '') && work_start_date > work_end_date);
-      const workEndDatePastMandatoryLicensingDate = (work_end_date !== '' && work_end_date >= mandatoryLicensingDate);
-      const workStartDatePastMandatoryLicensingDate = (work_start_date !== '' && work_start_date >= mandatoryLicensingDate);
+      const mandatoryLicensingDate = NEW_WELL_CONSTRUCTION_VALIDATION_DATE
 
-      if (this.activityType !== TYPE_OF_WORK.CON) { return; }
+      const workStartDatePastWorkEndDate = ((work_start_date !== '' && work_end_date !== '') && work_start_date > work_end_date)
+      const workEndDatePastMandatoryLicensingDate = (work_end_date !== '' && work_end_date >= mandatoryLicensingDate)
+      const workStartDatePastMandatoryLicensingDate = (work_start_date !== '' && work_start_date >= mandatoryLicensingDate)
+
+      if (this.activityType !== TYPE_OF_WORK.CON) { return }
 
       if (workStartDatePastWorkEndDate) {
-        errors.work_start_date = ['Invalid Start Date comes after End Date.'];
-        errors.work_end_date = ['Invalid End Date comes before Start Date.'];
+        errors.work_start_date = ['Invalid Start Date comes after End Date.']
+        errors.work_end_date = ['Invalid End Date comes before Start Date.']
       }
 
       if (workStartDatePastMandatoryLicensingDate || workEndDatePastMandatoryLicensingDate) {
-        this.validateWellIdentificationPlateFields(errors);
-        this.validateWellFields(errors);
+        this.validateWellIdentificationPlateFields(errors)
+        this.validateWellFields(errors)
       }
     },
     /**
@@ -690,35 +690,35 @@ export default {
      * To count as correct, one of these three sections has to be filled in.
      * @summary validates Well Location section of form
      */
-    isWellLocationFilled(errors){
+    isWellLocationFilled (errors) {
       const {
         legal_lot, legal_plan, legal_district_lot,
         legal_block, legal_section, legal_township,
         legal_range, land_district, legal_pid,
-        street_address, city,
-      } = this.form;
+        street_address, city
+      } = this.form
 
       const legalDescriptionFields = [
         legal_lot, legal_plan, legal_district_lot,
         legal_block, legal_section, legal_township,
         legal_range, land_district
-      ];
-      const locationAddressValidate = !!street_address && !!city;
+      ]
+      const locationAddressValidate = !!street_address && !!city
       // for legalDescription a user is only required to fill in a minimum one field
-      const legalDescriptionValidate = legalDescriptionFields.some((item) => !!item);
-      const pidNum = legal_pid.replace(/-/g, '');
-      const pidAddressValidate = Number(pidNum) > 0;
+      const legalDescriptionValidate = legalDescriptionFields.some((item) => !!item)
+      const pidNum = legal_pid.replace(/-/g, '')
+      const pidAddressValidate = Number(pidNum) > 0
 
-      if(locationAddressValidate || legalDescriptionValidate || pidAddressValidate) { return; }
-      errors.well_location_section = ['Well location not filled out'];
+      if (locationAddressValidate || legalDescriptionValidate || pidAddressValidate) { return }
+      errors.well_location_section = ['Well location not filled out']
     },
     isFormValid () {
       const errors = {}
 
       // We don't want to validate on edits of older wells
       if (this.activityType !== 'STAFF_EDIT') {
-        this.groundwaterProtectionRegulationValidation(errors);
-        this.newlyConstructedWellValidation(errors);
+        this.groundwaterProtectionRegulationValidation(errors)
+        this.newlyConstructedWellValidation(errors)
       }
 
       let validateWellClassAndIntendedWaterUse = true
@@ -728,11 +728,11 @@ export default {
 
       if (this.$refs.activitySubmissionForm && this.$refs.activitySubmissionForm.$refs.wellCoords) {
         const wellCoordsNotWithinBC = !this.$refs.activitySubmissionForm.$refs.wellCoords.validCoordinate
-        const wellCoordsMissing = !this.form.latitude || !this.form.longitude;
+        const wellCoordsMissing = !this.form.latitude || !this.form.longitude
         //
         if (wellCoordsMissing) {
-          if (!this.form.latitude){
-            errors.latitude = ['Valid Latitude Required'];
+          if (!this.form.latitude) {
+            errors.latitude = ['Valid Latitude Required']
           }
           if (!this.form.longitude) {
             errors.longitude = ['Valid Longitude Required']
@@ -1092,7 +1092,7 @@ function initialState () {
 </script>
 
 <style lang="scss">
-@import '~vuejs-noty/dist/vuejs-noty.css';
+@import 'vuejs-noty/dist/vuejs-noty.css';
 
   .slide-leave-active,
   .slide-enter-active {

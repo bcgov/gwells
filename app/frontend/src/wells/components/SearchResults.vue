@@ -329,8 +329,8 @@ export default {
     }
   },
   created () {
-    if(localStorage && localStorage.getItem('userColumnPreferences')) {
-      this.$store.commit(SET_SEARCH_RESULT_COLUMNS, JSON.parse(localStorage.getItem('userColumnPreferences')));
+    if (localStorage && localStorage.getItem('userColumnPreferences')) {
+      this.$store.commit(SET_SEARCH_RESULT_COLUMNS, JSON.parse(localStorage.getItem('userColumnPreferences')))
     }
     this.initFilterParams()
   }

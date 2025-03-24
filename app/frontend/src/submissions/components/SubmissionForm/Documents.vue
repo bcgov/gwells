@@ -87,8 +87,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     v-model="attachment.document_code"
                     :options="WELL_TAGS"
                     :state="getAttachmentError(index).document_code ? false : null"
-                    size="med"   
-                >    
+                    size="med"
+                >
                 </b-form-select>
                 <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
@@ -167,7 +167,7 @@ import ApiService from '@/common/services/ApiService.js'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import { WELL_TAGS } from '@/common/constants.js'
-import getLongFormLabel from '@/common/helpers/getLongFormLabel.js';
+import getLongFormLabel from '@/common/helpers/getLongFormLabel.js'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -203,7 +203,7 @@ export default {
     uploadedFiles: {
       type: Object,
       isInput: false,
-      default: {},
+      default: {}
     },
     showDocuments: {
       type: Boolean,
@@ -216,7 +216,7 @@ export default {
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       attachmentsData: [],
-      WELL_TAGS: WELL_TAGS,
+      WELL_TAGS: WELL_TAGS
     }
   },
   computed: {
@@ -243,33 +243,32 @@ export default {
       }
     },
     computedAttachments () {
-      return this.attachmentsData || [];
-    },
+      return this.attachmentsData || []
+    }
   },
   watch: {
     computedAttachments: {
       deep: true,
       handler: function (newAttachments, oldAttachments) {
-        let jsonNewAttachments = newAttachments;
+        let jsonNewAttachments = newAttachments
         // We have at least one new attachment
         if (jsonNewAttachments[0].file) {
           jsonNewAttachments.forEach((newAttachment, index) => {
-
             // Add the new attachment
-            const newFile = newAttachment.file;
+            const newFile = newAttachment.file
             if (newAttachment.file_name) {
-              const uploadName = newAttachment.file_name.replace(/^WTN\s\d+_/,'');
-              const newFileAdded = new File([newFile], uploadName, { type: newFile.type });
-              this.files[index] = { file: newFileAdded, private: this.attachmentsData[index].private };
+              const uploadName = newAttachment.file_name.replace(/^WTN\s\d+_/, '')
+              const newFileAdded = new File([newFile], uploadName, { type: newFile.type })
+              this.files[index] = { file: newFileAdded, private: this.attachmentsData[index].private }
             }
-          });
+          })
         }
-      },
-    },
+      }
+    }
   },
   created () {
     // When component created, add an initial row of attachments.
-    if(this.attachments && this.attachments.length > 0){
+    if (this.attachments && this.attachments.length > 0) {
       this.attachments.forEach((attachment) => {
         this.attachmentsData.push({ ...attachment })
       })
@@ -282,17 +281,17 @@ export default {
       'setPrivate',
       'removeFile'
     ]),
-    handleFileDelete(value, doc_status, e) {
+    handleFileDelete (value, doc_status, e) {
       e.preventDefault()
-      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well;
-      let encodedFileName = encodeURIComponent(value);
-      if(confirm(`Are you sure you want to delete file: \n${value}`)){
+      let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well
+      let encodedFileName = encodeURIComponent(value)
+      if (confirm(`Are you sure you want to delete file: \n${value}`)) {
         ApiService.deleteFile(`wells/${tag}/delete_document?filename=${encodedFileName}&private=${doc_status}`)
           .then(() => {
-            const splitFile = value.split("_");
-            const splitFileName = splitFile.length > 3 ? `${splitFile[1]}_${splitFile[2]}` : splitFile[1];
-            ApiService.decrementFileCount(`wells/${tag}`, splitFileName);
-            this.$emit('fetchFiles');
+            const splitFile = value.split('_')
+            const splitFileName = splitFile.length > 3 ? `${splitFile[1]}_${splitFile[2]}` : splitFile[1]
+            ApiService.decrementFileCount(`wells/${tag}`, splitFileName)
+            this.$emit('fetchFiles')
           })
       }
     },
@@ -300,24 +299,24 @@ export default {
      * @desc Updated the filename of an upload object if the user has filled in all the fields
      * @param {number} index of the item being modified
      */
-    setFileName(index) {
+    setFileName (index) {
       try {
         let file_name = null
         let WTN = this.wellTagNumber ? `WTN ${this.wellTagNumber}_` : ''
-        let entry = this.attachmentsData[index];
+        let entry = this.attachmentsData[index]
         if (entry.document_code &&
             entry.upload_date &&
-            entry.file){
-          file_name =  `${WTN}${entry.document_code}_${entry.upload_date}.${entry.file.name.split('.')[1]}`;
+            entry.file) {
+          file_name = `${WTN}${entry.document_code}_${entry.upload_date}.${entry.file.name.split('.')[1]}`
         }
-        this.attachmentsData[index].file_name = file_name;
-        if(this.attachmentsData[index].file_name !== null){ this.$emit('setFormValueChanged'); }
+        this.attachmentsData[index].file_name = file_name
+        if (this.attachmentsData[index].file_name !== null) { this.$emit('setFormValueChanged') }
       } catch (ex) {
-        console.log(ex);
+        console.log(ex)
       }
     },
-    callLongFormLabel(label){
-      return getLongFormLabel(label);
+    callLongFormLabel (label) {
+      return getLongFormLabel(label)
     },
     /**
      * @desc Add new entry to the users list of uploaded files
@@ -335,7 +334,7 @@ export default {
         upload_date: Date.now(),
         file_name: null,
         file: null,
-        private: false,
+        private: false
       }
     },
     /**
@@ -372,7 +371,7 @@ export default {
     },
     rowHasValues (row) {
       let keys = Object.keys(row)
-      return keys.length === 0 ? false : !this.attachmentIsEmpty(row);
+      return keys.length === 0 ? false : !this.attachmentIsEmpty(row)
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
@@ -381,7 +380,7 @@ export default {
     attachmentIsEmpty (attachment) {
       const fieldsToTest = omit(attachment, 'length_required')
       return Object.values(fieldsToTest).every((x) => !x)
-    },
+    }
   }
 }
 </script>
@@ -413,7 +412,7 @@ export default {
       }
     }
   }
-  #attachmentsTable { 
+  #attachmentsTable {
     overflow-x: visible !important;
   }
 </style>

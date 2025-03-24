@@ -84,7 +84,7 @@ export default {
       }
 
       return querystring.stringify(queryParams)
-    },
+    }
   },
   methods: {
     /**
@@ -103,10 +103,10 @@ export default {
      * @summary Downloads search data for file format.
      * @param   {string} format Filetype: "csv", "xlsx"
      */
-    exportHandler(format) {
-      const exportUrl = this.getExportUrl(format);
-      ApiService.download(exportUrl);
-    },
+    exportHandler (format) {
+      const exportUrl = this.getExportUrl(format)
+      ApiService.download(exportUrl)
+    }
   }
 }
 </script>
