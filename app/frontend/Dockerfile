@@ -9,10 +9,11 @@ COPY . .
 RUN set -x
 RUN cd /app/frontend
 RUN npm install
-# RUN npm run build
+RUN npm install -g serve
+RUN npm run build
 
 EXPOSE 5174
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "preview"]
 
 # RUN set -x
 # RUN cd /app/frontend
