@@ -10,6 +10,11 @@ export default defineConfig({
       process: true,
       buffer: true // optional, include if you need Buffer polyfill too
     })],
+  server: {
+    port: 5174, // Set your default port here
+    strictPort: true, // Throw error if port is already in use
+    host: true // Listen on all addresses, including LAN and public connections
+  },
   define: {
     // Define process.env for basic compatibility
     'process.env': {}

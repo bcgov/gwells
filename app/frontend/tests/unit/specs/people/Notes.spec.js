@@ -22,7 +22,7 @@ describe('Notes.vue', () => {
       currentDriller: jest.fn().mockReturnValue(fakePerson),
       drillers: () => [],
       userRoles: () => ({ registry: { edit: true, view: true, approve: true } }),
-      keycloak: () => ({idTokenParsed: { displayName: fakePerson.first_name}})
+      keycloak: () => ({ idTokenParsed: { displayName: fakePerson.first_name } })
     }
     store = new Vuex.Store({ getters, actions, mutations })
   })

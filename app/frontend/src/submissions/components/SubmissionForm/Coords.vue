@@ -278,7 +278,7 @@ export default {
     drinking_water: {
       type: Boolean,
       default: false
-    },
+    }
   },
   data () {
     return {
@@ -511,7 +511,6 @@ export default {
       // Revert the coordinates to the initial values, hide modal
       this.handleMapCoordinate({ lng: Math.abs(Number(this.initialLongitude)), lat: Number(this.initialLatitude) })
       this.confirmRemoveModalInput = false
-      return
     },
     confirmCoords () {
       // User agrees to update coords, so modal doesn't need to show again
@@ -521,7 +520,6 @@ export default {
         lng: this.initialLongitude
       }
       this.$emit('editWater', coords)
-      return
     }
   }
 }

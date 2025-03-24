@@ -146,7 +146,7 @@
             </p>
             <div class="crud-options">
               <b-btn
-                :disabled="keycloak.idTokenParsed.display_name !== note.author" 
+                :disabled="keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteEditHandler(note)"
                 size="sm"
                 variant="primary"
@@ -198,7 +198,7 @@ export default {
       confirmSubmitModal: false,
       confirmCancelModal: false,
       confirmDeleteModal: false,
-      noteContentEdit: "",
+      noteContentEdit: '',
       activeNote: null,
       maxNoteLength: 900
     }
@@ -211,7 +211,7 @@ export default {
       return []
     },
     invalidNewNoteLength () { return this.noteInput.length > this.maxNoteLength },
-    invalidEditNoteLength () { return this.noteContentEdit.length > this.maxNoteLength; },
+    invalidEditNoteLength () { return this.noteContentEdit.length > this.maxNoteLength },
     resourceType () {
       // map 'resource' names (e.g. organization, person) to API friendly plural versions
       // - this is also the list of resources that currently accept notes
@@ -224,99 +224,98 @@ export default {
     ...mapGetters(['userRoles', 'keycloak'])
   },
   methods: {
-    deleteNote() {
+    deleteNote () {
       ApiService.delete(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid)
-      .then(() => {
-        this.activeNote = null;
-        this.alertText = "Note deleted.";
-        this.submitSuccess = true;
-        this.$emit('updated');
-      })
-      .catch((e) => {
-        this.errorHandler(e);
-      })
+        .then(() => {
+          this.activeNote = null
+          this.alertText = 'Note deleted.'
+          this.submitSuccess = true
+          this.$emit('updated')
+        })
+        .catch((e) => {
+          this.errorHandler(e)
+        })
     },
     noteSubmit () {
       // submit the note as a post request, triggered after confirming via popup
-      this.submitSuccess = false;
-      this.submitError = false;
-      this.submitLoading = true;
+      this.submitSuccess = false
+      this.submitError = false
+      this.submitLoading = true
       ApiService.post(`${this.resourceType}/${this.guid}/notes`, { note: this.noteInput })
         .then(() => {
-          const notes = this.$refs.noteSection;
+          const notes = this.$refs.noteSection
           // Note submitted, set loading/success indicators and scroll down to the new note
           this.noteReset()
-          this.alertText = "Note added.";
-          this.submitLoading = false;
-          this.submitSuccess = true;
-          smoothScroll(notes, 1000);
-          this.$emit('updated');;
+          this.alertText = 'Note added.'
+          this.submitLoading = false
+          this.submitSuccess = true
+          smoothScroll(notes, 1000)
+          this.$emit('updated')
         }).catch((e) => {
-          this.errorHandler(e);
+          this.errorHandler(e)
         })
     },
-    notePatchHandle() {
-      const updatedNote = `(Edited ${new Date().toLocaleString()}) ` + this.noteContentEdit;
+    notePatchHandle () {
+      const updatedNote = `(Edited ${new Date().toLocaleString()}) ` + this.noteContentEdit
 
-      ApiService.patch(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid, {note: updatedNote})
+      ApiService.patch(`${this.resourceType}/${this.guid}/notes`, this.activeNote.org_note_guid, { note: updatedNote })
         .then(() => {
-          this.noteReset();
-          this.activeNote = null;
-          this.noteContentEdit = "";
-          this.confirmEditNoteModal = false;
-          this.alertText = "Note updated."
-          this.submitSuccess = true;
-          this.$emit('updated');
+          this.noteReset()
+          this.activeNote = null
+          this.noteContentEdit = ''
+          this.confirmEditNoteModal = false
+          this.alertText = 'Note updated.'
+          this.submitSuccess = true
+          this.$emit('updated')
         })
         .catch((e) => {
-          this.errorHandler(e);
+          this.errorHandler(e)
         })
     },
-    errorHandler(e){
-      this.submitLoading = false;
-      if(e.response.status === 500) { this.submitError = "Service unavailable - try again later"; }
-      else { this.submitError = e.response.data; }
-      alert(`An error has occured:\n\n${this.submitError}`);
+    errorHandler (e) {
+      this.submitLoading = false
+      if (e.response.status === 500) { this.submitError = 'Service unavailable - try again later' } else { this.submitError = e.response.data }
+      alert(`An error has occured:\n\n${this.submitError}`)
     },
     noteReset () {
-      this.submitSuccess = false;
-      this.submitError = false;
-      this.submitLoading = false;
-      this.noteInput = '';
+      this.submitSuccess = false
+      this.submitError = false
+      this.submitLoading = false
+      this.noteInput = ''
     },
     noteSubmitHandler () {
       // trigger popup to confirm submit
       this.confirmSubmitModal = true
     },
     noteDeleteHandler (note) {
-      this.activeNote = note;
-      this.confirmDeleteModal = true;
+      this.activeNote = note
+      this.confirmDeleteModal = true
     },
     noteCancelDeleteHandler () {
-      this.activeNote = null;
+      this.activeNote = null
     },
     /**
      * @desc Handler for note editing, prepends an Edited field to mark the content as changed
      * @param {Object} note Note currently being edited
      */
     noteEditHandler (note) {
-      const editRegexChromium = /^\(Edited \d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} (AM|PM)\)\s/;
-      const editRegexFirefox =  /^\(Edited \d{4}-\d{1,2}-\d{1,2}, \d{1,2}:\d{2}:\d{2} (a.m.|p.m.)\)\s/;
-      this.noteContentEdit = note.note.replace(editRegexChromium, "");
-      this.noteContentEdit = this.noteContentEdit.replace(editRegexFirefox, "");
-      this.activeNote = note;
-      this.confirmEditNoteModal = true;
+      const editRegexChromium = /^\(Edited \d{1,2}\/\d{1,2}\/\d{4}, \d{1,2}:\d{2}:\d{2} (AM|PM)\)\s/
+      const editRegexFirefox = /^\(Edited \d{4}-\d{1,2}-\d{1,2}, \d{1,2}:\d{2}:\d{2} (a.m.|p.m.)\)\s/
+      this.noteContentEdit = note.note.replace(editRegexChromium, '')
+      this.noteContentEdit = this.noteContentEdit.replace(editRegexFirefox, '')
+      this.activeNote = note
+      this.confirmEditNoteModal = true
     },
     noteCancelHandler () {
       // trigger popup to confirm discard note
-      this.confirmCancelModal = true;
+      this.confirmCancelModal = true
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus();
+      this.$refs.cancelSubmitCancelBtn.focus()
     },
     focusDeleteModal () {
-      this.$refs.cancelDeleteBtn.focus();
+      this.$refs.cancelDeleteBtn.focus()
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup

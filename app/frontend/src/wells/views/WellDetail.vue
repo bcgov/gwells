@@ -584,7 +584,7 @@ import codeToDescription from '@/common/codeToDescription.js'
 import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
-import { TOOLTIP_TEXT } from '@/common/constants.js';
+import { TOOLTIP_TEXT } from '@/common/constants.js'
 
 export default {
   name: 'WellDetail',

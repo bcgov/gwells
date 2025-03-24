@@ -13,7 +13,7 @@
 */
 /* Shared logic for handling search filters. */
 import { mapGetters } from 'vuex'
-import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC, } from '../../../common/constants'
+import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC } from '../../../common/constants'
 const SEARCH_FIELDS = {
   matchAny: {
     param: 'match_any',
@@ -27,38 +27,38 @@ const SEARCH_FIELDS = {
     param: 'well',
     label: 'Well tag or ID plate number',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   licenceNumber: {
-    param: "licence_number",
-    label: "Licence number",
-    type: "number",
-    resultLabel: "Licence number(s)",
-    sortable: false,
+    param: 'licence_number',
+    label: 'Licence number',
+    type: 'number',
+    resultLabel: 'Licence number(s)',
+    sortable: false
   },
   wellDocumentType: {
-    param: "well_document_type",
-    label: "Contains document type",
-    type: "select",
+    param: 'well_document_type',
+    label: 'Contains document type',
+    type: 'select',
     options: [...WELL_TAGS_PUBLIC, ...WELL_TAGS_PRIVATE].sort((a, b) => {
-      if (a.text === 'Other') return 1;
-      if (b.text === 'Other') return -1;
+      if (a.text === 'Other') return 1
+      if (b.text === 'Other') return -1
       return a.text.toLowerCase().localeCompare(b.text.toLowerCase())
     }),
-    sortable: false,
+    sortable: false
   },
   streetOrCity: {
     param: 'street_address_or_city',
     label: 'Street address or city',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   ownerName: {
     param: 'owner_full_name',
     label: 'Well owner',
     resultLabel: 'Owner name',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   publicationStatus: {
     param: 'well_publication_status',
@@ -67,19 +67,19 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'well_publication_status_code',
-    sortable: true,
+    sortable: true
   },
   legal: {
     param: 'legal',
     label: 'Lot, Legal plan, District lot or PID',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   landDistrict: {
     param: 'land_district',
     label: 'Land district',
     type: 'select',
-    sortable: true,
+    sortable: true
   },
   wellStatus: {
     param: 'well_status',
@@ -87,7 +87,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'well_status_code',
-    sortable: true,
+    sortable: true
   },
   licencedStatus: {
     param: 'licenced_status',
@@ -95,14 +95,14 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'licenced_status_code',
-    sortable: false,
+    sortable: false
   },
   personResponsible: {
     param: 'person_responsible_name',
     sortParam: 'person_responsible__name',
     label: 'Person responsible for work',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   personResponsibleGuid: {
     param: 'person_responsible',
@@ -110,14 +110,14 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'name',
     valueField: 'person_guid',
-    sortable: true,
+    sortable: true
   },
   orgResponsible: {
     param: 'company_of_person_responsible_name',
     sortParam: 'company_of_person_responsible__name',
     label: 'Company that did the work',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   orgResponsibleGuid: {
     param: 'company_of_person_responsible',
@@ -125,25 +125,25 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'name',
     valueField: 'org_guid',
-    sortable: true,
+    sortable: true
   },
   dateOfWork: {
     param: 'date_of_work',
     label: 'Date of work',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   wellDepth: {
     param: 'well_depth',
     label: 'Well depth',
     type: 'range',
-    sortable: false,
+    sortable: false
   },
   aquiferNr: {
     param: 'aquifer',
     label: 'Aquifer number',
     type: 'number',
-    sortable: true,
+    sortable: true
   },
   wellActivityType: {
     param: 'well_activity_type',
@@ -151,7 +151,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'code',
-    sortable: true,
+    sortable: true
   },
   wellClass: {
     param: 'well_class',
@@ -159,13 +159,13 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'well_class_code',
-    sortable: true,
+    sortable: true
   },
   wellSubclass: {
     param: 'well_subclass',
     label: 'Well subclass',
     type: 'select',
-    sortable: true,
+    sortable: true
   },
   intendedWaterUse: {
     param: 'intended_water_use',
@@ -173,7 +173,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'intended_water_use_code',
-    sortable: true,
+    sortable: true
   },
   boundaryEffect: {
     param: 'boundary_effect',
@@ -181,63 +181,63 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'code',
-    sortable: true,
+    sortable: true
   },
   wellIdPlateAttached: {
     param: 'well_identification_plate_attached',
     label: 'Where ID plate attached',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   idPlateAttachedBy: {
     param: 'id_plate_attached_by',
     label: 'ID plate attached by',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   waterSupplySystemName: {
     param: 'water_supply_system_name',
     label: 'Water supply system name',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   waterSupplyWellName: {
     param: 'water_supply_system_well_name',
     label: 'Water supply well name',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   drillerName: {
     param: 'driller_name',
     label: 'Person who completed the work',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   consultantName: {
     param: 'consultant_name',
     label: 'Consultant name',
     type: 'text',
-    sortable: false,
+    sortable: false
   },
   consultantCompany: {
     param: 'consultant_company',
     label: 'Consultant company',
     type: 'text',
-    sortable: false,
+    sortable: false
   },
   ownerMailingAddress: {
     authenticated: true,
     param: 'owner_mailing_address',
     label: 'Owner mailing address',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   ownerCity: {
     authenticated: true,
     param: 'owner_city',
     label: 'Owner city',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   ownerProvince: {
     authenticated: true,
@@ -246,14 +246,14 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'province_state_code',
-    sortable: true,
+    sortable: true
   },
   ownerPostalCode: {
     authenticated: true,
     param: 'owner_postal_code',
     label: 'Owner postal code',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   legalBlock: { param: 'legal_block', label: 'Block', type: 'text' },
   legalSection: { param: 'legal_section', label: 'Section', type: 'text' },
@@ -263,7 +263,7 @@ const SEARCH_FIELDS = {
     param: 'well_location_description',
     label: 'Description of well location',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   coordinateAcquisitionCode: {
     param: 'coordinate_acquisition_code',
@@ -271,13 +271,13 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'code',
-    sortable: true,
+    sortable: true
   },
   groundElevation: {
     param: 'ground_elevation',
     label: 'Ground elevation',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   groundElevationMethod: {
     param: 'ground_elevation_method',
@@ -285,7 +285,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'ground_elevation_method_code',
-    sortable: true,
+    sortable: true
   },
   drillingMethods: {
     param: 'drilling_methods',
@@ -293,7 +293,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'drilling_method_code',
-    sortable: true,
+    sortable: true
   },
   wellOrientationStatus: {
     param: 'well_orientation_status',
@@ -301,7 +301,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'well_orientation_code',
-    sortable: true,
+    sortable: true
   },
   surfaceSealMaterial: {
     param: 'surface_seal_material',
@@ -309,19 +309,19 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'surface_seal_material_code',
-    sortable: true,
+    sortable: true
   },
   surfaceSealDepth: {
     param: 'surface_seal_depth',
     label: 'Surface seal depth',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   surfaceSealThickness: {
     param: 'surface_seal_thickness',
     label: 'Surface seal thickness',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   surfaceSealMethod: {
     param: 'surface_seal_method',
@@ -329,19 +329,19 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'surface_seal_method_code',
-    sortable: true,
+    sortable: true
   },
   backfillAboveSurfaceSeal: {
     param: 'backfill_above_surface_seal',
     label: 'Backfill material above surface seal',
     type: 'text',
-    sortable: false,
+    sortable: false
   },
   backfillDepth: {
     param: 'backfill_depth',
     label: 'Backfill depth',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   linerMaterial: {
     param: 'liner_material',
@@ -349,37 +349,37 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'code',
-    sortable: true,
+    sortable: true
   },
   linerDiameter: {
     param: 'liner_diameter',
     label: 'Liner diameter',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   linerThickness: {
     param: 'liner_thickness',
     label: 'Liner thickness',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   linerFrom: {
     param: 'liner_from',
     label: 'Liner from',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   linerTo: {
     param: 'liner_to',
     label: 'Liner to',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   linerRange: {
     param: 'liner_range',
     label: 'Liner from/to',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   screenIntakeMethod: {
     param: 'screen_intake_method',
@@ -387,7 +387,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'screen_intake_code',
-    sortable: true,
+    sortable: true
   },
   screenType: {
     param: 'screen_type',
@@ -395,7 +395,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'screen_type_code',
-    sortable: true,
+    sortable: true
   },
   screenMaterial: {
     param: 'screen_material',
@@ -403,13 +403,13 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'screen_material_code',
-    sortable: true,
+    sortable: true
   },
   otherScreenMaterial: {
     param: 'other_screen_material',
     label: 'Screen other material',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   screenOpening: {
     param: 'screen_opening',
@@ -417,7 +417,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'screen_opening_code',
-    sortable: true,
+    sortable: true
   },
   screenBottom: {
     param: 'screen_bottom',
@@ -425,31 +425,31 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'screen_bottom_code',
-    sortable: true,
+    sortable: true
   },
   screenInformation: {
     param: 'screen_information',
     label: 'Screen information',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   filterPackFrom: {
     param: 'filter_pack_from',
     label: 'Filter pack from',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   filterPackTo: {
     param: 'filter_pack_to',
     label: 'Filter pack to',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   filterPackRange: {
     param: 'filter_pack_range',
     label: 'Filter pack from/to',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   filterPackMaterial: {
     param: 'filter_pack_material',
@@ -457,7 +457,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'filter_pack_material_code',
-    sortable: true,
+    sortable: true
   },
   filterPackMaterialSize: {
     param: 'filter_pack_material_size',
@@ -465,7 +465,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'filter_pack_material_size_code',
-    sortable: true,
+    sortable: true
   },
   developmentMethods: {
     param: 'development_methods',
@@ -473,19 +473,19 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'development_method_code',
-    sortable: true,
+    sortable: true
   },
   developmentHours: {
     param: 'development_hours',
     label: 'Development hours',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   developmentNotes: {
     param: 'development_notes',
     label: 'Development notes',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   yieldEstimationMethod: {
     param: 'yield_estimation_method',
@@ -493,56 +493,56 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'yield_estimation_method_code',
-    sortable: true,
+    sortable: true
   },
   yieldEstimationRate: {
     param: 'yield_estimation_rate',
     label: 'Yield estimation rate',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   yieldEstimationDuration: {
     param: 'yield_estimation_duration',
     label: 'Yield estimation duration',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   staticLevelBeforeTest: {
     param: 'static_level_before_test',
     label: 'SWL before test',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   hydroFracturingPerformed: {
     param: 'hydro_fracturing_performed',
     label: 'Hydro-fracturing performed',
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }],
-    sortable: true,
+    sortable: true
   },
   hydroFracturingYieldIncrease: {
     param: 'hydro_fracturing_yield_increase',
     label: 'Increase in well yield',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   drawdown: {
     param: 'drawdown',
     label: 'Drawdown',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   recommendedPumpDepth: {
     param: 'recommended_pump_depth',
     label: 'Recommended pump depth',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   recommendedPumpRate: {
     param: 'recommended_pump_rate',
     label: 'Recommended pump rate',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   waterQualityCharacteristics: {
     param: 'water_quality_characteristics',
@@ -550,7 +550,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'code',
-    sortable: true,
+    sortable: true
   },
   waterQualityColour: {
     param: 'water_quality_colour',
@@ -558,64 +558,64 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'code',
-    sortable: true,
+    sortable: true
   },
   waterQualityOdour: {
     param: 'water_quality_odour',
     label: 'Water quality odour',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   ems: {
     param: 'ems',
     label: 'EMS Id',
     type: 'text',
     anyValueBoolean: true,
-    sortable: true,
+    sortable: true
   },
   finalCasingStickUp: {
     param: 'final_casing_stick_up',
     label: 'Final casing stick up',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   bedrockDepth: {
     param: 'bedrock_depth',
     label: 'Depth to bedrock',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   staticWaterLevel: {
     param: 'static_water_level',
     label: 'Static water level',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   wellYield: {
     param: 'well_yield',
     label: 'Estimated well yield',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   artesianConditions: {
     param: 'artesian_conditions',
     label: 'Artesian Condition',
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }],
-    sortable: true,
+    sortable: true
   },
   wellCapType: {
     param: 'well_cap_type',
     label: 'Well cap type',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   observationWellNumber: {
     param: 'observation_well_number',
     label: 'Observation well number',
     type: 'text',
     anyValueBoolean: true,
-    sortable: true,
+    sortable: true
   },
   observationWellStatus: {
     param: 'observation_well_status',
@@ -623,20 +623,20 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'obs_well_status_code',
-    sortable: true,
+    sortable: true
   },
   finishedWellDepth: {
     param: 'finished_well_depth',
     label: 'Finished well depth',
     resultLabel: 'Finished well depth (feet)',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   decommissionReason: {
     param: 'decommission_reason',
     label: 'Reason for well decommission',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   decommissionMethod: {
     param: 'decommission_method',
@@ -644,59 +644,59 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'decommission_method_code',
-    sortable: true,
+    sortable: true
   },
   decommissionSealantMaterial: {
     param: 'decommission_sealant_material',
     label: 'Sealant material',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   decommissionBackfillMaterial: {
     param: 'decommission_backfill_material',
     label: 'Backfill material',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   decommissionDetails: {
     param: 'decommission_details',
     label: 'Decommission details',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
-  comments: { 
+  comments: {
     param: 'comments',
     label: 'Comments',
     type: 'text',
-    sortable: false,
+    sortable: false
   },
   alternativeSpecsSubmitted: {
     param: 'alternative_specs_submitted',
     label: 'Alt specs submitted',
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }],
-    sortable: true,
+    sortable: true
   },
   technicalReport: {
     param: 'technical_report',
     label: 'Technical Report',
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }],
-    sortable: true,
+    sortable: true
   },
   drinkingWaterProtectionArea: {
     param: 'drinking_water_protection_area_ind',
     label: 'Drinking Water Area Indicator',
     type: 'radio',
     options: [{ text: 'Yes', value: 'true' }, { text: 'No', value: 'false' }],
-    sortable: true,
+    sortable: true
   },
   internalComments: {
     param: 'internal_comments',
     authenticated: true,
     label: 'Internal office comments',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   aquiferLithology: {
     param: 'aquifer_lithology',
@@ -704,19 +704,19 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'aquifer_lithology_code',
-    sortable: true,
+    sortable: true
   },
   aquiferVulnerabilityIndex: {
     param: 'aquifer_vulnerability_index',
     label: 'AVI',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   storativity: {
     param: 'storativity',
     label: 'Storativity',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   startDatePumpingTest: {
     param: 'start_date_pumping_test',
@@ -727,31 +727,31 @@ const SEARCH_FIELDS = {
     param: 'transmissivity',
     label: 'Transmissivity',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   hydraulicConductivity: {
     param: 'hydraulic_conductivity',
     label: 'Hydraulic Conductivity',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   specificStorage: {
     param: 'specific_storage',
     label: 'Specific Storage',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   specificYield: {
     param: 'specific_yield',
     label: 'Specific Yield',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   specificCapacity: {
     param: 'specific_capacity',
     label: 'Specific Capacity',
     type: 'range',
-    sortable: false,
+    sortable: false
   },
   pumpingTestDescription: {
     param: 'pumping_test_description',
@@ -759,121 +759,121 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'pumping_test_description_code',
-    sortable: false,
+    sortable: false
   },
   createUser: {
     authenticated: true,
     param: 'create_user',
     label: 'Created by',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   createDate: {
     authenticated: true,
     param: 'create_date',
     label: 'Created date',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   updateUser: {
     authenticated: true,
     param: 'update_user',
     label: 'Updated by',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   updateDate: {
     authenticated: true,
     param: 'update_date',
     label: 'Updated date',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   wellTagNumber: {
     param: 'well_tag_number',
     label: 'Well tag number',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   identificationPlateNumber: {
     param: 'identification_plate_number',
     label: 'ID plate number',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   streetAddress: {
     param: 'street_address',
     label: 'Street Address',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   legalLot: {
     param: 'legal_lot',
     label: 'Legal lot',
     resultLabel: 'Lot',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   legalPlan: {
     param: 'legal_plan',
     label: 'Legal plan',
     resultLabel: 'Plan',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   legalDistrictLot: {
     param: 'legal_district_lot',
     label: 'District lot',
     type: 'text',
-    sortable: true,
+    sortable: true
   },
   legalPid: {
     param: 'legal_pid',
     label: 'PID',
     type: 'text',
-    sortable: false,
+    sortable: false
   },
   diameter: {
     param: 'diameter',
     label: 'Diameter (inches)',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   constructionStartDate: {
     param: 'construction_start_date',
     label: 'Construction start date',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   constructionEndDate: {
     param: 'construction_end_date',
     label: 'Construction end date',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   alterationStartDate: {
     param: 'alteration_start_date',
     label: 'Alteration start date',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   alterationEndDate: {
     param: 'alteration_end_date',
     label: 'Alteration end date',
     type: 'dateRange',
-    sortable: true,
+    sortable: true
   },
   decomissionStartDate: {
     param: 'decomission_start_date',
     label: 'Decomission start date',
     type: 'dateRange',
-    sortable: false,
+    sortable: false
   },
   decomissionEndDate: {
     param: 'decomission_end_date',
     label: 'Decomission end date',
     type: 'dateRange',
-    sortable: false,
+    sortable: false
   },
   wellDisinfectedStatus: {
     param: 'well_disinfected_status',
@@ -881,7 +881,7 @@ const SEARCH_FIELDS = {
     type: 'select',
     textField: 'description',
     valueField: 'well_disinfected_code',
-    sortable: true,
+    sortable: true
   },
   latitude: { param: 'latitude', label: 'Latitude', type: 'number' },
   longitude: { param: 'longitude', label: 'Longitude', type: 'number' },
@@ -889,31 +889,31 @@ const SEARCH_FIELDS = {
     param: 'geocode_distance',
     label: 'Geocode Distance',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   distanceToPid: {
     param: 'distance_to_pid',
     label: 'Distance to Matching PID',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   scoreAddress: {
     param: 'score_address',
     label: 'Score Address',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   scoreCity: {
     param: 'score_city',
     label: 'Score City',
     type: 'range',
-    sortable: true,
+    sortable: true
   },
   naturalResourceRegion: {
     param: 'natural_resource_region',
     label: 'Natural Resource Region',
     type: 'select',
-    sortable: true,
+    sortable: true
   },
   finishedWellDepthNull: {
     param: 'finished_well_depth',
@@ -985,7 +985,7 @@ const SEARCH_FIELDS = {
 }
 
 export default {
-  data() {
+  data () {
     return {
       filterParams: {} // filterId: {param1: val, param2: val}
     }
@@ -997,7 +997,7 @@ export default {
       'organizationNames',
       'userRoles'
     ]),
-    searchFields() {
+    searchFields () {
       const fields = { ...SEARCH_FIELDS }
       Object.keys(fields).forEach(k => {
         fields[k].sortParam = fields[k].sortParam || fields[k].param
@@ -1013,7 +1013,7 @@ export default {
 
       return fields
     },
-    landDistrictOptions() {
+    landDistrictOptions () {
       if (this.codes.land_district_codes === undefined || (this.codes.land_district_codes && Object.entries(this.codes.land_district_codes).length === 0)) {
         return []
       }
@@ -1024,7 +1024,7 @@ export default {
         }
       })
     },
-    wellSubclassOptions() {
+    wellSubclassOptions () {
       if (!this.codes.well_classes) {
         return []
       }
@@ -1040,7 +1040,7 @@ export default {
 
       return options
     },
-    filterSelectOptions() {
+    filterSelectOptions () {
       const options = {
         aquiferLithology: this.codes.aquifer_lithology_codes || [],
         coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes || [],
@@ -1088,14 +1088,14 @@ export default {
 
       return options
     },
-    searchQueryParams() {
+    searchQueryParams () {
       const searchQueryParams = Object.entries(this.filterParams).reduce((allParams, [id, filterParams]) => {
         return Object.assign(allParams, filterParams)
       }, {})
 
       return searchQueryParams
     },
-    emptyFilterParams() {
+    emptyFilterParams () {
       const filterParams = {}
       Object.keys(this.searchFields).forEach(id => {
         filterParams[id] = {}
@@ -1105,7 +1105,7 @@ export default {
     }
   },
   methods: {
-    getParamNames({ param, type, anyValueBoolean }) {
+    getParamNames ({ param, type, anyValueBoolean }) {
       const params = []
       if (type === 'range') {
         params.push(`${param}_min`, `${param}_max`)
@@ -1121,14 +1121,14 @@ export default {
 
       return params
     },
-    getFilterFields(fieldIds) {
+    getFilterFields (fieldIds) {
       return fieldIds.filter(id => this.searchFields[id] !== undefined).map(id => {
         const field = this.searchFields[id]
         const params = this.getParamNames(field)
         return { ...field, params: params, id: id }
       })
     },
-    clearFilterParams() {
+    clearFilterParams () {
       this.filterParams = { ...this.emptyFilterParams }
     }
   }

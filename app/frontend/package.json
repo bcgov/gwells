@@ -7,13 +7,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "OldBuild": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit",
     "coverage:test": "vue-cli-service test:unit --coverage",
     "test:unit:update": "vue-cli-service test:unit -u",
     "dev": "vite",
-    "buildVite": "vite build"
+    "build": "vite build"
   },
   "dependencies": {
     "@braintree/sanitize-url": "^6.0.2",

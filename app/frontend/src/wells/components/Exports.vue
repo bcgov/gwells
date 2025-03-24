@@ -45,7 +45,7 @@ export default {
     format_size (size) {
       // If the size is really small, this would go to zero if rounded down - so we rather round up.
       return `${Math.ceil(size / 1024 / 1024)} MB`
-    },
+    }
   }
 }
 </script>

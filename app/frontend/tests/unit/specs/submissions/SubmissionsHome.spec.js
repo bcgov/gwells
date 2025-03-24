@@ -34,7 +34,6 @@ describe('SubmissionsHome.vue', () => {
     })
   })
 
-
   it('requests codes/constants to use in form', () => {
     shallowMount(SubmissionsHome, {
       localVue,

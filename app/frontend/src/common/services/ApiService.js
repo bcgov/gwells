@@ -88,15 +88,15 @@ const ApiService = {
   deleteFile (resource) {
     return axios.delete(resource)
   },
-  decrementFileCount(resource, documentType){
-    return axios.get(`${resource}/sum`, {params: {inc: false, documentType}})
+  decrementFileCount (resource, documentType) {
+    return axios.get(`${resource}/sum`, { params: { inc: false, documentType } })
   },
-  incrementFileCount(resource, documentType){
-    return axios.get(`${resource}/sum`, {params: { inc: true, documentType}})
+  incrementFileCount (resource, documentType) {
+    return axios.get(`${resource}/sum`, { params: { inc: true, documentType } })
   },
-  getAddresses(searchTag){
-    return axios.get(`wells/geocoder`, {params: { searchTag: searchTag }})
-  },
+  getAddresses (searchTag) {
+    return axios.get(`wells/geocoder`, { params: { searchTag: searchTag } })
+  }
 }
 
 export default ApiService

@@ -595,8 +595,8 @@ export default {
       this.$emit('fetchFiles')
     },
     handleDelete (index) {
-      this.upload_files.splice(index, 1);
-    },
+      this.upload_files.splice(index, 1)
+    }
   },
   created () {
     this.fetchFiles()

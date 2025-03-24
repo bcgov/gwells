@@ -112,3 +112,20 @@ new Vue({
     window._paq.push(['trackPageView']) // To track pageview - Matomo
   }
 })
+
+// new Vue({
+//   el: '#app',
+//   router,
+//   store,
+//   components: { App },
+//   template: '<App/>',
+//   methods: {
+//     ...mapActions([
+//       FETCH_CONFIG
+//     ])
+//   },
+//   created () {
+//     this.FETCH_CONFIG()
+//     window._paq.push(['trackPageView']) // To track pageview - Matomo
+//   }
+// })

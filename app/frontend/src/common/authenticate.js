@@ -10,7 +10,7 @@
   limitations under the License.
  */
 import ApiService from '@/common/services/ApiService.js'
-import Keycloak from 'keycloak-js';
+import Keycloak from 'keycloak-js'
 import Vue from 'vue'
 
 export default {
@@ -18,35 +18,32 @@ export default {
     /**
      * Returns a promise that resolves to an instance of Keycloak.
      */
-    
+
     return new Promise((resolve, reject) => {
       if (!Vue.prototype.$keycloak) {
-
         ApiService.query('keycloak', {})
           .then(response => {
-
-            const { 
-              'ssl-required': sslRequired, 
+            const {
+              'ssl-required': sslRequired,
               resource,
               realm,
               'public-client': publicClient,
               'confidential-port': confidentialPort,
               clientId,
               'auth-server-url': authServerUrl
-            } = response.data;
+            } = response.data
 
-            Vue.prototype.$keycloak =  new Keycloak({
+            Vue.prototype.$keycloak = new Keycloak({
               url: authServerUrl,
               realm,
               clientId,
               sslRequired,
               resource,
               publicClient,
-              confidentialPort,
+              confidentialPort
             })
 
             resolve(Vue.prototype.$keycloak)
-
           })
           .catch(error => {
             console.error(error)
@@ -118,7 +115,6 @@ export default {
             // We've already authenticated, have a header, and we've not expired.
             resolve(instance)
           } else {
-
             try {
               // Attempt to retrieve a stored token, this may avoid us having to refresh the page.
               const token = localStorage.getItem('token')
@@ -132,7 +128,7 @@ export default {
                 checkLoginIframe: true,
                 token,
                 refreshToken,
-                idToken,
+                idToken
               })
 
               if (instance.authenticated) {
@@ -161,11 +157,9 @@ export default {
                 store.commit('SET_KEYCLOAK', instance)
                 resolve(instance)
               }
-
             } catch (error) {
-              console.error('Failed to initialize adapter:', error);
+              console.error('Failed to initialize adapter:', error)
             }
-
           }
         })
         .catch((error) => {

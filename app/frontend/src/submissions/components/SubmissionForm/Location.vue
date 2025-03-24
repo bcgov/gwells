@@ -279,7 +279,7 @@ export default {
       sameAsOwnerAddress: false,
       addressSuggestions: [],
       isLoadingSuggestions: false,
-      TOOLTIP_TEXT: TOOLTIP_TEXT,
+      TOOLTIP_TEXT: TOOLTIP_TEXT
     }
   },
   computed: {
@@ -318,41 +318,41 @@ export default {
      * On failure, it logs the error and clears the current suggestions.
      * Finally, sets the loading state to false.
      */
-    async fetchAddressSuggestions() {
-      const MIN_QUERY_LENGTH = 3;
+    async fetchAddressSuggestions () {
+      const MIN_QUERY_LENGTH = 3
       if (!this.streetAddressInput || this.streetAddressInput.length < MIN_QUERY_LENGTH) {
-        this.addressSuggestions = [];
-        return;
+        this.addressSuggestions = []
+        return
       }
-      this.isLoadingSuggestions = true;
+      this.isLoadingSuggestions = true
       const params = {
         minScore: 50,
         maxResults: 5,
         echo: 'false',
         brief: true,
         autoComplete: true,
-        matchPrecision: 'CIVIC_NUMBER', //forced minimum level of specificity for return values. will only return addresses that contain at least contain a street number
+        matchPrecision: 'CIVIC_NUMBER', // forced minimum level of specificity for return values. will only return addresses that contain at least contain a street number
         addressString: this.streetAddressInput
-      };
+      }
 
-      const querystring = require('querystring');
-      const searchParams = querystring.stringify(params);
+      const querystring = require('querystring')
+      const searchParams = querystring.stringify(params)
       try {
         ApiService.getAddresses(searchParams).then((response) => {
-        if (response.data) {
-          const data = response.data;
-          if (data && data.features) {
-            this.addressSuggestions = data.features.map(item => item.properties.fullAddress);
-          } else {
-            this.addressSuggestions = [];
+          if (response.data) {
+            const data = response.data
+            if (data && data.features) {
+              this.addressSuggestions = data.features.map(item => item.properties.fullAddress)
+            } else {
+              this.addressSuggestions = []
+            }
           }
-        }
-      })
+        })
       } catch (error) {
-        console.error(error);
-        this.addressSuggestions = [];
+        console.error(error)
+        this.addressSuggestions = []
       } finally {
-        this.isLoadingSuggestions = false;
+        this.isLoadingSuggestions = false
       }
     },
 
@@ -362,29 +362,29 @@ export default {
      * Clears the address suggestions afterward.
      * @param {string} suggestion - The selected address suggestion. ("1234 Street Rd, Name of City, BC")
      */
-    selectAddressSuggestion(suggestion) {
-      const CITY_ARRAY_INDEX = 1;
-      const STREET_ARRAY_INDEX = 0;
-      const wellAddressArray = suggestion.split(',');
-      this.streetAddressInput = wellAddressArray[STREET_ARRAY_INDEX];
-      this.cityInput = wellAddressArray[CITY_ARRAY_INDEX].trim();
+    selectAddressSuggestion (suggestion) {
+      const CITY_ARRAY_INDEX = 1
+      const STREET_ARRAY_INDEX = 0
+      const wellAddressArray = suggestion.split(',')
+      this.streetAddressInput = wellAddressArray[STREET_ARRAY_INDEX]
+      this.cityInput = wellAddressArray[CITY_ARRAY_INDEX].trim()
     },
 
     /**
      * @desc Clears the current list of address suggestions.
      */
     clearAddressSuggestions () {
-      this.addressSuggestions = [];
+      this.addressSuggestions = []
     },
     /**
      * @desc Shows or hides the address suggestions list in the UI.
      * @param {boolean} show - a boolean which indicates whether to show or hide the element
      */
-     showList(show) {
-      if(document.getElementById('location-address-suggestions-list')){
-        document.getElementById('location-address-suggestions-list').style.display =  show? 'block' : 'none';
+    showList (show) {
+      if (document.getElementById('location-address-suggestions-list')) {
+        document.getElementById('location-address-suggestions-list').style.display = show ? 'block' : 'none'
       }
-    }        
+    }
   }
 }
 </script>
