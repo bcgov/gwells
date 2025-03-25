@@ -1,0 +1,113 @@
+kind: BuildConfig
+apiVersion: build.openshift.io/v1
+metadata:
+  annotations:
+    description: Defines how to build the application
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","metadata":{"annotations":{"description":"Defines how to build the application"},"creationTimestamp":null,"labels":{"appver":"gwells-dev-pr-2338"},"name":"gwells-dev-pr-2338","namespace":"26e83e-tools"},"spec":{"failedBuildsHistoryLimit":3,"nodeSelector":null,"output":{"to":{"kind":"ImageStreamTag","name":"gwells-application:pr-2338"}},"resources":{"limits":{"cpu":"2","memory":"8Gi"},"requests":{"cpu":"1","memory":"4Gi"}},"runPolicy":"SerialLatestOnly","source":{"contextDir":"app","git":{"ref":"pull/2338/head","uri":"https://www.github.com/bcgov/gwells.git"},"type":"Git"},"strategy":{"sourceStrategy":{"env":[{"name":"BUILD_LOGLEVEL","value":"4"},{"name":"PIP_INDEX_URL"},{"name":"UPGRADE_PIP_TO_LATEST","value":"true"},{"name":"JWT_PUBLIC_KEY","value":"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjpPznS8NO5XNl395Xa/wJyhhMDMJUk8s2wrG/FQ9gZnRaCbm9YFYynZzeehkpTNbb+SsLBnh0Me5DKTSlt0Gm03ULXXW6FZzL3SCE1wTx6Trm+zQ1mx07aGDbv34OtK0HitToajZrnTsGQ0TloVbQladBM74S2K0ooveV7p2qIydFjtR+DTJGiOxSLvts+qsGn/Wr2l939SRpQa/10vpYJgCLsd6Bv/0v23DpmR8WbVkLh8e3rtI0XgsJ0ZFXR80DPt3fXX3gdrNdPRB+hpOR8IZMEUzhqGRg5VXP8Lp+bbaemFanTwlFD3aUfDlOcPekxYqQeEmS6ahA/6vCpjuGwIDAQAB\\n-----END PUBLIC KEY-----"},{"name":"JWT_AUDIENCE","value":"webapp-dev-local"}],"from":{"kind":"ImageStreamTag","name":"gwells-python:v3"}},"type":"Source"},"successfulBuildsHistoryLimit":3}}
+  resourceVersion: '12511730819'
+  name: gwells-backend
+  uid: c14cb9c0-17de-4f71-ae55-eefd2fadc2ee
+  creationTimestamp: '2024-12-09T23:29:23Z'
+  generation: 2
+  managedFields:
+    - manager: kubectl-client-side-apply
+      operation: Update
+      apiVersion: build.openshift.io/v1
+      time: '2024-12-09T23:29:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:description': {}
+            'f:kubectl.kubernetes.io/last-applied-configuration': {}
+          'f:labels':
+            .: {}
+            'f:appver': {}
+        'f:spec':
+          'f:failedBuildsHistoryLimit': {}
+          'f:output':
+            'f:to': {}
+          'f:resources':
+            'f:limits':
+              .: {}
+              'f:cpu': {}
+              'f:memory': {}
+            'f:requests':
+              .: {}
+              'f:cpu': {}
+              'f:memory': {}
+          'f:runPolicy': {}
+          'f:source':
+            'f:contextDir': {}
+            'f:git':
+              .: {}
+              'f:ref': {}
+              'f:uri': {}
+            'f:type': {}
+          'f:strategy':
+            'f:sourceStrategy':
+              .: {}
+              'f:env': {}
+              'f:from': {}
+            'f:type': {}
+          'f:successfulBuildsHistoryLimit': {}
+    - manager: openshift-apiserver
+      operation: Update
+      apiVersion: build.openshift.io/v1
+      time: '2024-12-09T23:29:29Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:lastVersion': {}
+  namespace: 26e83e-tools
+  labels:
+    appver: gwells-backend
+spec:
+  nodeSelector: null
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'gwells-backend:latest'
+  resources:
+    limits:
+      cpu: '2'
+      memory: 8Gi
+    requests:
+      cpu: '1'
+      memory: 4Gi
+  successfulBuildsHistoryLimit: 3
+  failedBuildsHistoryLimit: 3
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: 'gwells-python:v3'
+      env:
+        - name: BUILD_LOGLEVEL
+          value: '4'
+        - name: PIP_INDEX_URL
+        - name: UPGRADE_PIP_TO_LATEST
+          value: 'true'
+        - name: JWT_PUBLIC_KEY
+          value: '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjpPznS8NO5XNl395Xa/wJyhhMDMJUk8s2wrG/FQ9gZnRaCbm9YFYynZzeehkpTNbb+SsLBnh0Me5DKTSlt0Gm03ULXXW6FZzL3SCE1wTx6Trm+zQ1mx07aGDbv34OtK0HitToajZrnTsGQ0TloVbQladBM74S2K0ooveV7p2qIydFjtR+DTJGiOxSLvts+qsGn/Wr2l939SRpQa/10vpYJgCLsd6Bv/0v23DpmR8WbVkLh8e3rtI0XgsJ0ZFXR80DPt3fXX3gdrNdPRB+hpOR8IZMEUzhqGRg5VXP8Lp+bbaemFanTwlFD3aUfDlOcPekxYqQeEmS6ahA/6vCpjuGwIDAQAB\n-----END PUBLIC KEY-----'
+        - name: JWT_AUDIENCE
+          value: webapp-dev-local
+  postCommit: {}
+  source:
+    type: Git
+    git:
+      uri: 'https://www.github.com/bcgov/gwells.git'
+      ref: pull/2338/head
+    contextDir: app
+  runPolicy: SerialLatestOnly
+triggers:
+  - type: ConfigChange
+  - type: GitHub
+    github:
+      secretReference:
+        name: github-build-webhook
+status:
+  lastVersion: 1
