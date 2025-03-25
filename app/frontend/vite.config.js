@@ -14,14 +14,12 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    https: true,
     allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost']
   },
   preview: {
     port: 8080,
     strictPort: true,
     host: true,
-    https: true,
     allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost']
   },
   define: {
