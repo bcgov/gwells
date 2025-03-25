@@ -318,7 +318,7 @@ const wellsStore = {
     qaqcWellFileDownloads (state) {
       return state.downloads
     },
-    searchQueryParams (state) {
+    qaqcSearchQueryParams (state) {
       return buildSearchParams(state)
     },
     qaqcSelectedTab (state) {

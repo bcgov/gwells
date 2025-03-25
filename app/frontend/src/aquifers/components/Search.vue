@@ -421,9 +421,11 @@ export default {
       this.triggerSearch({ constrain: true })
     },
     updateQueryParams () {
-      const query = { ...this.queryParams }
+      const query = { ...this.queryParams || {} }
       if (this.showRetiredAquifers) {
         query['show-retired'] = true
+      } else {
+        delete query['show-retired'];
       }
       this.$router.replace({ query })
     },

@@ -323,7 +323,7 @@ export default {
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
-      const filterGroup = { ...this.searchQueryParams }
+      const filterGroup = { ...this.qaqcSearchQueryParams }
       this.$store.commit(SET_QAQC_RESULT_FILTERS, filterGroup)
       this.$emit('filter-changed', filterGroup)
 

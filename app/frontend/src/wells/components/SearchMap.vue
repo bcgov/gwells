@@ -128,7 +128,7 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles', 'searchQueryParams']),
-    hasSearchParams (state) {
+    hasSearchParams () {
       return Object.keys(this.searchQueryParams).length > 0
     },
     showUnpublished () {

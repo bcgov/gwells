@@ -48,10 +48,10 @@ export default {
       const url = 'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0' +
         '&REQUEST=GetFeature&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG' +
         "&CQL_FILTER=REGION_NAME IN('South Coast Natural Resource Region','West Coast Natural Resource Region')"
-      axios.get(url, { transformRequest: (data, headers) => {
-        delete headers.common['Authorization']
-        return data
-      }
+      axios.get(url, {
+        headers: {
+          'Authorization': undefined
+        }
       }).then((response) => {
         const data = response.data
         if (data.features) {
@@ -63,10 +63,10 @@ export default {
       const url = 'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature' +
         '&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP' +
           '&propertyName=AQUIFER_ID,NOTATION_DESCRIPTION'
-      axios.get(url, { transformRequest: (data, headers) => {
-        delete headers.common['Authorization']
-        return data
-      }
+      axios.get(url, {
+        headers: {
+          'Authorization': undefined
+        }
       }).then((response) => {
         const data = response.data
         if (data.features) {

@@ -205,7 +205,7 @@ export default {
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
     },
-    hasSearchParams (state) {
+    hasSearchParams () {
       return Object.keys(this.searchQueryParams).length > 0
     }
   },
