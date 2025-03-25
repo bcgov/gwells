@@ -200,7 +200,7 @@ export default {
       'searchMapZoom',
       'constrainSearch',
       'searchInProgress',
-      'searchQueryParams'
+      // 'searchQueryParams'
     ]),
     hasResultErrors () {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
