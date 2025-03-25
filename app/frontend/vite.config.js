@@ -8,19 +8,19 @@ export default defineConfig({
   plugins: [vue(),
     NodeGlobalsPolyfillPlugin({
       process: true,
-      buffer: true // optional, include if you need Buffer polyfill too
+      buffer: true
     })],
   server: {
-    port: 8080, // Set your default port here
-    strictPort: true, // Throw error if port is already in use
-    host: true, // Listen on all addresses, including LAN and public connections
-    allowedHosts: 'all' // Allow all hosts
+    port: 8080,
+    strictPort: true,
+    host: true,
+    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost']
   },
   preview: {
-    port: 8080, // Set your default port here
-    strictPort: true, // Throw error if port is already in use
+    port: 8080,
+    strictPort: true,
     host: true,
-    allowedHosts: 'all' // Allow all hosts
+    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost']
   },
   define: {
     // Define process.env for basic compatibility
