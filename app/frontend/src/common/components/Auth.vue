@@ -49,6 +49,9 @@ export default {
               localStorage.setItem('refreshToken', this.keycloak.refreshToken)
               localStorage.setItem('idToken', this.keycloak.idToken)
             }
+            console.log('Access Token:', this.keycloak.token);
+            console.log('Refresh Token:', this.keycloak.refreshToken);
+            console.log('ID Token:', this.keycloak.idToken);
           }
         }).catch((e) => {
           console.error('keyCloakLogin: ', e)

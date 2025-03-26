@@ -206,7 +206,7 @@ export default {
       return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
     },
     hasSearchParams () {
-      return Object.keys(this.searchQueryParams).length > 0
+      return Object.keys(this.searchQueryParams ?? {} ).length > 0
     }
   },
   methods: {
@@ -375,9 +375,11 @@ export default {
       this.$store.commit(SET_SEARCH_PARAMS, query)
     },
     updateQueryParams () {
-      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
+      if (this.$route.path !== '/') {
+        const tabHash = (this.tabIndex === 1) ? 'advanced' : null
 
-      this.$router.replace({ query: this.buildQueryParams(), hash: tabHash })
+        this.$router.replace({ query: this.buildQueryParams(), hash: tabHash })
+      }
     },
     buildQueryParams () {
       const query = { ...this.searchParams }

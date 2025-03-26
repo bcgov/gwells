@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     handleSubmit () {
-      const params = { search: this.searchString }
+      const params = this.searchString ? { search: this.searchString } : {}
       this.$store.commit(SET_SEARCH_PARAMS, params)
 
       this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: true })

@@ -422,12 +422,14 @@ export default {
     },
     updateQueryParams () {
       const query = { ...this.queryParams || {} }
-      if (this.showRetiredAquifers) {
-        query['show-retired'] = true
-      } else {
-        delete query['show-retired'];
+      if (this.$route.path !== '/aquifers') {
+        if (this.showRetiredAquifers) {
+          query['show-retired'] = true
+        } else {
+          delete query['show-retired'];
+        }
+        this.$router.replace({ query })
       }
-      this.$router.replace({ query })
     },
     mapMoved (bounds, featuresOnMap, isViewReset) {
       const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)

@@ -29,12 +29,7 @@ import 'vue-select/dist/vue-select.css'
 import VueMoment from 'vue-moment'
 import FormInput from '@/common/components/FormInput.vue'
 import { FETCH_CONFIG } from '@/common/store/config.js'
-<<<<<<< HEAD
 import * as filters from './common/filters'
-=======
-import filters from '@/common/filters'
-// Test
->>>>>>> c01a09134 (Test commit)
 // GWELLS js API library (helper methods for working with API)
 import ApiService from '@/common/services/ApiService.js'
 
@@ -44,7 +39,8 @@ const BASE_PATH = '/gwells/'
 const PRODUCTION_MATOMO_HOST = 'https://water-matomo.apps.silver.devops.gov.bc.ca/'
 const TEST_MATOMO_HOST = 'https://water-matomo-staging.apps.silver.devops.gov.bc.ca/'
 
-const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL))
+const isProduction = () => window.location.origin === PRODUCTION_GWELLS_URL;
+// Does not return true for the production site @https://gwells.apps.silver.devops.gov.bc.ca/gwells
 const isStaging = () => (
   window.location.pathname.includes(BASE_PATH) && STAGING_GWELLS_URLS.includes(window.location.hostname)
 )

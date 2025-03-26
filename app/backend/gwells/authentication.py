@@ -24,6 +24,23 @@ from gwells.models import Profile
 from gwells.roles import roles_to_groups
 from gwells.settings.base import get_env_variable
 
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+# Create a console handler to output log messages to the console
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.DEBUG)  # Set to DEBUG to capture debug-level logs
+
+# Create a formatter to format log messages
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console_handler.setFormatter(formatter)
+
+# Add the console handler to the logger
+logger.addHandler(console_handler)
+
+
 # KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
 # KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth'
 KEYCLOAK_GOLD_REALM_URL = 'dev.loginproxy.gov.bc.ca/auth/realms/standard'
@@ -66,6 +83,8 @@ class JwtOidcAuthentication(JWTTokenUserAuthentication):
 
         # Make sure the user is coming from a known sso authority
         if not self.known_sso_authority(payload):
+            logger.debug("JWT Payload: %s", payload)
+            logger.debug("Preferred username: %s", payload.get('preferred_username'))
             raise exceptions.AuthenticationFailed(
                 'Preferred username is invalid.')
 
