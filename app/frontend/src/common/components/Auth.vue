@@ -38,9 +38,9 @@ export default {
       }
     },
     keyCloakLogin () {
-      this.keycloak.init({
-        checkLoginIframe: false
-      }).then(() => {
+      // Only initialize if not already initialized
+      if (!this.keycloak.authenticated) {
+        // Skip initialization and go straight to login
         this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
           if (authenticated) {
             ApiService.authHeader('JWT', this.keycloak.token)
@@ -54,7 +54,10 @@ export default {
           console.error('keyCloakLogin: ', e)
           this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
         })
-      })
+      } else {
+        // If already authenticated, just refresh the token
+        this.keycloak.updateToken(30)
+      }
     },
     keyCloakLogout () {
       // This should log the user out, but unfortunately does not delete the cookie storing the user
