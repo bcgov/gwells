@@ -57,7 +57,7 @@ def create_db_comments_from_models(models):
         for model_class in models:
             # Doing the check for abstract is a bit weird, we have to create an instance of the class, we
             # can't check it on the class definition.
-            if model_class()._meta.abstract:
+            if model_class._meta.abstract:
                 # If it's an abstract class, don't proceed.
                 continue
 

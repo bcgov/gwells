@@ -43,8 +43,11 @@ BULK_VERTICAL_AQUIFER_EXTENTS_UPLOAD = 'bulk_vertical_aquifer_extents_upload'
 # Surveys
 SURVEYS_EDIT_ROLE = 'surveys_edit'
 
+# IDIR
+IDIR_ROLE = 'idir'
+
 # These roles are excluded, as they cannot be mapped to any particular useful groups.
-EXCLUDE = ('idir', 'offline_access', 'admin', 'uma_authorization', 'gwells_admin')
+EXCLUDE = ('offline_access', 'admin', 'uma_authorization', 'gwells_admin')
 
 
 def roles_to_groups(user, roles: Tuple[str] = None):

@@ -1,36 +1,63 @@
-# FROM python:3.7
+# FROM node:14.21.3 AS frontend
 
-# WORKDIR /app/backend
+# ENV LOG_LEVEL="info"
 
-# # whitebox_tools is added to the context dir by the BuildConfig, which
-# # copies it from the whiteboxtools:latest imagestream.
-# # the BuildConfig also copies whitebox_tools.py (WBT Python bindings)
-# # into the context dir so it gets copied by the COPY directive below.
-# # COPY /wbt/target/x86_64-unknown-linux-musl/release/whitebox_tools /usr/local/bin/
-# # COPY /wbt/whitebox_tools.py /app/
+# RUN apt update && \
+#     apt install -y git build-essential python3 python3-pip make g++ && \
+#     apt autoremove -y && \
+#     apt clean
 
-# # RUN useradd wally -M -G root -u 1021 && chmod -R 775 /app \
-# #   && chown -R wally:root /app \ 
-# #   && apt-get update && apt-get -y install ca-certificates libgdal-dev gdal-bin
+# WORKDIR /app
 
-# COPY ./requirements.txt /
+# COPY ./frontend/package*.json ./
 
-# RUN pip install -r /requirements.txt
+# RUN npm install
 
-# COPY . /app/backend
+# COPY ./frontend/ /app
 
-# ENV PYTHONPATH=/app/backend
-# # RUN pytest /app/tests/ -W ignore::DeprecationWarning
+# RUN npm run build
 
-# EXPOSE 8000
+FROM python:3.7
 
-# # Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
-# # And then will start Gunicorn with Uvicorn
-# CMD ["/app/backend/start.sh"]
+# Install dependencies
+RUN apt -y update && apt -y install git build-essential gdal-bin libgdal-dev postgresql-client
 
-FROM artifacts.developer.gov.bc.ca/g26e-backend-docker-local/gwells-backend:1.0 AS base
+ENV PATH="/usr/bin/python3:${PATH}"
 
-FROM base
-WORKDIR /app
+WORKDIR /app/backend
 
-COPY . .
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip install ptvsd
+RUN python3 -m pip install 'setuptools<58.0'
+
+COPY . /app/backend
+# COPY ./backend-command-script.sh /backend-command-script.sh
+# COPY ./requirements.txt /app/backend/requirements.txt
+
+# COPY --from=frontend ./app/dist ./gwells/static
+# COPY --from=frontend ./app/dist/index.html ./gwells/templates/
+# COPY /backend/startup.sh /docker-entrypoint-initdb.d/
+
+# RUN chmod +x load_fixtures.sh works when i pull the dockerfile into backend but not when dockerfile is with other docker files
+RUN chmod -R +x /app/backend
+# RUN chmod -R 777 /app 
+# RUN python3 -m pip install -r requirements.txt
+
+RUN python3 -m pip install -r requirements.txt
+
+# Create the staticfiles directory and set permissions before switching user
+RUN mkdir -p /app/staticfiles && \
+    chmod -R 777 /app/staticfiles
+
+# TODO: move to entrypoint in deployment template?
+# chmod -R 777 /app && \
+# CMD [""]
+
+CMD sh -c "python3 manage.py migrate --noinput && \
+    ./load_fixtures.sh all && \
+    python3 manage.py createinitialrevisions && \
+    python3 manage.py collectstatic --noinput && \
+    # python3 manage.py export --cleanup=1 --upload=1 && \
+    python3 manage.py runserver 0.0.0.0:8000"
+
+USER 1001

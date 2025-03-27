@@ -35,6 +35,7 @@ def border_data(apps, schema_editor):
     tmp_path = '/tmp/BCGW_ABMS_PROV-migrations/'
 
     zip_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'migrations/BCGW_ABMS_PROV.zip')
+
     with ZipFile(zip_path, 'r') as zipObj:
         zipObj.extractall(tmp_path)
 
