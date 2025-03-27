@@ -1,0 +1,443 @@
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: gwells-backend-dc-template
+  creationTimestamp:
+labels:
+  template: gwells-backend-dc-template
+parameters:
+  - name: NAMESPACE_SUFFIX
+    displayName: Namespace Suffix
+    description: Namespace Suffix, e.g. dev, test, prod
+    required: true
+  - name: ENV
+    displayName: Namespace Suffix
+    description: Namespace Suffix, e.g. development, staging, production
+    required: true
+objects:
+  - apiVersion: image.openshift.io/v1
+    kind: ImageStream
+    metadata:
+      annotations:
+        description: gwells backend image stream
+      labels:
+        shared: "true"
+      creationTimestamp: null
+      namespace: 26e83e-${NAMESPACE_SUFFIX}
+      name: gwells-backend-${ENV}
+    spec:
+      lookupPolicy:
+        local: false
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: gwells-backend-${ENV}
+      namespace: 26e83e-${NAMESPACE_SUFFIX}
+    labels:
+      app: gwells-backend-${ENV}
+      app-name: gwells
+      appver: gwells-backend-${ENV}
+      env-name: ${ENV}
+    spec:
+      type: ClusterIP
+      ports:
+        - port: 8080
+          targetPort: 8080
+          protocol: TCP
+          name: web
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: gwells-backend-${ENV}
+      namespace: 26e83e-${NAMESPACE_SUFFIX}
+      labels:
+        app: gwells-backend-${ENV}
+        app-name: gwells
+        appver: gwells-backend-${ENV}
+        env-name: ${ENV}
+        frontend: ""
+    spec:
+      host: gwells-backend-${ENV}.apps.silver.devops.gov.bc.ca
+      to:
+        kind: Service
+        name: gwells-backend-${ENV}
+        weight: 100
+      port:
+        targetPort: web
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: gwells-backend-${ENV}
+      namespace: 26e83e-${NAMESPACE_SUFFIX}
+      labels:
+        app: gwells-backend
+        app-name: gwells
+        appver: gwells-backend
+        env-name: ${ENV}
+    spec:
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 900
+          maxUnavailable: 25%
+          maxSurge: 25%
+          pre:
+            failurePolicy: Abort
+            execNewPod:
+              command:
+                - /usr/bin/container-entrypoint
+                - /opt/app-root/src/scripts/pre-deploy.sh
+              env:
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-name
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-password
+                - name: PGHOST
+                  value: gwells-pg12-${ENV}
+              containerName: gwells-app-${ENV}
+        resources: {}
+        activeDeadlineSeconds: 21600
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - gwells-app-${ENV}
+            from:
+              kind: ImageStreamTag
+              namespace: 26e83e-${NAMESPACE_SUFFIX}
+              name: "gwells-backend-${ENV}:${ENV}"
+        - type: ConfigChange
+      replicas: 0
+      revisionHistoryLimit: 10
+      test: false
+      selector:
+        name: gwells-backend
+      template:
+        metadata:
+          name: gwells-backend
+          creationTimestamp: null
+          labels:
+            appver: gwells-backend
+            name: gwells-backend
+        spec:
+          initContainers:
+            - name: check-db
+              image: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis:centos7-12.4-3.0-4.5.0"
+              command:
+                - /bin/bash
+                - "-c"
+                - psql -qtAX -c 'select 1'
+              env:
+                - name: PGDATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-name
+                - name: PGUSER
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-user
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-password
+                - name: PGHOST
+                  value: gwells-pg12-${ENV}
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 128Mi
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: IfNotPresent
+          containers:
+            - resources:
+                requests:
+                  cpu: 500m
+                  memory: 1.3Gi
+              readinessProbe:
+                httpGet:
+                  path: /gwells/health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 5
+                timeoutSeconds: 2
+                periodSeconds: 5
+                successThreshold: 1
+                failureThreshold: 10
+              terminationMessagePath: /dev/termination-log
+              name: gwells-app-${ENV}
+              livenessProbe:
+                httpGet:
+                  path: /gwells/health
+                  port: 8080
+                  scheme: HTTP
+                initialDelaySeconds: 60
+                timeoutSeconds: 5
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 6
+              env:
+                - name: DATABASE_SERVICE_NAME
+                  value: gwells-pg12-${ENV}
+                - name: DATABASE_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-name
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-user
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-pg12-${ENV}
+                      key: database-password
+                - name: DATABASE_SCHEMA
+                  value: public
+                - name: APP_MODULE
+                  value: "wsgi:application"
+                - name: APP_HOME
+                  value: backend
+                - name: APP_CONFIG
+                  value: /opt/app-root/src/backend/gunicorn.ocp4.cfg
+                - name: DJANGO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-django-${ENV}
+                      key: secret_key
+                - name: DJANGO_ADMIN_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-django-${ENV}
+                      key: admin_url
+                - name: DJANGO_ADMIN_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-django-${ENV}
+                      key: admin_user
+                - name: DJANGO_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-django-${ENV}
+                      key: admin_password
+                - name: E_LICENSING_AUTH_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-e-licensing-${ENV}
+                      key: E_LICENSING_AUTH_PASSWORD
+                - name: E_LICENSING_AUTH_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: gwells-e-licensing-${ENV}
+                      key: E_LICENSING_AUTH_USERNAME
+                - name: E_LICENSING_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: E_LICENSING_URL
+                - name: DJANGO_DEBUG
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: DJANGO_DEBUG
+                - name: GDAL_LIBRARY_PATH
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: GDAL_LIBRARY_PATH
+                - name: GEOS_LIBRARY_PATH
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: GEOS_LIBRARY_PATH
+                - name: S3_AQUIFER_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_AQUIFER_BUCKET
+                - name: S3_REGISTRANT_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_REGISTRANT_BUCKET
+                - name: S3_PRIVATE_ROOT_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_PRIVATE_ROOT_BUCKET
+                - name: S3_PRIVATE_AQUIFER_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_PRIVATE_AQUIFER_BUCKET
+                - name: S3_PRIVATE_REGISTRANT_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_PRIVATE_REGISTRANT_BUCKET
+                - name: S3_PRIVATE_WELL_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_PRIVATE_WELL_BUCKET
+                - name: SSO_CLIENT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_CLIENT
+                - name: SSO_PUBKEY
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_PUBKEY
+                - name: SSO_AUTH_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_AUTH_HOST
+                - name: SSO_AUDIENCE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_AUDIENCE
+                - name: SSO_REALM
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_REALM
+                - name: SSO_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_PORT
+                - name: SSO_TEST_CLIENT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_TEST_CLIENT
+                - name: SSO_TEST_AUDIENCE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_TEST_AUDIENCE
+                - name: ENABLE_ADDITIONAL_DOCUMENTS
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: ENABLE_ADDITIONAL_DOCUMENTS
+                - name: ENABLE_AQUIFERS_SEARCH
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: ENABLE_AQUIFERS_SEARCH
+                - name: APP_CONTEXT_ROOT
+                  value: gwells
+                - name: SESSION_COOKIE_SECURE
+                  value: "True"
+                - name: CSRF_COOKIE_SECURE
+                  value: "True"
+                - name: DB_REPLICATE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: DB_REPLICATE
+                - name: MINIO_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-access-parameters-${ENV}
+                      key: MINIO_ACCESS_KEY
+                - name: MINIO_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-access-parameters-${ENV}
+                      key: MINIO_SECRET_KEY
+                - name: S3_PUBLIC_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-access-parameters-${ENV}
+                      key: S3_PUBLIC_ACCESS_KEY
+                - name: S3_PUBLIC_SECRET_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-access-parameters-${ENV}
+                      key: S3_PUBLIC_SECRET_KEY
+                - name: S3_HOST
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-access-parameters-${ENV}
+                      key: S3_HOST
+                - name: S3_ROOT_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: minio-access-parameters-${ENV}
+                      key: S3_ROOT_BUCKET
+                - name: S3_PRIVATE_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_PRIVATE_HOST
+                - name: S3_WELL_EXPORT_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_WELL_EXPORT_BUCKET
+                - name: S3_PRIVATE_BUCKET
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: S3_PRIVATE_BUCKET
+                - name: SSO_IDP_HINT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: SSO_IDP_HINT
+                - name: WEB_CONCURRENCY
+                  value: "4"
+                - name: GUNICORN_WORKERS
+                  value: "4"
+                - name: ENFORCE_ENV_VARIABLES
+                  value: "False"
+                - name: EMAIL_NOTIFICATION_RECIPIENT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: EMAIL_NOTIFICATION_RECIPIENT
+                - name: GEOCODER_ADDRESS_API_BASE
+                  valueFrom:
+                    configMapKeyRef:
+                      name: gwells-global-config-${ENV}
+                      key: GEOCODER_ADDRESS_API_BASE
+              ports:
+                - containerPort: 8080
+                  protocol: TCP
+              imagePullPolicy: Always
+              terminationMessagePolicy: File
+              image: "image-registry.openshift-image-registry.svc:5000/26e83e-${NAMESPACE_SUFFIX}/gwells-backend-${ENV}:${ENV}"
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          schedulerName: default-scheduler
