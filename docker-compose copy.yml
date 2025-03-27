@@ -116,8 +116,8 @@ services:
     hostname: frontend
     environment:
       DEBUG: "True"
-      VUE_APP_AXIOS_BASE_URL: /api/
-      VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
+      VITE_AXIOS_BASE_URL: /api/
+      VITE_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
     ports:

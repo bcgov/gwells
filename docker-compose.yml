@@ -113,20 +113,20 @@ services:
     build:
       context: ./app/frontend
       dockerfile: Dockerfile
-    hostname: frontend
+    # hostname: frontend
     environment:
       DEBUG: "True"
-      VUE_APP_AXIOS_BASE_URL: /api/
-      VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
+      VITE_AXIOS_BASE_URL: /api/
+      VITE_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
     ports:
       - "8080:8080"
-    volumes:
-      - type: bind
-        source: ./app/frontend
-        target: /app/frontend
-      - /app/frontend/node_modules/
+    # volumes:
+    #   - type: bind
+    #     source: ./app/frontend
+    #     target: /app/frontend
+    #   - /app/frontend/node_modules/
     depends_on:
       - backend
     networks:
@@ -138,8 +138,8 @@ services:
     platform: linux/x86_64
     # working_dir: /backend
     build:
-      context: ./
-      dockerfile: ./app/backend/Dockerfile
+      context: ./app/backend
+      dockerfile: ./Dockerfile
     image: nr-gwells/backend:latest
     container_name: backend
     # env_file:
@@ -195,8 +195,8 @@ services:
       GEOCODER_ADDRESS_API_BASE: https://geocoder.api.gov.bc.ca/addresses.json?
       LOCAL: "true"
       LOAD_FIXTURES: "true"
-    volumes:
-      - ./app/backend:/app/backend
+    # volumes:
+    #   - ./app/backend:/app/backend
     healthcheck:
       test: timeout 3s bash -c 'true > /dev/tcp/127.0.0.1/8000'
       interval: 5s

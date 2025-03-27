@@ -46,8 +46,8 @@ RUN chmod -R +x /app/backend
 RUN python3 -m pip install -r requirements.txt
 
 # Create the staticfiles directory and set permissions before switching user
-RUN mkdir -p /app/staticfiles && \
-    chmod -R 777 /app/staticfiles
+RUN mkdir -p /app/backend/staticfiles && \
+    chmod -R 777 /app/backend/staticfiles
 
 # TODO: move to entrypoint in deployment template?
 # chmod -R 777 /app && \

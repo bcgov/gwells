@@ -326,7 +326,7 @@ export class DataBCGeocoder extends MapboxGeocoder {
       // https://github.com/mapbox/parse-mapbox-token/blob/c84408f016b9b540f3dc341e332db0613713f2ca/test.js#L8
       accessToken: 'pk.eyJ1IjoiZmFrZXVzZXIiLCJhIjoicHBvb2xsIn0.sbihZCZJ56-fsFNKHXF8YQ',
       // Use our API endpoint to query DataBC
-      origin: process.env.VUE_APP_AXIOS_BASE_URL,
+      origin: import.meta.env.VITE_AXIOS_BASE_URL,
       collapsed: true,
       ...options,
       mapboxgl
