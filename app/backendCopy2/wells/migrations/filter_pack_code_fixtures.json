@@ -1,0 +1,142 @@
+[
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "1020_SAND",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:04:52.132Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:04:52.132Z",
+      "description": "1020 sand",
+      "display_order": 0,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "1_2_mm",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:05:44.402Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:05:44.402Z",
+      "description": "1.0 - 2.0 mm",
+      "display_order": 2,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "240_SAND",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:05:10.451Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:05:10.451Z",
+      "description": "240 sand",
+      "display_order": 1,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "2_4_mm",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:06:00.061Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:06:00.061Z",
+      "description": "2.0 - 4.0 mm",
+      "display_order": 3,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "4_8_mm",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:06:15.349Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:06:15.349Z",
+      "description": "4.0 - 8.0 mm",
+      "display_order": 4,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "OTHER",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:06:29.381Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:06:29.381Z",
+      "description": "Other",
+      "display_order": 5,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialsizecode",
+    "pk": "PEA_GRAVEL",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:06:57.197Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:06:57.197Z",
+      "description": "Pea gravel",
+      "display_order": 6,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialcode",
+    "pk": "FINE_GRAVL",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:02:58.290Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:02:58.290Z",
+      "description": "Fine gravel",
+      "display_order": 2,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialcode",
+    "pk": "V_COU_SAND",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:02:01.732Z",
+      "update_user": "",
+      "update_date": "2019-10-16T23:02:01.732Z",
+      "description": "Very coarse sand",
+      "display_order": 0,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.filterpackmaterialcode",
+    "pk": "V_FI_GRAVL",
+    "fields": {
+      "create_user": "",
+      "create_date": "2018-12-12T23:02:31.740Z",
+      "update_user": "",
+      "update_date": "2018-12-12T23:02:31.740Z",
+      "description": "Very fine gravel",
+      "display_order": 1,
+      "effective_date": "1970-01-01T08:00:00Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }
+]

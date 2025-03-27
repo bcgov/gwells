@@ -1,0 +1,28 @@
+[{
+    "model": "wells.wellpublicationstatuscode",
+    "pk": "Published",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Well is Published and can be Open Information for the public",
+        "display_order": 10,
+        "effective_date": "2018-05-25T07:00:00Z",
+        "expiry_date": "9999-12-31T23:59:59.999999Z"
+    }
+},
+{
+    "model": "wells.wellpublicationstatuscode",
+    "pk": "Unpublished",
+    "fields": {
+        "create_user": "ETL_USER",
+        "create_date": "2017-07-01T08:00:00Z",
+        "update_user": "ETL_USER",
+        "update_date": "2017-07-01T08:00:00Z",
+        "description": "Well is unpublished and hidden from public",
+        "display_order": 20,
+        "effective_date": "2018-05-25T07:00:00Z",
+        "expiry_date": "9999-12-31T23:59:59.999999Z"
+    }
+}]

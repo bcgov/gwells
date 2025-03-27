@@ -1,0 +1,42 @@
+[{
+    "model": "wells.welldisinfectedcode",
+    "pk": "Disinfected",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-08-14T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-08-14T17:42:52.421Z",
+        "description": "Well disinfected",
+        "display_order": 0,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+},
+{
+  "model": "wells.welldisinfectedcode",
+  "pk": "Not Disinfected",
+  "fields": {
+      "create_user": "DATALOAD_USER",
+      "create_date": "2018-08-14T17:42:52.421Z",
+      "update_user": "DATALOAD_USER",
+      "update_date": "2018-08-14T17:42:52.421Z",
+      "description": "Well not disinfected",
+      "display_order": 1,
+      "effective_date": "2013-11-07T05:28:00.402Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+  }
+},
+{
+    "model": "wells.welldisinfectedcode",
+    "pk": "Unknown",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-08-14T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-08-14T17:42:52.421Z",
+        "description": "Well disinfected status unknown",
+        "display_order": 2,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "1970-01-01T23:59:59Z"
+    }
+}]

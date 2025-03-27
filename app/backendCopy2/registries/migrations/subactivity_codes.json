@@ -1,0 +1,62 @@
+[
+    {
+        "model": "registries.subactivitycode",
+        "pk": "GEOTECH",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "registries_activity": "DRILL",
+            "description": "Geotechnical/Environmental Driller",
+            "display_order": 4,
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    },
+    {
+        "model": "registries.subactivitycode",
+        "pk": "GEOXCHG",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "registries_activity": "DRILL",
+            "description": "Geoexchange Driller",
+            "display_order": 6,
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    },
+    {
+        "model": "registries.subactivitycode",
+        "pk": "PUMPINST",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "registries_activity": "PUMP",
+            "description": "Pump Installer",
+            "display_order": 8,
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    },
+    {
+        "model": "registries.subactivitycode",
+        "pk": "WATER",
+        "fields": {
+            "create_user": "DATALOAD_USER",
+            "create_date": "2018-01-01T08:00:00Z",
+            "update_user": "DATALOAD_USER",
+            "update_date": "2018-01-01T08:00:00Z",
+            "registries_activity": "DRILL",
+            "description": "Water Well Driller",
+            "display_order": 2,
+            "effective_date": "2018-01-01T18:20:35.936Z",
+            "expiry_date": "9999-12-31T23:59:59Z"
+        }
+    }
+]
