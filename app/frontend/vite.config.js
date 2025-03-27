@@ -22,10 +22,6 @@ export default defineConfig({
     host: true,
     allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost']
   },
-  define: {
-    // Define process.env for basic compatibility
-    'process.env': {}
-  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),

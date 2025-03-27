@@ -1,0 +1,877 @@
+[
+  {
+    "model": "registries.organization",
+    "pk": "020307b6-e30a-44e6-ae5a-96920f09ae19",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:23:11.226Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:23:11.226Z",
+      "name": "Three Pump Company",
+      "street_address": "453 W 12th Ave",
+      "city": "Vancouver",
+      "province_state": "BC",
+      "postal_code": "B3B3B3",
+      "geom": "POINT(-123.1139388 49.261317)",
+      "main_tel": "(333) 654-0987",
+      "fax_tel": "(333) 654-0987",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T11:11:11Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "threepumpcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "1debc17b-4991-481d-b3c9-8c871be78dd1",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:25:18.261Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-12T18:26:01.969Z",
+      "name": "One DrillPump Company",
+      "street_address": "877 Goldstream Ave",
+      "city": "Langford",
+      "province_state": "BC",
+      "postal_code": "C1C1C1",
+      "geom": "POINT(-123.504632 48.4495587)",
+      "main_tel": "(111) 098-1234",
+      "fax_tel": "(111) 098-1234",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T11:11:11Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "onedrillpumpcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "2b1a46a0-0c44-4ed4-9366-a458782629df",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:19:46.531Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-12T18:20:35.936Z",
+      "name": "One Drill Company",
+      "street_address": "1 Centennial Square",
+      "city": "Victoria",
+      "province_state": "BC",
+      "postal_code": "A1A 1A1",
+      "geom": "POINT(-123.3657434 48.4287096)",
+      "main_tel": "(111) 456-7890",
+      "fax_tel": "(111) 456-7890",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "onedrillcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "728457aa-3af3-418d-a1a9-bd72528947f8",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:20:54.873Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:20:54.873Z",
+      "name": "Three Drill Company",
+      "street_address": "720 Douglas St",
+      "city": "Victoria",
+      "province_state": "BC",
+      "postal_code": "A3A3A3",
+      "geom": "POINT(-123.3674375 48.4215461)",
+      "main_tel": "(333) 456-7890",
+      "fax_tel": "(333) 456-7890",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "threedrillcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "7b82ae61-1cc3-424a-bd96-a286e3a79ce9",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:22:25.891Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:22:25.891Z",
+      "name": "Two Pump Company",
+      "street_address": "222 Pump Ave",
+      "city": "Toronto",
+      "province_state": "ON",
+      "postal_code": "B2B2B2",
+      "main_tel": "(222) 654-0987",
+      "fax_tel": "(222) 654-0987",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "twopumpcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "94a0adca-54ca-4825-8e35-0a3a6a791ac6",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:26:40.295Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:26:40.295Z",
+      "name": "Three DrillPump Company",
+      "street_address": "2167 Oak Bay Ave",
+      "city": "Oak Bay",
+      "province_state": "BC",
+      "postal_code": "C3C3C3",
+      "geom": "POINT(-123.3168644 48.4259489)",
+      "main_tel": "(333) 098-1234",
+      "fax_tel": "(333) 098-1234",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "threedrillpumpcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "b8059303-2161-4561-aa2c-601fe4e220d3",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:21:50.849Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:21:50.849Z",
+      "name": "One Pump Company",
+      "street_address": "455 Wallace St",
+      "city": "Nanaimo",
+      "province_state": "BC",
+      "postal_code": "B1B1B1",
+      "geom": "POINT(-123.9379279 49.1641645)",
+      "main_tel": "(111) 654-0987",
+      "fax_tel": "(111) 654-0987",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "onepumpcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "cc3345c1-7291-48fc-b3d2-0b97a189bf1a",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:20:16.502Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-12T18:22:38.684Z",
+      "name": "Two Drill Company",
+      "street_address": "222 Drill Street",
+      "city": "Calgary",
+      "province_state": "AB",
+      "postal_code": "A2A2A2",
+      "main_tel": "(222) 456-7890",
+      "fax_tel": "(222) 456-7890",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "twodrillcompany@fakeeemail.com"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "ef819007-4a05-4da2-b3d6-7557ec334bb8",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:25:50.050Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:25:50.050Z",
+      "name": "Two DrillPump Company",
+      "street_address": "20399 Douglas Cres",
+      "city": "Langley",
+      "province_state": "BC",
+      "postal_code": "C2C2C2",
+      "geom": "POINT(-122.6575906 49.1042438)",
+      "main_tel": "(222) 098-1234",
+      "fax_tel": "(222) 098-1234",
+      "website_url": "https://www.google.ca/",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z",
+      "email": "twodrillpumpcompany@fakeeemail.com"
+    }
+  } , {
+    "model": "registries.organization",
+    "pk": "f606669c-a60c-422d-859a-fdc54278d9b0",
+    "fields": {
+      "create_user": "PROXY_WELLS",
+      "create_date": "2008-09-12T18:14:53Z",
+      "update_user": "",
+      "update_date": "2016-12-10T23:42:51Z",
+      "name": "Flotonic Waterwell",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "1237493e-ebd8-41e2-83ca-0a600da00bc9",
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-13T15:55:14Z",
+      "update_user": "PROXY_WELLS",
+      "update_date": "2008-08-28T22:10:40Z",
+      "name": "Bezal Drilling Co",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "69f5459a-5ec1-49e1-94b6-58b0eb90b368",
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-13T15:55:14Z",
+      "update_user": "WELLS",
+      "update_date": "2006-12-14T17:28:28Z",
+      "name": "Ginkogene Aquamasters",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.organization",
+    "pk": "bf5d31ea-8a5a-4363-8a5e-6c00eed03058",
+    "fields": {
+      "create_user": "WELLS",
+      "create_date": "2003-08-13T15:55:14Z",
+      "update_user": "WELLS",
+      "update_date": "2006-12-14T17:28:28Z",
+      "name": "Industrial Drillers",
+      "province_state": "BC",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "257aa7c0-6f15-47e8-8217-ae7f749b5180",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:29:39.431Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:29:39.431Z",
+      "first_name": "LongNameDriller",
+      "surname": "WellDriller",
+      "well_driller_orcs_no": "231",
+      "pump_installer_orcs_no": "231",
+      "contact_tel": "(231) 456-7890",
+      "contact_cell": null,
+      "contact_email": "longdrilleremail@fakeeeeeeemail.com",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "71e9509a-7d65-43a7-9ea4-9a3e357ce318",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:31:57.916Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:31:57.916Z",
+      "first_name": "NotApproved",
+      "surname": "Diller",
+      "well_driller_orcs_no": null,
+      "pump_installer_orcs_no": null,
+      "contact_tel": "(543) 345-6543",
+      "contact_cell": null,
+      "contact_email": "notapproveddriller@fakeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:41:41.128Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:41:41.128Z",
+      "first_name": "PumpsAndDrills",
+      "surname": "Installer",
+      "well_driller_orcs_no": "5000-30/DRI JSO N",
+      "pump_installer_orcs_no": "5001-31/PUMP JSO N",
+      "contact_tel": "(232) 132-11232",
+      "contact_cell": null,
+      "contact_email": "pumpsanddrills@fakeeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "7f7e4809-b162-4820-9dd6-89abf8d3f3c9",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:27:50.728Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:27:50.728Z",
+      "first_name": "short",
+      "surname": "Driller",
+      "well_driller_orcs_no": "123",
+      "pump_installer_orcs_no": "123",
+      "contact_tel": "(123) 456-7890",
+      "contact_cell": null,
+      "contact_email": "shortdriller@fakeeemail.com",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "5a44af09-c36c-aad3-487b-55ffc643d323",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:27:50.728Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:27:50.728Z",
+      "first_name": "Sally",
+      "surname": "Smith",
+      "well_driller_orcs_no": "123",
+      "pump_installer_orcs_no": "123",
+      "contact_tel": "(123) 452-1122",
+      "contact_cell": null,
+      "contact_email": "sallysmith@fakeeemail.com",
+      "effective_date": "2018-10-12T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "8c3affb2-9619-421d-9656-c939e1b3d662",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:31:11.747Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:31:11.747Z",
+      "first_name": "Pending",
+      "surname": "Driller",
+      "well_driller_orcs_no": "321645",
+      "pump_installer_orcs_no": null,
+      "contact_tel": "(234) 123-4567",
+      "contact_cell": null,
+      "contact_email": "pendingdriller@fakeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "b29087c9-a5d7-4060-babb-b17f97d38b0a",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T17:27:40.640Z",
+      "update_user": "",
+      "update_date": "2018-10-15T17:27:40.640Z",
+      "first_name": "Removed",
+      "surname": "Pump",
+      "well_driller_orcs_no": null,
+      "pump_installer_orcs_no": "45666-25/PUMP Remo P",
+      "contact_tel": "(321) 321-3333",
+      "contact_cell": null,
+      "contact_email": "removedpumper@fakeeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:43:55.317Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:43:55.317Z",
+      "first_name": "HalfNotApproved",
+      "surname": "DrillPumper",
+      "well_driller_orcs_no": "12312-25/DRI SMIT J",
+      "pump_installer_orcs_no": "12312-25/PUMP SMIT J",
+      "contact_tel": "(333) 333-3333",
+      "contact_cell": null,
+      "contact_email": "somewhatnotapproved@thisisalongeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "d724011a-7ba3-4017-b180-4107b62b46a5",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:38:15.895Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:38:15.895Z",
+      "first_name": "Pump",
+      "surname": "Installer",
+      "well_driller_orcs_no": null,
+      "pump_installer_orcs_no": "57490-25/PUMP JSO N",
+      "contact_tel": "(154) 345-63124",
+      "contact_cell": null,
+      "contact_email": "pumpinstaller@fakeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.person",
+    "pk": "ef6bec85-2248-4373-812b-ea9330b13942",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:46:52.393Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:46:52.393Z",
+      "first_name": "Incomplete",
+      "surname": "Pump",
+      "well_driller_orcs_no": null,
+      "pump_installer_orcs_no": "65445-81/PUMP ACME S",
+      "contact_tel": "(444) 666-7777",
+      "contact_cell": null,
+      "contact_email": "IncompletePumpInstaller@fakeeemail.com",
+      "effective_date": "2018-10-15T18:20:35.936Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "3112db09-a3c9-40d9-9ebd-b5f09af4254c",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T17:27:40.642Z",
+      "update_user": "",
+      "update_date": "2018-10-15T17:27:40.642Z",
+      "registries_activity": "PUMP",
+      "person": "b29087c9-a5d7-4060-babb-b17f97d38b0a",
+      "organization": "94a0adca-54ca-4825-8e35-0a3a6a791ac6",
+      "registration_no": ""
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "6d622df3-cd01-4939-b541-4ca68d0c7d0d",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:29:55.547Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-12T18:30:02.023Z",
+      "registries_activity": "DRILL",
+      "person": "257aa7c0-6f15-47e8-8217-ae7f749b5180",
+      "organization": "cc3345c1-7291-48fc-b3d2-0b97a189bf1a",
+      "registration_no": "WD 382934"
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "8c53d65b-8f99-4978-979a-89e4b4aa6f43",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:41:41.139Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:41:41.139Z",
+      "registries_activity": "DRILL",
+      "person": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
+      "organization": "94a0adca-54ca-4825-8e35-0a3a6a791ac6",
+      "registration_no": "WD 0827261"
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "8c64b712-65cb-4715-b850-598d77a93ba1",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:46:52.396Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:46:52.396Z",
+      "registries_activity": "PUMP",
+      "person": "ef6bec85-2248-4373-812b-ea9330b13942",
+      "organization": "7b82ae61-1cc3-424a-bd96-a286e3a79ce9",
+      "registration_no": ""
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "92580e4c-bdb4-4826-a542-d24408d5b3f3",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:32:00.988Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:32:12.794Z",
+      "registries_activity": "DRILL",
+      "person": "71e9509a-7d65-43a7-9ea4-9a3e357ce318",
+      "organization": "2b1a46a0-0c44-4ed4-9366-a458782629df",
+      "registration_no": null
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "aa5703d7-70cf-4e17-9e24-544a8c1b374d",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:43:55.319Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:43:55.319Z",
+      "registries_activity": "DRILL",
+      "person": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
+      "organization": "cc3345c1-7291-48fc-b3d2-0b97a189bf1a",
+      "registration_no": "WD 01234567"
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "ae280218-24f8-4ae6-82a2-d37cef97efda",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:41:41.130Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:41:41.130Z",
+      "registries_activity": "PUMP",
+      "person": "7764a47a-020c-4c45-b729-7a2f6c0a488c",
+      "organization": "ef819007-4a05-4da2-b3d6-7557ec334bb8",
+      "registration_no": "WPI 0034567"
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "b396f48a-f641-4c63-80ab-cdf8e4a410ba",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:43:55.322Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:43:55.322Z",
+      "registries_activity": "PUMP",
+      "person": "d660ccb1-46d1-4e7a-93f3-0e77f71ecf24",
+      "organization": "ef819007-4a05-4da2-b3d6-7557ec334bb8",
+      "registration_no": "WPI 98765"
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "b4d27e45-b2ae-4437-8b87-f9d9f3762274",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:27:59.493Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-12T18:28:05.911Z",
+      "registries_activity": "DRILL",
+      "person": "7f7e4809-b162-4820-9dd6-89abf8d3f3c9",
+      "organization": "2b1a46a0-0c44-4ed4-9366-a458782629df",
+      "registration_no": null
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "ce8cd361-ae4b-4bef-83af-2f1042d564b3",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:38:15.897Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:38:15.897Z",
+      "registries_activity": "PUMP",
+      "person": "d724011a-7ba3-4017-b180-4107b62b46a5",
+      "organization": "b8059303-2161-4561-aa2c-601fe4e220d3",
+      "registration_no": ""
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "d49ecac4-f863-499e-8a12-15f3a79f2408",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:31:11.750Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:31:11.750Z",
+      "registries_activity": "DRILL",
+      "person": "8c3affb2-9619-421d-9656-c939e1b3d662",
+      "organization": "728457aa-3af3-418d-a1a9-bd72528947f8",
+      "registration_no": ""
+    }
+  }, {
+    "model": "registries.register",
+    "pk": "4e4c468f-3dd2-2b59-009d-d9f8a79f2412",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:31:11.750Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:31:11.750Z",
+      "registries_activity": "DRILL",
+      "person": "5a44af09-c36c-aad3-487b-55ffc643d323",
+      "organization": "2b1a46a0-0c44-4ed4-9366-a458782629df",
+      "registration_no": ""
+    }
+  },{
+    "model": "registries.registriesapplication",
+    "pk": "2eb96908-2ff0-478c-9aee-ed3eeaff52ed",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T17:27:40.644Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T17:28:12.041Z",
+      "registration": "3112db09-a3c9-40d9-9ebd-b5f09af4254c",
+      "subactivity": "PUMPINST",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "No longer works in Canada",
+      "primary_certificate": "88d5d0aa-d2aa-450a-9708-a911dce42f7f",
+      "primary_certificate_no": "333444555",
+      "current_status": "NA",
+      "application_recieved_date": "2018-10-01",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": "2018-10-15",
+      "removal_date": "2018-10-15",
+      "removal_reason": "NLACT"
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "3510cac6-7cdb-46b0-8848-f8f0772c1805",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:30:25.039Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:30:25.039Z",
+      "registration": "6d622df3-cd01-4939-b541-4ca68d0c7d0d",
+      "subactivity": "WATER",
+      "file_no": null,
+      "proof_of_age": "DRIVERS",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "4a059930-265f-43f5-9dbb-c71862ccc5b5",
+      "primary_certificate_no": "231",
+      "current_status": "A",
+      "application_recieved_date": "2018-01-01",
+      "application_outcome_date": "2018-10-11",
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "35be501b-50a7-4e69-aa9b-2b4d2c792e4c",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:33:09.326Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:40:06.067Z",
+      "registration": "92580e4c-bdb4-4826-a542-d24408d5b3f3",
+      "subactivity": "WATER",
+      "file_no": null,
+      "proof_of_age": "PASSPORT",
+      "registrar_notes": null,
+      "reason_denied": "This person tells bad jokes.",
+      "primary_certificate": "a4b2e41c-3796-4c4c-ae28-eb6ad30202d9",
+      "primary_certificate_no": "111333",
+      "current_status": "NA",
+      "application_recieved_date": "2018-10-02",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": "2018-10-15",
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "7b3a99cc-fcab-4c19-a246-a18f869b341a",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:44:41.926Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:45:04.616Z",
+      "registration": "aa5703d7-70cf-4e17-9e24-544a8c1b374d",
+      "subactivity": "WATER",
+      "file_no": null,
+      "proof_of_age": "DRIVERS",
+      "registrar_notes": null,
+      "reason_denied": "Drills bad holes.",
+      "primary_certificate": "5856eb50-7ea3-45c7-b882-a8863cc36b73",
+      "primary_certificate_no": "22222222",
+      "current_status": "NA",
+      "application_recieved_date": "2004-03-03",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": "2018-10-15",
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "7ca581ca-b432-4d7b-bd1a-b7219f3b3cd0",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T17:27:40.651Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T17:28:25.917Z",
+      "registration": "3112db09-a3c9-40d9-9ebd-b5f09af4254c",
+      "subactivity": "PUMPINST",
+      "file_no": null,
+      "proof_of_age": "DRIVERS",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "88d5d0aa-d2aa-450a-9708-a911dce42f7f",
+      "primary_certificate_no": "444221111",
+      "current_status": "A",
+      "application_recieved_date": "2018-10-15",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": "2018-10-15",
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "93414dee-d7c1-4f76-86a9-e8204b1d72fe",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-12T18:28:41.353Z",
+      "update_user": "",
+      "update_date": "2018-10-12T18:28:41.353Z",
+      "registration": "b4d27e45-b2ae-4437-8b87-f9d9f3762274",
+      "subactivity": "GEOXCHG",
+      "file_no": null,
+      "proof_of_age": "DRIVERS",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "28bf8730-dbb7-4218-8e9f-06bd51f60161",
+      "primary_certificate_no": "123",
+      "current_status": "A",
+      "application_recieved_date": "2018-10-12",
+      "application_outcome_date": "2018-10-12",
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "94654074-dcf5-4c6b-841c-df7759c6a112",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:38:15.900Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:39:20.083Z",
+      "registration": "ce8cd361-ae4b-4bef-83af-2f1042d564b3",
+      "subactivity": "PUMPINST",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "1886daa8-e799-49f0-9034-33d02bad543d",
+      "primary_certificate_no": "654543534",
+      "current_status": "A",
+      "application_recieved_date": "2018-10-15",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": "2018-10-15",
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "9cd223b9-67bf-4e11-8fac-4dfedbde3780",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:43:55.323Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:45:21.370Z",
+      "registration": "b396f48a-f641-4c63-80ab-cdf8e4a410ba",
+      "subactivity": "PUMPINST",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "7bf968aa-c6e0-4f57-b4f4-58723214de80",
+      "primary_certificate_no": "1111111111",
+      "current_status": "A",
+      "application_recieved_date": "2018-10-11",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "a4690ad4-060b-4b22-a7aa-987c3232508e",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:46:52.398Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T17:26:15.827Z",
+      "registration": "8c64b712-65cb-4715-b850-598d77a93ba1",
+      "subactivity": "PUMPINST",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "1dfd37f5-5082-497a-be4e-6facd1d4dee9",
+      "primary_certificate_no": "3332222",
+      "current_status": "I",
+      "application_recieved_date": "2018-10-03",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": "2018-10-16",
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "ab62a995-5080-48fc-bc42-95c33907c36b",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:31:11.752Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:31:11.752Z",
+      "registration": "d49ecac4-f863-499e-8a12-15f3a79f2408",
+      "subactivity": "WATER",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "a4b2e41c-3796-4c4c-ae28-eb6ad30202d9",
+      "primary_certificate_no": "123645",
+      "current_status": "P",
+      "application_recieved_date": "2018-10-09",
+      "application_outcome_date": null,
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "2242fe54-5f32-290f-c90c-33da1943ffd3",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:31:11.752Z",
+      "update_user": "",
+      "update_date": "2018-10-15T16:31:11.752Z",
+      "registration": "4e4c468f-3dd2-2b59-009d-d9f8a79f2412",
+      "subactivity": "GEOTECH",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "a4b2e41c-3796-4c4c-ae28-eb6ad30202d9",
+      "primary_certificate_no": "345324",
+      "current_status": "A",
+      "application_recieved_date": "2018-10-09",
+      "application_outcome_date": null,
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "c56c1c2e-df71-4549-bd17-87d9507f53e6",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:41:41.141Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:42:20.756Z",
+      "registration": "8c53d65b-8f99-4978-979a-89e4b4aa6f43",
+      "subactivity": "GEOTECH",
+      "file_no": null,
+      "proof_of_age": "PASSPORT",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "da85087a-9764-410b-908e-b2b65f3dfb48",
+      "primary_certificate_no": "123321123123",
+      "current_status": "A",
+      "application_recieved_date": "2018-04-03",
+      "application_outcome_date": "2018-10-15",
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }, {
+    "model": "registries.registriesapplication",
+    "pk": "efd34b14-64cf-4efb-b26f-f42930e1e680",
+    "fields": {
+      "create_user": "bddfirst bddlast",
+      "create_date": "2018-10-15T16:41:41.134Z",
+      "update_user": "bddfirst bddlast",
+      "update_date": "2018-10-15T16:42:32.593Z",
+      "registration": "ae280218-24f8-4ae6-82a2-d37cef97efda",
+      "subactivity": "PUMPINST",
+      "file_no": null,
+      "proof_of_age": "BIRTH",
+      "registrar_notes": null,
+      "reason_denied": "",
+      "primary_certificate": "a53d3f1e-65eb-46b7-8999-e662d654df77",
+      "primary_certificate_no": "77657567567",
+      "current_status": "A",
+      "application_recieved_date": "2018-10-14",
+      "application_outcome_date": "2018-10-14",
+      "application_outcome_notification_date": null,
+      "removal_date": null,
+      "removal_reason": null
+    }
+  }
+]

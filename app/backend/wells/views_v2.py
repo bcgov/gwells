@@ -54,7 +54,7 @@ from wells.serializers_v2 import (
     CrossReferencingSerializer,
     RecordComplianceSerializer
 )
-from wells.permissions import WellsEditOrReadOnly
+from wells.permissions import WellsEditOrReadOnly, WellsIDIREditOrReadOnly
 from wells.renderers import WellListCSVRenderer, WellListExcelRenderer
 
 from aquifers.models import (
@@ -593,7 +593,7 @@ class MislocatedWellsListView(ListAPIView):
     serializer_class = MislocatedWellsSerializer
 
     swagger_schema = None
-    permission_classes = (WellsEditOrReadOnly,)
+    permission_classes = (WellsIDIREditOrReadOnly,)
     model = Well
     pagination_class = APILimitOffsetPagination
 
@@ -617,7 +617,7 @@ class RecordComplianceListView(ListAPIView):
     serializer_class = RecordComplianceSerializer
 
     swagger_schema = None
-    permission_classes = (WellsEditOrReadOnly,)
+    permission_classes = (WellsIDIREditOrReadOnly,)
     model = Well
     pagination_class = APILimitOffsetPagination
 
@@ -636,7 +636,7 @@ class CrossReferencingListView(ListAPIView):
     serializer_class = CrossReferencingSerializer
 
     swagger_schema = None
-    permission_classes = (WellsEditOrReadOnly,)
+    permission_classes = (WellsIDIREditOrReadOnly,)
     model = Well
     pagination_class = APILimitOffsetPagination
 
@@ -657,6 +657,7 @@ class CrossReferencingListView(ListAPIView):
 # Download Views for QaQc
 
 class MislocatedWellsDownloadView(WellExportListAPIViewV2):
+    permission_classes = (WellsIDIREditOrReadOnly,)
     filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
 
     def get_queryset(self):
@@ -667,6 +668,7 @@ class MislocatedWellsDownloadView(WellExportListAPIViewV2):
     
 
 class RecordComplianceDownloadView(WellExportListAPIViewV2):
+    permission_classes = (WellsIDIREditOrReadOnly,)
     filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
 
     def get_queryset(self):
@@ -677,6 +679,7 @@ class RecordComplianceDownloadView(WellExportListAPIViewV2):
     
 
 class CrossReferencingDownloadView(WellExportListAPIViewV2):
+    permission_classes = (WellsIDIREditOrReadOnly,)
     filter_backends = (WellListOrderingFilter, WellQaQcFilterBackend, filters.SearchFilter)
 
     def get_queryset(self):

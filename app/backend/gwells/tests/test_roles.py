@@ -1,6 +1,5 @@
 from django.core.management import call_command
 from django.test import TestCase
-from django.utils.six import StringIO
 from gwells.roles import (
     roles_to_groups,
     REGISTRIES_EDIT_ROLE,

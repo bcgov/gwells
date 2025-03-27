@@ -1,0 +1,28 @@
+[{
+    "model": "wells.boundaryeffectcode",
+    "pk": "CH",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2018-08-14T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2018-08-14T17:42:52.421Z",
+        "description": "Constant head",
+        "display_order": 0,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+},
+{
+  "model": "wells.boundaryeffectcode",
+  "pk": "NF",
+  "fields": {
+      "create_user": "DATALOAD_USER",
+      "create_date": "2018-08-14T17:42:52.421Z",
+      "update_user": "DATALOAD_USER",
+      "update_date": "2018-08-14T17:42:52.421Z",
+      "description": "No flow boundaries",
+      "display_order": 1,
+      "effective_date": "2013-11-07T05:28:00.402Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+  }
+}]

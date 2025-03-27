@@ -22,7 +22,7 @@ from django.views.generic import TemplateView
 from django.urls import path, re_path
 
 from django.shortcuts import redirect
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import never_cache 
 
 from gwells.views import SurveyListCreateView, SurveyUpdateDeleteView, HealthView, index, api
 from gwells.views.bulk import BulkWellAquiferCorrelation, BulkVerticalAquiferExtents

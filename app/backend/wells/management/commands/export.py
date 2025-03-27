@@ -198,7 +198,7 @@ class Command(BaseCommand):
         :param options: django managed options
         """
         logger.info('starting export')
-        zip_filename = 'gwells.zip'
+        zip_filename = '/tmp/gwells.zip'
         spreadsheet_filename = 'gwells.xlsx'
         for version_desc in self.versioning_descriptor:
             version = version_desc['version']

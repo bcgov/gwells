@@ -1258,7 +1258,6 @@ class Well(AuditModelStructure):
         "internal_comments":"Staff only comments and information related to the well, and for internal use only, not to be made public.",
         "land_district_code":"Codes used to identify legal land district used to help identify the property where the well is located. E.g. Alberni, Barclay, Cariboo.",
         "legal_pid":"A Parcel Identifier or PID is a nine-digit number that uniquely identifies a parcel in the land title register of in BC. The Registrar of Land Titles assigns PID numbers to parcels for which a title is being entered in the land title register as a registered title. The Land Title Act refers to the PID as “the permanent parcel identifier”.",
-        "licenced_status_code":"Valid licensing options granted to a well under the Water Sustainability Act. This information comes from eLicensing. i.e. Unlicensed, Licensed, Historical.",
         "liner_diameter":"Diameter of the liner placed inside the well.  Measured in inches.",
         "liner_from":"Depth below ground level at which the liner starts inside the well. Measured in feet.",
         "liner_material_code":"Code that describes the material noted for lithology. E.g. Rock, Clay, Sand, Unspecified,",
@@ -2534,6 +2533,10 @@ class AquiferParameters(AuditModel):
                                 db_comment='Valid codes for the boundaries observed in '
                                             'pumping test analysis. i.e. CH, NF.')
 
+    private = models.BooleanField(
+      default=False, choices=((False, 'No'), (True, 'Yes'))
+    )
+    
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
     
@@ -2575,6 +2578,7 @@ class AquiferParameters(AuditModel):
         "pumping_test_description_code":"Identification of the testing method (e.g.basic pumping test, pumping test with monitoring wells, single-well-response/slug test, constant head).",
         "test_duration":"The duration of the hydraulic testing period.  For consistency, do not include the recovery period.",
         "boundary_effect_code":"Valid codes for the boundaries observed in pumping test analysis. i.e. CH, NF.",
+        "private":"If a hydrogeological consultant has not provided permission with a signed data sharing agreement to share their interpretations publicly.",
         "storativity":"Storativity estimated from hydraulic testing (dimensionless).",
         "transmissivity":"Transmissivity estimated from hydraulic testing.",
         "hydraulic_conductivity":"Hydraulic conductivity estimated from hydraulic testing in metres per second.",
@@ -2608,7 +2612,6 @@ class AquiferParameters(AuditModel):
         }
 
 class WellAttachment(models.Model):
-    id = models.AutoField(primary_key=True)
     well_tag_number = models.ForeignKey(Well, on_delete=models.PROTECT, blank=True, null = False)
     # Public Tags
     well_construction = models.PositiveSmallIntegerField(default=0)

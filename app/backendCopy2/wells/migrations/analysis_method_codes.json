@@ -1,0 +1,99 @@
+[{
+    "model": "wells.AnalysisMethodCode",
+    "pk": "TH",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Theis",
+        "display_order": 0,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+},
+{
+  "model": "wells.AnalysisMethodCode",
+  "pk": "CJ",
+  "fields": {
+      "create_user": "DATALOAD_USER",
+      "create_date": "2023-03-31T17:42:52.421Z",
+      "update_user": "DATALOAD_USER",
+      "update_date": "2023-03-31T17:42:52.421Z",
+      "description": "Cooper-Jacob",
+      "display_order": 1,
+      "effective_date": "2013-11-07T05:28:00.402Z",
+      "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.AnalysisMethodCode",
+    "pk": "HJ",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Hantush-Jacob",
+        "display_order": 2,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.AnalysisMethodCode",
+    "pk": "N",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Neuman",
+        "display_order": 3,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.AnalysisMethodCode",
+    "pk": "B",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Boulton",
+        "display_order": 4,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.AnalysisMethodCode",
+    "pk": "PC",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Papadopulos-Cooper",
+        "display_order": 5,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  },
+  {
+    "model": "wells.AnalysisMethodCode",
+    "pk": "OTHER",
+    "fields": {
+        "create_user": "DATALOAD_USER",
+        "create_date": "2023-03-31T17:42:52.421Z",
+        "update_user": "DATALOAD_USER",
+        "update_date": "2023-03-31T17:42:52.421Z",
+        "description": "Other",
+        "display_order": 6,
+        "effective_date": "2013-11-07T05:28:00.402Z",
+        "expiry_date": "9999-12-31T23:59:59Z"
+    }
+  }
+]

@@ -40,7 +40,10 @@ from gwells.management.commands.export_databc import (
     AQUIFER_CHUNK_SIZE,
     GeoJSONIterator
 )
-from gwells.roles import AQUIFERS_EDIT_ROLE
+from gwells.roles import (
+  AQUIFERS_EDIT_ROLE,
+  AQUIFERS_VIEWER_ROLE
+)
 from aquifers import serializers, serializers_v2
 from aquifers.models import Aquifer
 from wells.models import Well, AquiferParameters
@@ -88,6 +91,13 @@ class AquiferRetrieveUpdateAPIViewV2(RevisionMixin, AuditUpdateMixin, RetrieveUp
         if not self.request.user.groups.filter(name=AQUIFERS_EDIT_ROLE).exists():
             qs = qs.filter(effective_date__lte=now, expiry_date__gt=now)
         return qs
+
+    def get(self, request, *args, **kwargs):
+        """ Removes notes field for users without the aquifer view role """
+        response = super().get(self, request, *args, **kwargs)
+        if not request.user.groups.filter(name=AQUIFERS_VIEWER_ROLE).exists():
+            response.data.pop('notes', None)
+        return response
 
 
 def _aquifer_qs(request):

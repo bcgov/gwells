@@ -1,0 +1,746 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: gwells-backend
+  namespace: 26e83e-dev
+  uid: bf985783-11a8-406b-bd33-4bd8b57acdfc
+  resourceVersion: '13798189211'
+  generation: 10
+  creationTimestamp: '2025-03-25T21:26:05Z'
+  labels:
+    app: gwells-backend
+    app-name: gwells
+    appver: gwells-backend
+    env-name: development
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-25T23:57:55Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app-name': {}
+            'f:appver': {}
+            'f:env-name': {}
+        'f:spec':
+          'f:replicas': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:strategy':
+            'f:activeDeadlineSeconds': {}
+            'f:rollingParams':
+              .: {}
+              'f:intervalSeconds': {}
+              'f:maxSurge': {}
+              'f:maxUnavailable': {}
+              'f:pre':
+                .: {}
+                'f:execNewPod':
+                  .: {}
+                  'f:command': {}
+                  'f:containerName': {}
+                  'f:env': {}
+                'f:failurePolicy': {}
+              'f:timeoutSeconds': {}
+              'f:updatePeriodSeconds': {}
+            'f:type': {}
+          'f:template':
+            .: {}
+            'f:metadata':
+              .: {}
+              'f:creationTimestamp': {}
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              .: {}
+              'f:containers':
+                .: {}
+                'k:{"name":"container"}':
+                  'f:image': {}
+                  'f:terminationMessagePolicy': {}
+                  .: {}
+                  'f:resources': {}
+                  'f:env':
+                    'k:{"name":"DATABASE_NAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"APP_HOME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"SSO_AUTH_HOST"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DATABASE_USER"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"DJANGO_ADMIN_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"S3_REGISTRANT_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"E_LICENSING_AUTH_USERNAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"APP_CONFIG"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"S3_PRIVATE_WELL_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"SSO_IDP_HINT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DJANGO_SECRET_KEY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"E_LICENSING_URL"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"S3_PRIVATE_REGISTRANT_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"S3_PRIVATE_AQUIFER_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"E_LICENSING_AUTH_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"S3_PUBLIC_SECRET_KEY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"GUNICORN_WORKERS"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"S3_AQUIFER_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"ENABLE_AQUIFERS_SEARCH"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DATABASE_SERVICE_NAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"S3_ROOT_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"DB_REPLICATE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"EMAIL_NOTIFICATION_RECIPIENT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    .: {}
+                    'k:{"name":"ENABLE_ADDITIONAL_DOCUMENTS"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"APP_MODULE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"MINIO_ACCESS_KEY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"S3_PRIVATE_ROOT_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DJANGO_ADMIN_USER"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"SSO_REALM"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DATABASE_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"GDAL_LIBRARY_PATH"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DJANGO_DEBUG"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"SSO_TEST_AUDIENCE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"APP_CONTEXT_ROOT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"SSO_PORT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"S3_WELL_EXPORT_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"S3_PRIVATE_HOST"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"SSO_PUBKEY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"DATABASE_SCHEMA"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"S3_PRIVATE_BUCKET"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"GEOS_LIBRARY_PATH"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"SSO_AUDIENCE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"S3_HOST"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"SSO_TEST_CLIENT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"WEB_CONCURRENCY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"ENFORCE_ENV_VARIABLES"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"SESSION_COOKIE_SECURE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"MINIO_SECRET_KEY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"CSRF_COOKIE_SECURE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"GEOCODER_ADDRESS_API_BASE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                    'k:{"name":"S3_PUBLIC_ACCESS_KEY"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"DJANGO_ADMIN_URL"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"SSO_CLIENT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:configMapKeyRef': {}
+                  'f:terminationMessagePath': {}
+                  'f:imagePullPolicy': {}
+                  'f:ports':
+                    .: {}
+                    'k:{"containerPort":8080,"protocol":"TCP"}':
+                      .: {}
+                      'f:containerPort': {}
+                      'f:protocol': {}
+                  'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+          'f:triggers': {}
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-25T23:58:58Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:updatedReplicas': {}
+          'f:readyReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:details':
+            .: {}
+            'f:causes': {}
+            'f:message': {}
+          'f:replicas': {}
+          'f:availableReplicas': {}
+          'f:observedGeneration': {}
+          'f:unavailableReplicas': {}
+          'f:latestVersion': {}
+      subresource: status
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+      pre:
+        failurePolicy: Abort
+        execNewPod:
+          command:
+            - /usr/bin/container-entrypoint
+          env:
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: PGHOST
+              value: gwells-pg12-development
+          containerName: gwells-app-development
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - gwells-backend
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'gwells-application:production'
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    app: gwells-backend
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gwells-backend
+    spec:
+      containers:
+        - name: container
+          image: 'image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DATABASE_SERVICE_NAME
+              value: gwells-pg12-development
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: DATABASE_SCHEMA
+              value: public
+            - name: APP_MODULE
+              value: 'wsgi:application'
+            - name: APP_HOME
+              value: backend
+            - name: APP_CONFIG
+              value: /opt/app-root/src/backend/gunicorn.ocp4.cfg
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-production
+                  key: secret_key
+            - name: DJANGO_ADMIN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-production
+                  key: admin_url
+            - name: DJANGO_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-production
+                  key: admin_user
+            - name: DJANGO_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-production
+                  key: admin_password
+            - name: E_LICENSING_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-e-licensing-production
+                  key: E_LICENSING_AUTH_PASSWORD
+            - name: E_LICENSING_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-e-licensing-production
+                  key: E_LICENSING_AUTH_USERNAME
+            - name: E_LICENSING_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: E_LICENSING_URL
+            - name: DJANGO_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: DJANGO_DEBUG
+            - name: GDAL_LIBRARY_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: GDAL_LIBRARY_PATH
+            - name: GEOS_LIBRARY_PATH
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: GEOS_LIBRARY_PATH
+            - name: S3_AQUIFER_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_AQUIFER_BUCKET
+            - name: S3_REGISTRANT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_REGISTRANT_BUCKET
+            - name: S3_PRIVATE_ROOT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_PRIVATE_ROOT_BUCKET
+            - name: S3_PRIVATE_AQUIFER_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_PRIVATE_AQUIFER_BUCKET
+            - name: S3_PRIVATE_REGISTRANT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_PRIVATE_REGISTRANT_BUCKET
+            - name: S3_PRIVATE_WELL_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_PRIVATE_WELL_BUCKET
+            - name: SSO_CLIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_CLIENT
+            - name: SSO_PUBKEY
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_PUBKEY
+            - name: SSO_AUTH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_AUTH_HOST
+            - name: SSO_AUDIENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_AUDIENCE
+            - name: SSO_REALM
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_REALM
+            - name: SSO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_PORT
+            - name: SSO_TEST_CLIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_TEST_CLIENT
+            - name: SSO_TEST_AUDIENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_TEST_AUDIENCE
+            - name: ENABLE_ADDITIONAL_DOCUMENTS
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: ENABLE_ADDITIONAL_DOCUMENTS
+            - name: ENABLE_AQUIFERS_SEARCH
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: ENABLE_AQUIFERS_SEARCH
+            - name: APP_CONTEXT_ROOT
+              value: gwells
+            - name: SESSION_COOKIE_SECURE
+              value: 'True'
+            - name: CSRF_COOKIE_SECURE
+              value: 'True'
+            - name: DB_REPLICATE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: DB_REPLICATE
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-production
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-production
+                  key: MINIO_SECRET_KEY
+            - name: S3_PUBLIC_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-production
+                  key: S3_PUBLIC_ACCESS_KEY
+            - name: S3_PUBLIC_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-production
+                  key: S3_PUBLIC_SECRET_KEY
+            - name: S3_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-production
+                  key: S3_HOST
+            - name: S3_ROOT_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-production
+                  key: S3_ROOT_BUCKET
+            - name: S3_PRIVATE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_PRIVATE_HOST
+            - name: S3_WELL_EXPORT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_WELL_EXPORT_BUCKET
+            - name: S3_PRIVATE_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: S3_PRIVATE_BUCKET
+            - name: SSO_IDP_HINT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: SSO_IDP_HINT
+            - name: WEB_CONCURRENCY
+              value: '4'
+            - name: GUNICORN_WORKERS
+              value: '4'
+            - name: ENFORCE_ENV_VARIABLES
+              value: 'False'
+            - name: EMAIL_NOTIFICATION_RECIPIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: EMAIL_NOTIFICATION_RECIPIENT
+            - name: GEOCODER_ADDRESS_API_BASE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-production
+                  key: GEOCODER_ADDRESS_API_BASE
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+status:
+  observedGeneration: 10
+  details:
+    message: config change
+    causes:
+      - type: ConfigChange
+  availableReplicas: 1
+  unavailableReplicas: 0
+  latestVersion: 2
+  updatedReplicas: 0
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2025-03-25T23:18:28Z'
+      lastTransitionTime: '2025-03-25T23:18:28Z'
+      message: Deployment config has minimum availability.
+    - type: Progressing
+      status: 'False'
+      lastUpdateTime: '2025-03-25T23:58:58Z'
+      lastTransitionTime: '2025-03-25T23:58:58Z'
+      reason: ProgressDeadlineExceeded
+      message: replication controller "gwells-backend-2" has failed progressing
+  replicas: 1
+  readyReplicas: 1

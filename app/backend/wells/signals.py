@@ -9,17 +9,54 @@ from wells.utils import calculate_geocode_distance, calculate_pid_distance_for_w
   calculate_score_address, calculate_score_city, calculate_natural_resource_region_for_well, \
   reverse_geocode
 
+def _get_utm_zone(geom):
+    if not geom:
+        return
+    return math.floor((geom.x + 180) / 6) + 1
+
+def _generate_utm_point(utm_zone, geom):
+    from osgeo import ogr, osr
+
+    if utm_zone is None:
+        return
+
+    source_srs = osr.SpatialReference()
+    source_srs.ImportFromEPSG(4326)
+
+    target_srs = osr.SpatialReference()
+    target_srs.ImportFromEPSG(32600 + utm_zone)
+
+    transform = osr.CoordinateTransformation(source_srs, target_srs)
+
+    point = ogr.Geometry(ogr.wkbPoint)
+
+    point.AddPoint(geom.y, geom.x)
+
+    point.Transform(transform)
+
+    return point
+
+
 @receiver(pre_save, sender=Well)
 def update_utm(sender, instance, **kwargs):
-    if instance.geom and (-180 < instance.geom.x < 180): # only update utm when geom is valid
-        utm_zone = math.floor((instance.geom.x + 180) / 6) + 1
-        coord_transform = CoordTransform(SpatialReference(4326), SpatialReference(32600 + utm_zone))
-        utm_point = instance.geom.transform(coord_transform, clone=True)
+    if not instance.geom:
+        return
+    
+    geom = instance.geom
+    utm_is_valid = -180 < geom.x < 180
+    
+    if not utm_is_valid:
+        return
+    
+    utm_zone = _get_utm_zone(geom)
 
-        instance.utm_zone_code = utm_zone
-        # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
-        instance.utm_easting = round(utm_point.x)
-        instance.utm_northing = round(utm_point.y)
+    utm_point = _generate_utm_point(utm_zone, geom)
+
+    instance.utm_zone_code = utm_zone
+    
+    # We round to integers because easting/northing is only precise to 1m. The DB column is also an integer type.
+    instance.utm_easting = round(utm_point.GetX())
+    instance.utm_northing = round(utm_point.GetY())
 
 if not TESTING:
     @receiver(pre_save, sender=Well)

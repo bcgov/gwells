@@ -9,13 +9,24 @@
    "pk": "BC"},
 
   {"model": "wells.wellclasscode",
-   "fields": {"create_user": "",
+   "fields": {
+    "create_user": "",
               "description": "",
               "create_date": "2018-02-08T17:22:21.892Z",
               "display_order": 1,
               "update_date": "2018-02-08T17:22:21.893Z",
-              "update_user":""},
-   "pk": "WCC"},
+              "update_user":""
+  },
+   "pk": "WCC"
+  },
+  {
+    "model": "wells.wellorientationcode",
+    "pk": 1,
+    "fields": {
+      "display_order": 1,
+      "well_orientation_code": "HORIZONTAL"
+    }
+  },
 
   {"model": "wells.well",
    "pk": 123,
@@ -47,7 +58,7 @@
               "alternative_specs_submitted": false,
               "screen_type": null,
               "well_subclass": null,
-              "well_orientation_status": "horizontal",
+              "well_orientation_status": "HORIZONTAL",
               "owner_postal_code": "",
               "other_screen_material": "",
               "legal_township": "",
@@ -55,6 +66,7 @@
               "utm_easting": null,
               "well_location_description": "",
               "comments": null,
+              "internal_comments": null,
               "well_identification_plate_attached": null,
               "well_yield_unit": null,
               "finished_well_depth": null,

@@ -119,8 +119,22 @@ class WellDetail(RetrieveAPIView):
             qs = Well.objects.all()
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
-
         return qs
+
+    def get(self, request, *args, **kwargs):
+        """ Removes internal-only fields for public user """
+        response = super().get(self, request, *args, **kwargs)
+        if not(request.user.groups.filter(name=WELLS_VIEWER_ROLE).exists()):
+            response.data.pop('internal_comments')
+
+        """ Removes aquifer paramaters marked private for users without the edit role """
+        if not request.user.groups.filter(name=WELLS_EDIT_ROLE).exists():
+          aquifer_params = response.data.get('aquifer_parameters_set', [])
+          response.data['aquifer_parameters_set'] = [
+            param for param in aquifer_params if not param.get('private', False)
+          ]
+
+        return response
 
 
 class WellStaffEditDetail(RetrieveAPIView):

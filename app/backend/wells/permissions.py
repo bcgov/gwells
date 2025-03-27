@@ -12,7 +12,7 @@
     limitations under the License.
 """
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE
+from gwells.roles import WELLS_VIEWER_ROLE, WELLS_EDIT_ROLE, WELLS_SUBMISSION_ROLE, WELLS_SUBMISSION_VIEWER_ROLE, IDIR_ROLE
 
 
 class WellsEditOrReadOnly(BasePermission):
@@ -24,6 +24,17 @@ class WellsEditOrReadOnly(BasePermission):
         has_edit = request.user and request.user.is_authenticated and request.user.groups.filter(
             name=WELLS_EDIT_ROLE).exists()
         result = has_edit or request.method in SAFE_METHODS
+        return result
+
+class WellsIDIREditOrReadOnly(BasePermission):
+    """
+    Allows read access to all IDIR users and write access to those with edit rights.
+    """
+    def has_permission(self, request, view):
+        has_edit = request.user and request.user.is_authenticated and request.user.groups.filter(
+            name=WELLS_EDIT_ROLE).exists()
+        result = (has_edit or request.method in SAFE_METHODS) and request.user.groups.filter(
+            name=IDIR_ROLE).exists()
         return result
 
 

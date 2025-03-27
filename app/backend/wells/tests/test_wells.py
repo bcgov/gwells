@@ -122,3 +122,31 @@ class TestWellHistory(APITestCase):
         url = reverse('well-history', kwargs={'well_id': 123, 'version': 'v1'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+class TestWellDetailAuthenticated(APITestCase):
+    # Tbh, I don't know if all of these fixtures are necessary but I don't feel like tracing through the code to find out
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables', 'well_detail_fixture', 'aquifers']
+
+    def setUp(self):
+        roles = [WELLS_VIEWER_ROLE]
+        for role in roles:
+            Group.objects.get_or_create(name=role)
+        user, _created = User.objects.get_or_create(username='test')
+        user.profile.username = user.username
+        user.save()
+        roles_to_groups(user, roles)
+        self.client.force_authenticate(user)
+
+    def test_well_detail_authenticated(self):
+        url = reverse('well-detail', kwargs={'well_tag_number': 123, 'version': 'v1'})
+        response = self.client.get(url)
+        self.assertTrue('internal_comments' in response.data)
+
+class TestWellDetailUnauthenticated(APITestCase):
+    # Same comment as above
+    fixtures = ['gwells-codetables', 'wellsearch-codetables', 'wellsearch', 'registries', 'registries-codetables', 'well_detail_fixture', 'aquifers']
+
+    def test_well_detail_unauthenticated(self):
+        url = reverse('well-detail', kwargs={'well_tag_number': 123, 'version': 'v1'})
+        response = self.client.get(url)
+        self.assertFalse('internal_comments' in response.data)

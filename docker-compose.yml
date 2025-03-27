@@ -113,20 +113,20 @@ services:
     build:
       context: ./app/frontend
       dockerfile: Dockerfile
-    hostname: frontend
+    # hostname: frontend
     environment:
       DEBUG: "True"
-      VUE_APP_AXIOS_BASE_URL: /api/
-      VUE_APP_VECTOR_TILE_BASE_URL: "/tiles/"
+      VITE_AXIOS_BASE_URL: /api/
+      VITE_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
     ports:
       - "8080:8080"
-    volumes:
-      - type: bind
-        source: ./app/frontend
-        target: /app/frontend
-      - /app/frontend/node_modules/
+    # volumes:
+    #   - type: bind
+    #     source: ./app/frontend
+    #     target: /app/frontend
+    #   - /app/frontend/node_modules/
     depends_on:
       - backend
     networks:
@@ -136,33 +136,37 @@ services:
 #############################################################################################
   backend:
     platform: linux/x86_64
+    # working_dir: /backend
     build:
-      context: ./openshift/docker/backend
-      dockerfile: Dockerfile.dev
-    hostname: backend
-    env_file:
-    - path: ./.env.test
-      required: false
+      context: ./app/backend
+      dockerfile: ./Dockerfile
+    image: nr-gwells/backend:latest
+    container_name: backend
+    # env_file:
+    # - path: ./.env.test
+    #   required: false
     environment:
       ENVIRONMENT: "${ENVIRONMENT:-local}"
       APP_CONTEXT_ROOT: gwells
-      CSRF_COOKIE_SECURE: "False"
-      CUSTOM_GDAL_GEOS: "False"
+      CSRF_COOKIE_SECURE: "false"
+      CUSTOM_GDAL_GEOS: "false"
       DATABASE_NAME: gwells
       DATABASE_USER: "${DATABASE_USER:-gwells}"
       DATABASE_PASSWORD: "${DATABASE_PASSWORD:-test1}"
-      DATABASE_SERVICE_NAME: gwells
+      # DATABASE_SERVICE_NAME: gwells
       DJANGO_ADMIN_URL: admin
-      DJANGO_DEBUG: "True"
+      DJANGO_DEBUG: "true"
       DJANGO_SECRET_KEY: secret
-      ENABLE_ADDITIONAL_DOCUMENTS: "True"
-      ENABLE_AQUIFERS_SEARCH: "True"
-      GWELLS_SERVICE_HOST: "${GWELLS_SERVICE_HOST:-db}"
-      GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
+      ENABLE_ADDITIONAL_DOCUMENTS: "true"
+      ENABLE_AQUIFERS_SEARCH: "true"
+      # GWELLS_SERVICE_HOST: "${GWELLS_SERVICE_HOST:-db}"
+      # GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
+      DATABASE_SERVICE_NAME: db
+      DATABASE_PORT: 5432
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
       PYTHONUNBUFFERED: "1"
-      SESSION_COOKIE_SECURE: "False"
+      SESSION_COOKIE_SECURE: "false"
       SSO_AUDIENCE: gwells-4121
       SSO_CLIENT: gwells-4121
       SSO_TEST_AUDIENCE: gwells-api-tests-4820
@@ -189,26 +193,25 @@ services:
       S3_USE_SECURE: 0
       EMAIL_NOTIFICATION_RECIPIENT: sustainment.team@gov.bc.ca
       GEOCODER_ADDRESS_API_BASE: https://geocoder.api.gov.bc.ca/addresses.json?
-      LOCAL: True
-    command: ./scripts/backend-command-script.sh
-    volumes:
-      - type: bind
-        source: ./app/backend
-        target: /app/backend
-        consistency: cached
-      - type: bind
-        source: ./app/scripts/backend-command-script.sh
-        target: /app/scripts/backend-command-script.sh
-        consistency: cached
+      LOCAL: "true"
+      LOAD_FIXTURES: "true"
+    # volumes:
+    #   - ./app/backend:/app/backend
+    healthcheck:
+      test: timeout 3s bash -c 'true > /dev/tcp/127.0.0.1/8000'
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
     ports:
       - "8000:8000"
-      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
+      minio-public:
+        condition: service_started
     networks:
       - gwells-network
-
 #############################################################################################
 ###                                       Volumes                                         ###
 #############################################################################################
