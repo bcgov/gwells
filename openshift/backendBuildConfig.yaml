@@ -80,11 +80,10 @@ spec:
   successfulBuildsHistoryLimit: 3
   failedBuildsHistoryLimit: 3
   strategy:
-    type: Source
-    sourceStrategy:
-      from:
-        kind: DockerImage
-        name: 'artifacts.developer.gov.bc.ca/g26e-backend-docker-local/gwells-backend:1.0'
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: "Dockerfile"
+      contextDir: "app/backend"
       env:
         - name: BUILD_LOGLEVEL
           value: '4'
