@@ -60,9 +60,26 @@ export default {
     // },
     keyCloakLogin () {
       if (!this.keycloak.authenticated) {
-        this.keycloak.init({
-          checkLoginIframe: false
-        }).then(() => {
+        if (!this.keycloak.didInitialize) {
+          console.log('keyCloakLogin: ', this.keycloak.didInitialize)
+          this.keycloak.init({
+            checkLoginIframe: false
+          }).then(() => {
+            this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+              if (authenticated) {
+                ApiService.authHeader('JWT', this.keycloak.token)
+                if (window.localStorage) {
+                  localStorage.setItem('token', this.keycloak.token)
+                  localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+                  localStorage.setItem('idToken', this.keycloak.idToken)
+                }
+              }
+            }).catch((e) => {
+              console.error("keyCloakLogin: ", e)
+              this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+            })
+          })
+        } else {
           this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
             if (authenticated) {
               ApiService.authHeader('JWT', this.keycloak.token)
@@ -76,7 +93,7 @@ export default {
             console.error("keyCloakLogin: ", e)
             this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
           })
-        })
+        }
       } else {
         this.keycloak.updateToken(30)
       }
