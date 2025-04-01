@@ -49,6 +49,8 @@ RUN python3 -m pip install -r requirements.txt
 RUN mkdir -p /app/backend/staticfiles && \
     chmod -R 777 /app/backend/staticfiles
 
+
+
 # TODO: move to entrypoint in deployment template?
 # chmod -R 777 /app && \
 # CMD [""]

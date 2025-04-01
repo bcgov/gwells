@@ -3,7 +3,7 @@
     <span v-if="authenticated" class="userLoggedInText text-light">
       {{ keycloak.tokenParsed.name }}
     </span>
-    <b-btn  variant="light" size="sm" :id="`${id}-logout-button`" :disabled="!ready" @click="buttonClicked()">
+    <b-btn  variant="light" size="sm" :id="`${id}-logout-button`" @click="buttonClicked()">
       {{authenticated ? 'Log out' : 'Log in'}}
     </b-btn>
   </div>
