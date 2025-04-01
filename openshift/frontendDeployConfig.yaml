@@ -4,11 +4,180 @@ metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
       {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","metadata":{"annotations":{},"name":"gwells-frontend","namespace":"26e83e-dev"},"spec":{"replicas":1,"revisionHistoryLimit":10,"selector":{"app":"gwells-frontend"},"strategy":{"activeDeadlineSeconds":21600,"recreateParams":{"timeoutSeconds":600},"resources":{},"type":"Recreate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"gwells-frontend"}},"spec":{"containers":[{"imagePullPolicy":"Always","livenessProbe":{"failureThreshold":2,"httpGet":{"path":"/gwells","port":8080,"scheme":"HTTP"},"periodSeconds":30,"successThreshold":1,"timeoutSeconds":90},"name":"gwells-frontend","ports":[{"containerPort":8080,"protocol":"TCP"}],"readinessProbe":{"failureThreshold":1,"httpGet":{"path":"/gwells","port":8080,"scheme":"HTTP"},"initialDelaySeconds":5,"periodSeconds":3,"successThreshold":1,"timeoutSeconds":1},"resources":{"limits":{"cpu":"50m","memory":"256Mi"},"requests":{"cpu":"10m","memory":"128Mi"}},"startupProbe":{"failureThreshold":45,"httpGet":{"path":"/gwells","port":8080,"scheme":"HTTP"},"periodSeconds":2,"successThreshold":1,"timeoutSeconds":1},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","securityContext":{},"terminationGracePeriodSeconds":30}},"test":false,"triggers":[{"imageChangeParams":{"automatic":true,"containerNames":["gwells-frontend"],"from":{"kind":"ImageStreamTag","name":"gwells-application:dev","namespace":"26e83e-tools"}},"type":"ImageChange"},{"type":"ConfigChange"}]}}
-  resourceVersion: '13796654174'
+  resourceVersion: '13879514836'
   name: gwells-frontend
   uid: 0c508ed8-3954-462b-962b-1e1f912a99e3
   creationTimestamp: '2025-03-20T21:07:49Z'
-  generation: 16
+  generation: 21
+  managedFields:
+    - manager: kubectl-client-side-apply
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-20T22:11:56Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:kubectl.kubernetes.io/last-applied-configuration': {}
+        'f:spec':
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector':
+            .: {}
+            'f:app': {}
+          'f:strategy':
+            'f:activeDeadlineSeconds': {}
+            'f:recreateParams':
+              .: {}
+              'f:timeoutSeconds': {}
+            'f:type': {}
+          'f:template':
+            .: {}
+            'f:metadata':
+              .: {}
+              'f:creationTimestamp': {}
+              'f:labels':
+                .: {}
+                'f:app': {}
+            'f:spec':
+              .: {}
+              'f:containers':
+                .: {}
+                'k:{"name":"gwells-frontend"}':
+                  'f:startupProbe':
+                    .: {}
+                    'f:failureThreshold': {}
+                    'f:httpGet':
+                      .: {}
+                      'f:path': {}
+                      'f:port': {}
+                      'f:scheme': {}
+                    'f:periodSeconds': {}
+                    'f:successThreshold': {}
+                    'f:timeoutSeconds': {}
+                  'f:terminationMessagePolicy': {}
+                  .: {}
+                  'f:resources':
+                    .: {}
+                    'f:limits':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                    'f:requests':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                  'f:livenessProbe':
+                    .: {}
+                    'f:failureThreshold': {}
+                    'f:httpGet':
+                      .: {}
+                      'f:path': {}
+                      'f:port': {}
+                      'f:scheme': {}
+                    'f:periodSeconds': {}
+                    'f:successThreshold': {}
+                    'f:timeoutSeconds': {}
+                  'f:readinessProbe':
+                    .: {}
+                    'f:failureThreshold': {}
+                    'f:httpGet':
+                      .: {}
+                      'f:path': {}
+                      'f:port': {}
+                      'f:scheme': {}
+                    'f:initialDelaySeconds': {}
+                    'f:periodSeconds': {}
+                    'f:successThreshold': {}
+                    'f:timeoutSeconds': {}
+                  'f:terminationMessagePath': {}
+                  'f:imagePullPolicy': {}
+                  'f:ports':
+                    .: {}
+                    'k:{"containerPort":8080,"protocol":"TCP"}':
+                      .: {}
+                      'f:containerPort': {}
+                      'f:protocol': {}
+                  'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-31T20:37:16Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:template':
+            'f:spec':
+              'f:containers':
+                'k:{"name":"gwells-frontend"}':
+                  'f:image': {}
+          'f:triggers': {}
+    - manager: Mozilla
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-31T23:02:28Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app-name': {}
+            'f:appver': {}
+            'f:env-name': {}
+        'f:spec':
+          'f:template':
+            'f:spec':
+              'f:containers':
+                'k:{"name":"gwells-frontend"}':
+                  'f:env':
+                    .: {}
+                    'k:{"name":"VITE_AXIOS_BASE_URL"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-31T23:03:17Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:updatedReplicas': {}
+          'f:readyReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:details':
+            .: {}
+            'f:causes': {}
+            'f:message': {}
+          'f:replicas': {}
+          'f:availableReplicas': {}
+          'f:observedGeneration': {}
+          'f:unavailableReplicas': {}
+          'f:latestVersion': {}
+      subresource: status
   namespace: 26e83e-dev
   labels:
     app: gwells-frontend
@@ -32,7 +201,7 @@ spec:
           kind: ImageStreamTag
           namespace: 26e83e-tools
           name: 'gwells-application:dev'
-        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:23c497779d0703ef83f28a46e461e2b418eeb22ae641655053eb00af073a58cc'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:14e892f079a3d957115bfcdd1c77063ca0d69c17a258127a94d65011dc0882bb'
     - type: ConfigChange
   replicas: 1
   revisionHistoryLimit: 10
@@ -74,6 +243,9 @@ spec:
             periodSeconds: 30
             successThreshold: 1
             failureThreshold: 2
+          env:
+            - name: VITE_AXIOS_BASE_URL
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
           ports:
             - containerPort: 8080
               protocol: TCP
@@ -88,37 +260,33 @@ spec:
             successThreshold: 1
             failureThreshold: 45
           terminationMessagePolicy: File
-          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:23c497779d0703ef83f28a46e461e2b418eeb22ae641655053eb00af073a58cc'
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:14e892f079a3d957115bfcdd1c77063ca0d69c17a258127a94d65011dc0882bb'
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
 status:
-  observedGeneration: 16
+  observedGeneration: 21
   details:
-    message: image change
+    message: config change
     causes:
-      - type: ImageChange
-        imageTrigger:
-          from:
-            kind: DockerImage
-            name: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:23c497779d0703ef83f28a46e461e2b418eeb22ae641655053eb00af073a58cc'
+      - type: ConfigChange
   availableReplicas: 1
   unavailableReplicas: 0
-  latestVersion: 14
+  latestVersion: 17
   updatedReplicas: 1
   conditions:
     - type: Available
       status: 'True'
-      lastUpdateTime: '2025-03-25T21:04:27Z'
-      lastTransitionTime: '2025-03-25T21:04:27Z'
+      lastUpdateTime: '2025-03-31T23:03:15Z'
+      lastTransitionTime: '2025-03-31T23:03:15Z'
       message: Deployment config has minimum availability.
     - type: Progressing
       status: 'True'
-      lastUpdateTime: '2025-03-25T21:04:29Z'
-      lastTransitionTime: '2025-03-25T21:03:39Z'
+      lastUpdateTime: '2025-03-31T23:03:17Z'
+      lastTransitionTime: '2025-03-31T23:02:32Z'
       reason: NewReplicationControllerAvailable
-      message: replication controller "gwells-frontend-14" successfully rolled out
+      message: replication controller "gwells-frontend-17" successfully rolled out
   replicas: 1
   readyReplicas: 1

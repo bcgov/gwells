@@ -1,0 +1,420 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","metadata":{"annotations":{},"generation":160,"labels":{"app":"gwells-development","app-name":"gwells","app.openshift.io/runtime":"postgresql","env-name":"development","template":"postgresql-persistent-template"},"name":"gwells-pg12-development","namespace":"26e83e-dev"},"spec":{"replicas":1,"revisionHistoryLimit":10,"selector":{"name":"gwells-pg12-development"},"strategy":{"activeDeadlineSeconds":21600,"recreateParams":{"timeoutSeconds":600},"resources":{},"type":"Recreate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"appver":"gwells-development","name":"gwells-pg12-development"}},"spec":{"containers":[{"env":[{"name":"PG_PRIMARY_PORT","value":"5432"},{"name":"CONTAINER_NAME","value":"postgresql"},{"name":"PG_PRIMARY_HOST","value":"gwells-pg12-development"},{"name":"PGDATA_PATH_OVERRIDE","value":"userdata"},{"name":"PGHOST","value":"/tmp"},{"name":"PG_DATABASE","valueFrom":{"secretKeyRef":{"key":"database-name","name":"gwells-pg12-development"}}},{"name":"PG_PASSWORD","valueFrom":{"secretKeyRef":{"key":"database-password","name":"gwells-pg12-development"}}},{"name":"PG_USER","valueFrom":{"secretKeyRef":{"key":"database-user","name":"gwells-pg12-development"}}},{"name":"PG_MODE","valueFrom":{"secretKeyRef":{"key":"PG_MODE","name":"crunchy-db-credentials"}}},{"name":"PG_PRIMARY_PASSWORD","valueFrom":{"secretKeyRef":{"key":"PG_PRIMARY_PASSWORD","name":"crunchy-db-credentials"}}},{"name":"PG_PRIMARY_USER","valueFrom":{"secretKeyRef":{"key":"PG_PRIMARY_USER","name":"crunchy-db-credentials"}}},{"name":"PG_ROOT_PASSWORD","valueFrom":{"secretKeyRef":{"key":"PG_ROOT_PASSWORD","name":"crunchy-db-credentials"}}}],"imagePullPolicy":"IfNotPresent","livenessProbe":{"failureThreshold":3,"initialDelaySeconds":30,"periodSeconds":10,"successThreshold":1,"tcpSocket":{"port":5432},"timeoutSeconds":1},"name":"postgresql","ports":[{"containerPort":5432,"protocol":"TCP"}],"readinessProbe":{"exec":{"command":["/usr/bin/env","bash","-c","psql -q -d $PG_DATABASE -c 'SELECT 1'"]},"failureThreshold":5,"initialDelaySeconds":30,"periodSeconds":15,"successThreshold":1,"timeoutSeconds":1},"resources":{"limits":{"cpu":"2","memory":"4Gi"},"requests":{"cpu":"800m","memory":"4Gi"}},"securityContext":{"capabilities":{},"privileged":false},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File","volumeMounts":[{"mountPath":"/pgdata","name":"gwells-pg12-development-data"},{"mountPath":"/var/run/postgresql","name":"gwells-pg12-development-run"},{"mountPath":"/pgconf","name":"gwells-pg12-development-setupcfg"}]}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30,"volumes":[{"name":"gwells-pg12-development-data","persistentVolumeClaim":{"claimName":"gwells-pg12-development"}},{"emptyDir":{},"name":"gwells-pg12-development-run"},{"configMap":{"defaultMode":420,"name":"gwells-pg12-development-setupcfg"},"name":"gwells-pg12-development-setupcfg"}]}},"test":false,"triggers":[{"imageChangeParams":{"automatic":true,"containerNames":["postgresql"],"from":{"kind":"ImageStreamTag","name":"crunchy-postgres-gis:centos7-12.4-3.0-4.5.0","namespace":"26e83e-tools"}},"type":"ImageChange"},{"type":"ConfigChange"}]},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2021-02-20T00:23:43Z","lastUpdateTime":"2021-02-20T00:24:30Z","message":"replication controller \"gwells-pg12-production-1\" successfully rolled out","reason":"NewReplicationControllerAvailable","status":"True","type":"Progressing"},{"lastTransitionTime":"2025-03-26T16:46:24Z","lastUpdateTime":"2025-03-26T16:46:24Z","message":"Deployment config has minimum availability.","status":"True","type":"Available"}],"details":{"causes":[{"type":"ConfigChange"}],"message":"config change"},"latestVersion":1,"observedGeneration":160,"readyReplicas":1,"replicas":1,"unavailableReplicas":0,"updatedReplicas":1}}
+  resourceVersion: '13878103936'
+  name: gwells-pg12-development
+  uid: 523a1817-59fb-44d6-8e7a-480c10663a86
+  creationTimestamp: '2025-03-31T20:39:17Z'
+  generation: 2
+  managedFields:
+    - manager: kubectl-client-side-apply
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-31T20:39:17Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:kubectl.kubernetes.io/last-applied-configuration': {}
+          'f:labels':
+            .: {}
+            'f:app': {}
+            'f:app-name': {}
+            'f:app.openshift.io/runtime': {}
+            'f:env-name': {}
+            'f:template': {}
+        'f:spec':
+          'f:replicas': {}
+          'f:revisionHistoryLimit': {}
+          'f:selector':
+            .: {}
+            'f:name': {}
+          'f:strategy':
+            'f:activeDeadlineSeconds': {}
+            'f:recreateParams':
+              .: {}
+              'f:timeoutSeconds': {}
+            'f:type': {}
+          'f:template':
+            .: {}
+            'f:metadata':
+              .: {}
+              'f:creationTimestamp': {}
+              'f:labels':
+                .: {}
+                'f:appver': {}
+                'f:name': {}
+            'f:spec':
+              .: {}
+              'f:containers':
+                .: {}
+                'k:{"name":"postgresql"}':
+                  'f:volumeMounts':
+                    .: {}
+                    'k:{"mountPath":"/pgconf"}':
+                      .: {}
+                      'f:mountPath': {}
+                      'f:name': {}
+                    'k:{"mountPath":"/pgdata"}':
+                      .: {}
+                      'f:mountPath': {}
+                      'f:name': {}
+                    'k:{"mountPath":"/var/run/postgresql"}':
+                      .: {}
+                      'f:mountPath': {}
+                      'f:name': {}
+                  'f:terminationMessagePolicy': {}
+                  .: {}
+                  'f:resources':
+                    .: {}
+                    'f:limits':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                    'f:requests':
+                      .: {}
+                      'f:cpu': {}
+                      'f:memory': {}
+                  'f:livenessProbe':
+                    .: {}
+                    'f:failureThreshold': {}
+                    'f:initialDelaySeconds': {}
+                    'f:periodSeconds': {}
+                    'f:successThreshold': {}
+                    'f:tcpSocket':
+                      .: {}
+                      'f:port': {}
+                    'f:timeoutSeconds': {}
+                  'f:env':
+                    'k:{"name":"PG_PRIMARY_USER"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PGHOST"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"PG_USER"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PGDATA_PATH_OVERRIDE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"CONTAINER_NAME"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    .: {}
+                    'k:{"name":"PG_PRIMARY_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PG_ROOT_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PG_DATABASE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PG_PASSWORD"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PG_PRIMARY_PORT"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                    'k:{"name":"PG_MODE"}':
+                      .: {}
+                      'f:name': {}
+                      'f:valueFrom':
+                        .: {}
+                        'f:secretKeyRef': {}
+                    'k:{"name":"PG_PRIMARY_HOST"}':
+                      .: {}
+                      'f:name': {}
+                      'f:value': {}
+                  'f:readinessProbe':
+                    .: {}
+                    'f:exec':
+                      .: {}
+                      'f:command': {}
+                    'f:failureThreshold': {}
+                    'f:initialDelaySeconds': {}
+                    'f:periodSeconds': {}
+                    'f:successThreshold': {}
+                    'f:timeoutSeconds': {}
+                  'f:securityContext':
+                    .: {}
+                    'f:capabilities': {}
+                    'f:privileged': {}
+                  'f:terminationMessagePath': {}
+                  'f:imagePullPolicy': {}
+                  'f:ports':
+                    .: {}
+                    'k:{"containerPort":5432,"protocol":"TCP"}':
+                      .: {}
+                      'f:containerPort': {}
+                      'f:protocol': {}
+                  'f:name': {}
+              'f:dnsPolicy': {}
+              'f:restartPolicy': {}
+              'f:schedulerName': {}
+              'f:securityContext': {}
+              'f:terminationGracePeriodSeconds': {}
+              'f:volumes':
+                .: {}
+                'k:{"name":"gwells-pg12-development-data"}':
+                  .: {}
+                  'f:name': {}
+                  'f:persistentVolumeClaim':
+                    .: {}
+                    'f:claimName': {}
+                'k:{"name":"gwells-pg12-development-run"}':
+                  .: {}
+                  'f:emptyDir': {}
+                  'f:name': {}
+                'k:{"name":"gwells-pg12-development-setupcfg"}':
+                  .: {}
+                  'f:configMap':
+                    .: {}
+                    'f:defaultMode': {}
+                    'f:name': {}
+                  'f:name': {}
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-31T20:39:18Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:spec':
+          'f:template':
+            'f:spec':
+              'f:containers':
+                'k:{"name":"postgresql"}':
+                  'f:image': {}
+          'f:triggers': {}
+    - manager: openshift-controller-manager
+      operation: Update
+      apiVersion: apps.openshift.io/v1
+      time: '2025-03-31T20:49:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:status':
+          'f:updatedReplicas': {}
+          'f:readyReplicas': {}
+          'f:conditions':
+            .: {}
+            'k:{"type":"Available"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:status': {}
+              'f:type': {}
+            'k:{"type":"Progressing"}':
+              .: {}
+              'f:lastTransitionTime': {}
+              'f:lastUpdateTime': {}
+              'f:message': {}
+              'f:reason': {}
+              'f:status': {}
+              'f:type': {}
+          'f:details':
+            .: {}
+            'f:causes': {}
+            'f:message': {}
+          'f:replicas': {}
+          'f:availableReplicas': {}
+          'f:observedGeneration': {}
+          'f:unavailableReplicas': {}
+          'f:latestVersion': {}
+      subresource: status
+  namespace: 26e83e-dev
+  labels:
+    app: gwells-development
+    app-name: gwells
+    app.openshift.io/runtime: postgresql
+    env-name: development
+    template: postgresql-persistent-template
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - postgresql
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'crunchy-postgres-gis:centos7-12.4-3.0-4.5.0'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c'
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    name: gwells-pg12-development
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        appver: gwells-development
+        name: gwells-pg12-development
+    spec:
+      volumes:
+        - name: gwells-pg12-development-data
+          persistentVolumeClaim:
+            claimName: gwells-pg12-development
+        - name: gwells-pg12-development-run
+          emptyDir: {}
+        - name: gwells-pg12-development-setupcfg
+          configMap:
+            name: gwells-pg12-development-setupcfg
+            defaultMode: 420
+      containers:
+        - resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: 800m
+              memory: 4Gi
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - '-c'
+                - psql -q -d $PG_DATABASE -c 'SELECT 1'
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+          terminationMessagePath: /dev/termination-log
+          name: postgresql
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: PG_PRIMARY_PORT
+              value: '5432'
+            - name: CONTAINER_NAME
+              value: postgresql
+            - name: PG_PRIMARY_HOST
+              value: gwells-pg12-development
+            - name: PGDATA_PATH_OVERRIDE
+              value: userdata
+            - name: PGHOST
+              value: /tmp
+            - name: PG_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: PG_MODE
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_MODE
+            - name: PG_PRIMARY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_PRIMARY_PASSWORD
+            - name: PG_PRIMARY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_PRIMARY_USER
+            - name: PG_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_ROOT_PASSWORD
+          securityContext:
+            capabilities: {}
+            privileged: false
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: gwells-pg12-development-data
+              mountPath: /pgdata
+            - name: gwells-pg12-development-run
+              mountPath: /var/run/postgresql
+            - name: gwells-pg12-development-setupcfg
+              mountPath: /pgconf
+          terminationMessagePolicy: File
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+status:
+  observedGeneration: 2
+  details:
+    message: config change
+    causes:
+      - type: ConfigChange
+  availableReplicas: 1
+  unavailableReplicas: 0
+  latestVersion: 1
+  updatedReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2025-03-31T20:49:21Z'
+      lastTransitionTime: '2025-03-31T20:49:21Z'
+      message: Deployment config has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2025-03-31T20:49:23Z'
+      lastTransitionTime: '2025-03-31T20:49:23Z'
+      reason: NewReplicationControllerAvailable
+      message: replication controller "gwells-pg12-development-1" successfully rolled out
+  replicas: 1
+  readyReplicas: 1
