@@ -59,23 +59,27 @@ export default {
     //   }
     // },
     keyCloakLogin () {
-      this.keycloak.init({
-        checkLoginIframe: false
-      }).then(() => {
-        this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
-          if (authenticated) {
-            ApiService.authHeader('JWT', this.keycloak.token)
-            if (window.localStorage) {
-              localStorage.setItem('token', this.keycloak.token)
-              localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-              localStorage.setItem('idToken', this.keycloak.idToken)
+      if (!this.keycloak.authenticated) {
+        this.keycloak.init({
+          checkLoginIframe: false
+        }).then(() => {
+          this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+            if (authenticated) {
+              ApiService.authHeader('JWT', this.keycloak.token)
+              if (window.localStorage) {
+                localStorage.setItem('token', this.keycloak.token)
+                localStorage.setItem('refreshToken', this.keycloak.refreshToken)
+                localStorage.setItem('idToken', this.keycloak.idToken)
+              }
             }
-          }
-        }).catch((e) => {
-          console.error("keyCloakLogin: ", e)
-          this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+          }).catch((e) => {
+            console.error("keyCloakLogin: ", e)
+            this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
+          })
         })
-      })
+      } else {
+        this.keycloak.updateToken(30)
+      }
     },
     keyCloakLogout () {
       // This should log the user out, but unfortunately does not delete the cookie storing the user
