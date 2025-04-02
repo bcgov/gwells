@@ -14,9 +14,9 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost'],
+    allowedHosts: ['https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost'],
     cors: {
-      origin: 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca',
+      origin: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca',
       credentials: true,
     },
   },
@@ -24,9 +24,9 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost'],
+    allowedHosts: ['https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost'],
     cors: {
-      origin: 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca',
+      origin: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca',
       credentials: true,
     },
   },
