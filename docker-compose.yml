@@ -119,9 +119,9 @@ services:
       VITE_AXIOS_BASE_URL: /api/
       VITE_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
-      API_TARGET: "${API_TARGET:-http://backend:8000/}"
-      VITE_BACKEND_URL: http://localhost:8000
-    ports: ["8080:8080"]
+      API_TARGET: "${API_TARGET:-http://backend:8080/}"
+    ports:
+      - "8080:8080"
     # volumes:
     #   - type: bind
     #     source: ./app/frontend
@@ -141,12 +141,17 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
+      BACKEND_URL: http://backend:8000
       VITE_BACKEND_URL: http://backend:8000
       LOG_LEVEL: info
     ports: ["3005:3000"]
     volumes: ["./frontend/Caddyfile:/etc/caddy/Caddyfile"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3005"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
     depends_on:
       backend:
         condition: service_healthy
