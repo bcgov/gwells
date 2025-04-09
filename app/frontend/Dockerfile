@@ -12,7 +12,7 @@ RUN npm install
 RUN npm install -g serve
 RUN npm run build
 
-FROM caddy:2.9.1-alpine
+FROM caddy:2.8.4-alpine
 RUN apk add --no-cache ca-certificates
 
 # Copy static files, verify Caddyfile formatting
