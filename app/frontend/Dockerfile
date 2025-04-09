@@ -20,8 +20,11 @@ COPY --from=build /app/frontend/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
 RUN caddy fmt /etc/caddy/Caddyfile
 
+# Fix permissions for OpenShift
+RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy \
+    && chgrp -R 0 /srv /etc/caddy /usr/bin/caddy
+
 # Boilerplate, not used in OpenShift/Kubernetes
 EXPOSE 8080 3001
 
-# EXPOSE 8080
-# CMD ["npm", "run", "preview", "--", "--port", "8080"]
+USER 1001
