@@ -222,43 +222,47 @@ spec:
             requests:
               cpu: 10m
               memory: 128Mi
-          readinessProbe:
-            httpGet:
-              path: /gwells
-              port: 8080
-              scheme: HTTP
-            initialDelaySeconds: 5
-            timeoutSeconds: 1
-            periodSeconds: 3
-            successThreshold: 1
-            failureThreshold: 1
+          # readinessProbe:
+          #   httpGet:
+          #     path: /gwells
+          #     port: 8080
+          #     scheme: HTTP
+          #   initialDelaySeconds: 5
+          #   timeoutSeconds: 1
+          #   periodSeconds: 3
+          #   successThreshold: 1
+          #   failureThreshold: 1
           terminationMessagePath: /dev/termination-log
           name: gwells-frontend
-          livenessProbe:
-            httpGet:
-              path: /gwells
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 90
-            periodSeconds: 30
-            successThreshold: 1
-            failureThreshold: 2
+          # livenessProbe:
+          #   httpGet:
+          #     path: /gwells
+          #     port: 8080
+          #     scheme: HTTP
+          #   timeoutSeconds: 90
+          #   periodSeconds: 30
+          #   successThreshold: 1
+          #   failureThreshold: 2
           env:
             - name: VITE_AXIOS_BASE_URL
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+            - name: VITE_BACKEND_URL
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+            - name: BACKEND_URL
               value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
           ports:
             - containerPort: 8080
               protocol: TCP
           imagePullPolicy: Always
-          startupProbe:
-            httpGet:
-              path: /gwells
-              port: 8080
-              scheme: HTTP
-            timeoutSeconds: 1
-            periodSeconds: 2
-            successThreshold: 1
-            failureThreshold: 45
+          # startupProbe:
+          #   httpGet:
+          #     path: /gwells
+          #     port: 8080
+          #     scheme: HTTP
+          #   timeoutSeconds: 1
+          #   periodSeconds: 2
+          #   successThreshold: 1
+          #   failureThreshold: 45
           terminationMessagePolicy: File
           image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:14e892f079a3d957115bfcdd1c77063ca0d69c17a258127a94d65011dc0882bb'
       restartPolicy: Always

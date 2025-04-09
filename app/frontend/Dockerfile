@@ -12,19 +12,16 @@ RUN npm install
 RUN npm install -g serve
 RUN npm run build
 
-EXPOSE 8080
-CMD ["npm", "run", "preview", "--", "--port", "8080"]
+FROM caddy:2.9.1-alpine
+RUN apk add --no-cache ca-certificates
 
-# RUN set -x
-# RUN cd /app/frontend
-# RUN npm install
-# RUN npm run build
+# Copy static files, verify Caddyfile formatting
+COPY --from=build /app/frontend/dist /srv
+COPY Caddyfile /etc/caddy/Caddyfile
+RUN caddy fmt /etc/caddy/Caddyfile
+
+# Boilerplate, not used in OpenShift/Kubernetes
+EXPOSE 3000 3001
 
 # EXPOSE 8080
-# CMD ["npm", "run", "serve"]
-
-# We got to the point where the frontend is completely separate from the backend build and deploy and it runs locally. However, we need to fix the vite build
-
-# Do some reading on setting up a vite vue project
-# Create backend dockerfile with docker compose pointing
-# Create new branch and try to get frontend to run locally
+# CMD ["npm", "run", "preview", "--", "--port", "8080"]
