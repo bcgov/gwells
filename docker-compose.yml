@@ -135,7 +135,9 @@ services:
   caddy:
     container_name: caddy
     profiles: ["caddy"]
-    build: ./frontend
+    build: 
+      context: ./app/frontend
+      dockerfile: Dockerfile
     environment:
       NODE_ENV: development
       PORT: 3000
