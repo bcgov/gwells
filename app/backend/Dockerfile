@@ -60,8 +60,8 @@ CMD sh -c "python3 manage.py migrate --noinput && \
     python3 manage.py createinitialrevisions && \
     python3 manage.py collectstatic --noinput && \
     # python3 manage.py export --cleanup=1 --upload=1 && \
-    python3 manage.py runserver 0.0.0.0:8080"
+    python3 manage.py runserver 0.0.0.0:8000"
 
-EXPOSE 8080
+EXPOSE 8000
 
 USER 1001
