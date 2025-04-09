@@ -120,8 +120,8 @@ services:
       VITE_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8000/}"
-    ports:
-      - "8080:8080"
+      VITE_BACKEND_URL: http://localhost:8000
+    ports: ["8080:8080"]
     # volumes:
     #   - type: bind
     #     source: ./app/frontend
@@ -131,6 +131,23 @@ services:
       - backend
     networks:
       - gwells-network
+  
+  caddy:
+    container_name: caddy
+    profiles: ["caddy"]
+    build: ./frontend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      VITE_BACKEND_URL: http://backend:8000
+      LOG_LEVEL: info
+    ports: ["3005:3000"]
+    volumes: ["./frontend/Caddyfile:/etc/caddy/Caddyfile"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3005"]
+    depends_on:
+      backend:
+        condition: service_healthy
 #############################################################################################
 ###                                       Backend                                         ###
 #############################################################################################
@@ -203,8 +220,7 @@ services:
       timeout: 3s
       retries: 10
       start_period: 20s
-    ports:
-      - "8000:8000"
+    ports: ["8000:8000"]
     depends_on:
       db:
         condition: service_healthy
