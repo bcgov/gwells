@@ -21,7 +21,7 @@ COPY Caddyfile /etc/caddy/Caddyfile
 RUN caddy fmt /etc/caddy/Caddyfile
 
 # Boilerplate, not used in OpenShift/Kubernetes
-EXPOSE 3000 3001
+EXPOSE 8080 3001
 
 # EXPOSE 8080
 # CMD ["npm", "run", "preview", "--", "--port", "8080"]
