@@ -11,7 +11,6 @@ The Ministry of Environment receives and processes groundwater data and informat
 GWELLS, the new groundwater data repository, aims to improve the user experience when submitting and searching for well information, to improve the quality of the data being submitted, and to improve the overall functionality of the system to meet user and regulatory requirements.
 
 The application is being developed as an open source solution.
-## TEST COMMENT
 ## Table of Contents
 
 1. [Using the GWELLS API](#Using-the-gwells-api)
