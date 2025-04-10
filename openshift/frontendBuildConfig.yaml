@@ -1,88 +1,17 @@
 kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
-  annotations:
-    description: Defines how to build the application
-    kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"build.openshift.io/v1","kind":"BuildConfig","metadata":{"annotations":{"description":"Defines how to build the application"},"creationTimestamp":"2025-03-13T20:28:33Z","generation":3,"labels":{"appver":"gwells-dev"},"managedFields":[{"apiVersion":"build.openshift.io/v1","fieldsType":"FieldsV1","fieldsV1":{"f:metadata":{"f:annotations":{".":{},"f:description":{},"f:kubectl.kubernetes.io/last-applied-configuration":{}},"f:labels":{".":{},"f:appver":{}}},"f:spec":{"f:failedBuildsHistoryLimit":{},"f:output":{"f:to":{}},"f:resources":{"f:limits":{".":{},"f:cpu":{},"f:memory":{}},"f:requests":{".":{},"f:cpu":{},"f:memory":{}}},"f:runPolicy":{},"f:source":{"f:contextDir":{},"f:git":{".":{},"f:ref":{},"f:uri":{}},"f:type":{}},"f:strategy":{"f:sourceStrategy":{".":{},"f:env":{},"f:from":{}},"f:type":{}},"f:successfulBuildsHistoryLimit":{}}},"manager":"kubectl-client-side-apply","operation":"Update","time":"2025-03-13T20:28:33Z"},{"apiVersion":"build.openshift.io/v1","fieldsType":"FieldsV1","fieldsV1":{"f:status":{"f:lastVersion":{}}},"manager":"openshift-apiserver","operation":"Update","time":"2025-03-13T20:29:13Z"},{"apiVersion":"build.openshift.io/v1","fieldsType":"FieldsV1","fieldsV1":{"f:spec":{"f:triggers":{}}},"manager":"Mozilla","operation":"Update","time":"2025-03-13T20:32:31Z"}],"name":"gwells-frontend-dev","namespace":"26e83e-tools","resourceVersion":"13630197954","uid":"a5b42cca-5a0a-4d4e-8896-1617ce9b64e1"},"spec":{"failedBuildsHistoryLimit":3,"nodeSelector":null,"output":{"to":{"kind":"ImageStreamTag","name":"gwells-application:dev"}},"postCommit":{},"resources":{"limits":{"cpu":"2","memory":"8Gi"},"requests":{"cpu":"1","memory":"4Gi"}},"runPolicy":"SerialLatestOnly","source":{"contextDir":"app","git":{"ref":"release","uri":"https://www.github.com/bcgov/gwells.git"},"type":"Git"},"strategy":{"dockerStrategy":{"contextDir":"app/frontend","dockerfilePath":"Dockerfile","env":[{"name":"BUILD_LOGLEVEL","value":"4"},{"name":"PIP_INDEX_URL"},{"name":"UPGRADE_PIP_TO_LATEST","value":"true"},{"name":"JWT_PUBLIC_KEY","value":"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjpPznS8NO5XNl395Xa/wJyhhMDMJUk8s2wrG/FQ9gZnRaCbm9YFYynZzeehkpTNbb+SsLBnh0Me5DKTSlt0Gm03ULXXW6FZzL3SCE1wTx6Trm+zQ1mx07aGDbv34OtK0HitToajZrnTsGQ0TloVbQladBM74S2K0ooveV7p2qIydFjtR+DTJGiOxSLvts+qsGn/Wr2l939SRpQa/10vpYJgCLsd6Bv/0v23DpmR8WbVkLh8e3rtI0XgsJ0ZFXR80DPt3fXX3gdrNdPRB+hpOR8IZMEUzhqGRg5VXP8Lp+bbaemFanTwlFD3aUfDlOcPekxYqQeEmS6ahA/6vCpjuGwIDAQAB\\n-----END PUBLIC KEY-----"},{"name":"JWT_AUDIENCE","value":"webapp-dev-local"}]},"type":"Docker"},"successfulBuildsHistoryLimit":3,"triggers":[{"type":"ConfigChange"},{"github":{"secretReference":{"name":"github-build-webhook"}},"type":"GitHub"}]},"status":{"lastVersion":2}}
-  resourceVersion: '13821619252'
-  name: gwells-frontend-dev
-  uid: 7474f169-431b-4ce3-91d9-c0cd92f7b4cc
-  creationTimestamp: '2025-03-20T22:11:16Z'
+  name: gwells-frontend
   generation: 15
-  managedFields:
-    - manager: kubectl-client-side-apply
-      operation: Update
-      apiVersion: build.openshift.io/v1
-      time: '2025-03-20T22:11:16Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:metadata':
-          'f:annotations':
-            .: {}
-            'f:description': {}
-            'f:kubectl.kubernetes.io/last-applied-configuration': {}
-          'f:labels':
-            .: {}
-            'f:appver': {}
-        'f:spec':
-          'f:failedBuildsHistoryLimit': {}
-          'f:output':
-            'f:to': {}
-          'f:resources':
-            'f:limits':
-              .: {}
-              'f:cpu': {}
-              'f:memory': {}
-            'f:requests':
-              .: {}
-              'f:cpu': {}
-              'f:memory': {}
-          'f:runPolicy': {}
-          'f:source':
-            'f:git':
-              .: {}
-              'f:ref': {}
-              'f:uri': {}
-            'f:type': {}
-          'f:strategy':
-            'f:dockerStrategy':
-              .: {}
-              'f:dockerfilePath': {}
-              'f:env': {}
-            'f:sourceStrategy':
-              .: {}
-              'f:env': {}
-              'f:from': {}
-            'f:type': {}
-          'f:successfulBuildsHistoryLimit': {}
-          'f:triggers': {}
-    - manager: Mozilla
-      operation: Update
-      apiVersion: build.openshift.io/v1
-      time: '2025-03-24T20:54:13Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:spec':
-          'f:source':
-            'f:contextDir': {}
-    - manager: openshift-apiserver
-      operation: Update
-      apiVersion: build.openshift.io/v1
-      time: '2025-03-27T22:58:17Z'
-      fieldsType: FieldsV1
-      fieldsV1:
-        'f:status':
-          'f:lastVersion': {}
   namespace: 26e83e-tools
   labels:
-    appver: gwells-dev
+    appver: gwells
 spec:
   nodeSelector: null
   output:
     to:
       kind: ImageStreamTag
-      name: 'gwells-application:dev'
+      name: 'gwells-application:latest'
   resources:
     limits:
       cpu: '2'
@@ -108,9 +37,9 @@ spec:
         - name: VITE_AXIOS_BASE_URL
           value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
         - name: VITE_BACKEND_URL
-          value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
+          value: "{{.Env.VITE_BACKEND_URL}}"
         - name: BACKEND_URL
-          value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
+          value: "{{.Env.BACKEND_URL}}"
       dockerfilePath: Dockerfile
   postCommit: {}
   source:

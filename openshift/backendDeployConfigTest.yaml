@@ -1,20 +1,19 @@
 kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
-  annotations:
-    description: Defines how to deploy the application server
-  resourceVersion: '13683705274'
   name: gwells-backend
-  generation: 5
-  namespace: 26e83e-dev
+  generation: 21
+  namespace: 26e83e-test
   labels:
     app: gwells-backend
     app-name: gwells
     appver: gwells-backend
-    env-name: development
+    env-name: test
 spec:
   strategy:
-    type: Rolling
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
     rollingParams:
       updatePeriodSeconds: 1
       intervalSeconds: 1
@@ -25,8 +24,7 @@ spec:
         failurePolicy: Abort
         execNewPod:
           command:
-          #   - /usr/bin/container-entrypoint
-            - /opt/app-root/src/scripts/pre-deploy.sh
+            - pwd
           env:
             - name: PGDATABASE
               valueFrom:
@@ -58,8 +56,9 @@ spec:
           kind: ImageStreamTag
           namespace: 26e83e-tools
           name: 'gwells-backend:latest'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:f7e70920b99304cc6bbb06bd9df2eb3cab31af6f619d5b5d95e443cfd2af40e2'
     - type: ConfigChange
-  replicas: 0
+  replicas: 1
   revisionHistoryLimit: 10
   test: false
   selector:
@@ -75,16 +74,15 @@ spec:
       containers:
         - resources:
             limits:
-              cpu: 500m
+              cpu: '1'
               memory: 1Gi
             requests:
-              cpu: 100m
-              memory: 750Mi
+              cpu: '1'
+              memory: 1Gi
           readinessProbe:
-            httpGet:
-              path: /gwells/health
-              port: 8080
-              scheme: HTTP
+            exec:
+              command:
+                - pwd
             initialDelaySeconds: 5
             timeoutSeconds: 2
             periodSeconds: 5
@@ -93,10 +91,9 @@ spec:
           terminationMessagePath: /dev/termination-log
           name: gwells-app-development
           livenessProbe:
-            httpGet:
-              path: /gwells/health
-              port: 8080
-              scheme: HTTP
+            exec:
+              command:
+                - pwd
             initialDelaySeconds: 60
             timeoutSeconds: 5
             periodSeconds: 10
@@ -168,10 +165,8 @@ spec:
                 configMapKeyRef:
                   name: gwells-global-config-development
                   key: DJANGO_DEBUG
-            - name: GDAL_LIBRARY_PATH
-              value: /usr/lib/ogdi/4.1/libgdal.so
-            - name: GEOS_LIBRARY_PATH
-              value: /usr/lib/x86_64-linux-gnu/libgeos_c.so
+            - name: CUSTOM_GDAL_GEOS
+              value: 'false'
             - name: S3_AQUIFER_BUCKET
               valueFrom:
                 configMapKeyRef:
@@ -340,3 +335,27 @@ spec:
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
+status:
+  observedGeneration: 21
+  details:
+    message: manual change
+    causes:
+      - type: Manual
+  availableReplicas: 1
+  unavailableReplicas: 0
+  latestVersion: 13
+  updatedReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2025-04-09T19:28:16Z'
+      lastTransitionTime: '2025-04-09T19:28:16Z'
+      message: Deployment config has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2025-04-09T19:28:18Z'
+      lastTransitionTime: '2025-04-09T19:27:55Z'
+      reason: NewReplicationControllerAvailable
+      message: replication controller "gwells-backend-13" successfully rolled out
+  replicas: 1
+  readyReplicas: 1

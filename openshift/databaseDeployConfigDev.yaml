@@ -1,0 +1,174 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: gwells-pg12-development
+  generation: 2
+  namespace: 26e83e-dev
+  labels:
+    app: gwells-development
+    app-name: gwells
+    app.openshift.io/runtime: postgresql
+    env-name: development
+    template: postgresql-persistent-template
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - postgresql
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'crunchy-postgres-gis:centos7-12.4-3.0-4.5.0'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c'
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    name: gwells-pg12-development
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        appver: gwells-development
+        name: gwells-pg12-development
+    spec:
+      volumes:
+        - name: gwells-pg12-development-data
+          persistentVolumeClaim:
+            claimName: gwells-pg12-development
+        - name: gwells-pg12-development-run
+          emptyDir: {}
+        - name: gwells-pg12-development-setupcfg
+          configMap:
+            name: gwells-pg12-development-setupcfg
+            defaultMode: 420
+      containers:
+        - resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: 800m
+              memory: 4Gi
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - '-c'
+                - psql -q -d $PG_DATABASE -c 'SELECT 1'
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+          terminationMessagePath: /dev/termination-log
+          name: postgresql
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: PG_PRIMARY_PORT
+              value: '5432'
+            - name: CONTAINER_NAME
+              value: postgresql
+            - name: PG_PRIMARY_HOST
+              value: gwells-pg12-development
+            - name: PGDATA_PATH_OVERRIDE
+              value: userdata
+            - name: PGHOST
+              value: /tmp
+            - name: PG_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: PG_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: PG_MODE
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_MODE
+            - name: PG_PRIMARY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_PRIMARY_PASSWORD
+            - name: PG_PRIMARY_USER
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_PRIMARY_USER
+            - name: PG_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: crunchy-db-credentials
+                  key: PG_ROOT_PASSWORD
+          securityContext:
+            capabilities: {}
+            privileged: false
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: gwells-pg12-development-data
+              mountPath: /pgdata
+            - name: gwells-pg12-development-run
+              mountPath: /var/run/postgresql
+            - name: gwells-pg12-development-setupcfg
+              mountPath: /pgconf
+          terminationMessagePolicy: File
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+status:
+  observedGeneration: 2
+  details:
+    message: config change
+    causes:
+      - type: ConfigChange
+  availableReplicas: 1
+  unavailableReplicas: 0
+  latestVersion: 1
+  updatedReplicas: 1
+  conditions:
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2025-03-31T20:49:23Z'
+      lastTransitionTime: '2025-03-31T20:49:23Z'
+      reason: NewReplicationControllerAvailable
+      message: replication controller "gwells-pg12-development-1" successfully rolled out
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2025-04-02T12:58:00Z'
+      lastTransitionTime: '2025-04-02T12:58:00Z'
+      message: Deployment config has minimum availability.
+  replicas: 1
+  readyReplicas: 1
