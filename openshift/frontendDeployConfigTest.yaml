@@ -1,0 +1,93 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: gwells-frontend
+  generation: 5
+  namespace: 26e83e-test
+  labels:
+    app: gwells-frontend
+    app-name: gwells
+    appver: gwells-frontend
+    env-name: test
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - gwells-frontend
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'gwells-application:latest'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421'
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    app: gwells-frontend
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gwells-frontend
+    spec:
+      containers:
+        - name: gwells-frontend
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421'
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: VITE_AXIOS_BASE_URL
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+            - name: BACKEND_URL
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+            - name: VITE_BACKEND_URL
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+          resources:
+            limits:
+              cpu: 50m
+              memory: 256Mi
+            requests:
+              cpu: 10m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+status:
+  observedGeneration: 5
+  details:
+    message: config change
+    causes:
+      - type: ConfigChange
+  availableReplicas: 1
+  unavailableReplicas: 0
+  latestVersion: 4
+  updatedReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2025-04-09T22:17:58Z'
+      lastTransitionTime: '2025-04-09T22:17:58Z'
+      message: Deployment config has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2025-04-09T22:18:00Z'
+      lastTransitionTime: '2025-04-09T22:17:52Z'
+      reason: NewReplicationControllerAvailable
+      message: replication controller "gwells-frontend-4" successfully rolled out
+  replicas: 1
+  readyReplicas: 1

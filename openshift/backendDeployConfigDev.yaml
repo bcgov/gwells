@@ -1,0 +1,361 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: gwells-backend
+  generation: 21
+  namespace: 26e83e-dev
+  labels:
+    app: gwells-backend
+    app-name: gwells
+    appver: gwells-backend
+    env-name: development
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 900
+      maxUnavailable: 25%
+      maxSurge: 25%
+      pre:
+        failurePolicy: Abort
+        execNewPod:
+          command:
+            - pwd
+          env:
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: PGHOST
+              value: gwells-pg12-development
+          containerName: gwells-app-development
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - gwells-backend
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'gwells-backend:latest'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:44a95af21f33e0cdd873f010bd69f5299a8d18d26bb0b7c11eb885246b953cf6'
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    name: gwells-backend
+  template:
+    metadata:
+      name: gwells-backend
+      creationTimestamp: null
+      labels:
+        appver: gwells-backend
+        name: gwells-backend
+    spec:
+      containers:
+        - resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '1'
+              memory: 1Gi
+          readinessProbe:
+            exec:
+              command:
+                - pwd
+            initialDelaySeconds: 5
+            timeoutSeconds: 2
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 10
+          terminationMessagePath: /dev/termination-log
+          name: gwells-app-development
+          livenessProbe:
+            exec:
+              command:
+                - pwd
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 6
+          env:
+            - name: DATABASE_SERVICE_NAME
+              value: gwells-pg12-development
+            - name: DATABASE_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: DATABASE_SCHEMA
+              value: public
+            - name: APP_MODULE
+              value: 'wsgi:application'
+            - name: APP_HOME
+              value: backend
+            - name: APP_CONFIG
+              value: /opt/app-root/src/backend/gunicorn.ocp4.cfg
+            - name: DJANGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-development
+                  key: secret_key
+            - name: DJANGO_ADMIN_URL
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-development
+                  key: admin_url
+            - name: DJANGO_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-development
+                  key: admin_user
+            - name: DJANGO_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-django-development
+                  key: admin_password
+            - name: E_LICENSING_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-e-licensing-development
+                  key: E_LICENSING_AUTH_PASSWORD
+            - name: E_LICENSING_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-e-licensing-development
+                  key: E_LICENSING_AUTH_USERNAME
+            - name: E_LICENSING_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: E_LICENSING_URL
+            - name: DJANGO_DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: DJANGO_DEBUG
+            - name: CUSTOM_GDAL_GEOS
+              value: 'false'
+            - name: S3_AQUIFER_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_AQUIFER_BUCKET
+            - name: S3_REGISTRANT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_REGISTRANT_BUCKET
+            - name: S3_PRIVATE_ROOT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_PRIVATE_ROOT_BUCKET
+            - name: S3_PRIVATE_AQUIFER_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_PRIVATE_AQUIFER_BUCKET
+            - name: S3_PRIVATE_REGISTRANT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_PRIVATE_REGISTRANT_BUCKET
+            - name: S3_PRIVATE_WELL_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_PRIVATE_WELL_BUCKET
+            - name: SSO_CLIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_CLIENT
+            - name: SSO_PUBKEY
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_PUBKEY
+            - name: SSO_AUTH_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_AUTH_HOST
+            - name: SSO_AUDIENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_AUDIENCE
+            - name: SSO_REALM
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_REALM
+            - name: SSO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_PORT
+            - name: SSO_TEST_CLIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_TEST_CLIENT
+            - name: SSO_TEST_AUDIENCE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_TEST_AUDIENCE
+            - name: ENABLE_ADDITIONAL_DOCUMENTS
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: ENABLE_ADDITIONAL_DOCUMENTS
+            - name: ENABLE_AQUIFERS_SEARCH
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: ENABLE_AQUIFERS_SEARCH
+            - name: APP_CONTEXT_ROOT
+              value: gwells
+            - name: SESSION_COOKIE_SECURE
+              value: 'True'
+            - name: CSRF_COOKIE_SECURE
+              value: 'True'
+            - name: DB_REPLICATE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: DB_REPLICATE
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-development
+                  key: MINIO_ACCESS_KEY
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-development
+                  key: MINIO_SECRET_KEY
+            - name: S3_PUBLIC_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-development
+                  key: S3_PUBLIC_ACCESS_KEY
+            - name: S3_PUBLIC_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-development
+                  key: S3_PUBLIC_SECRET_KEY
+            - name: S3_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-development
+                  key: S3_HOST
+            - name: S3_ROOT_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: minio-access-parameters-development
+                  key: S3_ROOT_BUCKET
+            - name: S3_PRIVATE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_PRIVATE_HOST
+            - name: S3_WELL_EXPORT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_WELL_EXPORT_BUCKET
+            - name: S3_PRIVATE_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: S3_PRIVATE_BUCKET
+            - name: SSO_IDP_HINT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: SSO_IDP_HINT
+            - name: WEB_CONCURRENCY
+              value: '4'
+            - name: GUNICORN_WORKERS
+              value: '4'
+            - name: ENFORCE_ENV_VARIABLES
+              value: 'False'
+            - name: EMAIL_NOTIFICATION_RECIPIENT
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: EMAIL_NOTIFICATION_RECIPIENT
+            - name: GEOCODER_ADDRESS_API_BASE
+              valueFrom:
+                configMapKeyRef:
+                  name: gwells-global-config-development
+                  key: GEOCODER_ADDRESS_API_BASE
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: Always
+          terminationMessagePolicy: File
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend:latest'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+status:
+  observedGeneration: 21
+  details:
+    message: manual change
+    causes:
+      - type: Manual
+  availableReplicas: 1
+  unavailableReplicas: 0
+  latestVersion: 13
+  updatedReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2025-04-09T19:28:16Z'
+      lastTransitionTime: '2025-04-09T19:28:16Z'
+      message: Deployment config has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2025-04-09T19:28:18Z'
+      lastTransitionTime: '2025-04-09T19:27:55Z'
+      reason: NewReplicationControllerAvailable
+      message: replication controller "gwells-backend-13" successfully rolled out
+  replicas: 1
+  readyReplicas: 1
