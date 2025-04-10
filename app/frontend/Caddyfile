@@ -5,6 +5,11 @@
 		metrics
 	}
 }
+{$VITE_BACKEND_URL:http://backend:8000/} {
+	root * app/frontend/dist
+	file_server
+	templates
+}
 :8080 {
 	# log {
 	# 	output stdout
@@ -23,6 +28,10 @@
 			try_files {path} /index.html
 		}
 	}
+	templates {
+        mime application/javascript
+        match /env.js
+    }
 	rewrite @spa_router {http.matchers.file.relative}
 	# Proxy requests to API service
 	reverse_proxy /api* {$VITE_BACKEND_URL} {
@@ -39,6 +48,14 @@
 		Content-Security-Policy "default-src 'self' https://spt.apps.gov.bc.ca data:; script-src 'self' 'unsafe-eval' https://www2.gov.bc.ca ;style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://use.fontawesome.com https://stackpath.bootstrapcdn.com; font-src 'self' https://fonts.gstatic.com https://stackpath.bootstrapcdn.com; img-src 'self' data: https://fonts.googleapis.com http://www.w3.org https://*.gov.bc.ca; connect-src 'self' http://localhost:8000 https://*.gov.bc.ca; child-src 'self' *.gov.bc.ca; worker-src 'self' https://*.gov.bc.ca http://localhost:3005 blob:;"
 		Referrer-Policy "same-origin"
 		Feature-Policy "fullscreen 'self'; camera 'none'; microphone 'none'"
+	}
+	cors / {
+		origin            https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*
+		methods           POST,PUT, GET
+		allow_credentials false
+		max_age           3600
+		allowed_headers   *
+		exposed_headers   *
 	}
 }
 :3001 {
