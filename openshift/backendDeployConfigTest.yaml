@@ -2,7 +2,7 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: gwells-backend
-  generation: 21
+  generation: 19
   namespace: 26e83e-test
   labels:
     app: gwells-backend
@@ -20,30 +20,6 @@ spec:
       timeoutSeconds: 900
       maxUnavailable: 25%
       maxSurge: 25%
-      pre:
-        failurePolicy: Abort
-        execNewPod:
-          command:
-            - pwd
-          env:
-            - name: PGDATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-name
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-user
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-password
-            - name: PGHOST
-              value: gwells-pg12-development
-          containerName: gwells-app-development
     resources: {}
     activeDeadlineSeconds: 21600
   triggers:
@@ -56,7 +32,7 @@ spec:
           kind: ImageStreamTag
           namespace: 26e83e-tools
           name: 'gwells-backend:latest'
-        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:f7e70920b99304cc6bbb06bd9df2eb3cab31af6f619d5b5d95e443cfd2af40e2'
+        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:229c9d78fccff9bf8373e285b4a4a949f2fd4d37675dedd507fbb0753fab54b1'
     - type: ConfigChange
   replicas: 1
   revisionHistoryLimit: 10
@@ -89,7 +65,7 @@ spec:
             successThreshold: 1
             failureThreshold: 10
           terminationMessagePath: /dev/termination-log
-          name: gwells-app-development
+          name: gwells-backend
           livenessProbe:
             exec:
               command:
@@ -325,37 +301,41 @@ spec:
                   name: gwells-global-config-development
                   key: GEOCODER_ADDRESS_API_BASE
           ports:
-            - containerPort: 8080
+            - containerPort: 8000
               protocol: TCP
           imagePullPolicy: Always
           terminationMessagePolicy: File
-          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend'
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:229c9d78fccff9bf8373e285b4a4a949f2fd4d37675dedd507fbb0753fab54b1'
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
 status:
-  observedGeneration: 21
+  observedGeneration: 19
   details:
-    message: manual change
+    message: image change
     causes:
-      - type: Manual
+      - type: ImageChange
+        imageTrigger:
+          from:
+            kind: DockerImage
+            name: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:229c9d78fccff9bf8373e285b4a4a949f2fd4d37675dedd507fbb0753fab54b1'
   availableReplicas: 1
   unavailableReplicas: 0
-  latestVersion: 13
+  latestVersion: 7
   updatedReplicas: 1
   conditions:
     - type: Available
       status: 'True'
-      lastUpdateTime: '2025-04-09T19:28:16Z'
-      lastTransitionTime: '2025-04-09T19:28:16Z'
+      lastUpdateTime: '2025-04-10T22:39:29Z'
+      lastTransitionTime: '2025-04-10T22:39:29Z'
       message: Deployment config has minimum availability.
     - type: Progressing
       status: 'True'
-      lastUpdateTime: '2025-04-09T19:28:18Z'
-      lastTransitionTime: '2025-04-09T19:27:55Z'
+      lastUpdateTime: '2025-04-10T22:39:31Z'
+      lastTransitionTime: '2025-04-10T22:39:08Z'
       reason: NewReplicationControllerAvailable
-      message: replication controller "gwells-backend-13" successfully rolled out
+      message: replication controller "gwells-backend-7" successfully rolled out
   replicas: 1
   readyReplicas: 1

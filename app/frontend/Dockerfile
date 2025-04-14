@@ -18,7 +18,7 @@ RUN apk add --no-cache ca-certificates
 # Copy static files, verify Caddyfile formatting
 COPY --from=build /app/frontend/dist /srv
 COPY Caddyfile /etc/caddy/Caddyfile
-RUN caddy fmt /etc/caddy/Caddyfile
+RUN caddy fmt /etc/caddy/Caddyfile --overwrite
 
 # Fix permissions for OpenShift
 RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy \
