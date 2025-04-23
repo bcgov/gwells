@@ -95,7 +95,10 @@ services:
     depends_on:
       - db
     platform: linux/x86_64
-    image: pramsey/pg_tileserv:20231005
+    # image: pramsey/pg_tileserv:20231005
+    build:
+      context: ./app/tileserve
+      dockerfile: Dockerfile
     env_file:
     - path: ./.env.test
       required: false
