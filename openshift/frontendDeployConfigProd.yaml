@@ -2,12 +2,12 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: gwells-frontend
-  namespace: 26e83e-test
+  namespace: 26e83e-prod
   labels:
     app: gwells-frontend
     app-name: gwells
     appver: gwells-frontend
-    env-name: test
+    env-name: production
 spec:
   strategy:
     type: Recreate
@@ -24,7 +24,7 @@ spec:
         from:
           kind: ImageStreamTag
           namespace: 26e83e-tools
-          name: 'gwells-application:test'
+          name: 'gwells-application:prod'
         lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:6f0e2320c237e434ac7d4e36be0ae261ac6036d92fe307ac352976220b36b834'
     - type: ConfigChange
   replicas: 1
