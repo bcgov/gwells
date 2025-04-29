@@ -9,16 +9,13 @@
    "pk": "BC"},
 
   {"model": "wells.wellclasscode",
-   "fields": {
-    "create_user": "",
+   "fields": {"create_user": "",
               "description": "",
               "create_date": "2018-02-08T17:22:21.892Z",
               "display_order": 1,
               "update_date": "2018-02-08T17:22:21.893Z",
-              "update_user":""
-  },
-   "pk": "WCC"
-  },
+              "update_user":""},
+   "pk": "WCC"},
   {
     "model": "wells.wellorientationcode",
     "pk": 1,

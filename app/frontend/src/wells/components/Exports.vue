@@ -32,7 +32,11 @@ export default {
   computed: {
     ...mapGetters({
       files: 'wellFileDownloads'
-    })
+    }),
+    hasFiles() {
+      console.log('Files:', this.files);
+      return this.files && this.files.length > 0;
+    }
   },
   created () {
     this.$store.dispatch(FETCH_WELL_DOWNLOAD_LINKS)
