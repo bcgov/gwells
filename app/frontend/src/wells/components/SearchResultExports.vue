@@ -42,7 +42,7 @@
 </template>
 
 <script>
-// import querystring from 'querystring'
+import querystring from 'querystring'
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
@@ -83,9 +83,7 @@ export default {
         Object.assign(queryParams, this.bounds)
       }
 
-      // return querystring.stringify(queryParams)
-      return new URLSearchParams(queryParams).toString();
-
+      return querystring.stringify(queryParams)
     }
   },
   methods: {
