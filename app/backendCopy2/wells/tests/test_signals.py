@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.contrib.gis.geos import Point
 from wells.models import Well
-from wells.signals import update_utm
+_from wells.signals import update_utm
 
 class TestSignals(TestCase):
     def test_update_utm__no_geom__well_not_updated(self):

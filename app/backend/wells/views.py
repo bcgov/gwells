@@ -119,6 +119,7 @@ class WellDetail(RetrieveAPIView):
             qs = Well.objects.all()
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
+
         return qs
 
     def get(self, request, *args, **kwargs):
