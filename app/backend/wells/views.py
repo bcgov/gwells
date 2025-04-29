@@ -167,6 +167,10 @@ class ListExtracts(APIView):
                             secure=use_secure)
         objects = minioClient.list_objects(
             get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/')
+        print("S3 objects:", objects)
+        print("S3 host:", host)
+        print("S3 use_secure:", use_secure)
+        print("bucket:", get_env_variable('S3_WELL_EXPORT_BUCKET'))
         urls = list(
             map(
                 lambda document: {
