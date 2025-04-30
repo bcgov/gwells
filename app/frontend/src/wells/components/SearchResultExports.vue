@@ -81,7 +81,7 @@ export default {
       if (this.constrain) {
         Object.assign(queryParams, this.bounds)
       }
-
+      console.log('export queryParams', queryParams)
       return new URLSearchParams(queryParams).toString()
     }
   },
