@@ -15,6 +15,8 @@ from urllib.parse import quote
 import logging
 import json
 import requests
+import os
+import sys
 
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
@@ -158,17 +160,26 @@ class ListExtracts(APIView):
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, **kwargs):
         try:
-            host = get_env_variable('S3_HOST')
-            use_secure = int(get_env_variable('S3_USE_SECURE', 1))
+            # host = get_env_variable('S3_HOST')
+            # use_secure = int(get_env_variable('S3_USE_SECURE', 1))
             
-            minioClient = Minio(host,
-                              access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
-                              secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-                              secure=use_secure)
+            # minioClient = Minio(host,
+            #                   access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+            #                   secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
+            #                   secure=use_secure)
+            minioClient = Minio(
+                os.environ.get('S3_HOST'), 
+                access_key=os.environ.get('S3_PUBLIC_ACCESS_KEY'), 
+                secret_key=os.environ.get('S3_PUBLIC_SECRET_KEY'),
+                secure=int(os.environ.get('S3_USE_SECURE', 1))
+            )
             
             try:
-                objects = list(minioClient.list_objects(
-                    get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/'))
+                bucket = os.environ.get('S3_WELL_EXPORT_BUCKET')
+                # objects = list(minioClient.list_objects(
+                #     get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/'))
+                objects = list(minioClient.list_objects(bucket, 'export/v2/'))
+
                 logger.info("Successfully listed %d objects", len(objects))
             except Exception as e:
                 logger.error("Error listing objects: %s", str(e))
@@ -179,7 +190,7 @@ class ListExtracts(APIView):
                 for document in objects:
                     logger.info("Processing document: %s", document.object_name)
                     url_data = {
-                        'url': 'https://{}/{}/{}'.format(host,
+                        'url': 'https://{}/{}/{}'.format(os.environ.get('S3_HOST'),
                                                      quote(document.bucket_name),
                                                      quote(document.object_name)),
                         'name': document.object_name,
