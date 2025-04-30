@@ -157,43 +157,52 @@ class ListExtracts(APIView):
     """
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, **kwargs):
-        host = get_env_variable('S3_HOST')
-        use_secure = int(get_env_variable('S3_USE_SECURE', 1))
-        minioClient = Minio(host,
-                            access_key=get_env_variable(
-                                'S3_PUBLIC_ACCESS_KEY'),
-                            secret_key=get_env_variable(
-                                'S3_PUBLIC_SECRET_KEY'),
-                            secure=use_secure)
-        objects = minioClient.list_objects(
-            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/')
-        logger.info("S3 objects: %s", objects)
-        logger.info("S3 host: %s", host)
-        logger.info("S3 use_secure: %s", use_secure)
-        logger.info("bucket: %s", get_env_variable('S3_WELL_EXPORT_BUCKET'))
-        urls = list(
-            map(
-                lambda document: {
-                    'url': 'https://{}/{}/{}'.format(host,
-                                                     quote(
-                                                         document.bucket_name),
+        try:
+            host = get_env_variable('S3_HOST')
+            use_secure = int(get_env_variable('S3_USE_SECURE', 1))
+            
+            minioClient = Minio(host,
+                              access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
+                              secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
+                              secure=use_secure)
+            
+            try:
+                objects = list(minioClient.list_objects(
+                    get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/'))
+                logger.info("Successfully listed %d objects", len(objects))
+            except Exception as e:
+                logger.error("Error listing objects: %s", str(e))
+                return Response({"error": "Failed to list objects"}, status=500)
+                
+            try:
+                urls = []
+                for document in objects:
+                    logger.info("Processing document: %s", document.object_name)
+                    url_data = {
+                        'url': 'https://{}/{}/{}'.format(host,
+                                                     quote(document.bucket_name),
                                                      quote(document.object_name)),
-                    'name': document.object_name,
-                    'size': document.size,
-                    'last_modified': document.last_modified,
-                    'description': self.create_description(document.object_name)
-                }, objects)
-        )
-        return Response(urls)
-
-    def create_description(self, name):
-        extension = name[name.rfind('.')+1:]
-        if extension == 'zip':
-            return 'ZIP, CSV'
-        elif extension == 'xlsx':
-            return 'XLSX'
-        else:
-            return None
+                        'name': document.object_name,
+                        'size': document.size,
+                        'last_modified': document.last_modified,
+                    }
+                    
+                    try:
+                        url_data['description'] = self.create_description(document.object_name)
+                    except Exception as desc_err:
+                        logger.error("Error creating description: %s", str(desc_err))
+                        url_data['description'] = None
+                        
+                    urls.append(url_data)
+                    
+                return Response(urls)
+            except Exception as map_err:
+                logger.error("Error mapping objects to URLs: %s", str(map_err))
+                return Response({"error": "Error processing object data"}, status=500)
+                
+        except Exception as e:
+            logger.error("General error in ListExtracts.get(): %s", str(e))
+            return Response({"error": "Server error"}, status=500)
 
 
 LIST_FILES_OK = openapi.Schema(
