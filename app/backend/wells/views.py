@@ -15,8 +15,6 @@ from urllib.parse import quote
 import logging
 import json
 import requests
-import os
-import sys
 
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import GEOSException, GEOSGeometry
@@ -121,7 +119,6 @@ class WellDetail(RetrieveAPIView):
             qs = Well.objects.all()
         else:
             qs = Well.objects.all().exclude(well_publication_status='Unpublished')
-
         return qs
 
     def get(self, request, *args, **kwargs):
@@ -159,65 +156,39 @@ class ListExtracts(APIView):
     """
     @swagger_auto_schema(auto_schema=None)
     def get(self, request, **kwargs):
-        try:
-            # host = get_env_variable('S3_HOST')
-            # use_secure = int(get_env_variable('S3_USE_SECURE', 1))
-            
-            # minioClient = Minio(host,
-            #                   access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
-            #                   secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),
-            #                   secure=use_secure)
-            minioClient = Minio(
-                os.environ.get('S3_HOST'), 
-                access_key=os.environ.get('S3_PUBLIC_ACCESS_KEY'), 
-                secret_key=os.environ.get('S3_PUBLIC_SECRET_KEY'),
-                secure=int(os.environ.get('S3_USE_SECURE', 1))
-            )
-            
-            try:
-                bucket = os.environ.get('S3_WELL_EXPORT_BUCKET')
-                logger.info("Attempting to list objects from bucket: %s with prefix: export/v2/", bucket)
-                
-                # Print environment variables for debugging
-                logger.info("S3_HOST: %s", os.environ.get('S3_HOST'))
-                logger.info("S3_WELL_EXPORT_BUCKET: %s", bucket)
-                logger.info("S3_USE_SECURE: %s", os.environ.get('S3_USE_SECURE', 1))
-                
-                objects = list(minioClient.list_objects(bucket, 'export/v2/'))
-                logger.info("Successfully listed %d objects", len(objects))
-            except Exception as e:
-                logger.error("Error listing objects: %s", str(e), exc_info=True)  # Add exc_info=True to get full traceback
-                return Response({"error": "Failed to list objects: " + str(e)}, status=500)
-                
-            try:
-                urls = []
-                for document in objects:
-                    logger.info("Processing document: %s", document.object_name)
-                    url_data = {
-                        'url': 'https://{}/{}/{}'.format(os.environ.get('S3_HOST'),
-                                                     quote(document.bucket_name),
+        host = get_env_variable('S3_HOST')
+        use_secure = int(get_env_variable('S3_USE_SECURE', 1))
+        minioClient = Minio(host,
+                            access_key=get_env_variable(
+                                'S3_PUBLIC_ACCESS_KEY'),
+                            secret_key=get_env_variable(
+                                'S3_PUBLIC_SECRET_KEY'),
+                            secure=use_secure)
+        objects = minioClient.list_objects(
+            get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/')
+        urls = list(
+            map(
+                lambda document: {
+                    'url': 'https://{}/{}/{}'.format(host,
+                                                     quote(
+                                                         document.bucket_name),
                                                      quote(document.object_name)),
-                        'name': document.object_name,
-                        'size': document.size,
-                        'last_modified': document.last_modified,
-                    }
-                    
-                    try:
-                        url_data['description'] = self.create_description(document.object_name)
-                    except Exception as desc_err:
-                        logger.error("Error creating description: %s", str(desc_err))
-                        url_data['description'] = None
-                        
-                    urls.append(url_data)
-                    
-                return Response(urls)
-            except Exception as map_err:
-                logger.error("Error mapping objects to URLs: %s", str(map_err))
-                return Response({"error": "Error processing object data"}, status=500)
-                
-        except Exception as e:
-            logger.error("General error in ListExtracts.get(): %s", str(e))
-            return Response({"error": "Server error"}, status=500)
+                    'name': document.object_name,
+                    'size': document.size,
+                    'last_modified': document.last_modified,
+                    'description': self.create_description(document.object_name)
+                }, objects)
+        )
+        return Response(urls)
+
+    def create_description(self, name):
+        extension = name[name.rfind('.')+1:]
+        if extension == 'zip':
+            return 'ZIP, CSV'
+        elif extension == 'xlsx':
+            return 'XLSX'
+        else:
+            return None
 
 
 LIST_FILES_OK = openapi.Schema(
@@ -603,7 +574,7 @@ class WellExportListAPIViewV1(ListAPIView):
             raise NotFound('No well records could be found.')
 
         renderer = request.accepted_renderer
-        if (renderer.format == 'xlsx'):
+        if renderer.format == 'xlsx':
             response_class = FileResponse
         else:
             response_class = StreamingHttpResponse
