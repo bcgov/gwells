@@ -176,14 +176,18 @@ class ListExtracts(APIView):
             
             try:
                 bucket = os.environ.get('S3_WELL_EXPORT_BUCKET')
-                # objects = list(minioClient.list_objects(
-                #     get_env_variable('S3_WELL_EXPORT_BUCKET'), 'export/v2/'))
+                logger.info("Attempting to list objects from bucket: %s with prefix: export/v2/", bucket)
+                
+                # Print environment variables for debugging
+                logger.info("S3_HOST: %s", os.environ.get('S3_HOST'))
+                logger.info("S3_WELL_EXPORT_BUCKET: %s", bucket)
+                logger.info("S3_USE_SECURE: %s", os.environ.get('S3_USE_SECURE', 1))
+                
                 objects = list(minioClient.list_objects(bucket, 'export/v2/'))
-
                 logger.info("Successfully listed %d objects", len(objects))
             except Exception as e:
-                logger.error("Error listing objects: %s", str(e))
-                return Response({"error": "Failed to list objects"}, status=500)
+                logger.error("Error listing objects: %s", str(e), exc_info=True)  # Add exc_info=True to get full traceback
+                return Response({"error": "Failed to list objects: " + str(e)}, status=500)
                 
             try:
                 urls = []
