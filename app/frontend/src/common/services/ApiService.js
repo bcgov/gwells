@@ -64,14 +64,26 @@ const ApiService = {
     options = { ...options, responseType: 'blob' }
     return axios.get(url, options).then((response) => {
       const blob = response.data
-      const contentDispositionHeader = response.headers['content-disposition']
-      const fileNameMatch = contentDispositionHeader.match(/filename=(["']?)([^'"]+)\1/)
-      const fileName = fileNameMatch ? fileNameMatch[2] : 'gwells-download'
+      let fileName = 'gwells-download'
+      
+      try {
+        const contentDispositionHeader = response.headers['content-disposition']
+        if (contentDispositionHeader) {
+          const fileNameMatch = contentDispositionHeader.match(/filename=(["']?)([^'"]+)\1/)
+          if (fileNameMatch && fileNameMatch[2]) {
+            fileName = fileNameMatch[2]
+          }
+        }
+      } catch (error) {
+        console.warn('Error extracting filename from response headers:', error)
+      }
 
       triggerDownload(blob, fileName, document.body)
+    }).catch(error => {
+      console.error('Download failed:', error)
+      throw error
     })
   },
-  // fileUpload uploads a file using a pre-signed S3 URL
   fileUpload (presignedUrl, file) {
     const config = {
       headers: {
