@@ -2533,9 +2533,9 @@ class AquiferParameters(AuditModel):
                                 db_comment='Valid codes for the boundaries observed in '
                                             'pumping test analysis. i.e. CH, NF.')
 
-    private = models.BooleanField(
-      default=False, choices=((False, 'No'), (True, 'Yes'))
-    )
+    # private = models.BooleanField(
+    #   default=False, choices=((False, 'No'), (True, 'Yes'))
+    # )
     
     storativity = models.DecimalField(
         max_digits=8, decimal_places=7, blank=True, null=True, verbose_name='Storativity')
