@@ -249,7 +249,7 @@
 </template>
 
 <script>
-import querystring from 'querystring'
+import querystring from 'querystring-es3'
 import mapboxgl from 'mapbox-gl'
 import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 import { omit } from 'lodash'
