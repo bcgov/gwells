@@ -35,7 +35,7 @@ spec:
         - name: JWT_AUDIENCE
           value: webapp-dev-local
         - name: VITE_AXIOS_BASE_URL
-          value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
+          value: "{{.Env.VITE_AXIOS_BASE_URL}}"
         - name: VITE_BACKEND_URL
           value: "{{.Env.VITE_BACKEND_URL}}"
         - name: BACKEND_URL
