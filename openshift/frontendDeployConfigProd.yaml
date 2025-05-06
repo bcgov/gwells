@@ -24,7 +24,7 @@ spec:
         from:
           kind: ImageStreamTag
           namespace: 26e83e-tools
-          name: 'gwells-application:latest'
+          name: 'gwells-application:prod'
         lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d'
     - type: ConfigChange
   replicas: 1
