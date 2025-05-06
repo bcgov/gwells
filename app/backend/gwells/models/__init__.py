@@ -53,11 +53,11 @@ class Profile(models.Model, DBComments):
 
 
 class Border(models.Model):
-    se_a_c_flg = models.CharField(max_length=254, null=True)
+    se_a_c_flg = models.CharField(max_length=254)
     obejctid = models.FloatField()
-    shape = models.FloatField(null=True)
+    shape = models.FloatField()
     length_m = models.FloatField()
-    oic_number = models.CharField(max_length=7, null=True)
+    oic_number = models.CharField(max_length=7)
     area_sqm = models.FloatField()
     upt_date = models.CharField(max_length=20)
     upt_type = models.CharField(max_length=50)
@@ -68,8 +68,8 @@ class Border(models.Model):
     aa_name = models.CharField(max_length=100)
     abrvn = models.CharField(max_length=40)
     bdy_type = models.CharField(max_length=20)
-    oic_year = models.CharField(max_length=4, null=True)
-    afctd_area = models.CharField(max_length=120, null=True)
+    oic_year = models.CharField(max_length=4)
+    afctd_area = models.CharField(max_length=120)
     geom = models.MultiPolygonField(srid=4269)
 
 
