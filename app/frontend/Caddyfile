@@ -39,8 +39,6 @@
 	# Proxy requests to API service
 	reverse_proxy /api* {
 		to $CADDY_HOST
-		uri strip_prefix /api
-		uri prefix /gwells/api/v2
 	}
 }
 :3001 {
