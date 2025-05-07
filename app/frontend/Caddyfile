@@ -13,14 +13,14 @@
 	templates
 }
 :8080 {
-	log {
-		output stdout
-		format console {
-			time_format iso8601
-			level_format color
-		}
-		level {$LOG_LEVEL}
-	}
+	# log {
+	# 	output stdout
+	# 	format console {
+	# 		time_format iso8601
+	# 		level_format color
+	# 	}
+	# 	level {$LOG_LEVEL}
+	# }
 	# handle_path /bc-maps/* {
 	# 	uri strip_prefix /bc-maps
 	# 	reverse_proxy https://maps.gov.bc.ca {
