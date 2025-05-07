@@ -36,6 +36,7 @@ spec:
           value: webapp-dev-local
         - name: VITE_AXIOS_BASE_URL
           value: "{{.Env.VITE_AXIOS_BASE_URL}}"
+          # value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
         - name: VITE_BACKEND_URL
           value: "{{.Env.VITE_BACKEND_URL}}"
         - name: BACKEND_URL
