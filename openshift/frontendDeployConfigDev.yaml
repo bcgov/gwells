@@ -52,6 +52,8 @@ spec:
               value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
             - name: VITE_BACKEND_URL
               value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+            - name: CADDY_HOST
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
           resources:
             limits:
               cpu: 50m

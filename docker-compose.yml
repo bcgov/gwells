@@ -117,6 +117,7 @@ services:
     environment:
       DEBUG: "True"
       VITE_AXIOS_BASE_URL: /api/
+      CADDY_HOST: "localhost:8000"
       VITE_VECTOR_TILE_BASE_URL: "/tiles/"
       VECTOR_TILE_SERVER: "http://tileserv:7800/"
       API_TARGET: "${API_TARGET:-http://backend:8080/}"
