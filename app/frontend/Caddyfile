@@ -1,4 +1,3 @@
-order replace after encode
 {
 	auto_https off
 	http_port 8080
@@ -31,7 +30,7 @@ order replace after encode
 			try_files {path} /index.html
 		}
 	}
-	replace_response {
+	replace {
 		"{{.Env.VITE_AXIOS_BASE_URL}}" {$VITE_AXIOS_BASE_URL}
 	}
 	rewrite @spa_router {http.matchers.file.relative}
@@ -39,6 +38,7 @@ order replace after encode
 	reverse_proxy /api* {
 		to $CADDY_HOST
 	}
+	order replace after encode
 }
 :3001 {
 	handle /health {

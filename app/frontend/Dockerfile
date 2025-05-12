@@ -16,7 +16,7 @@ FROM caddy:builder-alpine AS builder
 RUN xcaddy build \
   --with github.com/caddyserver/replace-response
  
-FROM caddy:alpine
+FROM caddy:2.8.4-alpine
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 RUN apk add --no-cache ca-certificates
