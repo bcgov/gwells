@@ -37,6 +37,7 @@
 		to $CADDY_HOST
 	}
 }
+order replace after encode
 :3001 {
 	handle /health {
 		respond "OK"
