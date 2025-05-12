@@ -21,8 +21,10 @@
 	# 	}
 	# 	level {$LOG_LEVEL}
 	# }
+	
 	root * /srv
 	encode zstd gzip
+	templates
 	file_server
 	@spa_router {
 		not path /gwells/api/v2/*
@@ -30,16 +32,12 @@
 			try_files {path} /index.html
 		}
 	}
-	replace {
-		"{{.Env.VITE_AXIOS_BASE_URL}}" {$VITE_AXIOS_BASE_URL}
-	}
 	rewrite @spa_router {http.matchers.file.relative}
 	# Proxy requests to API service
 	reverse_proxy /api* {
 		to $CADDY_HOST
 	}
 }
-// order replace after encode
 :3001 {
 	handle /health {
 		respond "OK"
