@@ -1,6 +1,4 @@
-{
-	order replace after encode
-}
+order replace after encode
 {
 	auto_https off
 	http_port 8080
