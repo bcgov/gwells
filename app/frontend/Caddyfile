@@ -30,10 +30,6 @@
 			try_files {path} /index.html
 		}
 	}
-	templates {
-        mime application/javascript text/plain
-        # match /env.js
-    }
 	replace "{{.Env.VITE_AXIOS_BASE_URL}}" {$VITE_AXIOS_BASE_URL}
 	rewrite @spa_router {http.matchers.file.relative}
 	# Proxy requests to API service

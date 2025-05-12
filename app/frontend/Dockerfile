@@ -12,7 +12,13 @@ RUN npm install
 RUN npm install -g serve
 RUN npm run build
 
-FROM caddy:2.8.4-alpine
+FROM caddy:builder-alpine AS builder
+RUN xcaddy build \
+  --with github.com/caddyserver/replace-response
+ 
+FROM caddy:alpine
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
 RUN apk add --no-cache ca-certificates
 
 # Copy static files, verify Caddyfile formatting
