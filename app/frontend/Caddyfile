@@ -31,10 +31,10 @@
 		}
 	}
 	templates {
-        mime application/javascript
+        mime application/javascript text/plain
         # match /env.js
-		replace "{{.Env.VITE_AXIOS_BASE_URL}}" {$VITE_AXIOS_BASE_URL}
     }
+	replace "{{.Env.VITE_AXIOS_BASE_URL}}" {$VITE_AXIOS_BASE_URL}
 	rewrite @spa_router {http.matchers.file.relative}
 	# Proxy requests to API service
 	reverse_proxy /api* {
