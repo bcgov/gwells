@@ -38,8 +38,8 @@
 	reverse_proxy /api* {
 		to $CADDY_HOST
 	}
-	order replace after encode
 }
+// order replace after encode
 :3001 {
 	handle /health {
 		respond "OK"
