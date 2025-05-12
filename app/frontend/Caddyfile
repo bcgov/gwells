@@ -1,4 +1,7 @@
 {
+	order replace after encode
+}
+{
 	auto_https off
 	http_port 8080
     https_port 8443
@@ -30,7 +33,7 @@
 			try_files {path} /index.html
 		}
 	}
-	replace {
+	replace_response {
 		"{{.Env.VITE_AXIOS_BASE_URL}}" {$VITE_AXIOS_BASE_URL}
 	}
 	rewrite @spa_router {http.matchers.file.relative}
@@ -39,7 +42,6 @@
 		to $CADDY_HOST
 	}
 }
-order replace after encode
 :3001 {
 	handle /health {
 		respond "OK"
