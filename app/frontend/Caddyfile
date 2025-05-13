@@ -27,7 +27,7 @@
 	file_server
   templates {
   mime text/plain text/html text/javascript
-  between {{{{ }}}}
+  between [[ ]]
   }
 	@spa_router {
 		not path /gwells/api/v2/*
