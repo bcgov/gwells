@@ -12,10 +12,11 @@
     encode zstd gzip
     file_server
     
-    # Add templates directive at the server level
+    # Fixed templates directive syntax
     templates {
-        mime "application/javascript"
-        between "{$" "}"
+        path /env.js
+        mime application/javascript
+        delimiters "{$" "}"
     }
     
     @spa_router {
