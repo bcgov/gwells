@@ -13,15 +13,17 @@ RUN npm install -g serve
 RUN npm run build
 
 # Final image
-FROM caddy:2.7.6
-COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+FROM caddy:2.7.6-alpine
 
 RUN apk add --no-cache ca-certificates
 
 # Copy static files, verify Caddyfile formatting
 COPY --from=build /app/frontend/dist /srv
-COPY Caddyfile /etc/caddy/Caddyfile
+COPY ./Caddyfile /etc/caddy/Caddyfile
 RUN caddy fmt /etc/caddy/Caddyfile --overwrite
+
+# Copy env.js separately to make sure it's in the right place
+COPY ./public/env.js /srv/env.js
 
 # Fix permissions for OpenShift
 RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy \
