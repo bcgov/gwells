@@ -12,11 +12,14 @@ RUN npm install
 RUN npm install -g serve
 RUN npm run build
 
-FROM caddy:builder-alpine AS builder
+# Use Caddy with templates module
+FROM caddy:2.4.6-builder AS builder
 RUN xcaddy build \
-  --with github.com/caddyserver/replace-response
- 
-FROM caddy:2.8.4-alpine
+    --with github.com/caddyserver/caddy/v2 \
+    --with github.com/caddyserver/transform-encoder
+
+# Final image
+FROM caddy:2.4.6
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 RUN apk add --no-cache ca-certificates
