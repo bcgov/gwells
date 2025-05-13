@@ -28,12 +28,11 @@
     }
     rewrite @spa_router {http.matchers.file.relative}
     
-    # New reverse proxy configuration using only host part
-    handle /api* {
-        reverse_proxy {$API_HOST} {
-            path_regexp \/api(.*)
-            replace /{$API_PATH}$1
-        }
+    # Updated reverse proxy configuration
+    handle_path /api/* {
+        uri strip_prefix /api
+        uri path_prefix {$API_PATH}
+        reverse_proxy {$API_HOST}
     }
 }
 
