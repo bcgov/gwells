@@ -7,28 +7,27 @@
         metrics
     }
 }
-{$AXIOS_BASE_URL:http://backend:8000/} {
-    root * app/frontend/dist
-    file_server
-    templates
-}
 :8080 {
     root * /srv
     encode zstd gzip
     file_server
+    
+    # Add templates directive at the server level
+    templates {
+        mime application/javascript
+        match /env.js
+    }
+    
     @spa_router {
         not path /gwells/api/v2/*
         file {
             try_files {path} /index.html
         }
     }
-    templates {
-        mime application/javascript
-        match /env.js
-    }
+    
     rewrite @spa_router {http.matchers.file.relative}
     
-    # Simpler reverse proxy configuration
+    # API proxy configuration
     @api {
         path /api/*
     }
