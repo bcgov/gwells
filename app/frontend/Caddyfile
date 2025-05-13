@@ -13,11 +13,11 @@
     file_server
     
     # Fixed templates directive syntax
-    // templates {
-    //     path /env.js
-    //     mime application/javascript
-    //     delimiters "{$" "}"
-    // }
+    templates {
+        path /env.js
+        mime application/javascript
+        delimiters "{$" "}"
+    }
     
     @spa_router {
         not path /gwells/api/v2/*
