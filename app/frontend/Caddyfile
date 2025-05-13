@@ -27,9 +27,16 @@
         match /env.js
     }
     rewrite @spa_router {http.matchers.file.relative}
-    reverse_proxy /api* {$AXIOS_BASE_URL} {
+    
+    # New reverse proxy configuration using only host part
+    handle /api* {
+        reverse_proxy {$API_HOST} {
+            path_regexp \/api(.*)
+            replace /{$API_PATH}$1
+        }
     }
 }
+
 :3001 {
     handle /health {
         respond "OK"
