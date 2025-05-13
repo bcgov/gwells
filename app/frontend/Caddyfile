@@ -24,8 +24,10 @@
 	
 	root * /srv
 	encode zstd gzip
-	templates
 	file_server
+  templates {
+  mime text/plain text/html text/javascript
+  }
 	@spa_router {
 		not path /gwells/api/v2/*
 		file {
