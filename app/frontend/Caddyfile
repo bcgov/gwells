@@ -14,8 +14,8 @@
     
     # Add templates directive at the server level
     templates {
-        mime application/javascript
-        match /env.js
+        mime "application/javascript"
+        between "{$" "}"
     }
     
     @spa_router {

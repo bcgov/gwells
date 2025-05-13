@@ -19,7 +19,7 @@ RUN xcaddy build \
     --with github.com/caddyserver/transform-encoder
 
 # Final image
-FROM caddy:2.4.6
+FROM caddy:2.7.6
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
 RUN apk add --no-cache ca-certificates
