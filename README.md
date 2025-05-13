@@ -12,6 +12,7 @@ GWELLS, the new groundwater data repository, aims to improve the user experience
 
 The application is being developed as an open source solution.
 ## Table of Contents
+## Test
 
 1. [Using the GWELLS API](#Using-the-gwells-api)
 1. [DataBC Export](#databc-export)
