@@ -7,7 +7,7 @@
         metrics
     }
 }
-{$VITE_AXIOS_BASE_URL:http://backend:8000/} {
+{$AXIOS_BASE_URL:http://backend:8000/} {
     root * app/frontend/dist
     file_server
     templates
@@ -27,7 +27,7 @@
         match /env.js
     }
     rewrite @spa_router {http.matchers.file.relative}
-    reverse_proxy /api* {$VITE_AXIOS_BASE_URL} {
+    reverse_proxy /api* {$AXIOS_BASE_URL} {
     }
 }
 :3001 {

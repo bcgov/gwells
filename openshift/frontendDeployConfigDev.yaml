@@ -47,13 +47,11 @@ spec:
               protocol: TCP
           env:
             - name: VITE_AXIOS_BASE_URL
-              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
             - name: BACKEND_URL
-              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
             - name: VITE_BACKEND_URL
-              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
-            - name: CADDY_HOST
-              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca'
+              value: 'https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
           resources:
             limits:
               cpu: 50m

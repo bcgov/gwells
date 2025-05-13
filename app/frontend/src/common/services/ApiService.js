@@ -4,7 +4,7 @@ import { triggerDownload } from '../helpers/download'
 
 const ApiService = {
   init () {
-    axios.defaults.baseURL = import.meta.env.VITE_AXIOS_BASE_URL
+    axios.defaults.baseURL = import.meta.env.AXIOS_BASE_URL
     this.baseURL = axios.defaults.baseURL
 
     axios.interceptors.request.use(function (request) {
