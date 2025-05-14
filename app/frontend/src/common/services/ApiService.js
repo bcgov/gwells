@@ -4,8 +4,7 @@ import { triggerDownload } from '../helpers/download'
 
 const ApiService = {
   init () {
-    // Replace Vite env var with runtime window.env variable
-    axios.defaults.baseURL = window.env?.API_BASE_URL || import.meta.env.AXIOS_BASE_URL
+    axios.defaults.baseURL = import.meta.env.VITE_AXIOS_BASE_URL
     this.baseURL = axios.defaults.baseURL
 
     axios.interceptors.request.use(function (request) {

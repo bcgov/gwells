@@ -1,6 +1,6 @@
 (function (window) {
     window.env = window.env || {};
-    window.env.DEBUG = "{$PATH}"; // Use Caddy's env var syntax
-    window.env.AXIOS_BASE_URL = "{$AXIOS_BASE_URL}";
-    // window.env.API_BASE_URL = "{$API_BASE_TEST}";
+    window.env.BACKEND_URL = "{{.Env.BACKEND_URL}}";
+    window.env.VITE_BACKEND_URL = "{{.Env.VITE_BACKEND_URL}}";
+    window.env.VITE_AXIOS_BASE_URL = "{{.Env.VITE_AXIOS_BASE_URL}}";
 })(window);

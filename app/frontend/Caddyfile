@@ -7,37 +7,29 @@
         metrics
     }
 }
+{$VITE_BACKEND_URL:http://backend:8000/} {
+    root * app/frontend/dist
+    file_server
+    templates
+}
 :8080 {
     root * /srv
     encode zstd gzip
     file_server
-    
-    # Fixed templates directive syntax
-    templates {
-        path /env.js
-        mime application/javascript
-        delimiters "{$" "}"
-    }
-    
     @spa_router {
         not path /gwells/api/v2/*
         file {
             try_files {path} /index.html
         }
     }
-    
-    rewrite @spa_router {http.matchers.file.relative}
-    
-    # API proxy configuration
-    @api {
-        path /api/*
+    templates {
+        mime application/javascript
+        match /env.js
     }
-    handle @api {
-        uri replace /api {$API_PATH}
-        reverse_proxy {$API_HOST}
+    rewrite @spa_router {http.matchers.file.relative}
+    reverse_proxy /api* {$VITE_BACKEND_URL} {
     }
 }
-
 :3001 {
     handle /health {
         respond "OK"
