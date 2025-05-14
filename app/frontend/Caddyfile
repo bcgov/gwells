@@ -1,37 +1,48 @@
 {
-    auto_https off
-    http_port 8080
+ auto_https off
+ http_port 8080
     https_port 8443
-    admin 0.0.0.0:3003
-    servers {
-        metrics
-    }
+ admin 0.0.0.0:3003
+ servers {
+     metrics
+ }
 }
-{$VITE_BACKEND_URL:http://backend:8000/} {
-    root * app/frontend/dist
-    file_server
-    templates
+{$VITE_AXIOS_BASE_URL:http://backend:8000/} {
+ root * app/frontend/dist
+ file_server
+ templates
 }
 :8080 {
-    root * /srv
-    encode zstd gzip
-    file_server
-    @spa_router {
-        not path /gwells/api/v2/*
-        file {
-            try_files {path} /index.html
-        }
-    }
-    templates {
-        mime application/javascript
-        match /env.js
-    }
-    rewrite @spa_router {http.matchers.file.relative}
-    reverse_proxy /api* {$VITE_BACKEND_URL} {
-    }
+ # log {
+ #   output stdout
+ #   format console {
+ #       time_format iso8601
+ #       level_format color
+ #   }
+ #   level {$LOG_LEVEL}
+ # }
+    
+ root * /srv
+ encode zstd gzip
+ file_server
+ templates {
+  mime text/plain text/html text/javascript
+  between @#@# #@#@
+  }
+ @spa_router {
+     not path /gwells/api/v2/*
+     file {
+         try_files {path} /index.html
+     }
+ }
+ rewrite @spa_router {http.matchers.file.relative}
+ # Proxy requests to API service
+ reverse_proxy /api* {
+     to $CADDY_HOST
+ }
 }
 :3001 {
-    handle /health {
-        respond "OK"
-    }
+ handle /health {
+     respond "OK"
+ }
 }
