@@ -49,7 +49,9 @@ export default {
         '&REQUEST=GetFeature&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG' +
         "&CQL_FILTER=REGION_NAME IN('South Coast Natural Resource Region','West Coast Natural Resource Region')"
       axios.get(url, { transformRequest: (data, headers) => {
-        delete headers.common['Authorization']
+        if (headers && headers.common) {
+          delete headers.common['Authorization']
+        }
         return data
       }
       }).then((response) => {
@@ -64,7 +66,9 @@ export default {
         '&outputFormat=json&srsName=epsg:4326&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_NOTATION_AQUIFERS_SP' +
           '&propertyName=AQUIFER_ID,NOTATION_DESCRIPTION'
       axios.get(url, { transformRequest: (data, headers) => {
-        delete headers.common['Authorization']
+        if (headers && headers.common) {
+          delete headers.common['Authorization']
+        }
         return data
       }
       }).then((response) => {
