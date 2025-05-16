@@ -327,10 +327,8 @@ export default {
 
       ApiService.query('wells/locations', params, { cancelToken: this.pendingLocationSearch.token })
         .then(
+          // resolved
           (response) => {
-            console.log('GeoJSON response:', response.data);
-            console.log('Features count:', response.data.features.length);
-            console.log('Sample feature:', response.data.features[0]);
             this.searchInProgress = false
             this.searchOnMapMove = true
             this.movedSinceLastSearch = false
@@ -362,43 +360,8 @@ export default {
         )
     },
     updateWellSearchResultsLayer (geoJSON) {
-      if (this.map) {
-        // Convert MultiPoint geometries (type 4) to Point geometries (type 1)
-        const processedGeoJSON = {
-          ...geoJSON,
-          features: geoJSON.features.map(feature => {
-            // If the geometry is a MultiPoint, take just the first point
-            if (feature.geometry && feature.geometry.type === 'MultiPoint' && 
-                feature.geometry.coordinates && feature.geometry.coordinates.length > 0) {
-              return {
-                ...feature,
-                geometry: {
-                  type: 'Point',
-                  coordinates: feature.geometry.coordinates[0] // Use the first point
-                }
-              };
-            }
-            return feature;
-          })
-        };
-
-        console.log('Updating searched wells layer with features:', processedGeoJSON.features.length);
-        this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(processedGeoJSON);
-        
-        // Make sure the layer is visible
-        if (!this.map.getLayoutProperty(SEARCHED_WELLS_LAYER_ID, 'visibility') || 
-            this.map.getLayoutProperty(SEARCHED_WELLS_LAYER_ID, 'visibility') === 'none') {
-          this.map.setLayoutProperty(SEARCHED_WELLS_LAYER_ID, 'visibility', 'visible');
-        }
-
-        // After updating the layer
-        if (processedGeoJSON.features.length > 0) {
-          const bounds = new mapboxgl.LngLatBounds();
-          processedGeoJSON.features.forEach(feature => {
-            bounds.extend(feature.geometry.coordinates);
-          });
-          this.map.fitBounds(bounds, { padding: 50 });
-        }
+      if (this.map) { // map could have been unloaded by the time this function is called
+        this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(geoJSON)
       }
     },
     clearWellSearchResultsLayer () {
