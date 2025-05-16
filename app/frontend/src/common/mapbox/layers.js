@@ -1,6 +1,6 @@
 import { defaultsDeep } from 'lodash'
 
-const VECTOR_TILE_SERVER = `https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/`
+const VECTOR_TILE_SERVER = `/gwells/tiles/`
 
 export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
 export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
