@@ -265,6 +265,14 @@ const router = new Router({
   }
 })
 
+// Add after creating the router instance
+const originalReplace = Router.prototype.replace
+Router.prototype.replace = function replace(location) {
+  return originalReplace.call(this, location).catch(err => {
+    if (err.name !== 'NavigationDuplicated') throw err
+  })
+}
+
 router.beforeEach((to, from, next) => {
   if (!router.app.$keycloak) {
     authenticate.authenticate(store).then((keycloak) => {
