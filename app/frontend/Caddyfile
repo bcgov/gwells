@@ -13,62 +13,21 @@
     templates
 }
 :8080 {
-    # Add CORS headers for preflight OPTIONS requests
-    @options_with_prefix {
-        method OPTIONS
-        path_regexp tiles ^/gwells/tiles/.*$
-    }
-    @options_without_prefix {
-        method OPTIONS
-        path_regexp tiles2 ^/tiles/.*$
-    }
-    handle @options_with_prefix {
-        header Access-Control-Allow-Origin "*"
-        header Access-Control-Allow-Methods "GET, OPTIONS"
-        header Access-Control-Allow-Headers "DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range"
-        header Access-Control-Max-Age "1728000"
-        respond 204
-    }
-    handle @options_without_prefix {
-        header Access-Control-Allow-Origin "*"
-        header Access-Control-Allow-Methods "GET, OPTIONS" 
-        header Access-Control-Allow-Headers "DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range"
-        header Access-Control-Max-Age "1728000"
-        respond 204
-    }
-    
-    # Handle tile requests and proxy them to the tile server
-    @tiles_with_prefix {
-        path_regexp tiles_proxy1 ^/gwells/tiles/(.*)$
-    }
-    @tiles_without_prefix {
-        path_regexp tiles_proxy2 ^/tiles/(.*)$
-    }
-    handle @tiles_with_prefix {
-        uri strip_prefix /gwells
-        reverse_proxy https://gwells.apps.silver.devops.gov.bc.ca {
-            header_up Host {upstream_hostport}
-            header_down Access-Control-Allow-Origin "*" 
-            header_down Access-Control-Allow-Methods "GET, OPTIONS"
-            header_down Access-Control-Allow-Headers "DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range"
-            header_down Access-Control-Expose-Headers "Content-Length, Content-Range"
+    root * /srv
+    encode zstd gzip
+    file_server
+    @spa_router {
+        not path /gwells/api/v2/*
+        file {
+            try_files {path} /index.html
         }
     }
-    handle @tiles_without_prefix {
-        reverse_proxy https://gwells.apps.silver.devops.gov.bc.ca/gwells {
-            header_up Host {upstream_hostport}
-            header_down Access-Control-Allow-Origin "*" 
-            header_down Access-Control-Allow-Methods "GET, OPTIONS"
-            header_down Access-Control-Allow-Headers "DNT, User-Agent, X-Requested-With, If-Modified-Since, Cache-Control, Content-Type, Range"
-            header_down Access-Control-Expose-Headers "Content-Length, Content-Range"
-        }
+    templates {
+        mime application/javascript
+        match /env.js
     }
-
-    # Serve the frontend static files
-    handle {
-        root * /srv
-        try_files {path} /index.html
-        file_server
+    rewrite @spa_router {http.matchers.file.relative}
+    reverse_proxy /api* {$VITE_BACKEND_URL} {
     }
 }
 :3001 {
