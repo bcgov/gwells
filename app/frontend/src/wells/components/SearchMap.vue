@@ -363,8 +363,27 @@ export default {
     },
     updateWellSearchResultsLayer (geoJSON) {
       if (this.map) {
-        console.log('Updating searched wells layer with features:', geoJSON.features.length);
-        this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(geoJSON);
+        // Convert MultiPoint geometries (type 4) to Point geometries (type 1)
+        const processedGeoJSON = {
+          ...geoJSON,
+          features: geoJSON.features.map(feature => {
+            // If the geometry is a MultiPoint, take just the first point
+            if (feature.geometry && feature.geometry.type === 'MultiPoint' && 
+                feature.geometry.coordinates && feature.geometry.coordinates.length > 0) {
+              return {
+                ...feature,
+                geometry: {
+                  type: 'Point',
+                  coordinates: feature.geometry.coordinates[0] // Use the first point
+                }
+              };
+            }
+            return feature;
+          })
+        };
+
+        console.log('Updating searched wells layer with features:', processedGeoJSON.features.length);
+        this.map.getSource(SEARCHED_WELLS_SOURCE_ID).setData(processedGeoJSON);
         
         // Make sure the layer is visible
         if (!this.map.getLayoutProperty(SEARCHED_WELLS_LAYER_ID, 'visibility') || 
@@ -373,9 +392,9 @@ export default {
         }
 
         // After updating the layer
-        if (geoJSON.features.length > 0) {
+        if (processedGeoJSON.features.length > 0) {
           const bounds = new mapboxgl.LngLatBounds();
-          geoJSON.features.forEach(feature => {
+          processedGeoJSON.features.forEach(feature => {
             bounds.extend(feature.geometry.coordinates);
           });
           this.map.fitBounds(bounds, { padding: 50 });
