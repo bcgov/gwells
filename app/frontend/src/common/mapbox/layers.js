@@ -318,15 +318,15 @@ export function searchedWellsLayer (options = {}) {
   const styles = defaultsDeep(options.styles, {
     'circle-color': [
       'case',
-      ['==', ['get', 'well_status'], 'CLOSURE'], '#302d57',
-      ['==', ['get', 'well_status'], 'ABANDONED'], '#302d57',
-      ['to-boolean', ['get', 'artesian_conditions']], '#1099FE',
+      ['==', ['get', 'well_status_code'], 'CLOSURE'], '#302d57',
+      ['==', ['get', 'well_status_code'], 'ABANDONED'], '#302d57',
+      ['to-boolean', ['get', 'artesian']], '#1099FE',
       '#0162FE'
     ],
     'circle-radius': 5,
     'circle-stroke-color': [
       'case',
-      ['to-boolean', ['get', 'artesian_conditions']], '#EE14CA',
+      ['to-boolean', ['get', 'artesian']], '#EE14CA',
       'black'
     ],
     'circle-stroke-width': 2.5
