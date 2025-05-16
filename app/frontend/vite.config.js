@@ -14,9 +14,9 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*'],
+    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
     cors: {
-      origin: ['gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*'],
+      origin: ['gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
       credentials: true,
     },
   },
@@ -24,9 +24,9 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*'],
+    allowedHosts: ['gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'localhost', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
     cors: {
-      origin: ['gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*'],
+      origin: ['gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca', 'maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
       credentials: true,
     },
   },
