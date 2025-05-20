@@ -20,8 +20,6 @@ export default defineConfig({
         'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
         'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
         'https://gwells.apps.silver.devops.gov.bc.ca',
-        'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*',
-        'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*',
         'https://maps.gov.bc.ca'
       ],
       credentials: true,
@@ -37,8 +35,6 @@ export default defineConfig({
         'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
         'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
         'https://gwells.apps.silver.devops.gov.bc.ca',
-        'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*',
-        'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*',
         'https://maps.gov.bc.ca'
       ],
       credentials: true,
