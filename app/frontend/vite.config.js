@@ -14,13 +14,14 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: ['https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'localhost', 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
+    allowedHosts: ['https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'localhost', 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/postgis_ftw.gwells_well_view/4/1/4.pbf'],
     cors: {
       origin: [
         'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
         'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
         'https://gwells.apps.silver.devops.gov.bc.ca',
-        'https://maps.gov.bc.ca'
+        'https://maps.gov.bc.ca',
+        'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/postgis_ftw.gwells_well_view/4/1/4.pbf'
       ],
       credentials: true,
     },
@@ -29,13 +30,14 @@ export default defineConfig({
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: ['https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'localhost', 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
+    allowedHosts: ['https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'localhost', 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/postgis_ftw.gwells_well_view/4/1/4.pbf'],
     cors: {
       origin: [
         'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
         'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
         'https://gwells.apps.silver.devops.gov.bc.ca',
-        'https://maps.gov.bc.ca'
+        'https://maps.gov.bc.ca',
+        'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/postgis_ftw.gwells_well_view/4/1/4.pbf'
       ],
       credentials: true,
     },
