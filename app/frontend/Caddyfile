@@ -18,7 +18,6 @@
     file_server
     @spa_router {
         not path /gwells/api/v2/*
-        not path /api/tiles/*
         file {
             try_files {path} /index.html
         }
@@ -28,17 +27,7 @@
         match /env.js
     }
     rewrite @spa_router {http.matchers.file.relative}
-    
-    # Existing API proxy
     reverse_proxy /api* {$VITE_BACKEND_URL} {
-    }
-    
-    # New proxy for tiles
-    reverse_proxy /api/tiles/* https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/ {
-        header_up Host gwells.apps.silver.devops.gov.bc.ca
-        header_up Origin https://gwells.apps.silver.devops.gov.bc.ca
-        # Strip the /api/tiles prefix before forwarding
-        uri strip_prefix /api/tiles
     }
 }
 :3001 {
