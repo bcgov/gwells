@@ -3,50 +3,42 @@ import vue from '@vitejs/plugin-vue2'
 import path from 'path'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
- 
+
 export default defineConfig({
-  plugins: [
-    vue()
-  ],
+  plugins: [vue(),
+    NodeGlobalsPolyfillPlugin({
+      process: true,
+      buffer: true
+    })],
   server: {
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: [
-      'gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-      'gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-      'localhost',
-      'maps.gov.bc.ca',
-      'gwells.apps.silver.devops.gov.bc.ca'
-    ],
+    allowedHosts: ['https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'localhost', 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
     cors: {
       origin: [
-        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-        'https://maps.gov.bc.ca',
-        'https://gwells.apps.silver.devops.gov.bc.ca'
+        'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
+        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
+        'https://gwells.apps.silver.devops.gov.bc.ca',
+        'https://maps.gov.bc.ca'
       ],
-      credentials: true
-    }
+      credentials: true,
+    },
   },
   preview: {
     port: 8080,
     strictPort: true,
     host: true,
-    allowedHosts: [
-      'gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-      'gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-      'localhost',
-      'maps.gov.bc.ca',
-      'gwells.apps.silver.devops.gov.bc.ca'
-    ],
+    allowedHosts: ['https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 'localhost', 'https://maps.gov.bc.ca/arcserver/rest/services/Province/roads_wm/MapServer/tile/*', 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/*'],
     cors: {
       origin: [
-        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-        'https://maps.gov.bc.ca',
-        'https://gwells.apps.silver.devops.gov.bc.ca'
+        'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
+        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
+        'https://gwells.apps.silver.devops.gov.bc.ca',
+        'https://maps.gov.bc.ca'
       ],
-      credentials: true
-    }
+      credentials: true,
+    },
   },
   resolve: {
     alias: {
@@ -70,16 +62,7 @@ export default defineConfig({
   },
   optimizeDeps: {
     esbuildOptions: {
-      plugins: [
-        NodeGlobalsPolyfillPlugin({
-          process: true,
-          buffer: true
-        }),
-        NodeModulesPolyfillPlugin()
-      ]
+      plugins: [NodeModulesPolyfillPlugin()]
     }
-  },
-  define: {
-    'process.env': {}
   }
 })
