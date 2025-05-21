@@ -314,7 +314,6 @@ export function wellsAquiferParameters (options = {}) {
 }
 // Builds MapBox layer config object for searched wells with artesian ones with a fuchsia outline
 export function searchedWellsLayer (options = {}) {
-  console.log('searchedWellsLayer', options)
   const layerId = options.id || SEARCHED_WELLS_LAYER_ID
   const styles = defaultsDeep(options.styles, {
     'circle-color': [

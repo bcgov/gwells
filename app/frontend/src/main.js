@@ -107,6 +107,7 @@ new Vue({
     ])
   },
   created () {
+    console.log('This is the new deploy of Gwells')
     this.FETCH_CONFIG()
     window._paq = window._paq || []
     window._paq.push(['trackPageView']) // To track pageview - Matomo
