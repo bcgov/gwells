@@ -16,18 +16,30 @@
     root * /srv
     encode zstd gzip
     file_server
-    @spa_router {
-        not path /gwells/api/v2/*
-        file {
-            try_files {path} /index.html
+
+    # Handle the double path prefix from OpenShift
+    handle /gwells/* {
+        # Strip the leading /gwells prefix from all incoming requests
+        uri strip_prefix /gwells
+
+        # Handle SPA routes, but avoid API paths
+        @spa_router {
+            not path /gwells/api/v2/*
+            file {
+                try_files {path} /index.html
+            }
         }
-    }
-    templates {
-        mime application/javascript
-        match /env.js
-    }
-    rewrite @spa_router {http.matchers.file.relative}
-    reverse_proxy /api* {$VITE_BACKEND_URL} {
+
+        templates {
+            mime application/javascript
+            match /env.js
+        }
+
+        rewrite @spa_router {http.matchers.file.relative}
+        
+        # Forward API requests with the prefix handled
+        reverse_proxy /api* {$VITE_BACKEND_URL} {
+        }
     }
 }
 :3001 {
