@@ -363,3 +363,54 @@ Steps before merging Pull Request into 'release':
   ![alt text](image-13.png)
 
   4. The frontend and backend will then deploy to the test environment
+
+Prod Environment
+  -
+  Steps before merging Pull Request into 'release':
+  1. Login to OpenShift
+
+  2. Navigate to '26e83e-tools' in projects
+
+  ![alt text](image.png)
+
+  3. Make sure you are in the administrator view
+
+  ![alt text](image-1.png)
+
+  4. Go to Builds -> BuildConfigs
+
+  ![alt text](image-2.png)
+
+  5. Find 'gwells-frontend'
+
+  ![alt text](image-3.png)
+
+  6. Click on the YAML tab
+
+  ![alt text](image-4.png)
+
+  7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'prod'. (It may currently already say dev, or test or prod)
+
+  ![alt text](image-14.png)
+
+  8. Hit 'save'
+
+  ![alt text](image-9.png)
+
+  9. You can now merge the Pull Request
+
+  Steps after merging Pull Request into 'release':
+
+  1.  Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
+
+  ![alt text](image-11.png)
+
+  2. Then select 'promote-to-prod'
+
+  ![alt text](image-15.png)
+
+  3. Finally Select Actions -> Start
+
+  ![alt text](image-13.png)
+
+  4. The frontend and backend will then deploy to the prod environment
