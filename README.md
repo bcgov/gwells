@@ -279,27 +279,87 @@ More documentation for the repository can be found in the following places
 Dev Environment
 -
 Steps before merging Pull Request into 'release':
-  1. Login to OpenShift 
+  1. Login to OpenShift
+
   2. Navigate to '26e83e-tools' in projects
+
   ![alt text](image.png)
 
   3. Make sure you are in the administrator view
+
   ![alt text](image-1.png)
 
   4. Go to Builds -> BuildConfigs
+
   ![alt text](image-2.png)
 
   5. Find 'gwells-frontend'
+
   ![alt text](image-3.png)
 
   6. Click on the YAML tab
+
   ![alt text](image-4.png)
 
   7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'dev'. (It may currently already say dev, or test or prod)
+
   ![alt text](image-8.png)
 
-  9. Hit 'save'
+  8. Hit 'save'
+
   ![alt text](image-9.png)
 
-  10. You can now merge the Pull Request
+  9. You can now merge the Pull Request
   
+  10. A build for the frontend and backend will now be triggered and automatically deploy to the dev environment once built.
+
+  Test Environment
+  -
+  Steps before merging Pull Request into 'release':
+  1. Login to OpenShift
+
+  2. Navigate to '26e83e-tools' in projects
+
+  ![alt text](image.png)
+
+  3. Make sure you are in the administrator view
+
+  ![alt text](image-1.png)
+
+  4. Go to Builds -> BuildConfigs
+
+  ![alt text](image-2.png)
+
+  5. Find 'gwells-frontend'
+
+  ![alt text](image-3.png)
+
+  6. Click on the YAML tab
+
+  ![alt text](image-4.png)
+
+  7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'test'. (It may currently already say dev, or test or prod)
+
+  ![alt text](image-10.png)
+
+  8. Hit 'save'
+
+  ![alt text](image-9.png)
+
+  9. You can now merge the Pull Request
+
+  Steps after merging Pull Request into 'release':
+
+  1.  Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
+
+  ![alt text](image-11.png)
+
+  2. Then select 'promote-to-test'
+
+  ![alt text](image-12.png)
+
+  3. Finally Select Actions -> Start
+
+  ![alt text](image-13.png)
+
+  4. The frontend and backend will then deploy to the test environment
