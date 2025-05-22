@@ -5,7 +5,6 @@
 https://apps.nrs.gov.bc.ca/gwells/
 
 ## Introduction
-## Test comment
 
 The Ministry of Environment receives and processes groundwater data and information related to the construction, alteration and decommissioning of groundwater wells. Well construction and reporting requirements are regulated under the Water Sustainability Act and Groundwater Protection Regulation. The information collected and stored is used by government and other users to help inform decisions related to the management of the groundwater resource in B.C.
 
@@ -274,3 +273,33 @@ More documentation for the repository can be found in the following places
 - [Frontend](/app/frontend/README.md)
 - [OpenShift](/openshift/README.md)
 - [Tests](/tests/api-tests/README.md)
+
+## New pipeline deployment instructions
+
+Dev Environment
+-
+Steps before merging Pull Request into 'release':
+  1. Login to OpenShift 
+  2. Navigate to '26e83e-tools' in projects
+  ![alt text](image.png)
+
+  3. Make sure you are in the administrator view
+  ![alt text](image-1.png)
+
+  4. Go to Builds -> BuildConfigs
+  ![alt text](image-2.png)
+
+  5. Find 'gwells-frontend'
+  ![alt text](image-3.png)
+
+  6. Click on the YAML tab
+  ![alt text](image-4.png)
+
+  7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'dev'. (It may currently already say dev, or test or prod)
+  ![alt text](image-8.png)
+
+  9. Hit 'save'
+  ![alt text](image-9.png)
+
+  10. You can now merge the Pull Request
+  
