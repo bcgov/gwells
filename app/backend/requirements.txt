@@ -20,7 +20,7 @@ django-reversion==5.0.12
 geopandas==0.10.2
 thefuzz==0.20.0
 djangorestframework-simplejwt==5.3.0
-cryptography==42.0.8
+cryptography==44.0.1
 geojson==3.1.0
 minio==7.2.6
 openpyxl==2.5.14
