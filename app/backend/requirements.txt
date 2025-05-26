@@ -1,4 +1,4 @@
-django==3.2.4
+django==4.2.21
 pygdal==3.6.2.11
 gdal==3.0.0
 pytz==2024.1
