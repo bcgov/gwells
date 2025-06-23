@@ -5,6 +5,7 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
 export default defineConfig({
+  base: '/gwells/',
   plugins: [vue(),
     NodeGlobalsPolyfillPlugin({
       process: true,
