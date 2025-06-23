@@ -16,12 +16,6 @@
     root * /srv
     encode zstd gzip
     file_server
-    
-    @js_files {
-        path *.js
-    }
-    header @js_files Content-Type "application/javascript"
-    
     @spa_router {
         not path /gwells/api/v2/*
         file {
