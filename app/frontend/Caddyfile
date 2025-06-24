@@ -18,6 +18,17 @@
     file_server
     @spa_router {
         not path /gwells/api/v2/*
+        not path /gwells/assets/*
+        not path /gwells/*.js
+        not path /gwells/*.css
+        not path /gwells/*.ico
+        not path /gwells/*.png
+        not path /gwells/*.jpg
+        not path /gwells/*.jpeg
+        not path /gwells/*.gif
+        not path /gwells/*.svg
+        not path /gwells/*.woff*
+        not path /gwells/*.ttf
         file {
             try_files {path} /index.html
         }
