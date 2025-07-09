@@ -26,9 +26,11 @@ RUN mkdir -p /app/backend/staticfiles && \
 #     # python3 manage.py export --cleanup=1 --upload=1 && \
 #     python3 manage.py runserver 0.0.0.0:8000"
 
-CMD sh -c "python3 manage.py collectstatic --noinput && \
-    # python3 manage.py export --cleanup=1 --upload=1 && \
-    python3 manage.py runserver 0.0.0.0:8000"
+# CMD sh -c "python3 manage.py collectstatic --noinput && \
+#     # python3 manage.py export --cleanup=1 --upload=1 && \
+#     python3 manage.py runserver 0.0.0.0:8000"
+
+CMD sh -c "python3 manage.py runserver 0.0.0.0:8000"
 
 EXPOSE 8000
 
