@@ -33,3 +33,4 @@ RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy \
 EXPOSE 8080 3001
 
 USER 1001
+
