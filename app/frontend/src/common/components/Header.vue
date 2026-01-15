@@ -22,7 +22,7 @@
               alt="B.C. Government Logo">
         </a>
         <b-navbar-nav>
-          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers{{getEnvironmentMessage}}(deploy test)</li>
+          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers{{getEnvironmentMessage}}</li>
         </b-navbar-nav>
         <b-navbar-nav class="ml-auto">
           <li>
