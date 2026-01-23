@@ -4,7 +4,8 @@ import path from 'path'
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill'
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+
   define:
   mode === 'production'
     ? {
@@ -71,4 +72,4 @@ export default defineConfig({
       plugins: [NodeModulesPolyfillPlugin()]
     }
   }
-})
+}))
