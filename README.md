@@ -135,7 +135,6 @@ To have a more complete dataset while running locally, you can opt to point the 
     ```
     # .env for test environment
     ENVIRONMENT=test
-    API_TARGET=http://backend:8000/
     DATABASE_USER=<db-user>
     DATABASE_PASSWORD=<db-password>
     GWELLS_SERVICE_HOST=142.34.194.68

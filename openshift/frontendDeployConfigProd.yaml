@@ -3,7 +3,7 @@ apiVersion: apps.openshift.io/v1
 metadata:
   annotations:
     kubectl.kubernetes.io/last-applied-configuration: |
-      {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","metadata":{"annotations":{},"labels":{"app":"gwells-frontend","app-name":"gwells","appver":"gwells-frontend","env-name":"production"},"name":"gwells-frontend","namespace":"26e83e-prod"},"spec":{"replicas":1,"revisionHistoryLimit":10,"selector":{"app":"gwells-frontend"},"strategy":{"activeDeadlineSeconds":21600,"recreateParams":{"timeoutSeconds":600},"resources":{},"type":"Recreate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"gwells-frontend"}},"spec":{"containers":[{"env":[{"name":"VITE_AXIOS_BASE_URL","value":"https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca"},{"name":"BACKEND_URL","value":"https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca"},{"name":"VITE_BACKEND_URL","value":"https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca"}],"image":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d","imagePullPolicy":"Always","name":"gwells-frontend","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{"limits":{"cpu":"50m","memory":"256Mi"},"requests":{"cpu":"10m","memory":"128Mi"}},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}},"test":false,"triggers":[{"imageChangeParams":{"automatic":true,"containerNames":["gwells-frontend"],"from":{"kind":"ImageStreamTag","name":"gwells-application:prod","namespace":"26e83e-tools"},"lastTriggeredImage":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d"},"type":"ImageChange"},{"type":"ConfigChange"}]},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2025-05-06T19:25:09Z","lastUpdateTime":"2025-05-06T19:25:09Z","message":"Deployment config has minimum availability.","status":"True","type":"Available"},{"lastTransitionTime":"2025-05-06T19:25:04Z","lastUpdateTime":"2025-05-06T19:25:11Z","message":"replication controller \"gwells-frontend-21\" successfully rolled out","reason":"NewReplicationControllerAvailable","status":"True","type":"Progressing"}],"details":{"causes":[{"imageTrigger":{"from":{"kind":"DockerImage","name":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d"}},"type":"ImageChange"}],"message":"image change"},"latestVersion":21,"observedGeneration":22,"readyReplicas":1,"replicas":1,"unavailableReplicas":0,"updatedReplicas":1}}
+      {"apiVersion":"apps.openshift.io/v1","kind":"DeploymentConfig","metadata":{"annotations":{},"labels":{"app":"gwells-frontend","app-name":"gwells","appver":"gwells-frontend","env-name":"production"},"name":"gwells-frontend","namespace":"26e83e-prod"},"spec":{"replicas":1,"revisionHistoryLimit":10,"selector":{"app":"gwells-frontend"},"strategy":{"activeDeadlineSeconds":21600,"recreateParams":{"timeoutSeconds":600},"resources":{},"type":"Recreate"},"template":{"metadata":{"creationTimestamp":null,"labels":{"app":"gwells-frontend"}},"spec":{"containers":[{"env":[{"name":"VITE_AXIOS_BASE_URL","value":"https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca"}],"image":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d","imagePullPolicy":"Always","name":"gwells-frontend","ports":[{"containerPort":8080,"protocol":"TCP"}],"resources":{"limits":{"cpu":"50m","memory":"256Mi"},"requests":{"cpu":"10m","memory":"128Mi"}},"terminationMessagePath":"/dev/termination-log","terminationMessagePolicy":"File"}],"dnsPolicy":"ClusterFirst","restartPolicy":"Always","schedulerName":"default-scheduler","securityContext":{},"terminationGracePeriodSeconds":30}},"test":false,"triggers":[{"imageChangeParams":{"automatic":true,"containerNames":["gwells-frontend"],"from":{"kind":"ImageStreamTag","name":"gwells-application:prod","namespace":"26e83e-tools"},"lastTriggeredImage":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d"},"type":"ImageChange"},{"type":"ConfigChange"}]},"status":{"availableReplicas":1,"conditions":[{"lastTransitionTime":"2025-05-06T19:25:09Z","lastUpdateTime":"2025-05-06T19:25:09Z","message":"Deployment config has minimum availability.","status":"True","type":"Available"},{"lastTransitionTime":"2025-05-06T19:25:04Z","lastUpdateTime":"2025-05-06T19:25:11Z","message":"replication controller \"gwells-frontend-21\" successfully rolled out","reason":"NewReplicationControllerAvailable","status":"True","type":"Progressing"}],"details":{"causes":[{"imageTrigger":{"from":{"kind":"DockerImage","name":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eaf15a848905c027bc5388082fd373ad1291fc163299f8e9a7a6b6563cf7065d"}},"type":"ImageChange"}],"message":"image change"},"latestVersion":21,"observedGeneration":22,"readyReplicas":1,"replicas":1,"unavailableReplicas":0,"updatedReplicas":1}}
   resourceVersion: '14516177889'
   name: gwells-frontend
   uid: 5b9d28df-f207-49c9-8f32-4c991ff6260d
@@ -54,14 +54,6 @@ metadata:
                   .: {}
                   'f:env':
                     .: {}
-                    'k:{"name":"BACKEND_URL"}':
-                      .: {}
-                      'f:name': {}
-                      'f:value': {}
-                    'k:{"name":"VITE_BACKEND_URL"}':
-                      .: {}
-                      'f:name': {}
-                      'f:value': {}
                   'f:imagePullPolicy': {}
                   'f:name': {}
                   'f:ports':
@@ -99,11 +91,7 @@ metadata:
               'f:containers':
                 'k:{"name":"gwells-frontend"}':
                   'f:env':
-                    'k:{"name":"API_BASE_URL"}':
-                      .: {}
-                      'f:name': {}
-                      'f:value': {}
-                    'k:{"name":"AXIOS_BASE_URL"}':
+                    'k:{"name":"VITE_AXIOS_BASE_URL"}':
                       .: {}
                       'f:name': {}
                       'f:value': {}
@@ -199,13 +187,7 @@ spec:
             - containerPort: 8080
               protocol: TCP
           env:
-            - name: AXIOS_BASE_URL
-              value: 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
-            - name: BACKEND_URL
-              value: 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
-            - name: VITE_BACKEND_URL
-              value: 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
-            - name: API_BASE_URL
+            - name: VITE_AXIOS_BASE_URL
               value: 'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
           resources:
             limits:

@@ -7,28 +7,25 @@
         metrics
     }
 }
-{$VITE_BACKEND_URL:http://backend:8000/} {
-    root * app/frontend/dist
-    file_server
-    templates
-}
 :8080 {
     root * /srv
-    encode zstd gzip
-    file_server
-    @spa_router {
-        not path /gwells/api/v2/*
-        file {
+    route {
+        handle /srv/assets/*.js {
+            header Cache-Control "no-cache, no-store"
+            templates {
+                mime application/javascript text/javascript
+            }
+            file_server
+        }
+        handle /srv/assets/* {
+            file_server
+        }
+        handle {
             try_files {path} /index.html
+            file_server
         }
     }
-    templates {
-        mime application/javascript
-        match /env.js
-    }
-    rewrite @spa_router {http.matchers.file.relative}
-    reverse_proxy /api* {$VITE_BACKEND_URL} {
-    }
+    encode zstd gzip
 }
 :3001 {
     handle /health {
