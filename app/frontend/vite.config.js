@@ -5,6 +5,10 @@ import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfil
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 
 export default defineConfig(({ mode }) => ({
+<<<<<<< HEAD
+=======
+
+>>>>>>> deaf5df34 (fix vite config)
   define:
     mode === "production"
       ? {
