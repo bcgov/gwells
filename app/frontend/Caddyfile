@@ -1,34 +1,49 @@
 {
-    auto_https off
-    http_port 8080
-    https_port 8443
-    admin 0.0.0.0:3003
-    servers {
-        metrics
-    }
+	auto_https off
+	http_port 8080
+	https_port 8443
+	admin 0.0.0.0:3003
+	servers {
+		metrics
+	}
 }
+
 :8080 {
-    root * /srv
-    route {
-        handle /srv/assets/*.js {
-            header Cache-Control "no-cache, no-store"
-            templates {
-                mime application/javascript text/javascript
-            }
-            file_server
-        }
-        handle /srv/assets/* {
-            file_server
-        }
-        handle {
-            try_files {path} /index.html
-            file_server
-        }
-    }
-    encode zstd gzip
+	root * /srv
+
+	route {
+		# Template only the Vite JS bundle(s) to inject env vars at serve-time.
+		# Uses custom delimiters to avoid collisions with `{{ ... }}` that may appear in minified code.
+		handle /assets/*.js {
+			# Templates modifies the response body, so strip headers that would be invalid.
+			header {
+				-Content-Length
+				-Etag
+				Cache-Control "no-store"
+			}
+			templates {
+				mime application/javascript text/javascript
+				between "___CADDY_TEMPLATE_START___" "___CADDY_TEMPLATE_END___"
+			}
+			file_server
+		}
+
+		# All other hashed assets served normally
+		handle /assets/* {
+			file_server
+		}
+
+		handle {
+			try_files {path} /index.html
+			file_server
+		}
+	}
+
+	encode zstd gzip
 }
+
 :3001 {
-    handle /health {
-        respond "OK"
-    }
+	handle /health {
+		respond "OK"
+	}
 }

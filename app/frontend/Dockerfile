@@ -32,5 +32,6 @@ RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy /config/caddy \
 # Boilerplate, not used in OpenShift/Kubernetes
 EXPOSE 8080 3001
 
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile" ]
 USER 1001
 
