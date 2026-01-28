@@ -25,12 +25,13 @@ RUN caddy fmt /etc/caddy/Caddyfile --overwrite
 # Copy env.js separately to make sure it's in the right place
 COPY ./public/env.js /srv/env.js
 
-# Fix permissions for OpenShift
-RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy \
-    && chgrp -R 0 /srv /etc/caddy /usr/bin/caddy
+# Fix permissions
+RUN chmod -R g+rwx /srv /etc/caddy /usr/bin/caddy /config/caddy \
+    && chgrp -R 0 /srv /etc/caddy /usr/bin/caddy /config/caddy
 
 # Boilerplate, not used in OpenShift/Kubernetes
 EXPOSE 8080 3001
 
+CMD ["caddy", "run", "--config", "/etc/caddy/Caddyfile" ]
 USER 1001
 

@@ -36,8 +36,8 @@ import ApiService from '@/common/services/ApiService.js'
 const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
 const STAGING_GWELLS_URLS = ['testapps.nrs.gov.bc.ca', 'gwells-staging.apps.silver.devops.gov.bc.ca']
 const BASE_PATH = '/gwells/'
-const PRODUCTION_MATOMO_HOST = 'https://water-matomo.apps.silver.devops.gov.bc.ca/'
-const TEST_MATOMO_HOST = 'https://water-matomo-staging.apps.silver.devops.gov.bc.ca/'
+const PRODUCTION_MATOMO_HOST = 'https://water-matomo.apps.silver.devops.gov.bc.ca'
+const TEST_MATOMO_HOST = 'https://water-matomo-staging.apps.silver.devops.gov.bc.ca'
 
 const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL))
 const isStaging = () => (
