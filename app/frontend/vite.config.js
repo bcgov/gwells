@@ -32,7 +32,9 @@ export default defineConfig(({ mode }) => ({
     cors: {
       origin: [
         'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
+        'https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca',
+        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca',
+        'https://gwells-staging.apps.silver.devops.gov.bc.ca',
         'https://gwells.apps.silver.devops.gov.bc.ca',
         'https://maps.gov.bc.ca'
       ],
@@ -47,7 +49,9 @@ export default defineConfig(({ mode }) => ({
     cors: {
       origin: [
         'https://gwells-frontend-26e83e-prod.apps.silver.devops.gov.bc.ca',
-        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca', 
+        'https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca',
+        'https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca',
+        'https://gwells-staging.apps.silver.devops.gov.bc.ca',
         'https://gwells.apps.silver.devops.gov.bc.ca',
         'https://maps.gov.bc.ca'
       ],
