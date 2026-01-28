@@ -118,8 +118,7 @@ services:
       DEBUG: "True"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
       CADDY_HOST: "localhost:8000"
-      VITE_VECTOR_TILE_BASE_URL: "/tiles/"
-      VECTOR_TILE_SERVER: "http://tileserv:7800/"
+      VITE_VECTOR_TILE_BASE_URL: "http://localhost:7800/"
     ports:
       - "8080:8080"
     # volumes:

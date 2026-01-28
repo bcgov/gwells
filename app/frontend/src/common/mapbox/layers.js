@@ -1,7 +1,5 @@
 import { defaultsDeep } from 'lodash'
 
-const VECTOR_TILE_SERVER = 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/'
-
 export const WELLS_SOURCE_ID = 'postgis_ftw.gwells_well_view'
 export const WELLS_BASE_AND_ARTESIAN_LAYER_ID = 'wells-with-artesian'
 export const WELLS_AQUIFER_PARAMETER_LAYER_ID = 'wells-with-aquifer-parameters'
@@ -45,7 +43,7 @@ export const DATABC_GROUND_WATER_LICENCES_LAYER_ID = 'DATABC-ground-water-licenc
 export const ECOCAT_FW_FEATURE_CODE = 'WC00015300'
 
 export function vectorTileServerUrl (sourceLayerName) {
-  return `${VECTOR_TILE_SERVER}${sourceLayerName}/{z}/{x}/{y}.pbf`
+  return `${import.meta.env.VITE_VECTOR_TILE_BASE_URL}${sourceLayerName}/{z}/{x}/{y}.pbf`
 }
 
 export function vectorSourceConfig (sourceLayerName, options = {}) {
