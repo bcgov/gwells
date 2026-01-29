@@ -110,22 +110,20 @@ services:
   ###                                       Frontend                                        ###
   #############################################################################################
   frontend:
-    build:
-      context: ./app/frontend
-      dockerfile: Dockerfile
-    # hostname: frontend
+    image: node:22.12.0
+    container_name: frontend
+    working_dir: /app/frontend
     environment:
       DEBUG: "True"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
       CADDY_HOST: "localhost:8000"
       VITE_VECTOR_TILE_BASE_URL: "http://localhost:7800/"
+    command: /bin/bash -c "cd /frontend && npm install && npm run dev"
     ports:
       - "8080:8080"
-    # volumes:
-    #   - type: bind
-    #     source: ./app/frontend
-    #     target: /app/frontend
-    #   - /app/frontend/node_modules/
+    volumes:
+      - ./app/frontend:/frontend
+      - /app/frontend/node_modules/
     depends_on:
       - backend
     networks:
