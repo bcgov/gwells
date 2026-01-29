@@ -25,8 +25,8 @@ spec:
         from:
           kind: ImageStreamTag
           namespace: 26e83e-tools
-          name: 'gwells-application:latest'
-        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421'
+          name: "gwells-application:latest"
+        lastTriggeredImage: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421"
     - type: ConfigChange
   replicas: 1
   revisionHistoryLimit: 10
@@ -41,15 +41,15 @@ spec:
     spec:
       containers:
         - name: gwells-frontend
-          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421'
+          image: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421"
           ports:
             - containerPort: 8080
               protocol: TCP
           env:
             - name: VITE_AXIOS_BASE_URL
-              value: 'https://gwells-backend-26e83e-test.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
+              value: "https://gwells-backend-26e83e-test.apps.silver.devops.gov.bc.ca/gwells/api/v2/"
             - name: VITE_VECTOR_TILE_BASE_URL
-              value: 'https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/'
+              value: "https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/"
           resources:
             limits:
               cpu: 50m
@@ -77,14 +77,14 @@ status:
   updatedReplicas: 1
   conditions:
     - type: Available
-      status: 'True'
-      lastUpdateTime: '2025-04-09T22:17:58Z'
-      lastTransitionTime: '2025-04-09T22:17:58Z'
+      status: "True"
+      lastUpdateTime: "2025-04-09T22:17:58Z"
+      lastTransitionTime: "2025-04-09T22:17:58Z"
       message: Deployment config has minimum availability.
     - type: Progressing
-      status: 'True'
-      lastUpdateTime: '2025-04-09T22:18:00Z'
-      lastTransitionTime: '2025-04-09T22:17:52Z'
+      status: "True"
+      lastUpdateTime: "2025-04-09T22:18:00Z"
+      lastTransitionTime: "2025-04-09T22:17:52Z"
       reason: NewReplicationControllerAvailable
       message: replication controller "gwells-frontend-4" successfully rolled out
   replicas: 1

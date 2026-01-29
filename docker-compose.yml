@@ -8,17 +8,17 @@
 #        For example:
 #          docker login -u garywong-bc -p `oc whoami -t` docker-registry.pathfinder.gov.bc.ca
 services:
-#############################################################################################
-###                                       Minio-Pub                                       ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Minio-Pub                                       ###
+  #############################################################################################
   minio-public:
     build:
       context: ./openshift/docker/minio/
     hostname: minio
     ports:
-    - "9000:9000"
+      - "9000:9000"
     volumes:
-    - /data
+      - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -27,17 +27,17 @@ services:
     command: server /data
     networks:
       - gwells-network
-#############################################################################################
-###                                       Minio-Priv                                      ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Minio-Priv                                      ###
+  #############################################################################################
   minio-private:
     build:
       context: ./openshift/docker/minio/
     hostname: minio
     ports:
-    - "9001:9001"
+      - "9001:9001"
     volumes:
-    - /data
+      - /data
     environment:
       MINIO_ACCESS_KEY: minio
       MINIO_SECRET_KEY: minio1234
@@ -46,9 +46,9 @@ services:
     command: server --address :9001 /data
     networks:
       - gwells-network
-#############################################################################################
-###                                       CrunchyDB                                       ###
-#############################################################################################
+  #############################################################################################
+  ###                                       CrunchyDB                                       ###
+  #############################################################################################
   db:
     platform: linux/x86_64
     image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
@@ -72,7 +72,7 @@ services:
       TILESERVER_USER: ftw_reader
       TILESERVER_PASSWORD: test1
     ports:
-    - "5432:5432"
+      - "5432:5432"
     volumes:
       - pgdata-volume:/pgdata:z
       - type: bind
@@ -87,9 +87,9 @@ services:
       start_period: 120s
     networks:
       - gwells-network
-#############################################################################################
-###                                       Tileserv                                        ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Tileserv                                        ###
+  #############################################################################################
   tileserv:
     hostname: tileserv
     depends_on:
@@ -97,8 +97,8 @@ services:
     platform: linux/x86_64
     image: pramsey/pg_tileserv:20231005
     env_file:
-    - path: ./.env.test
-      required: false
+      - path: ./.env.test
+        required: false
     environment:
       DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD:-test1}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
     ports:
@@ -106,35 +106,33 @@ services:
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
     networks:
       - gwells-network
-#############################################################################################
-###                                       Frontend                                        ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Frontend                                        ###
+  #############################################################################################
   frontend:
-    build:
-      context: ./app/frontend
-      dockerfile: Dockerfile
-    # hostname: frontend
+    image: node:22.12.0
+    container_name: frontend
+    working_dir: /app/frontend
     environment:
       DEBUG: "True"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
       CADDY_HOST: "localhost:8000"
       VITE_VECTOR_TILE_BASE_URL: "http://localhost:7800/"
+    command: /bin/bash -c "cd /frontend && npm install && npm run dev"
     ports:
       - "8080:8080"
-    # volumes:
-    #   - type: bind
-    #     source: ./app/frontend
-    #     target: /app/frontend
-    #   - /app/frontend/node_modules/
+    volumes:
+      - ./app/frontend:/frontend
+      - /app/frontend/node_modules/
     depends_on:
       - backend
     networks:
       - gwells-network
-  
+
   caddy:
     container_name: caddy
     profiles: ["caddy"]
-    build: 
+    build:
       context: ./app/frontend
       dockerfile: Dockerfile
     environment:
@@ -152,9 +150,9 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-#############################################################################################
-###                                       Backend                                         ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Backend                                         ###
+  #############################################################################################
   backend:
     platform: linux/x86_64
     # working_dir: /backend
@@ -200,7 +198,7 @@ services:
       S3_HOST: minio-public:9000
       S3_PRIVATE_HOST: minio-private:9001
       S3_PRIVATE_BUCKET: gwells
-      S3_PRIVATE_ROOT_BUCKET:  gwells
+      S3_PRIVATE_ROOT_BUCKET: gwells
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
       S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
@@ -208,7 +206,7 @@ services:
       S3_PUBLIC_SECRET_KEY: minio1234
       S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
-      S3_ROOT_BUCKET:  gwells
+      S3_ROOT_BUCKET: gwells
       S3_WELL_BUCKET: well-docs
       S3_WELL_EXPORT_BUCKET: gwells
       S3_USE_SECURE: 0
@@ -232,9 +230,9 @@ services:
         condition: service_started
     networks:
       - gwells-network
-#############################################################################################
-###                                       Volumes                                         ###
-#############################################################################################
+  #############################################################################################
+  ###                                       Volumes                                         ###
+  #############################################################################################
   pgadmin:
     container_name: gwells-pgadmin
     image: dpage/pgadmin4
@@ -245,7 +243,6 @@ services:
       PGADMIN_DEFAULT_EMAIL: admin@gwells.com
     networks:
       - gwells-network
-
 
 #############################################################################################
 ###                                       Volumes                                         ###
