@@ -43,7 +43,7 @@ export const DATABC_GROUND_WATER_LICENCES_LAYER_ID = 'DATABC-ground-water-licenc
 export const ECOCAT_FW_FEATURE_CODE = 'WC00015300'
 
 export function vectorTileServerUrl (sourceLayerName) {
-  return `${import.meta.env.VITE_VECTOR_TILE_BASE_URL}${sourceLayerName}/{z}/{x}/{y}.pbf`
+  return `${import.meta.env.VITE_FRONTEND_URL}/tiles/${sourceLayerName}/{z}/{x}/{y}.pbf`
 }
 
 export function vectorSourceConfig (sourceLayerName, options = {}) {
