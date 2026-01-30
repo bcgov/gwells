@@ -70,13 +70,13 @@ export default {
       // Dynamically set the base URL based on the activeTable prop
       switch (this.selectedTab) {
         case 0: // record compliance
-          return `${process.env.VITE_AXIOS_BASE_URL}qaqc/recordcompliance/download`
+          return `${import.meta.env.VITE_AXIOS_BASE_URL}qaqc/recordcompliance/download`
         case 1: // mislocated wells
-          return `${process.env.VITE_AXIOS_BASE_URL}qaqc/mislocatedwells/download`
+          return `${import.meta.env.VITE_AXIOS_BASE_URL}qaqc/mislocatedwells/download`
         case 2: // cross referencing
-          return `${process.env.VITE_AXIOS_BASE_URL}qaqc/crossreferencing/download`
+          return `${import.meta.env.VITE_AXIOS_BASE_URL}qaqc/crossreferencing/download`
         default:
-          return `${process.env.VITE_AXIOS_BASE_URL}wells/export` // Default or fallback URL
+          return `${import.meta.env.VITE_AXIOS_BASE_URL}wells/export` // Default or fallback URL
       }
     }
   },

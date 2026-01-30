@@ -115,9 +115,9 @@ services:
     working_dir: /app/frontend
     environment:
       DEBUG: "True"
+      VITE_FRONTEND_URL: "http://localhost:8080"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
-      CADDY_HOST: "localhost:8000"
-      VITE_VECTOR_TILE_BASE_URL: "http://localhost:7800/"
+      VECTOR_TILE_BASE_URL: "http://tileserv:7800"
     command: /bin/bash -c "cd /frontend && npm install && npm run dev"
     ports:
       - "8080:8080"
