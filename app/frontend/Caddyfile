@@ -9,8 +9,7 @@
 }
 
 :8080 {
-	handle_path /tiles/* {
-		uri replace /tiles/ /gwells/tiles/
+	handle_path /gwells/tiles/* {
 		reverse_proxy {$VECTOR_TILE_BASE_URL}
 	}
 	log
