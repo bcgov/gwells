@@ -115,6 +115,7 @@ services:
     working_dir: /app/frontend
     environment:
       DEBUG: "True"
+      VITE_FRONTEND_TILE_URL: "http://localhost:7800"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
     command: /bin/bash -c "cd /frontend && npm install && npm run dev"
     ports:
