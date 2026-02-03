@@ -6,18 +6,18 @@ import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfil
 
 export default defineConfig(({ mode }) => ({
   define:
-  mode === 'production'
-    ? {
-        // Caddy templates replaces these at serve-time (production only).
-        // Use very-unique custom delimiters to avoid collisions with:
-        // - Go templates default `{{ ... }}` sequences in minified bundles
-        // - JS libs that embed `<% ... %>`-style templates (lodash/underscore, etc.)
-        'import.meta.env.VITE_AXIOS_BASE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_AXIOS_BASE_URL" ___CADDY_TEMPLATE_END___'),
-        'process.env.VITE_AXIOS_BASE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_AXIOS_BASE_URL" ___CADDY_TEMPLATE_END___'),
-        'import.meta.env.VITE_FRONTEND_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_FRONTEND_URL" ___CADDY_TEMPLATE_END___'),
-        'process.env.VITE_FRONTEND_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_FRONTEND_URL" ___CADDY_TEMPLATE_END___'),
-      }
-    : {},
+    mode === 'production'
+      ? {
+          // Caddy templates replaces these at serve-time (production only).
+          // Use very-unique custom delimiters to avoid collisions with:
+          // - Go templates default `{{ ... }}` sequences in minified bundles
+          // - JS libs that embed `<% ... %>`-style templates (lodash/underscore, etc.)
+          'import.meta.env.VITE_AXIOS_BASE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_AXIOS_BASE_URL" ___CADDY_TEMPLATE_END___'),
+          'process.env.VITE_AXIOS_BASE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_AXIOS_BASE_URL" ___CADDY_TEMPLATE_END___'),
+          'import.meta.env.VITE_FRONTEND_TILE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_FRONTEND_TILE_URL" ___CADDY_TEMPLATE_END___'),
+          'process.env.VITE_FRONTEND_TILE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_FRONTEND_TILE_URL" ___CADDY_TEMPLATE_END___'),
+        }
+      : {},
   plugins: [vue(),
     NodeGlobalsPolyfillPlugin({
       process: true,

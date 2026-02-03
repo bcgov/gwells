@@ -27,7 +27,7 @@ npm install
 
 ``` bash
 # Compiles and hot-reloads for development, at localhost:8080
-npm run serve
+npm run dev
 ```
 
 ``` bash
