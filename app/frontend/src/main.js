@@ -11,87 +11,73 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-import "@/common/helpers/browserUpdate.js";
-import { createApp } from "vue";
-import * as Sentry from "@sentry/browser";
-import * as Integrations from "@sentry/integrations";
-import VueNoty from "vuejs-noty";
-import BootstrapVue from "bootstrap-vue";
-import VueMatomo from "vue-matomo";
-import App from "./App.vue";
-import router from "./router.js";
-import { store } from "./store/index.js";
-import "@/common/assets/css/bootstrap-theme.min.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
-import vSelect from "vue-select";
-import "vue-select/dist/vue-select.css";
-import VueMoment from "vue-moment";
-import FormInput from "@/common/components/FormInput.vue";
-import * as filters from "./common/filters";
+import '@/common/helpers/browserUpdate.js'
+import { createApp } from 'vue'
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
+import VueNoty from 'vuejs-noty'
+import BootstrapVue from 'bootstrap-vue'
+import VueMatomo from 'vue-matomo'
+import App from './App.vue'
+import router from './router.js'
+import { store } from './store/index.js'
+import '@/common/assets/css/bootstrap-theme.min.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css'
+import VueMoment from 'vue-moment'
+import FormInput from '@/common/components/FormInput.vue'
+import * as filters from './common/filters'
 // GWELLS js API library (helper methods for working with API)
-import ApiService from "@/common/services/ApiService.js";
-import authenticate from "@/common/authenticate.js";
-import { createPinia } from "pinia";
+import ApiService from '@/common/services/ApiService.js'
+import authenticate from '@/common/authenticate.js'
 
-const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
-const STAGING_GWELLS_URLS = [
-  "testapps.nrs.gov.bc.ca",
-  "gwells-staging.apps.silver.devops.gov.bc.ca",
-];
-const BASE_PATH = "/gwells/";
-const PRODUCTION_MATOMO_HOST =
-  "https://water-matomo.apps.silver.devops.gov.bc.ca";
-const TEST_MATOMO_HOST =
-  "https://water-matomo-staging.apps.silver.devops.gov.bc.ca";
+const PRODUCTION_GWELLS_URL = 'https://apps.nrs.gov.bc.ca/gwells'
+const STAGING_GWELLS_URLS = ['testapps.nrs.gov.bc.ca', 'gwells-staging.apps.silver.devops.gov.bc.ca']
+const BASE_PATH = '/gwells/'
+const PRODUCTION_MATOMO_HOST = 'https://water-matomo.apps.silver.devops.gov.bc.ca'
+const TEST_MATOMO_HOST = 'https://water-matomo-staging.apps.silver.devops.gov.bc.ca'
 
-const PRODUCTION_GWELLS_HOST = new URL(PRODUCTION_GWELLS_URL).hostname;
-const isProduction = () =>
-  window.location.hostname === PRODUCTION_GWELLS_HOST &&
-  window.location.pathname.startsWith(BASE_PATH);
-const isStaging = () =>
-  window.location.pathname.includes(BASE_PATH) &&
-  STAGING_GWELLS_URLS.includes(window.location.hostname);
+const isProduction = () => (window.location.href.includes(PRODUCTION_GWELLS_URL))
+const isStaging = () => (
+  window.location.pathname.includes(BASE_PATH) && STAGING_GWELLS_URLS.includes(window.location.hostname)
+)
 
 // set baseURL and default headers
-ApiService.init();
+ApiService.init()
 
-const app = createApp(App);
-authenticate.setApp(app);
+const app = createApp(App)
+authenticate.setApp(app)
 
 // Initialize Sentry
 if (isProduction()) {
   Sentry.init({
-    dsn: "https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823",
-    integrations: [
-      new Integrations.Vue({ app, attachProps: true, logError: true }),
-    ],
-    beforeSend(event) {
-      if (window.msCrypto) {
-        return null;
-      }
-      return event;
-    },
-  });
+    dsn: 'https://a83809da8c9b4f39b3d7cd683b803859@sentry.io/1802823',
+    integrations: [new Integrations.Vue({ app, attachProps: true, logError: true })],
+    beforeSend (event) {
+      if (window.msCrypto) { return null }
+      return event
+    }
+  })
 }
 
-app.use(store);
-app.use(router);
+app.use(store)
+app.use(router)
 app.use(VueNoty, {
-  layout: "topRight",
-  theme: "bootstrap-v4",
-  timeout: 1800,
-});
-app.use(BootstrapVue);
-app.use(VueMoment);
+  layout: 'topRight',
+  theme: 'bootstrap-v4',
+  timeout: 1800
+})
+app.use(BootstrapVue)
+app.use(VueMoment)
+app.use(filters)
 
 // Register global components
-app.component("v-select", vSelect);
-app.component("form-input", FormInput);
-
-const pinia = createPinia();
-app.use(pinia);
+app.component('v-select', vSelect)
+app.component('form-input', FormInput)
 
 if (isProduction()) {
+  app.use(VueMatomo, {
   app.use(VueMatomo, {
     host: PRODUCTION_MATOMO_HOST,
     siteId: 2,
@@ -100,13 +86,13 @@ if (isProduction()) {
   });
 } else if (isStaging()) {
   app.use(VueMatomo, {
+  app.use(VueMatomo, {
     host: TEST_MATOMO_HOST,
     siteId: 1,
     router: router,
-    domains: STAGING_GWELLS_URLS,
-  });
-} else {
-  // Local & DEV and anything else
+    domains: STAGING_GWELLS_URLS
+  })
+} else { // Local & DEV and anything else
   app.use(VueMatomo, {
     host: TEST_MATOMO_HOST,
     siteId: 3,
@@ -114,13 +100,9 @@ if (isProduction()) {
   });
 }
 
-app.config.productionTip = false;
-app.config.devtools = import.meta.env.MODE !== "production";
-app.config.performance = import.meta.env.MODE !== "production";
-
-app.config.globalProperties.excludeZeroDecimals = filters.excludeZeroDecimals;
-app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
-app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
+app.config.productionTip = false
+app.config.devtools = import.meta.env.MODE !== 'production'
+app.config.performance = import.meta.env.MODE !== 'production'
 
 // Mount app
-app.mount("#app");
+app.mount('#app')

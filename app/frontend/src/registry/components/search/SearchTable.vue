@@ -18,46 +18,46 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="searchResponse.results && searchResponse.results.length" :id="`registry-table-row-${index}`">
-            <template v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`">
-              <td :id="`drillerName${index}`">
-                <router-link
-                  v-if="commonStore.userRoles.registry.view"
-                  :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
-                    {{ driller.surname }}, {{ driller.first_name }}
-                </router-link>
-                <div v-else class="font-weight-bold">
+          <tr v-if="searchResponse.results && searchResponse.results.length"
+              v-for="(driller, index) in searchResponse.results"
+              :key="`tr ${driller.person_guid} ${index}`" :id="`registry-table-row-${index}`">
+            <td :id="`drillerName${index}`">
+              <router-link
+                v-if="commonStore.userRoles.registry.view"
+                :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
                   {{ driller.surname }}, {{ driller.first_name }}
-                </div>
-                <div v-if="driller.registrations && driller.registrations.length">
-                  <div
-                      v-for="(reg, regIndex) in driller.registrations"
-                      v-if="reg.activity === activity"
-                      :key="`reg no ${driller.person_guid} ${regIndex}`">
-                    {{ reg.registration_no }}</div>
-                </div>
-              </td>
-              <td :id="`personOrg${index}`">
-                <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
-              </td>
-              <td :id="`personAddress${index}`">
-                <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
-              </td>
-              <td :id="`personContact${index}`">
-                <div>
-                  <driller-contact-info :driller="driller" :activity="activity"/>
-                </div>
-              </td>
-              <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
-                <driller-subactivity :driller="driller"/>
-              </td>
-              <td :id="`certAuth${index}`">
-                <driller-certificate-authority :driller="driller" :activity="activity"/>
-              </td>
-              <td v-if="commonStore.userRoles.registry.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
-                <driller-registration-status :driller="driller" :activity="activity"/>
-              </td>
-            </template>
+              </router-link>
+              <div v-else class="font-weight-bold">
+                {{ driller.surname }}, {{ driller.first_name }}
+              </div>
+              <div v-if="driller.registrations && driller.registrations.length">
+                <div
+                    v-for="(reg, regIndex) in driller.registrations"
+                    v-if="reg.activity === activity"
+                    :key="`reg no ${driller.person_guid} ${regIndex}`">
+                  {{ reg.registration_no }}</div>
+              </div>
+            </td>
+            <td :id="`personOrg${index}`">
+              <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
+            </td>
+            <td :id="`personAddress${index}`">
+              <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
+            </td>
+            <td :id="`personContact${index}`">
+              <div>
+                <driller-contact-info :driller="driller" :activity="activity"/>
+              </div>
+            </td>
+            <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
+              <driller-subactivity :driller="driller"/>
+            </td>
+            <td :id="`certAuth${index}`">
+              <driller-certificate-authority :driller="driller" :activity="activity"/>
+            </td>
+            <td v-if="commonStore.userRoles.registry.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
+              <driller-registration-status :driller="driller" :activity="activity"/>
+            </td>
           </tr>
           <tr v-else>
           </tr>

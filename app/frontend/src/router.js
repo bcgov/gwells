@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Vue, { nextTick } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import Vue, { nextTick } from 'vue'
 import * as Sentry from '@sentry/browser'
 import { useCommonStore } from '@/stores/common.js'
 
@@ -266,22 +268,23 @@ router.replace = function replace (location) {
 
 router.beforeEach((to, from, next) => {
   const commonStore = useCommonStore()
+    const proceed = () => {
+    nextTick(() => next())
+  }
+  const redirect = () => {
+    nextTick(() => next({ name: 'wells-home' }))
+  }
   if (!commonStore.keycloak) {
     authenticate.authenticate().then((kc) => {
       if (kc.authenticated) {
         Sentry.setUser({ username: kc.tokenParsed.preferred_username })
       }
-      nextTick(() => next())
+      proceed()
     }).catch((e) => {
-      console.error('Authentication failed:', e)
-      if (to.name !== 'wells-home') {
-        nextTick(() => next({ name: 'wells-home' }))
-      } else {
-        nextTick(() => next())
-      }
+      redirect()
     })
   } else {
-    nextTick(() => next())
+    proceed()
   }
 })
 
