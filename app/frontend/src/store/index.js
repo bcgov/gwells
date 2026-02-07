@@ -9,8 +9,6 @@ import aquiferStore from '@/aquifers/store/index.js'
 import wellsStore from '@/wells/store/index.js'
 import qaqcStore from '@/qaqc/store/index.js'
 
-Vue.use(Vuex)
-
 export const store = new Vuex.Store({
   modules: {
     auth,

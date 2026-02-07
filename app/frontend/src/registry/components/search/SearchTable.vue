@@ -40,6 +40,7 @@
             </td>
             <td :id="`personOrg${index}`">
               <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
+            </td>
             <td :id="`personAddress${index}`">
               <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
             </td>
