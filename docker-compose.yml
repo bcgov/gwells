@@ -191,6 +191,7 @@ services:
       GEOCODER_ADDRESS_API_BASE: https://geocoder.api.gov.bc.ca/addresses.json?
       LOCAL: "true"
       LOAD_FIXTURES: "true"
+    command: /bin/bash -c "python3 manage.py migrate --noinput && ./load_fixtures.sh all && python3 manage.py createinitialrevisions && python3 manage.py collectstatic --noinput && python3 manage.py runserver 0.0.0.0:8000"
     # volumes:
     #   - ./app/backend:/app/backend
     healthcheck:
