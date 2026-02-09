@@ -295,52 +295,9 @@ There are currently two webhooks, both pointing to the tools instance in openshi
 
 The webhook secret key value can be modified in Openshift. Under the tools namespace, Workload → Secrets → github-build-webhook is where the key resides, under the key name "WebHookSecretKey"
 
-### Test Environment
+### Deploy to TEST/PROD
 
-Steps before merging Pull Request into 'release':
-
-1. Login to OpenShift
-
-2. Navigate to '26e83e-tools' in projects
-   ![alt text](pics/image.png)
-
-3. Make sure you are in the administrator view
-   ![alt text](pics/image-1.png)
-
-4. Go to Builds -> BuildConfigs
-   ![alt text](pics/image-2.png)
-
-5. Find 'gwells-frontend'
-   ![alt text](pics/image-3.png)
-
-6. Click on the YAML tab
-   ![alt text](pics/image-4.png)
-
-7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'test'. (It may currently already say dev, or test or prod)
-   ![alt text](pics/image-10.png)
-
-8. Hit 'save'
-   ![alt text](pics/image-9.png)
-
-9. You can now merge the Pull Request
-   Steps after merging Pull Request into 'release':
-
-10. Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
-    ![alt text](pics/image-11.png)
-
-11. Then select 'promote-to-test'
-    ![alt text](pics/image-12.png)
-
-12. Finally Select Actions -> Start
-    ![alt text](pics/image-13.png)
-
-13. The frontend and backend will then deploy to the test environment
-
-Prod Environment
-
--
-
-Steps before merging Pull Request into 'release':
+#### Steps to promote the current release in DEV to TEST:
 
 1. Login to OpenShift
 
@@ -350,30 +307,34 @@ Steps before merging Pull Request into 'release':
 3. Make sure you are in the administrator view
    ![alt text](pics/image-1.png)
 
-4. Go to Builds -> BuildConfigs
-   ![alt text](pics/image-2.png)
+4. Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
+   ![alt text](pics/image-11.png)
 
-5. Find 'gwells-frontend'
-   ![alt text](pics/image-3.png)
+5. Then select 'promote-to-test'
+   ![alt text](pics/image-12.png)
 
-6. Click on the YAML tab
-   ![alt text](pics/image-4.png)
+6. Finally Select Actions -> Start
+   ![alt text](pics/image-13.png)
 
-7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'prod'. (It may currently already say dev, or test or prod)
-   ![alt text](pics/image-14.png)
+7. The frontend and backend will then deploy to the test environment
 
-8. Hit 'save'
-   ![alt text](pics/image-9.png)
+#### Steps to promote the current TEST into PROD:
 
-9. You can now merge the Pull Request
-   Steps after merging Pull Request into 'release':
+1. Login to OpenShift
 
-10. Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
-    ![alt text](pics/image-11.png)
+2. Navigate to '26e83e-tools' in projects
+   ![alt text](pics/image.png)
 
-11. Then select 'promote-to-prod'
-    ![alt text](pics/image-15.png)
+3. Make sure you are in the administrator view
+   ![alt text](pics/image-1.png)
 
-12. Finally Select Actions -> Start
-    ![alt text](pics/image-13.png)
-13. The frontend and backend will then deploy to the prod environment
+4. Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
+   ![alt text](pics/image-11.png)
+
+5. Then select 'promote-to-prod'
+   ![alt text](pics/image-15.png)
+
+6. Finally Select Actions -> Start
+   ![alt text](pics/image-13.png)
+
+7. The frontend and backend will then deploy to the prod environment
