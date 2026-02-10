@@ -47,8 +47,6 @@ spec:
         name: gwells-backend
     spec:
       containers:
-        - command:
-          - /bin/bash -c "python3 manage.py runserver 0.0.0.0:8000"
         - resources:
             limits:
               cpu: '1'
@@ -67,6 +65,10 @@ spec:
             failureThreshold: 10
           terminationMessagePath: /dev/termination-log
           name: gwells-backend
+          command:
+            - /bin/bash
+            - '-c'
+            - 'python3 manage.py runserver 0.0.0.0:8000'
           livenessProbe:
             exec:
               command:
