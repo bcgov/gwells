@@ -13,33 +13,28 @@ The Registry frontend app provides a user interface for accessing the Registry A
 The GWELLS frontend web applications are developed with the Vue.JS framework.
 
 ### Customize configuration
+
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 ## Serving the web app
 
 ### Project setup
 
-``` bash
-npm install
+At the root folder, run:
+
+```
+docker compose up
 ```
 
-### Serving the web app
+And one of containers will establish the frontend at "localhost:8080"
 
-``` bash
-# Compiles and hot-reloads for development, at localhost:8080
-npm run dev
-```
-
-``` bash
-# Compiles and minifies for production
-NODE_ENV=production npm run build
-```
+Environment variables will be set at image build time, following defaults or values placed in the ".env" file.
 
 ## Unit tests
 
-Unit tests use the jest testing framework and vue-test-utils. ```npm run test``` runs the tests and outputs coverage information to the ```test/unit/coverage``` folder.
+Unit tests use the jest testing framework and vue-test-utils. `npm run test` runs the tests and outputs coverage information to the `test/unit/coverage` folder.
 
-``` bash
+```bash
 # run unit tests
 npm run test:unit
 
@@ -48,6 +43,7 @@ npm run test:unit -- --watch
 ```
 
 ## Lints and fixes files
-``` bash
+
+```bash
 npm run lint
 ```
