@@ -31,11 +31,7 @@ import * as filters from "./common/filters";
 // GWELLS js API library (helper methods for working with API)
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
-
-// Pinia imports
-import { createApp } from "vue";
-import { createPinia, ref, computed } from "pinia";
-import App from "../App.vue";
+import { createPinia } from "pinia";
 
 const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
 const STAGING_GWELLS_URLS = [
