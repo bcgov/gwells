@@ -188,7 +188,7 @@ export default {
     this.initMapBox()
     this.listenForReset()
   },
-  unmounted () {
+  destroyed () {
     this.map.remove()
     this.map = null
   },
