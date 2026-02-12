@@ -6,8 +6,8 @@
 	admin 0.0.0.0:3003
 }
 
-:8080 {
-	handle /gwells/* {
+gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca {
+	handle /gwells/tiles/* {
 		reverse_proxy {$VECTOR_TILE_BASE_URL}
 	}
 	log
