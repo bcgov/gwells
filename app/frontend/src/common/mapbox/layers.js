@@ -46,7 +46,7 @@ export function vectorTileServerUrl (sourceLayerName) {
   // Locally, this variable is the tile endpoint
   // In deployed versions, this variable holds a url that is
   // redirected via Caddy's reverse-proxy
-  return `${import.meta.env.VITE_FRONTEND_TILE_URL}/${sourceLayerName}/{z}/{x}/{y}.pbf`
+  return `${import.meta.env.VITE_FRONTEND_TILE_URL}`
 }
 
 export function vectorSourceConfig (sourceLayerName, options = {}) {
