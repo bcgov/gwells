@@ -7,7 +7,7 @@
 }
 
 :8080 {
-	handle /gwells/bananas/* {
+	handle /gwells/tiles/* {
 		reverse_proxy {$VECTOR_TILE_BASE_URL}
 	}
 	log
