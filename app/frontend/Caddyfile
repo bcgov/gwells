@@ -7,7 +7,7 @@
 }
 
 :8080 {
-	handle_path /bananas/* {
+	handle_path /bananas* {
 		reverse_proxy {$VECTOR_TILE_BASE_URL}
 	}
 	log
