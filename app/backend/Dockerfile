@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.11
 
 RUN apt -y update && apt -y install git build-essential gdal-bin libgdal-dev postgresql-client
 
