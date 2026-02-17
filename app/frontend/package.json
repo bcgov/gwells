@@ -23,7 +23,7 @@
     "@sentry/browser": "^9.6.0",
     "@sentry/integrations": "^5.7.1",
     "@turf/intersect": "^6.5.0",
-    "axios": "^1.8.3",
+    "axios": "^1.13.5",
     "bootstrap-vue": "^2.23.1",
     "@vitejs/plugin-vue2": "2.3.3",
     "browser-update": "^3.3.8",
