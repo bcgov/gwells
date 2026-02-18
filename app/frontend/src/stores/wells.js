@@ -123,11 +123,6 @@ export const useWellsStore = defineStore('wells', {
 			}
 		},
 
-    setWellRecord (payload) {
-      this.wellRecord = payload
-      this.wellId = payload.well || null
-    },
-
 		resetWellData () {
 			this.wellRecord = {}
 			this.recordLicence = { status: '', number: '' }
