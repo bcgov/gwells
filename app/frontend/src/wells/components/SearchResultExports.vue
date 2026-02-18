@@ -43,7 +43,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
+import { useWellsStore } from '@/stores/wells.js'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 export default {
@@ -53,19 +53,18 @@ export default {
   data () {
     return {
       exportBaseUrl: `wells/export`,
-      maxExportSize: MAX_API_RESULT_AND_EXPORT_COUNT
+      maxExportSize: MAX_API_RESULT_AND_EXPORT_COUNT,
+      wells: null
     }
   },
   computed: {
-    ...mapGetters({
-      bounds: 'searchBounds',
-      constrain: 'constrainSearch',
-      params: 'searchParams',
-      ordering: 'searchOrdering',
-      resultFilters: 'searchResultFilters',
-      resultCount: 'searchResultCount',
-      resultColumns: 'searchResultColumns'
-    }),
+    bounds () { return this.wells ? this.wells.searchBounds : {} },
+    constrain () { return this.wells ? this.wells.constrainSearch : true },
+    params () { return this.wells ? this.wells.searchParams : {} },
+    ordering () { return this.wells ? this.wells.searchOrdering : '' },
+    resultFilters () { return this.wells ? this.wells.searchResultFilters : {} },
+    resultCount () { return this.wells ? this.wells.searchResultCount : 0 },
+    resultColumns () { return this.wells ? this.wells.searchResultColumns : [] },
     exportFields () {
       return this.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
     },
@@ -83,6 +82,9 @@ export default {
       }
       return new URLSearchParams(queryParams).toString()
     }
+  },
+  created () {
+    this.wells = useWellsStore()
   },
   methods: {
     /**
