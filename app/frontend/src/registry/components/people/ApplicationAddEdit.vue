@@ -129,9 +129,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
-import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import { useRegistryStore } from '@/stores/registry.js'
 export default {
   props: {
     value: Object,
@@ -152,6 +151,7 @@ export default {
   },
   data () {
     return {
+      registryStore: useRegistryStore(),
       qualificationForm: this.copyFormData(this.value)
     }
   },
@@ -227,15 +227,10 @@ export default {
         (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_recieved_date)) &&
         this.isDateValid(this.qualificationForm.removal_date)
     },
-    ...mapActions([
-      FETCH_DRILLER_OPTIONS
-    ])
   },
   computed: {
-    ...mapGetters('registriesStore', [
-      'loading',
-      'drillerOptions'
-    ]),
+    loading () { return this.registryStore.loading },
+    drillerOptions () { return this.registryStore.drillerOptions },
     formOptions () {
       let result = {
         issuer: [{ value: { code: null }, text: 'Please select an option' }],
