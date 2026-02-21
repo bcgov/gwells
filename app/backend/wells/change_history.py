@@ -347,8 +347,8 @@ def clean_attrs(obj, key, prev_val):
 
 
 def action_type(diff, prev):
-    empty_diff = diff is None or diff is [] or diff is ''
-    empty_prev = prev is None or prev is [] or prev is ''
+    empty_diff = diff is None or diff is [] or diff == ''
+    empty_prev = prev is None or prev is [] or prev == ''
     if empty_diff:
         return 'Removed'
     elif not empty_diff and empty_prev:

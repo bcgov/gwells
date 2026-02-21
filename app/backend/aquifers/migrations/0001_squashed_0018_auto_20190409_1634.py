@@ -6,7 +6,7 @@ import django.contrib.gis.db.models.fields
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 import django.utils.timezone
 
 
@@ -270,7 +270,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='aquiferdemand',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='aquiferdemand',
@@ -290,7 +290,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='aquifermaterial',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='aquifermaterial',
@@ -310,7 +310,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='aquiferproductivity',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='aquiferproductivity',
@@ -330,7 +330,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='aquifersubtype',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='aquifersubtype',
@@ -350,7 +350,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='aquifervulnerabilitycode',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='aquifervulnerabilitycode',
@@ -370,7 +370,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='qualityconcern',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='qualityconcern',
@@ -390,7 +390,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='wateruse',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='wateruse',
@@ -536,7 +536,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='aquiferresourcesection',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AddField(
             model_name='aquiferresourcesection',

@@ -4,7 +4,7 @@ import datetime
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 import django.utils.timezone
 import gwells.db_comments.model_mixins
 import uuid
@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('update_user', models.CharField(max_length=60)),
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('acc_cert_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Accredited Certificate UUID')),
                 ('name', models.CharField(editable=False, max_length=100, verbose_name='Certificate Name')),
                 ('description', models.CharField(blank=True, max_length=100, null=True)),
@@ -65,7 +65,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('registries_activity_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('code', models.CharField(db_column='registries_application_status_code', editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],
@@ -104,7 +104,7 @@ class Migration(migrations.Migration):
                 ('update_user', models.CharField(max_length=60)),
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('cert_auth_code', models.CharField(editable=False, max_length=50, primary_key=True, serialize=False, verbose_name='Certifying Authority Name')),
                 ('description', models.CharField(blank=True, max_length=100, null=True)),
             ],
@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
                 ('fax_tel', models.CharField(blank=True, max_length=15, null=True, verbose_name='Fax number')),
                 ('website_url', models.URLField(blank=True, null=True, verbose_name='Website')),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email adddress')),
                 ('province_state', models.ForeignKey(db_column='province_state_code', on_delete=django.db.models.deletion.PROTECT, related_name='companies', to='gwells.ProvinceStateCode', verbose_name='Province/State')),
             ],
@@ -176,7 +176,7 @@ class Migration(migrations.Migration):
                 ('contact_cell', models.CharField(blank=True, max_length=15, null=True, verbose_name='Contact cell number')),
                 ('contact_email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email address')),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
             ],
             options={
                 'verbose_name_plural': 'People',
@@ -212,7 +212,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('code', models.CharField(db_column='registries_proof_of_age_code', editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],
@@ -232,7 +232,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('registries_well_qualification_guid', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False, verbose_name='Qualification / Well Class UUID')),
             ],
             options={
@@ -291,8 +291,8 @@ class Migration(migrations.Migration):
                 ('reason_denied', models.CharField(blank=True, max_length=255, null=True, verbose_name='Free form text explaining reason for denial.')),
                 ('primary_certificate_no', models.CharField(max_length=50)),
                 ('application_recieved_date', models.DateField(blank=True, null=True)),
-                ('application_outcome_date', models.DateField(blank=True, null=True)),
-                ('application_outcome_notification_date', models.DateField(blank=True, null=True)),
+                ('application_otimezone.utcome_date', models.DateField(blank=True, null=True)),
+                ('application_otimezone.utcome_notification_date', models.DateField(blank=True, null=True)),
                 ('removal_date', models.DateField(blank=True, null=True)),
                 ('current_status', models.ForeignKey(blank=True, db_column='registries_application_status_code', null=True, on_delete=django.db.models.deletion.PROTECT, to='registries.ApplicationStatusCode', verbose_name='Application Status Code Reference')),
                 ('primary_certificate', models.ForeignKey(blank=True, db_column='acc_cert_guid', null=True, on_delete=django.db.models.deletion.PROTECT, to='registries.AccreditedCertificateCode', verbose_name='Certificate')),
@@ -315,7 +315,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('code', models.CharField(db_column='registries_removal_reason_code', editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],
@@ -335,7 +335,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('registries_subactivity_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
                 ('registries_activity', models.ForeignKey(db_column='registries_activity_code', on_delete=django.db.models.deletion.PROTECT, to='registries.ActivityCode')),
@@ -356,7 +356,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('registries_well_class_code', models.CharField(editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],

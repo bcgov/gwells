@@ -2,7 +2,7 @@
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+from datetime import timezone
 import django.utils.timezone
 
 UPDATE_AQUIFER_EFFECTIVE_DATE_SQL = """
@@ -53,12 +53,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='aquifer',
             name='expiry_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.AddField(
             model_name='aquifer',
             name='retire_date',
-            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc)),
         ),
         migrations.RunSQL(
             UPDATE_AQUIFER_EFFECTIVE_DATE_SQL,

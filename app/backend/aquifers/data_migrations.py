@@ -15,7 +15,7 @@ import datetime
 import os
 import json
 import logging
-from django.utils.timezone import utc
+from datetime import timezone
 
 from django.db.models import F
 from django.db.models import Q
@@ -117,7 +117,7 @@ def reverse_update_user_fields(apps, schema_editor):
 
 def update_aquifer_resource_fields(apps, schema_editor):
     AquiferResource = apps.get_model('aquifers', 'AquiferResource')
-    AquiferResource.objects.filter(create_date__isnull=True).update(create_date=datetime.datetime.now(utc))
+    AquiferResource.objects.filter(create_date__isnull=True).update(create_date=datetime.datetime.now(timezone.utc))
     AquiferResource.objects.filter(update_date__isnull=True).update(update_date=F('create_date'))
     AquiferResource.objects.filter(
         Q(create_user__isnull=True) | Q(create_user='')).update(create_user=DATALOAD_USER)

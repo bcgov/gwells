@@ -2,7 +2,7 @@
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+from datetime import timezone
 import django.utils.timezone
 
 import gwells.db_comments.model_mixins
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('code', models.CharField(db_column='well_activity_type_code', editable=False, max_length=10, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],

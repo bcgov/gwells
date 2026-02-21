@@ -15,9 +15,6 @@ from django.contrib.gis.db import models
 from django.utils import timezone
 
 from gwells.db_comments.model_mixins import DBComments
-from gwells.db_comments.patch_fields import patch_fields
-
-patch_fields()
 
 
 class AuditModelStructure(models.Model, DBComments):
@@ -32,15 +29,15 @@ class AuditModelStructure(models.Model, DBComments):
     """
     create_user = models.CharField(
         max_length=60, null=False,
-        db_comment=('The user who created this record in the database.'))
+        db_comment='The user who created this record in the database.')
     create_date = models.DateTimeField(
         default=timezone.now, null=False,
-        db_comment=('Date and time (UTC) when the physical record was created in the database.'))
+        db_comment='Date and time (UTC) when the physical record was created in the database.')
     # We don't set a default for the update_user, the update user must always be explicitly stated.
     # If it's the backend bootstrapping something, the correct value to use is: gwells.models.DATALOAD_USER
     update_user = models.CharField(
         max_length=60, null=False,
-        db_comment=('The user who last updated this record in the database.'))
+        db_comment='The user who last updated this record in the database.')
     update_date = models.DateTimeField(
         default=timezone.now, null=False,
         db_comment=('Date and time (UTC) when the physical record was updated in the database. '
