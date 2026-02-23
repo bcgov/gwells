@@ -93,7 +93,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -140,11 +140,17 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       status: 'False'
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

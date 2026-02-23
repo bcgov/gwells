@@ -60,7 +60,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-form-select
             v-model="aquiferLithologyInput"
             value-field="aquifer_lithology_code"
-            :options="codes.aquifer_lithology_codes"
+            :options="codes?.aquifer_lithology_codes"
             :errors="errors['aquifer_lithology']"
             :loaded="fieldsLoaded['aquifer_lithology']"
             text-field="description">
@@ -76,7 +76,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { debounce } from 'lodash'
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import ApiService from '@/common/services/ApiService.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -143,7 +143,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   },
   methods: {
     aquiferSearch: debounce((loading, search, vm) => {

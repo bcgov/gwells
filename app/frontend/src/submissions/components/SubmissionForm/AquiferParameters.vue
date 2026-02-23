@@ -54,7 +54,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"
                     select
                     v-model="aquiferParameter.pumping_test_description"
-                    :options="codes.pumping_test_description_codes"
+                    :options="codes?.pumping_test_description_codes"
                     placeholder="Select Testing Description"
                     text-field="description"
                     value-field="pumping_test_description_code"
@@ -77,7 +77,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"
                     select
                     v-model="aquiferParameter.boundary_effect"
-                    :options="codes.boundary_effect_codes"
+                    :options="codes?.boundary_effect_codes"
                     placeholder="Select Boundary effect"
                     text-field="description"
                     value-field="boundary_effect_code"
@@ -100,7 +100,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     group-class="mt-1 mb-0"
                     select
                     v-model="aquiferParameter.analysis_method"
-                    :options="codes.analysis_method_codes"
+                    :options="codes?.analysis_method_codes"
                     placeholder="Select Analysis Method"
                     text-field="description"
                     value-field="analysis_method_code"
@@ -202,7 +202,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -240,6 +240,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       aquiferParametersData: []
@@ -313,7 +314,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    codes () {
+      return this.submissionStore.codes
+    },
     computedAquiferParameters () {
       return [...this.aquiferParametersData]
     }
@@ -328,6 +331,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // When component created, add an initial row of aquiferParameters.
     if (!this.aquiferParameters.length) {
       for (let i = 0; i < 1; i++) {

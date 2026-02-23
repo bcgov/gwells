@@ -129,12 +129,12 @@ governing permissions and limitations under the License. */
 <script>
 import Vue from "vue";
 import { mapActions, mapGetters, mapState } from "vuex";
+import { useSubmissionStore } from "@/stores/submission.js";
 import { diff } from "deep-diff";
 import { camelCase } from "lodash";
 import smoothScroll from "smoothscroll";
 
 import ApiService from "@/common/services/ApiService.js";
-import { FETCH_CODES, FETCH_WELL_TAGS } from "../store/actions.types.js";
 import inputFormatMixin from "@/common/inputFormatMixin.js";
 import SubmissionPreview from "@/submissions/components/SubmissionPreview/SubmissionPreview.vue";
 import filterBlankRows from "@/common/filterBlankRows.js";
@@ -158,6 +158,7 @@ export default {
   data() {
     return {
       compareForm: {},
+      submissionStore: null,
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue({
         el: "activity-submission-form",
@@ -225,7 +226,8 @@ export default {
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;
     },
-    ...mapGetters(["codes", "userRoles", "well", "keycloak"]),
+    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
+    ...mapGetters(["userRoles", "well", "keycloak"]),
     ...mapState("documentState", [
       "files_uploading",
       "file_upload_error",
@@ -1057,7 +1059,7 @@ export default {
     setupPage() {
       Object.assign(this.$data, initialState());
       this.resetForm();
-      this.$store.dispatch(FETCH_CODES);
+      this.submissionStore.fetchCodes();
       this.resetUploadFiles();
       if (this.$route.params.id) {
         this.setWellTagNumber(this.$route.params.id);
@@ -1069,7 +1071,7 @@ export default {
       } else {
         // Some of our child components need the well tags, we dispatch the request here, in hopes
         // that the data will be available by the time those components render.
-        this.$store.dispatch(FETCH_WELL_TAGS);
+        this.submissionStore.fetchWellTags();
         this.activityType = "CON";
         this.formIsFlat = true;
       }
@@ -1173,6 +1175,7 @@ export default {
     },
   },
   created() {
+    this.submissionStore = useSubmissionStore();
     this.setupPage();
     this.fetchSurveys();
     // connect our before window unload event listener

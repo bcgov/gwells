@@ -32,7 +32,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="surfaceSealMaterial"
               select
               v-model="surfaceSealMaterialInput"
-              :options="codes.surface_seal_materials"
+              :options="codes?.surface_seal_materials"
               placeholder="Select material"
               text-field="description"
               value-field="surface_seal_material_code"
@@ -64,7 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               label="Surface Seal Method of Installation"
               id="surfaceSealMethod"
               select
-              :options="codes.surface_seal_methods"
+              :options="codes?.surface_seal_methods"
               placeholder="Select method"
               text-field="description"
               value-field="surface_seal_method_code"
@@ -100,7 +100,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -148,10 +148,17 @@ export default {
     backfillDepthInput: 'backfillDepth'
   },
   data () {
-    return {}
+    return {
+      submissionStore: null
+    }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

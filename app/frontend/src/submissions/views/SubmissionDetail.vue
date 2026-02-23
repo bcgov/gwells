@@ -33,6 +33,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission.js'
 import ApiService from '@/common/services/ApiService.js'
 
 // adds 'readable' filter
@@ -44,6 +45,7 @@ export default {
   data () {
     return {
       loading: false,
+      submissionStore: null,
       breadcrumbs: [
         {
           text: `Well Search`,
@@ -74,7 +76,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes', 'userRoles'])
+    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
+    ...mapGetters(['userRoles'])
   },
   methods: {
     fetchSubmission () {
@@ -102,6 +105,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     this.fetchSubmission()
   }
 }
