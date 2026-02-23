@@ -173,7 +173,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -236,6 +236,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       artesianPressure: {
         head: null,
         psi: null
@@ -243,6 +244,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     this.artesianPressure.psi = this.artesianPressurePSI
     this.artesianPressure.head = this.artesianPressureHead
     if (this.artesianPressurePSI || this.artesianPressureHead) {
@@ -301,7 +303,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

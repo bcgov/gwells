@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="yieldEstimationMethod"
             label="Yield Estimation Method"
             select
-            :options="codes.yield_estimation_methods"
+            :options="codes?.yield_estimation_methods"
             text-field="description"
             value-field="yield_estimation_method_code"
             v-model="yieldEstimationMethodInput"
@@ -116,7 +116,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -159,7 +159,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore?.codes
+    }
   }
 }
 </script>
