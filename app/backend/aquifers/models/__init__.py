@@ -33,11 +33,9 @@ from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.contrib.gis import geos
 
 from gwells.models import AuditModel, CodeTableModel, BasicCodeTableModel
-from gwells.db_comments.patch_fields import patch_fields
 
 from .vertical_aquifer_extents import *
 
-patch_fields()
 
 
 class DynamicMaxValueValidator(MaxValueValidator):

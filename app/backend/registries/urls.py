@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.decorators.cache import never_cache
 from rest_framework.documentation import include_docs_urls
 from drf_yasg.views import get_schema_view
@@ -44,91 +44,91 @@ schema_view = get_schema_view(
 urlpatterns = [
 
     # Organization note endpoints
-    url(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)/notes$',
+    re_path(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)/notes$',
         views.OrganizationNoteListView.as_view(), name='org-note-list'),
-    url(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)$',
+    re_path(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)$',
         views.OrganizationNoteDetailView.as_view(), name='org-note-detail'),
 
     # Organization endpoints
-    url(api_path_prefix() + r'/organizations/names$',
+    re_path(api_path_prefix() + r'/organizations/names$',
         never_cache(views.OrganizationNameListView.as_view()),
         name='organization-names'),
-    url(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)/history$',
+    re_path(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)/history$',
         never_cache(views.OrganizationHistory.as_view()), name='organization-history'),
-    url(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)$',
+    re_path(api_path_prefix() + r'/organizations/(?P<org_guid>[-\w]+)$',
         never_cache(views.OrganizationDetailView.as_view()),
         name='organization-detail'),
-    url(api_path_prefix() + r'/organizations$',
+    re_path(api_path_prefix() + r'/organizations$',
         never_cache(views.OrganizationListView.as_view()),
         name='organization-list'),
 
 
-    url(r'api/v2/drillers/csv$',
+    re_path(r'api/v2/drillers/csv$',
         never_cache(views_v2.CSVExportV2.as_view()),
         name='drillers-list-csv'
         ),
-    url(r'api/v2/drillers/xlsx$',
+    re_path(r'api/v2/drillers/xlsx$',
         never_cache(views_v2.XLSXExportV2.as_view()),
         name='drillers-list-xlsx'
         ),
 
     # Document Uploading (driller records)
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/presigned_put_url$',
         never_cache(views.PreSignedDocumentKey.as_view()), name='drillers-pre-signed-url'),
 
     # Document Deleting (driller records)
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/delete_document$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/delete_document$',
         never_cache(views.DeleteDrillerDocument.as_view()), name='driller-delete-document'),
 
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/files$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/files$',
         never_cache(views.ListFiles.as_view()), name='drillers-file-list'),
 
     # Person note endpoints
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/notes$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/notes$',
         never_cache(views.PersonNoteListView.as_view()), name='person-note-list'),
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/notes/(?P<note_guid>[-\w]+)$',
         views.PersonNoteDetailView.as_view(), name='person-note-detail'),
 
     # Person endpoints (drillers, well installers, and other instances of Person model)
     # TODO: There's some confusion between drillers and persons. Sometimes we're looking only for drillers,
     # sometimes we're actually looking for people (pump installers, drillers etc.)
-    url(api_path_prefix() + r'/drillers/names$',
+    re_path(api_path_prefix() + r'/drillers/names$',
         never_cache(views.PersonNameSearch.as_view()), name='person-search'),
-    url(api_path_prefix() + r'/drillers/options$',
+    re_path(api_path_prefix() + r'/drillers/options$',
         views.PersonOptionsView.as_view(), name='person-options'),
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/history$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)/history$',
         never_cache(views.PersonHistory.as_view()), name='person-history'),
-    url(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)$',
+    re_path(api_path_prefix() + r'/drillers/(?P<person_guid>[-\w]+)$',
         never_cache(views.PersonDetailView.as_view()),
         name='person-detail'),
-    url(api_path_prefix() + r'/drillers$',
+    re_path(api_path_prefix() + r'/drillers$',
         never_cache(views.PersonListView.as_view()), name='person-list'),
 
     # Registration endpoints (a person may register as a driller or well pump installer)
-    url(api_path_prefix() + r'/registrations/(?P<register_guid>[-\w]+)$',
+    re_path(api_path_prefix() + r'/registrations/(?P<register_guid>[-\w]+)$',
         never_cache(views.RegistrationDetailView.as_view()),
         name='register-detail'),
-    url(api_path_prefix() + r'/registrations$',
+    re_path(api_path_prefix() + r'/registrations$',
         never_cache(views.RegistrationListView.as_view()), name='register-list'),
 
     # Applications (applications to be qualified for a drilling activity)
-    url(api_path_prefix() + r'/applications/(?P<application_guid>[-\w]+)$',
+    re_path(api_path_prefix() + r'/applications/(?P<application_guid>[-\w]+)$',
         never_cache(views.ApplicationDetailView.as_view()),
         name='application-detail'),
-    url(api_path_prefix() + r'/applications$', never_cache(views.ApplicationListView.as_view()),
+    re_path(api_path_prefix() + r'/applications$', never_cache(views.ApplicationListView.as_view()),
         name='application-list'),
 
     # List of cities that currently have registered drillers, pump installers etc.
-    url(api_path_prefix() + r'/cities/drillers$',
+    re_path(api_path_prefix() + r'/cities/drillers$',
         never_cache(views.CitiesListView.as_view()),
         {'activity': 'drill'},
         name='city-list-drillers'),
-    url(api_path_prefix() + r'/cities/installers$',
+    re_path(api_path_prefix() + r'/cities/installers$',
         never_cache(views.CitiesListView.as_view()),
         {'activity': 'install'},
         name='city-list-installers'),
 
     # Swagger documentation endpoint
-    url(r'^api/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
+    re_path(r'^api/$', schema_view.with_ui('swagger', cache_timeout=None), name='api-docs'),
 
 ]

@@ -15,8 +15,8 @@ import os
 
 import debug_toolbar
 
+from django.urls import include, re_path
 from django.conf import settings
-from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.urls import path, re_path
@@ -51,51 +51,51 @@ def api_path_prefix():
 
 
 urlpatterns = [
-    url(r'^__debug__/', include(debug_toolbar.urls)),
-    url(r'^' + app_root_slash, include('submissions.urls')),
+    re_path(r'^__debug__/', include(debug_toolbar.urls)),
+    re_path(r'^' + app_root_slash, include('submissions.urls')),
 
-    url(r'^' + app_root_slash + 'robots\.txt$',
+    re_path(r'^' + app_root_slash + 'robots\.txt$',
         TemplateView.as_view(template_name='robots.txt',
                              content_type='text/plain'),
         name='robots'),
 
 
-    url(r'^' + app_root_slash + 'health$', HealthView.health, name='health'),
-    url(r'^' +
+    re_path(r'^' + app_root_slash + 'health$', HealthView.health, name='health'),
+    re_path(r'^' +
         app_root_slash +
         'site_admin/survey/(?P<pk>[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$',
         SurveyView.as_view(), name='survey'),  # survey details view
-    url(r'^' + app_root_slash + 'site_admin/survey',
+    re_path(r'^' + app_root_slash + 'site_admin/survey',
         SurveyView.as_view(), name='survey'),  # survey api view
-    url(r'^' + app_root_slash + 'site_admin',
+    re_path(r'^' + app_root_slash + 'site_admin',
         AdminView.as_view(),
         name='site_admin'),  # editable list view of surveys and other site admin features
 
     # API routes
-    url(r'^' + app_root_slash + api_path_prefix() + r'/surveys/(?P<survey_guid>[-\w]+)$',
+    re_path(r'^' + app_root_slash + api_path_prefix() + r'/surveys/(?P<survey_guid>[-\w]+)$',
         SurveyUpdateDeleteView.as_view(), name='survey-detail'),
-    url(r'^' + app_root_slash + api_path_prefix() + r'/surveys$',
+    re_path(r'^' + app_root_slash + api_path_prefix() + r'/surveys$',
         SurveyListCreateView.as_view(), name='survey-list'),
 
-    url(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
-    url(r'^' + app_root_slash + 'accounts/',
+    re_path(r'^' + app_root_slash + DJANGO_ADMIN_URL + '/', admin.site.urls),
+    re_path(r'^' + app_root_slash + 'accounts/',
         include('django.contrib.auth.urls')),
-    url(r'^' + app_root_slash + api_path_prefix() + r'/keycloak$',
+    re_path(r'^' + app_root_slash + api_path_prefix() + r'/keycloak$',
         api.KeycloakConfig.as_view(), name='keycloak'),
-    url(r'^' + app_root_slash + api_path_prefix() + r'/config',
+    re_path(r'^' + app_root_slash + api_path_prefix() + r'/config',
         api.GeneralConfig.as_view(), name='configuration'),
-    url(r'^' + app_root_slash + api_path_prefix() + r'/gis/insidebc',
+    re_path(r'^' + app_root_slash + api_path_prefix() + r'/gis/insidebc',
         api.InsideBC.as_view(), name='insidebc'),
-    url(r'^' + app_root_slash + api_path_prefix() + r'/geocoding/v\d/.+\.places/(?P<query>.+)\.json$',
+    re_path(r'^' + app_root_slash + api_path_prefix() + r'/geocoding/v\d/.+\.places/(?P<query>.+)\.json$',
         api.DataBCGeocoder.as_view(), name='insidebc'),
-    url(r'^' + app_root_slash, include('registries.urls')),
-    url(r'^' + app_root_slash, include('wells.urls')),
-    url(r'^' + app_root_slash, include('aquifers.urls')),
+    re_path(r'^' + app_root_slash, include('registries.urls')),
+    re_path(r'^' + app_root_slash, include('wells.urls')),
+    re_path(r'^' + app_root_slash, include('aquifers.urls')),
 
     # Bulk
-    url(r'^' + app_root_slash + 'api/v2/bulk/well-aquifer-correlation$',
+    re_path(r'^' + app_root_slash + 'api/v2/bulk/well-aquifer-correlation$',
         never_cache(BulkWellAquiferCorrelation.as_view()), name='bulk-well-aquifer-correlation'),
-    url(r'^' + app_root_slash + 'api/v2/bulk/vertical-aquifer-extents$',
+    re_path(r'^' + app_root_slash + 'api/v2/bulk/vertical-aquifer-extents$',
         never_cache(BulkVerticalAquiferExtents.as_view()), name='bulk-vertical-aquifer-extents'),
 
     # Catch all other cases to api/ and 404 them

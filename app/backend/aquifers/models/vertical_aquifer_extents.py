@@ -18,10 +18,6 @@ from django.core.validators import MinValueValidator
 from django.contrib.gis.db import models
 
 from gwells.models import AuditModel, AuditModelStructure
-from gwells.db_comments.patch_fields import patch_fields
-
-
-patch_fields()
 
 
 class VerticalAquiferExtent(AuditModel):
