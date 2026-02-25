@@ -80,10 +80,8 @@ SETTINGS_EXPORT = [
     'FIXTURES_DIRS'
 ]
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS = ['https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca']
 CORS_ALLOWED_ORIGINS = ['https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca']
-CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_METHODS = [
     'GET',
     'OPTIONS'
