@@ -7,9 +7,6 @@
 }
 
 :8080 {
-	handle /gwells/tiles/* {
-		reverse_proxy {$VECTOR_TILE_BASE_URL}
-	}
 	log
 	handle {
 		root * /srv
