@@ -1,0 +1,116 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  namespace: 26e83e-${ENV}
+  name: pgtileserv
+  labels:
+    app: pgtileserv
+    app-name: gwells
+    appver: pgtileserv
+    env-name: ${ENVIRONMENT}
+spec:
+  selector:
+    name: pgtileserv
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: pgtileserv
+    spec:
+      containers:
+        - name: nginx
+          image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/nginx-tilecache:latest
+          imagePullPolicy: IfNotPresent
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            httpGet:
+              path: /health
+              port: 8080
+            timeoutSeconds: 1
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            httpGet:
+              path: /health
+              port: 8080
+            timeoutSeconds: 1
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        - capabilities: {}
+          env:
+            - name: PG_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-${ENVIRONMENT}
+                  key: database-name
+            - name: PG_USER
+              value: ftw_reader
+            - name: PG_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-${ENVIRONMENT}
+                  key: database-password
+            - name: PG_HOST
+              value: gwells-pg12-${ENVIRONMENT}
+            - name: DATABASE_URL
+              value: postgres://$(PG_USER):$(PG_PASSWORD)@$(PG_HOST)/gwells
+          image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/pg_tileserv:20201112
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 30
+            successThreshold: 1
+            tcpSocket:
+              port: 7800
+            timeoutSeconds: 5
+          name: pgtileserv
+          ports:
+            - containerPort: 7800
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 7800
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+  strategy:
+    type: Rolling
+    rollingParams:
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+  triggers:
+    - type: ConfigChange
+  paused: false
