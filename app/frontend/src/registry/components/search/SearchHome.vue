@@ -94,14 +94,14 @@
                         class="mb-3"
                         :select-size="6">
                         <option value="">All</option>
-                        <optgroup
-                          v-for="prov in cityList[formatActivityForCityList]"
-                          v-if="prov.cities && prov.cities.length"
-                          :key="prov.prov"
-                          :label="prov.prov"
-                        >
-                          <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
-                        </optgroup>
+                        <template v-for="prov in cityList[formatActivityForCityList]" :key="prov.prov">
+                          <optgroup
+                            v-if="prov.cities && prov.cities.length"
+                            :label="prov.prov"
+                          >
+                            <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
+                          </optgroup>
+                        </template>
                     </b-form-select>
                     <b-alert
                       show

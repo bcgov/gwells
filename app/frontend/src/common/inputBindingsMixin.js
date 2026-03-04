@@ -19,45 +19,47 @@
  */
 
 const inputBindingsMixin = {
-  beforeCreate () {
+  beforeCreate() {
     // TODO: I propose getting rid of the fields
-    const fields = this.$options.fields
+    const fields = this.$options.fields;
     if (fields) {
-      const props = Object.keys(this.$options.props)
+      const props = Object.keys(this.$options.props);
       if (!this.$options.computed) {
-        this.$options.computed = {}
+        this.$options.computed = {};
       }
-      Object.keys(fields).forEach(key => {
+      Object.keys(fields).forEach((key) => {
         if (!props.includes(fields[key])) {
-          console.warn(`Field ${key} declared in fields but corresponding prop ${fields[key]} is missing`)
+          console.warn(
+            `Field ${key} declared in fields but corresponding prop ${fields[key]} is missing`
+          );
         }
         this.$options.computed[key] = {
-          get () {
-            return this[fields[key]]
+          get() {
+            return this[fields[key]];
           },
-          set (val) {
-            this.$emit(`update:${fields[key]}`, val)
-          }
-        }
-      })
+          set(val) {
+            this.$emit(`update:${fields[key]}`, val);
+          },
+        };
+      });
     } else {
       // If you haven't specified fields, then just iterate through the props
-      const props = Object.keys(this.$options.props)
-      props.forEach(key => {
-        if (this.$options.props[key].isInput !== false) {
-          const inputKey = `${key}Input`
+      const props = Object.keys(this.$options.props);
+      props.forEach((key) => {
+        if (this.$options.props[key]?.isInput !== false) {
+          const inputKey = `${key}Input`;
           this.$options.computed[inputKey] = {
-            get () {
-              return this[key]
+            get() {
+              return this[key];
             },
-            set (val) {
-              this.$emit(`update:${key}`, val)
-            }
-          }
+            set(val) {
+              this.$emit(`update:${key}`, val);
+            },
+          };
         }
-      })
+      });
     }
-  }
-}
+  },
+};
 
-export default inputBindingsMixin
+export default inputBindingsMixin;

@@ -184,7 +184,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <form-input
                   id="coordinateAcquisitionCode"
                   select
-                  :options="codes.coordinate_acquisition_codes"
+                  :options="codes?.coordinate_acquisition_codes"
                   label="Coordinate Acquisition"
                   v-model="coordinateAcquisitionCodeInput"
                   text-field="description"
@@ -234,7 +234,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
@@ -328,6 +328,12 @@ export default {
     this.initialLongitude = this.longitude
   },
   computed: {
+    codes () {
+      return this.submissionStore.codes
+    },
+    codes () {
+      return this.submissionStore.codes
+    },
     // BC is covered by UTM zones 7 through 11
     utmZones () {
       const zones = [{
@@ -355,8 +361,7 @@ export default {
       // `this.degrees.longitude` is always a positive number. We need to convert it to negative
       // number as that is the true longitude.
       return this.degrees.longitude ? this.degrees.longitude * -1 : null
-    },
-    ...mapGetters(['codes'])
+    }
   },
   methods: {
     transformToPositive (value) {

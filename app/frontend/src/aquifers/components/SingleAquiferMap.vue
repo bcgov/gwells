@@ -20,7 +20,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
+import { useAquiferStore } from '@/stores/aquifers.js'
 
 import {
   DATABC_ROADS_SOURCE,
@@ -192,19 +193,18 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles']),
-    ...mapGetters('aquiferStore/notations', [
-      'getAquiferNotationsById'
-    ]),
+    aquiferStore () { return useAquiferStore() },
+    getAquiferNotationsById () { return this.aquiferStore.getAquiferNotationsById },
     showUnpublished () {
       return Boolean(this.userRoles.aquifers.edit)
     }
   },
   methods: {
-    ...mapActions('aquiferStore/notations', [
-      'fetchNotationsFromDataBC'
-    ]),
+    fetchNotationsFromDataBC () {
+      this.aquiferStore.fetchNotationsFromDataBC()
+    },
     initMapBox () {
-      this.fetchNotationsFromDataBC()
+      this.aquiferStore.fetchNotationsFromDataBC()
 
       if (!mapboxgl.supported()) {
         this.browserUnsupported = true

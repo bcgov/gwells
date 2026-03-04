@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="developmentMethod"
             label="Development Method"
             select
-            :options="codes.development_methods"
+            :options="codes?.development_methods"
             hint="Select one or more methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
             text-field="description"
             value-field="development_method_code"
@@ -65,7 +65,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -108,10 +108,17 @@ export default {
 
   },
   data () {
-    return {}
+    return {
+      submissionStore: null
+    }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

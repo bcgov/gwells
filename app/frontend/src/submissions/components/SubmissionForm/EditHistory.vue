@@ -28,7 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 import WellHistory from './WellHistory.vue'
 
 export default {
@@ -49,10 +49,17 @@ export default {
     WellHistory
   },
   data () {
-    return {}
+    return {
+      submissionStore: null
+    }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>
