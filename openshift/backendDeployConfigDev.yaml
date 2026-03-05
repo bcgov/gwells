@@ -24,7 +24,9 @@ spec:
         failurePolicy: Abort
         execNewPod:
           command:
-            - pwd
+            - /bin/bash
+            - '-c'
+            - './pre-deploy.sh'
           env:
             - name: PGDATABASE
               valueFrom:

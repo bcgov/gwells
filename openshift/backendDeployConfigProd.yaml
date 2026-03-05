@@ -19,6 +19,13 @@ spec:
       timeoutSeconds: 900
       maxUnavailable: 25%
       maxSurge: 25%
+      pre:
+        failurePolicy: Abort
+        execNewPod:
+          command:
+            - /bin/bash
+            - '-c'
+            - './pre-deploy.sh'
     resources: {}
     activeDeadlineSeconds: 21600
   triggers:
