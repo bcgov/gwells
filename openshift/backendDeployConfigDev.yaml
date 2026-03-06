@@ -27,25 +27,7 @@ spec:
             - /bin/bash
             - '-c'
             - './pre-deploy.sh'
-          env:
-            - name: PGDATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-name
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-user
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-password
-            - name: PGHOST
-              value: gwells-pg12-development
-          containerName: gwells-app-development
+          containerName: gwells-backend
     resources: {}
     activeDeadlineSeconds: 21600
   triggers:
@@ -91,7 +73,7 @@ spec:
             successThreshold: 1
             failureThreshold: 10
           terminationMessagePath: /dev/termination-log
-          name: gwells-app-development
+          name: gwells-backend
           command:
             - /bin/bash
             - '-c'
