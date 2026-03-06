@@ -26,7 +26,7 @@ spec:
             - /bin/bash
             - '-c'
             - './pre-deploy.sh'
-        containerName: gwells-backend
+          containerName: gwells-backend
     resources: {}
     activeDeadlineSeconds: 21600
   triggers:
