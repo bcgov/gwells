@@ -90,23 +90,17 @@ Some GWELLS pages (submitting new well reports, adding or editing aquifers, or a
 
 ### Running the GWELLS application locally
 
-- [Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
-- From the gwells folder run `docker-compose up -d`
+1. Clone the [GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
+2. In the root folder copy .env.template and create .env with the variables from OpenShift
+3. Then, run the application with Docker `docker-compose up -d`
 
-Login to Artifactory for pulling the backend base image:
+<!-- Login to Artifactory for pulling the backend base image:
 
 ```sh
 docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
 ```
 
-Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets)
-
-Then, run the application with Docker:
-
-```sh
-cd gwells
-docker-compose up
-```
+Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets) -->
 
 ### Running GWELLS locally with a connection to Staging's Database
 
@@ -197,12 +191,12 @@ Steps:
 1. Enter any meaningful name in `Name`
 1. Under the `Connection` tab supply the following values
 
-| Field               | Value    |
-| ------------------- | -------- |
-| Host name / address | `db`     |
-| Port                | `5432`   |
-| Username            | `gwells` |
-| Password            | `test1`  |
+| Field               | Value     |
+| ------------------- | --------  |
+| Host name / address | `db`      |
+| Port                | `5432`    |
+| Username            | `gwells`  |
+| Password            | see .env  |
 
 Visit the following links to browse the API and frontend applications:
 

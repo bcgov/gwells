@@ -20,8 +20,8 @@ services:
     volumes:
       - /data
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio1234
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server /data
@@ -39,8 +39,8 @@ services:
     volumes:
       - /data
     environment:
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio1234
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
@@ -55,12 +55,12 @@ services:
     hostname: db
     environment:
       PG_USER: gwells
-      PG_PASSWORD: test1
+      PG_PASSWORD: ${DATABASE_PASSWORD}
       PG_DATABASE: gwells
       PG_MODE: primary
       PG_PRIMARY_USER: primaryuser
-      PG_PRIMARY_PASSWORD: test_primary_password
-      PG_ROOT_PASSWORD: test_root_password
+      PG_PRIMARY_PASSWORD: ${PG_PRIMARY_PASSWORD}
+      PG_ROOT_PASSWORD: ${PG_ROOT_PASSWORD}
       PG_PRIMARY_PORT: 5432
       TEMP_BUFFERS: 9MB
       MAX_CONNECTIONS: 101
@@ -70,7 +70,7 @@ services:
       PG_PRIMARY_HOST: db
       PGHOST: /tmp
       TILESERVER_USER: ftw_reader
-      TILESERVER_PASSWORD: test1
+      TILESERVER_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -100,7 +100,7 @@ services:
       - path: ./.env.test
         required: false
     environment:
-      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD:-test1}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
+      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
     ports:
       - "7800:7800"
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
@@ -148,7 +148,7 @@ services:
       CUSTOM_GDAL_GEOS: "false"
       DATABASE_NAME: gwells
       DATABASE_USER: "${DATABASE_USER:-gwells}"
-      DATABASE_PASSWORD: "${DATABASE_PASSWORD:-test1}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
       # DATABASE_SERVICE_NAME: gwells
       DJANGO_ADMIN_URL: admin
       DJANGO_DEBUG: "true"
@@ -159,8 +159,8 @@ services:
       # GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
       DATABASE_SERVICE_NAME: db
       DATABASE_PORT: 5432
-      MINIO_ACCESS_KEY: minio
-      MINIO_SECRET_KEY: minio1234
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       PYTHONUNBUFFERED: "1"
       SESSION_COOKIE_SECURE: "false"
       SSO_AUDIENCE: gwells-4121
@@ -171,7 +171,7 @@ services:
       SSO_IDP_HINT: "undefined"
       SSO_PORT: 0
       SSO_REALM: standard
-      SSO_PUBKEY: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAiFdv9GA83uHuy8Eu9yiZHGGF9j6J8t7FkbcpaN81GDjwbjsIJ0OJO9dKRAx6BAtTC4ubJTBJMPvQER5ikOhIeBi4o25fg61jpgsU6oRZHkCXc9gX6mrjMjbsPaf3/bjjYxP5jicBDJQeD1oRa24+tiGggoQ7k6gDEN+cRYqqNpzC/GQbkUPk8YsgroncEgu8ChMh/3ERsLV2zorchMANUq76max16mHrhtWIQxrb/STpSt4JuSlUzzBV/dcXjJe5gywZHe0jAutFhNqjHzHdgyaC4RAd3eYQo+Kl/JOgy2AZrnx+CiPmvOJKe9tAW4k4H087ng8aVE40v4HW/FEbnwIDAQAB
+      SSO_PUBKEY: ${SSO_PUBKEY}
       S3_HOST: minio-public:9000
       S3_PRIVATE_HOST: minio-private:9001
       S3_PRIVATE_BUCKET: gwells
@@ -179,8 +179,8 @@ services:
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
       S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
-      S3_PUBLIC_ACCESS_KEY: minio
-      S3_PUBLIC_SECRET_KEY: minio1234
+      S3_PUBLIC_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      S3_PUBLIC_SECRET_KEY: ${MINIO_SECRET_KEY}
       S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
       S3_ROOT_BUCKET: gwells
@@ -217,7 +217,7 @@ services:
     ports:
       - 5050:80
     environment:
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_DEFAULT_EMAIL: admin@gwells.com
     networks:
       - gwells-network
