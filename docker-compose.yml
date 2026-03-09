@@ -100,7 +100,7 @@ services:
       - path: ./.env.test
         required: false
     environment:
-      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD:-test1}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
+      DATABASE_URL: "postgres://ftw_reader:${DATABASE_PASSWORD}@${GWELLS_SERVICE_HOST:-db}:${GWELLS_SERVICE_PORT:-5432}/gwells"
     ports:
       - "7800:7800"
     entrypoint: sh -c "sleep 10; /app/pg_tileserv"
@@ -148,7 +148,7 @@ services:
       CUSTOM_GDAL_GEOS: "false"
       DATABASE_NAME: gwells
       DATABASE_USER: "${DATABASE_USER:-gwells}"
-      DATABASE_PASSWORD: "${DATABASE_PASSWORD:-test1}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
       # DATABASE_SERVICE_NAME: gwells
       DJANGO_ADMIN_URL: admin
       DJANGO_DEBUG: "true"
