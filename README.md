@@ -191,12 +191,12 @@ Steps:
 1. Enter any meaningful name in `Name`
 1. Under the `Connection` tab supply the following values
 
-| Field               | Value    |
-| ------------------- | -------- |
-| Host name / address | `db`     |
-| Port                | `5432`   |
-| Username            | `gwells` |
-| Password            | `test1`  |
+| Field               | Value     |
+| ------------------- | --------  |
+| Host name / address | `db`      |
+| Port                | `5432`    |
+| Username            | `gwells`  |
+| Password            | see .env  |
 
 Visit the following links to browse the API and frontend applications:
 
