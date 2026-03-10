@@ -15,9 +15,8 @@
         <div v-if="submission.create_date">Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-5">
-          <template v-for="(value, key, i) in submission">
+          <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
             <div
-              :key="`submission data row ${i} value`"
               class="row record"
               v-if="showRow(key, value)">
               <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt>
