@@ -83,27 +83,23 @@ SETTINGS_EXPORT = [
 ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = ['https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca']
 # CORS_ALLOW_CREDENTIALS = True
+# CORS_ALLOWED_ORIGINS = ['https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca']
+CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS can be a comma-separated list of origins.
-CORS_ALLOWED_ORIGINS = get_env_variable(
-    'CORS_ALLOWED_ORIGINS',
-    'https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca'
-).split(',')
+CORS_ALLOW_METHODS = [
+    'GET',
+    'OPTIONS'
+]
 
 if DEBUG:
-    # Add localhost for development
-    CORS_ALLOWED_ORIGINS.append('http://localhost:8080')
-    CORS_ALLOWED_ORIGINS.append('http://127.0.0.1:8080')
-
-CORS_ALLOW_ALL_ORIGINS = get_env_variable('CORS_ALLOW_ALL_ORIGINS', 'False') == 'True'
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
+    CORS_ALLOW_METHODS = [
+        'DELETE',
+        'GET',
+        'OPTIONS',
+        'PATCH',
+        'POST',
+        'PUT',
+    ]
 
 # Application definition
 INSTALLED_APPS = (
