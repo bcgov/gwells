@@ -12,18 +12,17 @@
     limitations under the License.
 */
 import '@/common/helpers/browserUpdate.js'
-import Vue from 'vue'
+import { createApp } from 'vue'
 import * as Sentry from '@sentry/browser'
 import * as Integrations from '@sentry/integrations'
 import Vuex, { mapActions } from 'vuex'
 import VueNoty from 'vuejs-noty'
-import BootstrapVue from 'bootstrap-vue'
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 import VueMatomo from 'vue-matomo'
 import App from './App.vue'
 import router from './router.js'
 import { store } from './store/index.js'
-import '@/common/assets/css/bootstrap-theme.min.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
 import vSelect from 'vue-select'
 import 'vue-select/dist/vue-select.css'
 import VueMoment from 'vue-moment'
@@ -54,49 +53,55 @@ if (isProduction()) {
   })
 }
 
-Vue.use(Vuex)
-Vue.use(VueNoty, {
+const app = createApp(App);
+
+app.use(Vuex)
+app.use(VueNoty, {
   layout: 'topRight',
-  theme: 'bootstrap-v4',
+  theme: Aura,
   timeout: 1800
 })
-Vue.use(BootstrapVue)
-Vue.use(VueMoment)
-Vue.use(filters)
-Vue.component('v-select', vSelect)
-Vue.component('form-input', FormInput)
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura
+  }
+})
+app.use(VueMoment)
+app.use(filters)
+app.component('v-select', vSelect)
+app.component('form-input', FormInput)
 
 // set baseURL and default headers
 ApiService.init()
 
 if (isProduction()) {
-  Vue.use(VueMatomo, {
+  app.use(VueMatomo, {
     host: PRODUCTION_MATOMO_HOST,
     siteId: 2,
     router: router,
     domains: 'apps.nrs.gov.bc.ca'
   })
 } else if (isStaging()) {
-  Vue.use(VueMatomo, {
+  app.use(VueMatomo, {
     host: TEST_MATOMO_HOST,
     siteId: 1,
     router: router,
     domains: STAGING_GWELLS_URLS
   })
 } else { // Local & DEV and anything else
-  Vue.use(VueMatomo, {
+  app.use(VueMatomo, {
     host: TEST_MATOMO_HOST,
     siteId: 3,
     router: router
   })
 }
 
-Vue.config.productionTip = false
-Vue.config.devtools = import.meta.env.MODE !== 'production'
-Vue.config.performance = import.meta.env.MODE !== 'production'
+app.config.productionTip = false
+app.config.devtools = import.meta.env.MODE !== 'production'
+app.config.performance = import.meta.env.MODE !== 'production'
 
 /* eslint-disable no-new */
-new Vue({
+new createApp(App)({
   el: '#app',
   router,
   store,

@@ -3,7 +3,8 @@
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
       <div class="mt-3" v-if="userRoles.registry.edit">
-        <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
+        <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
+        <!-- <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler"> -->
           <b-form-group
               id="noteInputGroup"
               label="Add a note:"
@@ -11,14 +12,16 @@
             <b-form-textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></b-form-textarea>
           </b-form-group>
           <div class="submit-row">
-            <b-button
+            <Button label="Submit">
+            <!-- <b-button
             type="submit"
             variant="primary"
             :disabled="!noteInput || submitLoading || invalidNewNoteLength"
             ref="noteInputSaveBtn"
-          >
-            Save
-          </b-button>
+          > -->
+              Save
+          <!-- </b-button> -->
+           </Button>
           <b-button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</b-button>
             <p
               class="font-weight-bold text-count"
@@ -132,7 +135,8 @@
               </b-btn>
             </div>
           </b-modal>
-        </b-form>
+        <!-- </b-form> -->
+        </Form>
       </div>
       <div id="notesList" ref="notes">
         <div class="mt-5" v-if="!notes || !notes.length">
@@ -173,6 +177,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import smoothScroll from 'smoothscroll'
+import Button from 'primevue/button';
 
 import ApiService from '@/common/services/ApiService.js'
 
