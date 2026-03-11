@@ -149,13 +149,15 @@
                     </b-alert>
                   </b-col>
                   <b-col class="text-right">
-                      <b-button
-                        type="button"
-                        v-b-modal.orgModal
-                        variant="primary"
-                        size="sm"
-                        class="py-0">
-                        <i class="fa fa-plus-square-o"></i> Add a company</b-button>
+                    <Button
+                      type="button"
+                      v-b-modal.orgModal
+                      variant="primary"
+                      size="sm"
+                      class="py-0"
+                    >
+                      <i class="fa fa-plus-square-o"></i> Add a company
+                    </Button>
                   </b-col>
               </b-row>
               <organization-add @newOrgAdded="newOrgHandler"></organization-add>
@@ -196,12 +198,12 @@
                 </b-row>
                 <b-row>
                   <b-col>
-                    <b-button
+                    <Button
                     type="button"
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication (drillApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new well driller classification</b-button>
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new well driller classification</Button>
                   </b-col>
                 </b-row>
               </div>
@@ -242,20 +244,20 @@
                 </b-row>
                 <b-row>
                   <b-col>
-                    <b-button
+                    <Button
                     type="button"
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication(pumpApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</b-button>
+                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
                   </b-col>
                 </b-row>
               </div>
             </b-card>
             <b-row class="mt-3">
               <b-col>
-                <b-button type="submit" class="mr-2" variant="primary">Save</b-button>
-                <b-button type="reset" variant="light">Reset</b-button>
+                <Button type="submit" class="mr-2" variant="primary">Save</Button>
+                <Button type="reset" variant="light">Reset</Button>
               </b-col>
             </b-row>
             <b-row class="mt-3">

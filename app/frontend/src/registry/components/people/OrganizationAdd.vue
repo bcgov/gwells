@@ -144,8 +144,12 @@
           </b-row>
           <b-row class="my-3">
             <b-col>
-              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Save</b-button>
-              <b-button type="reset" variant="light" id="orgAddFormResetButton">Cancel</b-button>
+              <Button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">
+                Save
+              </Button>
+              <Button type="reset" variant="light" id="orgAddFormResetButton">
+                Cancel
+              </Button>
             </b-col>
           </b-row>
         </b-form>

@@ -28,14 +28,15 @@
       <!-- Add company button (opens 'add company' modal) and success feedback -->
       <b-row>
         <b-col>
-          <b-button
-              id="orgAddNewButton"
-              type="button"
-              v-b-modal.orgAddModal
-              variant="primary"
-              size="sm"
-              class="mb-5">
-            <i class="fa fa-plus-square-o"></i> Add new company</b-button>
+          <Button
+            id="orgAddNewButton"
+            type="button"
+            v-b-modal.orgAddModal
+            variant="primary"
+            size="sm"
+            class="mb-5">
+            <i class="fa fa-plus-square-o"></i> Add new company
+            </Button>
           <organization-add @newOrgAdded="newOrgHandler"></organization-add>
         </b-col>
       </b-row>
@@ -289,13 +290,13 @@
             <router-link :to="{ name: 'PersonDetail', params: { person_guid: row.item.person_guid }}">{{ row.item.surname }}, {{ row.item.first_name }}</router-link>
           </template>
         </b-table>
-        <b-button
+        <Button
           variant="danger"
           :disabled="companyDetails.registrations_count > 0"
           @click="companyDeleteConfirm()"
         >
           Delete this company
-        </b-button>
+        </Button>
         <p v-if="companyDetails.registrations_count > 0" class="delete-company">You must remove all registrants from this company before deleting.</p>
       </div>
       <b-modal
