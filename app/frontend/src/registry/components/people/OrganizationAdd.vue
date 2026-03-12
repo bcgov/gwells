@@ -5,9 +5,9 @@
     </div>
     <div class="container">
         <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
-          <b-row>
-            <b-col cols="12">
-              <b-form-group
+          <div class="row">
+            <div class="col" cols="12">
+              <Form
                 label="Company name:"
                 label-for="orgAddNameInput">
                 <b-form-input
@@ -16,11 +16,12 @@
                     v-model="orgForm.name"
                     required
                     ref="orgAddNameInput"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col cols="12">
+              </Form>
+            </div>
+          </div>
+          <!-- <DataTable class="mt-3"> -->
+          <div class="row">
+            <div class="col" cols="12">
               <b-form-group
                 label="Street address:"
                 label-for="orgAddAddressInput">
@@ -29,10 +30,10 @@
                     type="text"
                     v-model="orgForm.street_address"/>
               </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="City:"
                 label-for="orgAddCityInput">
@@ -41,8 +42,8 @@
                     type="text"
                     v-model="orgForm.city"/>
               </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
+            </div>
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="Province:"
                 label-for="orgAddProvinceInput">
@@ -62,10 +63,10 @@
                   </div>
                 </b-form-invalid-feedback>
               </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="Postal code:"
                 label-for="orgAddPostalInput">
@@ -74,10 +75,11 @@
                     type="text"
                     v-model="orgForm.postal_code"/>
               </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col cols="12" md="6">
+            </div>
+          </div>
+          <!-- <DataTable class="mt-3"> -->
+          <div class="row">
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="Office telephone number:"
                 label-for="orgAddPhoneInput">
@@ -88,8 +90,8 @@
                     lazy-formatter
                     v-model="orgForm.main_tel"/>
               </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
+            </div>
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="Fax number:"
                 label-for="orgAddFaxInput">
@@ -100,10 +102,10 @@
                     lazy-formatter
                     v-model="orgForm.fax_tel"/>
               </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="Email:"
                 label-for="orgAddEmailInput">
@@ -119,8 +121,8 @@
                   </div>
                 </b-form-invalid-feedback>
               </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
+            </div>
+            <div class="col" cols="12" md="6">
               <b-form-group
                 label="Website:"
                 label-for="orgAddWebsiteInput">
@@ -140,18 +142,19 @@
                   Use a full website address, including http://
                 </b-form-text>
               </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="my-3">
-            <b-col>
+            </div>
+          </div>
+          <!-- <DataTable class="my-3"> -->
+          <div class="row">
+            <div class="col">
               <Button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">
                 Save
               </Button>
               <Button type="reset" variant="light" id="orgAddFormResetButton">
                 Cancel
               </Button>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
         </b-form>
         <b-alert v-if="!!orgSubmitError" show variant="warning" dismissible @dismissed="orgSubmitError=null">
           Error creating a new company.
@@ -269,5 +272,15 @@ export default {
 </script>
 
 <style>
-
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>

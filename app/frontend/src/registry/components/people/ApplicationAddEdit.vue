@@ -21,105 +21,109 @@
           </button>
         </h5>
         <p v-if="loading" class="card-text">
-          <b-row>
-            <b-col md="12">
+          <div class="row">
+            <div class="col">
               <div class="fa-2x text-center">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
         </p>
         <p v-else class="card-text">
-          <b-row>
-            <b-col class="font-weight-bold">Certification</b-col>
-          </b-row>
-          <b-row>
-            <b-col md="6">
-              <b-form-group label="Issued by" :label-cols="3">
+          <div class="row">
+            <div class="col" style="font-weight: bold;">Certification</div>
+          </div>
+          <div div="row">
+            <div class="col">
+              <Form label="Issued by" :label-cols="3">
                 <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
-              </b-form-group>
-            </b-col>
-            <b-col md="6">
-              <b-form-group label="Certificate number" :label-cols="3">
+              </Form>
+            </div>
+            <div class="col">
+              <Form label="Certificate number" :label-cols="3">
                 <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="12">
-              <b-form-group label="Select classification" :label-cols="2" class="font-weight-bold">
+              </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Form label="Select classification" :label-cols="2" class="font-weight-bold">
                 <b-form-radio-group class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="8">
-              <b-form-group :label="`Qualified${activity === 'DRILL' ? ' to drill' : '' }`" class="font-weight-bold">
+              </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Form :label="`Qualified${activity === 'DRILL' ? ' to drill' : '' }`" class="font-weight-bold">
                 <b-form-checkbox-group class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
                 </b-form-checkbox-group>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="8">
+              </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <h5>Adjudication</h5>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-form-group :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Form :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
                 <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age.code" required></b-form-select>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="4">
-              <b-form-group :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
+              </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <Form :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row v-if="isEditMode">
-            <b-col md="4" v-if="qualificationForm.application_recieved_date">
-              <b-form-group :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
+              </Form>
+            </div>
+          </div>
+          <!-- <DataTable v-if="isEditMode"> -->
+          <div class="row">
+            <div class="col" v-if="qualificationForm.application_recieved_date">
+              <Form :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
-              </b-form-group>
-            </b-col>
-            <b-col md="4" v-if="showApprovalOutcome">
-              <b-form-group :label-cols="4" label="Approval outcome" class="font-weight-bold">
+              </Form>
+            </div>
+            <div class="col" v-if="showApprovalOutcome">
+              <Form :label-cols="4" label="Approval outcome" class="font-weight-bold">
                 <b-form-select :options="formOptions.approvalOutcome" v-model="qualificationForm.current_status.code"/>
-              </b-form-group>
-            </b-col>
-            <b-col md="4" v-if="showReasonDenied">
-              <b-form-group :label-cols="4" label="Reason denied" class="font-weight-bold">
+              </Form>
+            </div>
+            <div class="col" v-if="showReasonDenied">
+              <Form :label-cols="4" label="Reason denied" class="font-weight-bold">
                 <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row v-if="isEditMode">
-            <b-col md="4" v-if="showNotificationDate">
-              <b-form-group :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
+              </Form>
+            </div>
+          </div>
+          <!-- <DataTable v-if="isEditMode"> -->
+          <div class="row">
+            <div class="col" v-if="showNotificationDate">
+              <Form :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row v-if="showRemoval && isEditMode">
-            <b-col>
+              </Form>
+            </div>
+          </div>
+          <!-- <DataTable v-if="showRemoval && isEditMode"> -->
+          <div class="row">
+            <div class="col">
               <h5>Removal of classification from Register</h5>
-            </b-col>
-          </b-row>
-          <b-row v-if="showRemoval && isEditMode">
-            <b-col md="4">
-              <b-form-group :label-cols="4" label="Removal date" class="font-weight-bold">
+            </div>
+          </div>
+          <!-- <DataTable v-if="showRemoval && isEditMode"> -->
+          <div class="row">
+            <div class="col">
+              <Form :label-cols="4" label="Removal date" class="font-weight-bold">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.removal_date" :state="removalDateState"/>
-              </b-form-group>
-            </b-col>
-            <b-col md="4" v-if="showRemovalReason">
-              <b-form-group :label-cols="4" label="Removal reason" class="font-weight-bold">
+              </Form>
+            </div>
+            <div class="col" v-if="showRemovalReason">
+              <Form :label-cols="4" label="Removal reason" class="font-weight-bold">
                 <b-form-select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
+              </Form>
+            </div>
+          </div>
           <!-- slot for child elements to be added by parent component -->
           <slot></slot>
         </p>
@@ -303,12 +307,23 @@ export default {
 </script>
 
 <style>
-.fixed-width-date-input {
-  width: 150px;
-  padding-right: 0px;
-  margin-right: 0px;
-}
-.fixed-width .custom-control-label {
-  width: 220px;
-}
+  .fixed-width-date-input {
+    width: 150px;
+    padding-right: 0px;
+    margin-right: 0px;
+  }
+  .fixed-width .custom-control-label {
+    width: 220px;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>

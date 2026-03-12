@@ -4,9 +4,9 @@
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
       <b-form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
-        <b-row>
-          <b-col cols="12" md="5">
-            <b-form-group
+        <div class="row">
+          <div class="col" cols="12" md="5">
+            <Form
               id="surnameInputGroup"
               label="Surname:"
               label-for="surnameInput">
@@ -15,10 +15,10 @@
                 type="text"
                 v-model="personalInfoForm.surname"
                 required/>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="5" offset-md="1">
-            <b-form-group
+            </Form>
+          </div>
+          <div class="col" cols="12" md="5" offset-md="1">
+            <Form
               id="firstnameInputGroup"
               label="First name:"
               label-for="firstnameInput">
@@ -27,12 +27,12 @@
                 type="text"
                 v-model="personalInfoForm.first_name"
                 required/>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12" md="5">
-            <b-form-group
+            </Form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col" cols="12" md="5">
+            <Form
               id="drillOrcsInputGroup"
               label="Well Driller ORCS:"
               label-for="drillORCSInput">
@@ -43,10 +43,10 @@
               <b-form-text id="drillerORCSExample">
                 ORCS format: 38000-25/DRI XXXX X
               </b-form-text>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="5" offset-md="1">
-            <b-form-group
+            </Form>
+          </div>
+          <div class="col" cols="12" md="5" offset-md="1">
+            <Form
               id="pumpORCSInputGroup"
               label="Pump installer ORCS:"
               label-for="pumpORCSInput">
@@ -57,24 +57,24 @@
               <b-form-text id="pumpORCSExample">
                 ORCS format: 38000-25/PUMP XXXX X
               </b-form-text>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
+            </Form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
             <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-          </b-col>
-        </b-row>
+          </div>
+        </div>
       </b-form>
     </div>
 
     <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
       <b-form @submit.prevent="submitContactForm">
-        <b-row>
-          <b-col cols="12" md="4">
-            <b-form-group
+        <div class="row">
+          <div class="col" cols="12" md="4">
+            <Form
               id="emailInputGroup"
               label="Email Address:"
               label-for="emailInput">
@@ -89,10 +89,10 @@
                   {{ error }}
                 </div>
               </b-form-invalid-feedback>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="4">
-            <b-form-group
+            </Form>
+          </div>
+          <div class="col" cols="12" md="4">
+            <Form
               id="telInputGroup"
               label="Telephone:"
               label-for="telInput">
@@ -102,10 +102,10 @@
                 :formatter="formatTel"
                 lazy-formatter
                 v-model="contactInfoForm.contact_tel"/>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="4">
-            <b-form-group
+            </Form>
+          </div>
+          <div class="col" cols="12" md="4">
+            <Form
               id="cellInputGroup"
               label="Cell:"
               label-for="cellInput">
@@ -115,22 +115,22 @@
                 :formatter="formatTel"
                 lazy-formatter
                 v-model="contactInfoForm.contact_cell"/>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
+            </Form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
             <button type="submit" class="btn btn-primary">Save</button>
             <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-          </b-col>
-        </b-row>
+          </div>
+        </div>
       </b-form>
     </div>
 
     <!-- Company -->
     <div v-if="(section === 'company' || section === 'all') && !!record">
       <b-form @submit.prevent="submitCompanyForm">
-        <b-form-group
+        <Form
           id="companyInputGroup"
           :label="`${record.activity_description} company:`"
           label-for="companyInput"
@@ -142,7 +142,7 @@
             placeholder="Begin typing a company name"
             label="org_verbose_name">
           </v-select>
-        </b-form-group>
+        </Form>
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
       </b-form>
@@ -151,7 +151,7 @@
     <!-- Registration -->
     <div v-if="(section === 'registration' || section === 'all') && !!record">
       <b-form @submit.prevent="submitRegistrationForm">
-        <b-form-group
+        <Form
           id="registrationInputGroup"
           label="Registration number:"
           label-for="registrationInput"
@@ -160,7 +160,7 @@
             v-model="registrationForm.registration_no"
             id="registrationInput"
           ></b-form-input>
-        </b-form-group>
+        </Form>
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
       </b-form>
@@ -322,4 +322,15 @@ export default {
 </script>
 
 <style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>

@@ -10,10 +10,10 @@
       <div class="card-body p-md-3 p-2">
           <h5 class="card-title">Add new applicant</h5>
           <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
-            <b-row><b-col><h6 class="font-weight-bold">Personal Information</h6></b-col></b-row>
-            <b-row>
-              <b-col cols="12" md="5">
-                <b-form-group
+            <div class="row"><div class="col"><h6 class="font-weight-bold">Personal Information</h6></div></div>
+            <div class="row">
+              <div class="col" cols="12" md="5">
+                <Form
                   id="surnameInputGroup"
                   label="Surname:"
                   label-for="surnameInput">
@@ -22,10 +22,10 @@
                     type="text"
                     v-model="drillerForm.person.surname"
                     required/>
-                </b-form-group>
-              </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
+                </Form>
+              </div>
+              <div class="col" cols="12" md="5" offset-md="1">
+                <Form
                   id="firstnameInputGroup"
                   label="First name:"
                   label-for="firstnameInput">
@@ -34,13 +34,14 @@
                     type="text"
                     v-model="drillerForm.person.first_name"
                     required/>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Contact Information at Company</h6></b-col></b-row>
-            <b-row>
-              <b-col cols="12" md="5">
-                <b-form-group
+                </Form>
+              </div>
+            </div>
+            <!-- b-row class="mt-3" -->
+            <div class="row"><div class="col"><h6 class="font-weight-bold">Contact Information at Company</h6></div></div>
+            <div class="row">
+              <div class="col" cols="12" md="5">
+                <Form
                   id="contactTelInputGroup"
                   label="Telephone number:"
                   aria-describedby="drillerTelExample"
@@ -54,10 +55,10 @@
                   <b-form-text id="drillerTelExample">
                     Example: (250) 555-1234
                   </b-form-text>
-                </b-form-group>
-              </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
+                </Form>
+              </div>
+              <div class="col" cols="12" md="5" offset-md="1">
+                <Form
                   id="contactEmailInputGroup"
                   label="Email:"
                   label-for="contactEmailInput">
@@ -72,13 +73,14 @@
                       {{ error }}
                     </div>
                   </b-form-invalid-feedback>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">ORCS File Number</h6></b-col></b-row>
-            <b-row>
-              <b-col cols="12" md="5">
-                <b-form-group
+                </Form>
+              </div>
+            </div>
+            <!-- class="mt-3" -->
+            <div class="row"><div class="col"><h6 class="font-weight-bold">ORCS File Number</h6></div></div>
+            <div class="row">
+              <div class="col" cols="12" md="5">
+                <Form
                   id="drillerORCSInputGroup"
                   label="Well Driller ORCS Number:"
                   aria-describedby="drillerORCSExample"
@@ -90,10 +92,10 @@
                   <b-form-text id="drillerORCSExample">
                   ORCS format: 38000-25/DRI XXXX X
                   </b-form-text>
-                </b-form-group>
-              </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
+                </Form>
+              </div>
+              <div class="col" cols="12" md="5" offset-md="1">
+                <Form
                   id="pumpORCSInputGroup"
                   label="Pump Installer ORCS Number:"
                   label-for="pumpORCSInput"
@@ -105,23 +107,26 @@
                   <b-form-text id="pumpORCSExample">
                     ORCS format: 38000-25/PUMP XXXX X
                   </b-form-text>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
-                <b-form-group label="Register as: " label-for="registrationTypeInput">
+                </Form>
+              </div>
+            </div>
+            <!-- class="mt-3" -->
+            <div class="row">
+              <div class="col">
+                <Form label="Register as: " label-for="registrationTypeInput">
                   <b-form-checkbox-group id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType">
                     <b-form-checkbox value="DRILL">Well Driller</b-form-checkbox>
                     <b-form-checkbox value="PUMP">Well Pump Installer</b-form-checkbox>
                   </b-form-checkbox-group>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3"><b-col><h6 class="font-weight-bold">Attachments</h6></b-col></b-row>
-            <b-row class="mt-3">
-              <b-col>
-                <b-form-group
+                </Form>
+              </div>
+            </div>
+            <!-- <div class="mt-3"> -->
+              <div class="row"><div class="col"><h6 class="font-weight-bold">Attachments</h6></div></div>
+            <!-- <DataTable class="mt-3"> -->
+            <div class="row">
+              <div class="col">
+                <Form
                   horizontal
                   label-cols="4"
                   label="Documents">
@@ -134,12 +139,12 @@
                       <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
-                </b-form-group>
-              </b-col>
-            </b-row>
+                </Form>
+              </div>
+            </div>
             <b-card no-body class="mb-3 p-1 p-md-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
-              <b-row>
-                  <b-col>
+              <div class="row">
+                  <div class="col">
                     <b-alert :show="newOrgSuccess"
                           dismissible
                           variant="success"
@@ -147,8 +152,8 @@
                           class="mb-3">
                     Company added.
                     </b-alert>
-                  </b-col>
-                  <b-col class="text-right">
+                  </div>
+                  <div class="col" style="text-align: right;">
                     <Button
                       type="button"
                       v-b-modal.orgModal
@@ -158,18 +163,19 @@
                     >
                       <i class="fa fa-plus-square-o"></i> Add a company
                     </Button>
-                  </b-col>
-              </b-row>
+                  </div>
+              </div>
               <organization-add @newOrgAdded="newOrgHandler"></organization-add>
               <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
-                <b-row>
-                  <b-col>
+                <div class="row">
+                  <div class="col">
                     <h5>Well Driller Registration</h5>
-                  </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                  <b-col cols="12" md="7">
-                    <b-form-group
+                  </div>
+                </div>
+                <!-- <DataTable class="mb-3"> -->
+                <div class="row">
+                  <div class="col" cols="12" md="7">
+                    <Form
                       id="companyInputGroup"
                       label="Well drilling company:"
                       label-for="companyInput">
@@ -179,11 +185,11 @@
                         placeholder="Begin typing a company name"
                         label="org_verbose_name">
                       </v-select>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                    </Form>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
                     <h6 class="font-weight-normal">Well Driller Classifications</h6>
                     <application-add
                       class="mb-3"
@@ -194,28 +200,29 @@
                       v-model="item.data"
                       activity="DRILL"
                       mode="add"/>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
                     <Button
                     type="button"
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication (drillApplications)"
                     class="mb-3"><i class="fa fa-plus-square-o"></i> Add new well driller classification</Button>
-                  </b-col>
-                </b-row>
+                  </div>
+                </div>
               </div>
               <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
-                <b-row>
-                  <b-col>
+                <div class="row">
+                  <div class="col">
                     <h5>Well Pump Installer Registration</h5>
-                  </b-col>
-                </b-row>
-                <b-row class="mb-3">
-                  <b-col md="7">
-                    <b-form-group
+                  </div>
+                </div>
+                <!-- <DataTable class="mb-3"> -->
+                <div class="row">
+                  <div class="col" md="7">
+                    <Form
                       id="companyInputGroup"
                       label="Well pump installation company:"
                       label-for="companyInput">
@@ -225,11 +232,11 @@
                         placeholder="Begin typing a company name"
                         label="org_verbose_name">
                       </v-select>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                    </Form>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
                     <h6 class="font-weight-normal">Well Pump Installer Classifications</h6>
                     <application-add
                       class="mb-3"
@@ -240,28 +247,30 @@
                       v-model="item.data"
                       activity="PUMP"
                       mode="add"/>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
                     <Button
                     type="button"
                     variant="primary"
                     size="sm"
                     v-on:click="addApplication(pumpApplications)"
                     class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
-                  </b-col>
-                </b-row>
+                  </div>
+                </div>
               </div>
             </b-card>
-            <b-row class="mt-3">
-              <b-col>
+            <!-- <DataTable class="mt-3"> -->
+            <div class="row">
+              <div class="col">
                 <Button type="submit" class="mr-2" variant="primary">Save</Button>
                 <Button type="reset" variant="light">Reset</Button>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
+              </div>
+            </div>
+            <!-- <DataTable class="mt-3"> -->
+            <div class="row">
+              <div class="col">
                 <b-alert :show="submitSuccess"
                         dismissible
                         variant="success"
@@ -280,8 +289,8 @@
                       :key="`submit error msg ${index} ${msgIndex}`">{{ msg }} </span>
                   </div>
                 </b-alert>
-              </b-col>
-            </b-row>
+              </div>
+            </div>
           </b-form>
       </div>
     </div>
@@ -532,4 +541,15 @@ export default {
 </script>
 
 <style>
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>

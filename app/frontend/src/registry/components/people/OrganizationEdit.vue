@@ -6,9 +6,9 @@
     <b-card title="Manage Companies">
 
       <!-- Company selector (used to select company to edit) -->
-      <b-row>
-        <b-col cols="12" md="7">
-          <b-form-group label="Select a company:" label-for="orgEditSelectDropdown">
+      <div class="row">
+        <div class="col" cols="12" md="7">
+          <Form label="Select a company:" label-for="orgEditSelectDropdown">
             <v-select
                 id="orgEditSelectDropdown"
                 :options="companies"
@@ -16,18 +16,18 @@
                 v-model="selectedCompany"
                 placeholder="Begin typing a company name"
                 ></v-select>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="5">
+          </Form>
+        </div>
+        <div class="col" cols="12" md="5">
           <b-alert variant="warning" :show="!!companyListError" dismissible @dismissed="companyListError=false">
             Error retrieving list of companies. Please try again later.
           </b-alert>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
 
       <!-- Add company button (opens 'add company' modal) and success feedback -->
-      <b-row>
-        <b-col>
+      <div class="row">
+        <div class="col">
           <Button
             id="orgAddNewButton"
             type="button"
@@ -38,21 +38,21 @@
             <i class="fa fa-plus-square-o"></i> Add new company
             </Button>
           <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
           <b-alert variant="success" id="orgAddSuccessAlert" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</b-alert>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
 
       <!-- Selected company details and edit form fields -->
       <b-card no-body class="p-2 p-md-3" v-if="!!selectedCompany">
         <h6 class="card-subtitle mb-3">Company Information</h6>
         <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
-          <b-row>
-            <b-col cols="12" md="5">
-                <b-form-group
+          <div class="row">
+            <div class="col" cols="12" md="5">
+                <Form
                   label="Company name:"
                   label-for="orgEditNameInput">
                   <b-form-input
@@ -60,10 +60,10 @@
                     id="orgEditNameInput"
                     type="text"
                     v-model="companyForm.name"/>
-                </b-form-group>
-            </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
+                </Form>
+            </div>
+              <div class="col" cols="12" md="5" offset-md="1">
+                <Form
                   label="Street address:"
                   label-for="orgEditAddressInput">
                   <b-form-input
@@ -71,12 +71,12 @@
                     id="orgEditAddressInput"
                     type="text"
                     v-model="companyForm.street_address"/>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
-                <b-form-group
+                </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" cols="12" md="5">
+                <Form
                   label="City:"
                   label-for="orgEditCityInput">
                   <b-form-input
@@ -84,10 +84,10 @@
                     id="orgEditCityInput"
                     type="text"
                     v-model="companyForm.city"/>
-                </b-form-group>
-            </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
+                </Form>
+            </div>
+              <div class="col" cols="12" md="5" offset-md="1">
+                <Form
                   label="Province:"
                   label-for="orgEditProvinceInput">
                   <b-form-select
@@ -103,12 +103,12 @@
                       {{ error }}
                     </div>
                   </b-form-invalid-feedback>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
-                <b-form-group
+                </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" cols="12" md="5">
+                <Form
                   label="Postal code:"
                   label-for="orgEditPostalInput">
                   <b-form-input
@@ -116,12 +116,13 @@
                     id="orgEditPostalInput"
                     type="text"
                     v-model="companyForm.postal_code"/>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-4">
-            <b-col cols="12" md="5">
-              <b-form-group
+                </Form>
+            </div>
+          </div>
+          <!-- <DataTable class="mt-4"> -->
+          <div class="row">
+            <div class="col" cols="12" md="5">
+              <Form
                 label="Office telephone number:"
                 label-for="orgEditPhoneInput">
                 <b-form-input
@@ -131,10 +132,10 @@
                   :formatter="formatTel"
                   lazy-formatter
                   v-model="companyForm.main_tel"/>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
+              </Form>
+            </div>
+            <div class="col" cols="12" md="5" offset-md="1">
+                <Form
                   label="Fax number:"
                   label-for="orgEditFaxInput">
                   <b-form-input
@@ -144,12 +145,12 @@
                     :formatter="formatTel"
                     lazy-formatter
                     v-model="companyForm.fax_tel"/>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
-              <b-form-group
+                </Form>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col" cols="12" md="5">
+              <Form
                 label="Email:"
                 label-for="orgEditEmailInput">
                 <b-form-input
@@ -164,10 +165,10 @@
                     {{ error }}
                   </div>
                 </b-form-invalid-feedback>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="5" offset-md="1">
-              <b-form-group
+              </Form>
+            </div>
+            <div class="col" cols="12" md="5" offset-md="1">
+              <Form
                 label="Website:"
                 label-for="orgEditWebsiteInput">
                 <b-form-input
@@ -186,10 +187,10 @@
                 <b-form-text id="orgEditEmailInput">
                   Use a full website address, including http://
                 </b-form-text>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="12">
-              <b-form-group label="Region:" label-for="regionOptions">
+              </Form>
+            </div>
+            <div class="col" cols="12" md="12">
+              <Form label="Region:" label-for="regionOptions">
                 <b-form-select
                     multiple="multiple"
                     id="regionOptions"
@@ -197,22 +198,23 @@
                     class="mb-3">
                     <option v-for="region in regionOptions" :key="`${region.regional_area_guid}`" :value="region.regional_area_guid">{{ region.name }}</option>
                 </b-form-select>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col>
+              </Form>
+            </div>
+          </div>
+          <!-- <DataTable class="mt-3"> -->
+          <div class="row">
+            <div class="col">
               <button type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged">Update</button>
               <button type="reset" class="btn btn-light" ref="orgUpdateCancelBtn" :disabled="!selectedCompany || !formChanged">Cancel</button>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
               <b-alert class="mt-3" variant="success" id="orgUpdateSuccessAlert" :show="companyUpdateSuccess" dismissible @dismissed="companyUpdateSuccess=false">
                 Successfully updated company information.
               </b-alert>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
 
           <!-- Modals for confirming update/cancel editing -->
           <b-modal
@@ -566,5 +568,16 @@ export default {
   }
   button:disabled {
     cursor: not-allowed
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 </style>

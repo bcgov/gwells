@@ -20,21 +20,22 @@
       <div class="card-body">
         <!-- Display loading spinner if application is null -->
         <div v-if="applicationLoading">
-          <b-row>
-            <b-col md="12">
+          <div class="row">
+            <div class="col">
               <div class="fa-2x text-center">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
         </div>
         <!-- Display application detail once loaded -->
         <div v-else>
           <div v-if="currentDriller != {} && registration != null">
             <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
-            <b-col md="12" class="pl-0" v-if="classification">
+            <div class="col" style="padding-bottom: 0% !important;"
+            v-if="classification">
               <h5>Certification - {{ classification }}</h5>
-            </b-col>
+            </div>
           </div>
           <div v-if="editClassification">
             <b-form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
@@ -54,131 +55,132 @@
                   </b-btn>
                 </div>
               </b-modal>
-              <b-row>
-                <b-col>
+              <div class="row">
+                <div class="col">
                   <application-edit
                     :activity="activity"
                     :value="applicationFormValue"
                     mode="edit"
                     v-on:isValid="onApplicationIsValid"
                     v-on:close="confirmCancelModal=true"/>
-                </b-col>
-              </b-row>
-              <b-row class="mt-3">
-                <b-col>
+                </div>
+              </div>
+              <!-- <DataTable class="mt-3"> -->
+              <div class="row">
+                <div class="col">
                   <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
                   <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
-                </b-col>
-              </b-row>
+                </div>
+              </div>
             </b-form>
           </div>
           <div v-else>
             <div class="card mb-3">
               <div class="card-body">
-                <b-row>
-                  <b-col md="9">
+                <div class="row">
+                  <div class="col">
                     <h5>Classification &amp; Qualifications</h5>
-                  </b-col>
-                  <b-col md="3" class="text-right">
+                  </div>
+                  <div class="col" style="text-align: right;">
                     <button
                       class="btn btn-light btn-sm registries-edit-btn"
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
                       v-if="userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
-                  </b-col>
-                </b-row>
-                <b-row class="row" v-if="classification && classification.registries_subactivity">
-                  <b-col md="12" class="registry-item">
+                  </div>
+                </div>
+                <div class="row" v-if="classification && classification.registries_subactivity">
+                  <div class="registry-item" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
                     <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
                     <span class="registry-subtle">
                       (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
                     </span>
                     </h4>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="1"><span class="registry-label">Issued by:</span></b-col>
-                  <b-col md="4">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
-                  <b-col md="2"><span class="registry-label">Certificate number:</span></b-col>
-                  <b-col md="3">{{ application.primary_certificate_no }}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="8" class="pl-3 pt-3">
-                      <b-form-group
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col"><span class="registry-label">Issued by:</span></div>
+                  <div class="col">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</div>
+                  <div class="col"><span class="registry-label">Certificate number:</span></div>
+                  <div class="col">{{ application.primary_certificate_no }}</div>
+                </div>
+                <div class="row">
+                  <div class="pl-3 pt-3" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
+                      <Form
                           :label="`Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification`"
                           label-for="qualifications"
                           class="font-weight-bold">
                       <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="qualificationOptions" v-model="qualifications" disabled>
                       </b-form-checkbox-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                    </Form>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
                     <h5>Adjudication</h5>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col">
                     Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item pr-0">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="registry-item pr-0" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
                     <span class="registry-label">Date application received:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_recieved_date" md="2">
+                  </div>
+                  <div class="col" v-if="application && application.application_recieved_date">
                       {{ application.application_recieved_date }}
-                  </b-col>
-                  <b-col v-else>Unknown</b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item">
+                  </div>
+                  <div class="col" v-else>Unknown</div>
+                </div>
+                <div class="row">
+                  <div class="registry-item" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
                     <span class="registry-label">Approval outcome date:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_outcome_date" md="2">
+                  </div>
+                  <div class="col" v-if="application && application.application_outcome_date">
                     {{ application.application_outcome_date }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                  <b-col md="2" class="registry-item">
+                  </div>
+                  <div class="col" v-else>Unknown</div>
+                  <div class="registry-item" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
                     <span class="registry-label">Approval outcome:</span>
-                  </b-col>
-                  <b-col v-if="application && application.current_status" md="2">
+                  </div>
+                  <div class="col" v-if="application && application.current_status">
                     {{ application.current_status.description }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2" class="registry-item">
+                  </div>
+                  <div class="col" v-else>Unknown</div>
+                  <div v-if="application && application.current_status && application.current_status.code === 'NA'" class="registry-item" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
                     <span class="registry-label">Reason denied:</span>
-                  </b-col>
-                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2">
+                  </div>
+                  <div class="col" v-if="application && application.current_status && application.current_status.code === 'NA'">
                     <span v-if="application.reason_denied">
                       {{ application.reason_denied }}
                     </span>
                     <span v-else>
                       Unknown
                     </span>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="registry-item" style="flex: 1 1 0%; padding-left: 15px; padding-right: 15px;">
                     <span class="registry-label">Notification date:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_outcome_notification_date" md="2">
+                  </div>
+                  <div class="col" v-if="application && application.application_outcome_notification_date">
                     {{ application.application_outcome_notification_date }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                </b-row>
-                <b-row v-if="removalDate || removalReason">
-                  <b-col class="pt-3"><h6>Removal of classification from register</h6></b-col>
-                </b-row>
-                <b-row v-if="removalDate || removalReason">
-                  <b-col md="2"><span class="registry-label">Removal date:</span></b-col>
-                  <b-col md="2">{{removalDate}}</b-col>
-                  <b-col md="2"><span class="registry-label">Removal reason:</span></b-col>
-                  <b-col v-if="removalReason">{{removalReason.description}}</b-col>
-                  <b-col v-else>Unknown</b-col>
-                </b-row>
+                  </div>
+                  <div class="col" v-else>Unknown</div>
+                </div>
+                <div class="row" v-if="removalDate || removalReason">
+                  <div class="col" style="padding: 1rem !important;"><h6>Removal of classification from register</h6></div>
+                </div>
+                <div class="row" v-if="removalDate || removalReason">
+                  <div class="col" ><span class="registry-label">Removal date:</span></div>
+                  <div class="col" >{{removalDate}}</div>
+                  <div class="col" ><span class="registry-label">Removal reason:</span></div>
+                  <div class="col" v-if="removalReason">{{removalReason.description}}</div>
+                  <div class="col" v-else>Unknown</div>
+                </div>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">
@@ -369,21 +371,32 @@ export default {
 </script>
 
 <style>
-.registry-section {
-  margin-top: 25px;
-  margin-bottom: 20px;
-}
-.registry-disabled-item {
-  color: #808080;
-  cursor: auto!important;
-}
-.qualification-item {
-  margin-bottom: 5px;
-}
-.registry-subtle {
-  font-size: 0.9rem;
-}
-.fixed-width .custom-control-label {
-  width: 220px;
-}
+  .registry-section {
+    margin-top: 25px;
+    margin-bottom: 20px;
+  }
+  .registry-disabled-item {
+    color: #808080;
+    cursor: auto!important;
+  }
+  .qualification-item {
+    margin-bottom: 5px;
+  }
+  .registry-subtle {
+    font-size: 0.9rem;
+  }
+  .fixed-width .custom-control-label {
+    width: 220px;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>

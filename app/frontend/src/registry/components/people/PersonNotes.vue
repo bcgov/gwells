@@ -4,15 +4,15 @@
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
       <div class="mt-3 mb-4" v-if="userRoles.registry.edit">
         <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
-          <b-form-group
+          <Form
               id="noteInputGroup"
               label="Add a note:"
               label-for="noteInput">
             <b-form-textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></b-form-textarea>
-          </b-form-group>
+          </Form>
           <div class="submit-row">
-            <b-button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</b-button>
-            <b-button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</b-button>
+            <Button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</Button>
+            <Button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</Button>
             <p
               class="font-weight-bold text-count"
               :class="[invalidNewNoteLength ? 'error': '']"
@@ -119,7 +119,7 @@
       </div>
       <div id="notesList" ref="notes">
         <div v-if="!notes || !notes.length">
-          <b-row><b-col>No notes for this person.</b-col></b-row>
+          <div class="row"><div class="col">No notes for this person.</div></div>
         </div>
         <div class="mt-5 note-container" v-if="notes && notes.length">
           <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
@@ -294,47 +294,58 @@ export default {
 </script>
 
 <style lang="scss">
-.crud-options {
-  display: flex;
-  margin-left: 0.5em;
-  width: auto;
-}
-.crud-options button:last-child {
-  margin-left: 0.5em;
-}
-.note {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5em;
-  border-radius: 4pt;
-}
-.note:hover {
-  transition: 0.2s;
-  background-color: #F8F8F8;
-}
-.note p {
-  padding: 0;
-  margin: 0;
-}
-.buttons button:last-child {
-  margin-left: 0.5em;
-}
-.wb {
-  word-break: break-all;
-}
-.error {
-  color: red;
-}
-.text-count {
-  width: 100%;
-  text-align: right;
-  padding: 0.5em 1em 0 0;
-}
-.submit-row {
-  display: flex;
-  flex-direction: row;
-}
+  .crud-options {
+    display: flex;
+    margin-left: 0.5em;
+    width: auto;
+  }
+  .crud-options button:last-child {
+    margin-left: 0.5em;
+  }
+  .note {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.5em;
+    border-radius: 4pt;
+  }
+  .note:hover {
+    transition: 0.2s;
+    background-color: #F8F8F8;
+  }
+  .note p {
+    padding: 0;
+    margin: 0;
+  }
+  .buttons button:last-child {
+    margin-left: 0.5em;
+  }
+  .wb {
+    word-break: break-all;
+  }
+  .error {
+    color: red;
+  }
+  .text-count {
+    width: 100%;
+    text-align: right;
+    padding: 0.5em 1em 0 0;
+  }
+  .submit-row {
+    display: flex;
+    flex-direction: row;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>

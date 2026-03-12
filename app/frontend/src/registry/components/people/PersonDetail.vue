@@ -4,13 +4,13 @@
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
     <div v-if="showSpinner">
-      <b-row>
-        <b-col md="12">
+      <div class="row">
+        <div class="col" md="12">
           <div class="fa-2x text-center">
             <i class="fa fa-circle-o-notch fa-spin"></i>
           </div>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
     </div>
     <div v-else class="card">
       <div class="col-xs-12" v-if="files_uploading">
@@ -122,8 +122,8 @@
                   </tbody>
                 </table>
               </div>
-              <b-row v-if="show(registration.registries_activity)">
-                <b-col>
+              <div class="row" v-if="show(registration.registries_activity)">
+                <div class="col">
                   <b-form @submit.prevent="saveApplication(registration.registries_activity)">
                     <application-add
                         class="mb-3"
@@ -135,19 +135,19 @@
                         <button type="button" class="btn btn-light" @click="closeApplication(registration.registries_activity)">Cancel</button>
                     </application-add>
                   </b-form>
-                </b-col>
-              </b-row>
-              <b-row v-else>
-                <b-col>
-                  <b-button
+                </div>
+              </div>
+              <div class="row" v-else>
+                <div class="col">
+                  <Button
                           v-if="userRoles.registry.edit"
                           type="button"
                           variant="primary"
                           size="sm"
                           v-on:click="addApplication(registration)"
-                          class="mb-3 registries-action-button"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
-                </b-col>
-              </b-row>
+                          class="mb-3 registries-action-button"><i class="fa fa-plus-square-o"></i> Add classification</Button>
+                </div>
+              </div>
             </div>
 
             <!-- Registration information -->
@@ -285,9 +285,9 @@
                     return !currentDriller.registrations.some(reg => reg.registries_activity === item.code)
                   })"
                 :key="`unregistered activity ${index}`">
-              <b-button variant="primary" class="my-1 registries-action-button" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
+              <Button variant="primary" class="my-1 registries-action-button" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
                 Register as a {{ item.desc }}
-              </b-button>
+              </Button>
               <b-modal
                   v-model="confirmRegisterModal[item.code]"
                   centered
@@ -359,9 +359,10 @@
                 <h5 class="card-title mb-3">Attachments</h5>
               </div>
             </div>
-            <b-row class="mt-3">
-              <b-col>
-                <b-form-group
+            <!-- <DataTable class="mt-3"> -->
+            <div class="row">
+              <div class="col">
+                <Form
                   label-cols="4"
                   label="Upload Documents">
                   <b-form-file
@@ -373,16 +374,17 @@
                       <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
+                </Form>
+              </div>
+            </div>
+            <!-- <DataTable class="mt-3"> -->
+            <div class="row">
+              <div class="col">
                 <person-documents :files="person_files"
                   v-on:fetchFiles="fetchFiles"
                   :guid="currentDriller.person_guid"></person-documents>
-              </b-col>
-            </b-row>
+              </div>
+            </div>
             <div slot="modal-footer">
               <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.upload_files.length === 0">
                 Save
@@ -674,13 +676,24 @@ export default {
 </script>
 
 <style>
-#classification-table th {
-  font-weight: 400!important;
-}
-.registries-edit-btn {
-  margin-top: -5px;
-}
-.contact-label {
-  margin-right: 1rem;
-}
+  #classification-table th {
+    font-weight: 400!important;
+  }
+  .registries-edit-btn {
+    margin-top: -5px;
+  }
+  .contact-label {
+    margin-right: 1rem;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+  .col {
+    flex: 1 1 0%;
+    padding-left: 15px;
+    padding-right: 15px;
+  }
 </style>
