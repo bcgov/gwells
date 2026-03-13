@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser'
 
 import authenticate from '@/common/authenticate.js'
 import AuthGuard from './authGuard.js'
-import { store } from './store/index.js'
+import store from './store/index.js'
 
 // Aquifers components
 import AquiferSearch from '@/aquifers/components/Search.vue'
@@ -42,6 +42,7 @@ import Surveys from '@/surveys/views/Surveys.vue'
 
 // QaQc
 import QaQcDashboard from '@/qaqc/views/QaQcDashboard.vue'
+import KeycloakHolder from './KeycloakHolder.js'
 
 Vue.use(Router)
 
@@ -274,7 +275,7 @@ Router.prototype.replace = function replace(location) {
 }
 
 router.beforeEach((to, from, next) => {
-  if (!router.app.$keycloak) {
+  if (!KeycloakHolder.keycloak) {
     authenticate.authenticate(store).then((keycloak) => {
       if (keycloak.authenticated) {
         Sentry.setUser({ username: keycloak.tokenParsed.preferred_username })

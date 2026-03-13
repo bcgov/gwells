@@ -73,7 +73,7 @@ export default {
   mounted () {
     this.initMapBox()
   },
-  destroyed () {
+  unmounted () {
     this.map.remove()
     this.map = null
   },
@@ -364,7 +364,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "mapbox-gl/dist/mapbox-gl.css";
+@use "mapbox-gl/dist/mapbox-gl.css" as *;
 
 .mapboxgl-popup {
   min-width: 275px !important;

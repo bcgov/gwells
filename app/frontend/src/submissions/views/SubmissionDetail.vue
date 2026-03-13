@@ -12,7 +12,7 @@
         </div>
       </div>
       <div v-else>
-        <div v-if="submission.create_date">Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
+        <div v-if="submission.create_date">Filed: {{ moment(submission.create_date, "MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-5">
           <template v-for="(value, key, i) in submission">
@@ -20,7 +20,7 @@
               :key="`submission data row ${i} value`"
               class="row record"
               v-if="showRow(key, value)">
-              <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt>
+              <dt class="col-12 col-md-6 col-xl-2">{{readable(key)}}</dt>
               <dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
           </template>

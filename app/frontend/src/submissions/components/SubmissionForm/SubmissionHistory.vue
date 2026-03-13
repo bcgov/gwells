@@ -26,7 +26,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-table
             id="submissionHistoryTable"
             ref="submissionHistoryTable"
-            :busy.sync="submissionsBusy"
+            v-model:busy="submissionsBusy"
             :items="filteredSubmissions"
             :fields="tableHeaders"
             responsive
@@ -42,7 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
           <template v-slot:cell(date_entered)="data">
             <div>
-              <span v-if="data.item.create_date">{{ data.item.create_date | moment("MMMM Do YYYY [at] LT") }}</span>
+              <span v-if="data.item.create_date">{{ moment(data.item.create_date, "MMMM Do YYYY [at] LT") }}</span>
             </div>
           </template>
           <template v-slot:cell(entered_by)="data">

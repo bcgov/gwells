@@ -16,47 +16,46 @@
                 <span class="font-weight-bold">{{ version.user }}</span>
                   {{ version.created ? "created" : "edited" }}
                   {{ version.name ? version.name : 'record' }}
-                  ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
+                  ({{ moment(version.date, "MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
                 <div class="ml-4">
                   <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
-                  <div
-                      v-for="(value, key) in version.diff"
-                      v-if="!(value === '' && version.prev[key] === null)"
-                      :key="`history-item-${key}-in-version ${index}`">
-                    <div v-if="isTable(value)" class="mt-2">
-                      {{ key | formatKey | readable }} changed to:
-                      <div v-if="value != null && value.length > 0">
-                        <b-table
-                          responsive
-                          striped
-                          small
-                          fixed
-                          bordered
-                          :items="value"/>
-                      </div>
-                      <div v-else>
-                        None
-                      </div>
-                      <div style="margin-bottom:10px;">
-                        From:
-                        <div v-if="version.prev[key] != null && version.prev[key].length > 0">
+                   <template v-for="(value, key) in version.diff">
+                    <div v-if="!(value === '' && version.prev[key] === null)" :key="`history-item-${key}-in-version ${index}`">
+                      <div v-if="isTable(value)" class="mt-2">
+                        {{ readable(formatKey(key)) }} changed to:
+                        <div v-if="value != null && value.length > 0">
                           <b-table
                             responsive
                             striped
                             small
                             fixed
                             bordered
-                            :items="version.prev[key]"/>
+                            :items="value"/>
                         </div>
                         <div v-else>
                           None
                         </div>
+                        <div style="margin-bottom:10px;">
+                          From:
+                          <div v-if="version.prev[key] != null && version.prev[key].length > 0">
+                            <b-table
+                              responsive
+                              striped
+                              small
+                              fixed
+                              bordered
+                              :items="version.prev[key]"/>
+                          </div>
+                          <div v-else>
+                            None
+                          </div>
+                        </div>
+                      </div>
+                      <div v-else>
+                        {{ readable(key) }} changed from {{ formatValue($booleanToYesNo(version.prev[key])) }} to {{ formatValue($booleanToYesNo(value)) }}
                       </div>
                     </div>
-                    <div v-else>
-                      {{ key | readable }} changed from {{ version.prev[key] | booleanToYesNo | formatValue }} to {{ value | booleanToYesNo | formatValue }}
-                    </div>
-                  </div>
+                  </template>
                 </div>
             </div>
           </div>
@@ -95,6 +94,32 @@ export default {
         person: 'drillers'
       }
       return endpointMap[this.resource] || this.resource
+    },
+    readable (val) {
+      val = val || ''
+
+      // some GIS data is returned in field 'geom' by default.
+      // for the history view, we can translate that to 'Location'
+      if (val.toLowerCase() === 'geom') {
+        return 'Location'
+      }
+
+      return val.split('_').map((word) => {
+        return word.charAt(0).toUpperCase() + word.substring(1)
+      }).join(' ')
+    },
+    formatKey (val) {
+      return val
+    },
+    formatValue (val) {
+      // takes a single value and returns a string in a human readable format.
+      // if val started as something that would be displayed as an empty space,
+      // we return 'none' instead so we can form a complete sentence.
+      // e.g. Province changed from none to British Columbia
+      if (val === undefined || val === null || val === '') {
+        return 'none'
+      }
+      return val
     }
   },
   watch: {
@@ -123,34 +148,6 @@ export default {
     },
     isTable (arr) {
       return Array.isArray(arr) && arr.length > 0
-    }
-  },
-  filters: {
-    readable (val) {
-      val = val || ''
-
-      // some GIS data is returned in field 'geom' by default.
-      // for the history view, we can translate that to 'Location'
-      if (val.toLowerCase() === 'geom') {
-        return 'Location'
-      }
-
-      return val.split('_').map((word) => {
-        return word.charAt(0).toUpperCase() + word.substring(1)
-      }).join(' ')
-    },
-    formatKey (val) {
-      return val
-    },
-    formatValue (val) {
-      // takes a single value and returns a string in a human readable format.
-      // if val started as something that would be displayed as an empty space,
-      // we return 'none' instead so we can form a complete sentence.
-      // e.g. Province changed from none to British Columbia
-      if (val === undefined || val === null || val === '') {
-        return 'none'
-      }
-      return val
     }
   },
   created () {

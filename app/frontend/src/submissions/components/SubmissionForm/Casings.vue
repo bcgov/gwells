@@ -79,7 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     value-field="code"
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
-                  <template slot="first">
+                  <template v-slot:first>
                     <option :value="null">Select a type</option>
                   </template>
                 </b-form-select>
@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     value-field="code"
                     text-field="description"
                     :state="getCasingError(index).casing_material ? false : null">
-                  <template slot="first">
+                  <template v-slot:first>
                     <option :value="null" enabled>Select a material</option>
                   </template>
                 </b-form-select>
@@ -139,7 +139,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :options="codes.drive_shoe_codes"
                   :errors="errors['drive_shoe_status']"
                   :loaded="fieldsLoaded['drive_shoe_status']">
-                  <template slot="first">
+                  <template v-slot:first>
                     <option :value="null" enabled>Select drive shoe</option>
                   </template>
                 </b-form-select>

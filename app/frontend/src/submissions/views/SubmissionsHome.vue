@@ -66,11 +66,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :events="events"
                 :submissionsHistory="submissionsHistory"
                 :isPublished="isPublished"
-                :activityType.sync="activityType"
+                :activityType="activityType"
                 :sections="displayFormSection"
                 :formSteps="formSteps"
                 :errors="errors"
-                :formIsFlat.sync="formIsFlat"
+                :formIsFlat="formIsFlat"
                 :trackValueChanges="trackValueChanges"
                 :formSubmitLoading="formSubmitLoading"
                 :isStaffEdit="isStaffEdit"
@@ -967,7 +967,7 @@ export default {
       next()
     }
   },
-  beforeDestroy () {
+  beforeUnmount () {
     // disconnect our before window unload event listener
     window.removeEventListener('beforeunload', this.beforeWindowUnload)
   }
@@ -1092,7 +1092,7 @@ function initialState () {
 </script>
 
 <style lang="scss">
-@import 'vuejs-noty/dist/vuejs-noty.css';
+@use 'vuejs-noty/dist/vuejs-noty.css' as *;
 
   .slide-leave-active,
   .slide-enter-active {

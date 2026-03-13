@@ -31,15 +31,16 @@
                 {{ driller.surname }}, {{ driller.first_name }}
               </div>
               <div v-if="driller.registrations && driller.registrations.length">
-                <div
-                    v-for="(reg, regIndex) in driller.registrations"
-                    v-if="reg.activity === activity"
-                    :key="`reg no ${driller.person_guid} ${regIndex}`">
-                  {{ reg.registration_no }}</div>
+                <template v-for="(reg, regIndex) in driller.registrations">
+                  <div v-if="reg.activity === activity" :key="`reg no ${driller.person_guid} ${regIndex}`">
+                    {{ reg.registration_no }}
+                  </div>
+                </template>
               </div>
             </td>
             <td :id="`personOrg${index}`">
               <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
+            </td>
             <td :id="`personAddress${index}`">
               <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
             </td>

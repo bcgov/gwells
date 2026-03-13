@@ -12,6 +12,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import Keycloak from 'keycloak-js'
 import Vue from 'vue'
+import KeycloakHolder from '../KeycloakHolder'
 
 export default {
   getInstance: function () {
@@ -42,12 +43,16 @@ export default {
               publicClient,
               confidentialPort
             })
+            // TODO: Remove when we replace the above w/ globalProperties
+            KeycloakHolder.keycloak = Vue.prototype.$keycloak
 
             resolve(Vue.prototype.$keycloak)
           })
           .catch(error => {
             console.error(error)
             Vue.prototype.$keycloak = {}
+            // TODO: Remove when we replace the above w/ globalProperties
+            KeycloakHolder.keycloak = {}
             resolve(Vue.prototype.$keycloak)
           })
       } else {

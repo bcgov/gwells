@@ -250,7 +250,7 @@
                 </li>
               </ul>
               <p>
-                <i v-if="licenceDetails.wells_updated">Well info last updated {{ licenceDetails.wells_updated.update_date__max|formatDate }}</i>
+                <i v-if="licenceDetails.wells_updated">Well info last updated {{ formatDate(licenceDetails.wells_updated.update_date__max) }}</i>
               </p>
               <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
               <aquifer-documents :files="aquiferFiles"
@@ -282,7 +282,7 @@
                 </li>
                 <li>
                   <dt>Water withdrawal volume (annual)</dt>
-                  <dd class="m-0" v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
+                  <dd class="m-0" v-if="waterWithdrawlVolume">{{ unitWaterVolume(waterWithdrawlVolume) }}</dd>
                   <dd class="m-0" v-else>No information available.</dd>
                 </li>
               </ul>
@@ -320,7 +320,7 @@
                   </ul>
                 </template>
               </b-table>
-              <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ licenceDetails.licences_updated.update_date__max|formatDate }}</i></p>
+              <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ formatDate(licenceDetails.licences_updated.update_date__max) }}</i></p>
               <p>
                 Licensing information is obtained from
                 the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" target="_blank" class="d-print-url">
@@ -752,6 +752,14 @@ export default {
     },
     aquiferNotations () {
       return this.getAquiferNotationsById(this.id, this.record.geom)
+    },
+    unitWaterVolume (volume) {
+      return Math.round(volume) + ' cubic metres'
+    },
+    formatDate (value) {
+      if (!value) return ''
+      value = new Date(value)
+      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   watch: {
@@ -767,16 +775,6 @@ export default {
     },
     licenceDetails (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
-    }
-  },
-  filters: {
-    unitWaterVolume (volume) {
-      return Math.round(volume) + ' cubic metres'
-    },
-    formatDate: function (value) {
-      if (!value) return ''
-      value = new Date(value)
-      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   methods: {

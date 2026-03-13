@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="description"
             index="aquifer_id"
             @search="onAquiferSearch">
-            <template slot="no-options">
+            <template v-slot:no-options>
                 Search for an aquifer by name or id number
             </template>
             <template v-slot:cell(option)="option">
@@ -64,7 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['aquifer_lithology']"
             :loaded="fieldsLoaded['aquifer_lithology']"
             text-field="description">
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null" disabled>Select Lithology</option>
             </template>
           </b-form-select>
