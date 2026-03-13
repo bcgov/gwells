@@ -124,21 +124,6 @@ Vue.prototype.$excludeZeroDecimals = (value) => {
 }
 
 /**
- * if variable is boolean type we return Yes/No, otherwise return original value
- * safe
- * can accept null/undefined/blank string/anything NaN and returns original
- * only processes non null boolean typed values
- * @param value
- * @returns {string|*}
- */
-Vue.prototype.$booleanToYesNo = (value) => {
-  if (value != null && typeof (value) === 'boolean') {
-    return nullBooleanToYesNo(value)
-  }
-  return value
-}
-
-/**
  * if variable is null or boolean type we return Yes/No
  * unsafe
  * this will return a string value of No for nulls or false boolean values
@@ -148,6 +133,21 @@ Vue.prototype.$booleanToYesNo = (value) => {
  */
 Vue.prototype.$nullBooleanToYesNo = (value) => {
   return (value == null || value === false ? 'No' : 'Yes')
+}
+
+/**
+ * if variable is boolean type we return Yes/No, otherwise return original value
+ * safe
+ * can accept null/undefined/blank string/anything NaN and returns original
+ * only processes non null boolean typed values
+ * @param value
+ * @returns {string|*}
+ */
+Vue.prototype.$booleanToYesNo = (value) => {
+  if (value != null && typeof (value) === 'boolean') {
+    return Vue.prototype.$nullBooleanToYesNo(value)
+  }
+  return value
 }
 
 /* eslint-disable no-new */

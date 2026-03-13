@@ -86,7 +86,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ nullBooleanToYesNo(well.artesian_conditions) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ $nullBooleanToYesNo(well.artesian_conditions) }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Technical Report:</span>
               <a
                 v-if="well.technical_report"
@@ -97,7 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               > Report Available</a>
               <span v-if="!well.technical_report"> N/A</span>
             </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Drinking Water Area Indicator:</span> {{nullBooleanToYesNo(well.drinking_water_protection_area_ind) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ $nullBooleanToYesNo(well.drinking_water_protection_area_ind) }}</b-col>
           </b-row>
         </fieldset>
 
@@ -457,7 +457,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{ $excludeZeroDecimals(well.drawdown) }} {{ well.drawdown ? 'ft (btoc)':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{nullBooleanToYesNo(well.hydro_fracturing_performed)}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{$nullBooleanToYesNo(well.hydro_fracturing_performed)}}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{ $excludeZeroDecimals(well.hydro_fracturing_yield_increase) }} {{ well.hydro_fracturing_yield_increase ? 'USgpm':'' }}</b-col>
           </b-row>
         </fieldset>
