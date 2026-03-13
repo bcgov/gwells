@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue2";
+import vue from "@vitejs/plugin-vue";
 import path from "path";
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
@@ -18,7 +18,16 @@ export default defineConfig(({ mode }) => ({
           'process.env.VITE_FRONTEND_TILE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_FRONTEND_TILE_URL" ___CADDY_TEMPLATE_END___'),
         }
       : {},
-  plugins: [vue(),
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          compatConfig: {
+            MODE: 2
+          }
+        }
+      }
+    }),
     NodeGlobalsPolyfillPlugin({
       process: true,
       buffer: true,
@@ -79,6 +88,7 @@ export default defineConfig(({ mode }) => ({
       process: "rollup-plugin-node-polyfills/polyfills/process-es6",
       stream: "rollup-plugin-node-polyfills/polyfills/stream",
       string_decoder: "rollup-plugin-node-polyfills/polyfills/string-decoder",
+      vue: '@vue/compat',
     },
     extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
   },
@@ -86,7 +96,13 @@ export default defineConfig(({ mode }) => ({
     preprocessorOptions: {
       scss: {
         // If you need any global SCSS variables or imports
-        // additionalData: `@import "./src/common/variables.scss";`
+        // additionalData: `@use "./src/common/variables.scss" as *;`
+        api: 'modern-compiler',
+        quietDeps: true,
+      },
+      sass: {
+        // TODO: Remove when we completely transition from Bootstrap
+        quietDeps: true,
       },
     },
   },

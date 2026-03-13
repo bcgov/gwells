@@ -115,23 +115,23 @@
                 {{ removeRegionSuffix(row[column.param]) }}
               </template>
               <template v-else-if="column.param === 'street_address'">
-                {{ row | streetAddressFormat }}
+                {{ streetAddressFormat(row) }}
               </template>
               <template v-else-if="column.type === 'select' && Array.isArray(row[column.param])">
-                <template v-for="(value, index) in row[column.param]">
-                  <span :key="`${row.well_tag_number}-${column.param}-${index}`">
-                    {{ value | selectOptionFormat(column, filterSelectOptions[column.id]) }}<span v-if="index < row[column.param].length - 1">, </span>
+                <template v-for="(value, index) in row[column.param]" :key="`${row.well_tag_number}-${column.param}-${index}`">
+                  <span>
+                    {{ selectOptionFormat(value, column, filterSelectOptions[column.id]) }}<span v-if="index < row[column.param].length - 1">, </span>
                   </span>
                 </template>
               </template>
               <template v-else-if="column.type === 'select' || column.type === 'radio'">
-                {{ row[column.param] | selectOptionFormat(column, filterSelectOptions[column.id]) }}
+                {{ selectOptionFormat(row[column.param], column, filterSelectOptions[column.id]) }}
               </template>
               <template v-else-if="column.param === 'legal_pid'">
                 {{ row[column.param] }}
               </template>
               <template v-else>
-                {{ row[column.param] | defaultFormat }}
+                {{ defaultFormat(row[column.param]) }}
               </template>
             </td>
           </tr>
@@ -298,6 +298,34 @@ export default {
     },
     isBusy () {
       return (this.pending !== null)
+    },
+    selectOptionFormat (value, column, options = null) {
+      if (value === undefined || value === null || value === '') {
+        return ''
+      }
+
+      const valueProp = column.valueField || 'value'
+      const textProp = column.textField || 'text'
+      const selectOptions = column.options || options
+      const optionsMatch = selectOptions.find(option => option[valueProp] === value.toString())
+      if (optionsMatch) {
+        return optionsMatch[textProp]
+      }
+
+      return value
+    },
+    defaultFormat: (value) => {
+      if (value === null) {
+        return ''
+      }
+      return value
+    },
+    streetAddressFormat (row) {
+      if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
+        return `${row.street_address}, ${row.city}`
+      } else {
+        return row.street_address
+      }
     }
   },
   methods: {
@@ -371,36 +399,6 @@ export default {
     safeUrl (wellTagNumber) {
       const url = sanitizeUrl(`/gwells/well/${wellTagNumber}`)
       return encodeURI(url)
-    }
-  },
-  filters: {
-    selectOptionFormat (value, column, options = null) {
-      if (value === undefined || value === null || value === '') {
-        return ''
-      }
-
-      const valueProp = column.valueField || 'value'
-      const textProp = column.textField || 'text'
-      const selectOptions = column.options || options
-      const optionsMatch = selectOptions.find(option => option[valueProp] === value.toString())
-      if (optionsMatch) {
-        return optionsMatch[textProp]
-      }
-
-      return value
-    },
-    defaultFormat: (value) => {
-      if (value === null) {
-        return ''
-      }
-      return value
-    },
-    streetAddressFormat (row) {
-      if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
-        return `${row.street_address}, ${row.city}`
-      } else {
-        return row.street_address
-      }
     }
   },
   watch: {

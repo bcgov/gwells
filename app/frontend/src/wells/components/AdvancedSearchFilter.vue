@@ -38,8 +38,8 @@
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="placeholder"
         @input="updateParamValue(paramNames[0], $event)"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)" />
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)" />
       <b-form-select
         v-else-if="type === 'select'"
         :id="`${id}Input`"
@@ -51,9 +51,9 @@
         :value-field="valueField"
         :text-field="textField"
         @input="updateParamValue(paramNames[0], $event)"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)">
-        <template slot="first">
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)">
+        <template v-slot:first>
           <option :value="null">{{ placeholder || '----------' }}</option>
         </template>
       </b-form-select>
@@ -66,8 +66,8 @@
         :aria-describedby="`${id}InvalidFeedback`"
         :options="options"
         @input="updateParamValue(paramNames[0], $event)"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)" />
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)" />
       <b-form-row v-else-if="type === 'range' || type === 'dateRange'">
         <b-col class="mb-1">
           <b-form-row>
@@ -84,8 +84,8 @@
                 :aria-describedby="`${id}InvalidFeedback`"
                 :placeholder="placeholder"
                 @input="updateParamValue(paramNames[0], $event)"
-                @focus.native="$emit('focus', true)"
-                @blur.native="$emit('blur', true)" />
+                @focus="$emit('focus', true)"
+                @blur="$emit('blur', true)" />
               <b-form-input
                 v-else-if="type === 'dateRange'"
                 type="date"
@@ -96,8 +96,8 @@
                 :aria-describedby="`${id}InvalidFeedback`"
                 placeholder="YYYY/MM/DD"
                 @input="updateParamValue(paramNames[0], $event)"
-                @focus.native="$emit('focus', true)"
-                @blur.native="$emit('blur', true)" />
+                @focus="$emit('focus', true)"
+                @blur="$emit('blur', true)" />
             </b-col>
           </b-form-row>
         </b-col>
@@ -116,8 +116,8 @@
                 :aria-describedby="`${id}InvalidFeedback`"
                 :placeholder="placeholder"
                 @input="updateParamValue(paramNames[1], $event)"
-                @focus.native="$emit('focus', true)"
-                @blur.native="$emit('blur', true)" />
+                @focus="$emit('focus', true)"
+                @blur="$emit('blur', true)" />
               <b-form-input
                 v-else-if="type === 'dateRange'"
                 type="date"
@@ -128,8 +128,8 @@
                 :aria-describedby="`${id}InvalidFeedback`"
                 placeholder="YYYY/MM/DD"
                 @input="updateParamValue(paramNames[1], $event)"
-                @focus.native="$emit('focus', true)"
-                @blur.native="$emit('blur', true)" />
+                @focus="$emit('focus', true)"
+                @blur="$emit('blur', true)" />
             </b-col>
           </b-form-row>
         </b-col>
@@ -158,6 +158,8 @@
  *
  */
 export default {
+  // UNCOMMENT AFTER MIGRATING TO VUE 3
+  // emits: ['focus', 'blur'],
   model: {
     prop: 'value',
     event: 'input'

@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/browser'
 
 import authenticate from '@/common/authenticate.js'
 import AuthGuard from './authGuard.js'
-import { store } from './store/index.js'
+import store from './store/index.js'
 
 // Aquifers components
 import AquiferSearch from '@/aquifers/components/Search.vue'

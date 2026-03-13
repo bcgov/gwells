@@ -14,14 +14,14 @@
         :value-field="valueField"
         :text-field="textField"
         :class="inputClass"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)"
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)"
         :disabled="disabled"
         :required="required"
         :multiple="multiple"
         @change="updateValue($event)"
     >
-      <template slot="first" v-if="placeholder">
+      <template v-slot:first v-if="placeholder">
         <option :value="null">{{ placeholder }}</option>
       </template>
     </b-form-select>
@@ -43,8 +43,8 @@
         :formatter="formatter"
         :lazy-formatter="lazyFormatter"
         @input="updateValue($event)"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)"
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)"
         :placeholder="placeholder"/>
     <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
       <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
@@ -71,6 +71,8 @@
  *
  */
 export default {
+  // UNCOMMENT AFTER MIGRATING TO VUE 3
+  // emits: ['focus', 'blur'],
   props: {
     id: { // an ID for the form group that will be used to generate IDs for the related components
       required: true,

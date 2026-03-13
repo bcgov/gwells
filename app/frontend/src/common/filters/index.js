@@ -44,15 +44,3 @@ export const booleanToYesNo = (value) => {
 export const nullBooleanToYesNo = (value) => {
   return (value == null || value === false ? 'No' : 'Yes')
 }
-
-export default {
-  /**
-   * install function(s) as filters
-   * @param Vue
-   */
-  install (Vue) {
-    Vue.filter('excludeZeroDecimals', excludeZeroDecimals)
-    Vue.filter('booleanToYesNo', booleanToYesNo)
-    Vue.filter('nullBooleanToYesNo', nullBooleanToYesNo)
-  }
-}

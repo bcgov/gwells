@@ -374,7 +374,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="4"><span class="font-weight-bold">Drawdown:</span> {{form.drawdown}}</b-col>
       </b-row>
       <b-row>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{form.hydro_fracturing_performed | nullBooleanToYesNo}}</b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{nullBooleanToYesNo(form.hydro_fracturing_performed)}}</b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{form.hydro_fracturing_yield_increase}}</b-col>
       </b-row>
     </fieldset>
@@ -411,7 +411,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ form.final_casing_stick_up }} {{ form.final_casing_stick_up ? 'inches':''}}</b-col>
-        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Condition:</span> {{ form.artesian_conditions | nullBooleanToYesNo }} </b-col>
+        <b-col cols="12" lg="4"><span class="font-weight-bold">Artesian Condition:</span> {{ nullBooleanToYesNo(form.artesian_conditions) }} </b-col>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Well Cap:</span> {{ form.well_cap_type }}</b-col>
       </b-row>
       <b-row>
@@ -471,13 +471,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         {{ form.comments ? form.comments : 'No comments submitted' }}
       </p>
       <p>
-        <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ form.alternative_specs_submitted | nullBooleanToYesNo }}
+        <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ nullBooleanToYesNo(form.alternative_specs_submitted) }}
       </p>
       <p>
-        <span class="font-weight-bold">Technical Report:</span> {{ form.technical_report | nullBooleanToYesNo }}
+        <span class="font-weight-bold">Technical Report:</span> {{ nullBooleanToYesNo(form.technical_report) }}
       </p>
       <p>
-        <span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ form.drinking_water_protection_area_ind | nullBooleanToYesNo }}
+        <span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ nullBooleanToYesNo(form.drinking_water_protection_area_ind) }}
       </p>
     </fieldset>
 

@@ -136,7 +136,6 @@ services:
     build:
       context: ./app/backend
       dockerfile: ./Dockerfile
-    image: nr-gwells/backend:latest
     container_name: backend
     # env_file:
     # - path: ./.env.test

@@ -52,7 +52,7 @@
                   v-model="orgForm.province_state"
                   :state="validation.province_state"
                   required>
-                  <template slot="first">
+                  <template v-slot:first>
                     <option :value="null" disabled>Select a province</option>
                   </template>
                 </b-form-select>

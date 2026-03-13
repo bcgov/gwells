@@ -64,7 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                         ({{ (row.nonAquiferSize).toFixed(2) }}m)
                       </td>
                     </tr>
-                    <tr :key="`aquifer-${index}`">
+                    <tr v-else :key="`aquifer-${index}`">
                       <td class="input-width-small py-0 pl-0">
                         <form-input
                           group-class="my-1"
@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                             label="description"
                             index="aquifer_id"
                             @search="onAquiferSearch">
-                            <template slot="no-options">
+                            <template v-slot:no-options>
                               Search for an aquifer by name or id number
                             </template>
                             <template v-slot:cell(option)="option">
