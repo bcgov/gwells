@@ -76,7 +76,7 @@
                 </div>
               </b-form-row>
               <b-form-row v-if="subactivities && subactivities.length > 1">
-                <div class="col" md="12">
+                <div class="col">
                   <Form label="Choose classification(s):">
                     <b-form-checkbox-group name="subactivitySelector"
                       class="fixed-width font-weight-normal pt-2"
@@ -86,7 +86,7 @@
                 </div>
               </b-form-row>
               <b-form-row>
-                <div class="col" cols="12" md="12">
+                <div class="col" cols="12">
                   <Form label="Community:" label-for="cityOptions">
                     <b-form-select
                         multiple="multiple"
@@ -114,7 +114,7 @@
                   </b-alert>
                   </Form>
                 </div>
-                <div class="col" cols="12" md="6" v-if="userRoles.registry.view">
+                <div class="col" cols="12" v-if="userRoles.registry.view">
                   <Form label="Registration status:" label-for="registrationStatusSelect">
                     <b-form-select
                         :options="regStatusOptions"
@@ -125,7 +125,7 @@
                 </div>
               </b-form-row>
               <b-form-row>
-                <div class="col" cols="12" md="12">
+                <div class="col" cols="12">
                   <Form label="Region:" label-for="regionOptions">
                     <b-form-select
                         multiple="multiple"
@@ -140,7 +140,7 @@
                 </div>
               </b-form-row>
               <b-form-row>
-                <div class="col" cols="12" md="6">
+                <div class="col" cols="12">
                   <Form label="Individual, company, or registration number:" label-for="regTypeInput">
                     <b-form-input
                         type="text"

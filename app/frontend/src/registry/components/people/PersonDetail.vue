@@ -5,7 +5,7 @@
     </b-card>
     <div v-if="showSpinner">
       <div class="row">
-        <div class="col" md="12">
+        <div class="col">
           <div class="fa-2x text-center">
             <i class="fa fa-circle-o-notch fa-spin"></i>
           </div>

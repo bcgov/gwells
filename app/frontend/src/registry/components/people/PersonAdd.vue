@@ -12,7 +12,7 @@
           <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
             <div class="row"><div class="col"><h6 class="font-weight-bold">Personal Information</h6></div></div>
             <div class="row">
-              <div class="col" cols="12" md="5">
+              <div class="col">
                 <Form
                   id="surnameInputGroup"
                   label="Surname:"
@@ -24,7 +24,7 @@
                     required/>
                 </Form>
               </div>
-              <div class="col" cols="12" md="5" offset-md="1">
+              <div class="col">
                 <Form
                   id="firstnameInputGroup"
                   label="First name:"
@@ -40,7 +40,7 @@
             <!-- b-row class="mt-3" -->
             <div class="row"><div class="col"><h6 class="font-weight-bold">Contact Information at Company</h6></div></div>
             <div class="row">
-              <div class="col" cols="12" md="5">
+              <div class="col">
                 <Form
                   id="contactTelInputGroup"
                   label="Telephone number:"
@@ -57,7 +57,7 @@
                   </b-form-text>
                 </Form>
               </div>
-              <div class="col" cols="12" md="5" offset-md="1">
+              <div class="col">
                 <Form
                   id="contactEmailInputGroup"
                   label="Email:"
@@ -79,7 +79,7 @@
             <!-- class="mt-3" -->
             <div class="row"><div class="col"><h6 class="font-weight-bold">ORCS File Number</h6></div></div>
             <div class="row">
-              <div class="col" cols="12" md="5">
+              <div class="col">
                 <Form
                   id="drillerORCSInputGroup"
                   label="Well Driller ORCS Number:"
@@ -94,7 +94,7 @@
                   </b-form-text>
                 </Form>
               </div>
-              <div class="col" cols="12" md="5" offset-md="1">
+              <div class="col">
                 <Form
                   id="pumpORCSInputGroup"
                   label="Pump Installer ORCS Number:"
@@ -128,7 +128,6 @@
               <div class="col">
                 <Form
                   horizontal
-                  label-cols="4"
                   label="Documents">
                   <b-form-file
                     v-model="files"
@@ -174,7 +173,7 @@
                 </div>
                 <!-- <DataTable class="mb-3"> -->
                 <div class="row">
-                  <div class="col" cols="12" md="7">
+                  <div class="col">
                     <Form
                       id="companyInputGroup"
                       label="Well drilling company:"
@@ -221,7 +220,7 @@
                 </div>
                 <!-- <DataTable class="mb-3"> -->
                 <div class="row">
-                  <div class="col" md="7">
+                  <div class="col">
                     <Form
                       id="companyInputGroup"
                       label="Well pump installation company:"

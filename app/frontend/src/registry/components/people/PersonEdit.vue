@@ -5,7 +5,7 @@
     <div v-if="section === 'person' || section === 'all'">
       <b-form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
         <div class="row">
-          <div class="col" cols="12" md="5">
+          <div class="col" cols="12">
             <Form
               id="surnameInputGroup"
               label="Surname:"
@@ -17,7 +17,7 @@
                 required/>
             </Form>
           </div>
-          <div class="col" cols="12" md="5" offset-md="1">
+          <div class="col" cols="12" offset-md="1">
             <Form
               id="firstnameInputGroup"
               label="First name:"
@@ -31,7 +31,7 @@
           </div>
         </div>
         <div class="row">
-          <div class="col" cols="12" md="5">
+          <div class="col" cols="12">
             <Form
               id="drillOrcsInputGroup"
               label="Well Driller ORCS:"
@@ -45,7 +45,7 @@
               </b-form-text>
             </Form>
           </div>
-          <div class="col" cols="12" md="5" offset-md="1">
+          <div class="col" cols="12" offset-md="1">
             <Form
               id="pumpORCSInputGroup"
               label="Pump installer ORCS:"
@@ -73,7 +73,7 @@
     <div v-if="(section === 'contact' || section === 'all')">
       <b-form @submit.prevent="submitContactForm">
         <div class="row">
-          <div class="col" cols="12" md="4">
+          <div class="col" cols="12">
             <Form
               id="emailInputGroup"
               label="Email Address:"
@@ -91,7 +91,7 @@
               </b-form-invalid-feedback>
             </Form>
           </div>
-          <div class="col" cols="12" md="4">
+          <div class="col" cols="12">
             <Form
               id="telInputGroup"
               label="Telephone:"
@@ -104,7 +104,7 @@
                 v-model="contactInfoForm.contact_tel"/>
             </Form>
           </div>
-          <div class="col" cols="12" md="4">
+          <div class="col" cols="12">
             <Form
               id="cellInputGroup"
               label="Cell:"

@@ -7,7 +7,7 @@
 
       <!-- Company selector (used to select company to edit) -->
       <div class="row">
-        <div class="col" cols="12" md="7">
+        <div class="col">
           <Form label="Select a company:" label-for="orgEditSelectDropdown">
             <v-select
                 id="orgEditSelectDropdown"
@@ -18,7 +18,7 @@
                 ></v-select>
           </Form>
         </div>
-        <div class="col" cols="12" md="5">
+        <div class="col">
           <b-alert variant="warning" :show="!!companyListError" dismissible @dismissed="companyListError=false">
             Error retrieving list of companies. Please try again later.
           </b-alert>
@@ -51,7 +51,7 @@
         <h6 class="card-subtitle mb-3">Company Information</h6>
         <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
           <div class="row">
-            <div class="col" cols="12" md="5">
+            <div class="col">
                 <Form
                   label="Company name:"
                   label-for="orgEditNameInput">
@@ -62,7 +62,7 @@
                     v-model="companyForm.name"/>
                 </Form>
             </div>
-              <div class="col" cols="12" md="5" offset-md="1">
+              <div class="col">
                 <Form
                   label="Street address:"
                   label-for="orgEditAddressInput">
@@ -75,7 +75,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col" cols="12" md="5">
+            <div class="col">
                 <Form
                   label="City:"
                   label-for="orgEditCityInput">
@@ -86,7 +86,7 @@
                     v-model="companyForm.city"/>
                 </Form>
             </div>
-              <div class="col" cols="12" md="5" offset-md="1">
+              <div class="col">
                 <Form
                   label="Province:"
                   label-for="orgEditProvinceInput">
@@ -107,7 +107,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col" cols="12" md="5">
+            <div class="col">
                 <Form
                   label="Postal code:"
                   label-for="orgEditPostalInput">
@@ -121,7 +121,7 @@
           </div>
           <!-- <DataTable class="mt-4"> -->
           <div class="row">
-            <div class="col" cols="12" md="5">
+            <div class="col">
               <Form
                 label="Office telephone number:"
                 label-for="orgEditPhoneInput">
@@ -134,7 +134,7 @@
                   v-model="companyForm.main_tel"/>
               </Form>
             </div>
-            <div class="col" cols="12" md="5" offset-md="1">
+            <div class="col">
                 <Form
                   label="Fax number:"
                   label-for="orgEditFaxInput">
@@ -149,7 +149,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col" cols="12" md="5">
+            <div class="col">
               <Form
                 label="Email:"
                 label-for="orgEditEmailInput">
@@ -167,7 +167,7 @@
                 </b-form-invalid-feedback>
               </Form>
             </div>
-            <div class="col" cols="12" md="5" offset-md="1">
+            <div class="col">
               <Form
                 label="Website:"
                 label-for="orgEditWebsiteInput">
@@ -189,7 +189,7 @@
                 </b-form-text>
               </Form>
             </div>
-            <div class="col" cols="12" md="12">
+            <div class="col">
               <Form label="Region:" label-for="regionOptions">
                 <b-form-select
                     multiple="multiple"

@@ -35,19 +35,19 @@
           </div>
           <div div="row">
             <div class="col">
-              <Form label="Issued by" :label-cols="3">
+              <Form label="Issued by">
                 <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
               </Form>
             </div>
             <div class="col">
-              <Form label="Certificate number" :label-cols="3">
+              <Form label="Certificate number">
                 <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
               </Form>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <Form label="Select classification" :label-cols="2" class="font-weight-bold">
+              <Form label="Select classification" class="font-weight-bold">
                 <b-form-radio-group class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
               </Form>
             </div>
@@ -67,14 +67,14 @@
           </div>
           <div class="row">
             <div class="col">
-              <Form :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
+              <Form label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
                 <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age.code" required></b-form-select>
               </Form>
             </div>
           </div>
           <div class="row">
             <div class="col">
-              <Form :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
+              <Form description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
               </Form>
             </div>
@@ -82,17 +82,17 @@
           <!-- <DataTable v-if="isEditMode"> -->
           <div class="row">
             <div class="col" v-if="qualificationForm.application_recieved_date">
-              <Form :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
+              <Form description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
               </Form>
             </div>
             <div class="col" v-if="showApprovalOutcome">
-              <Form :label-cols="4" label="Approval outcome" class="font-weight-bold">
+              <Form label="Approval outcome" class="font-weight-bold">
                 <b-form-select :options="formOptions.approvalOutcome" v-model="qualificationForm.current_status.code"/>
               </Form>
             </div>
             <div class="col" v-if="showReasonDenied">
-              <Form :label-cols="4" label="Reason denied" class="font-weight-bold">
+              <Form label="Reason denied" class="font-weight-bold">
                 <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
               </Form>
             </div>
@@ -100,7 +100,7 @@
           <!-- <DataTable v-if="isEditMode"> -->
           <div class="row">
             <div class="col" v-if="showNotificationDate">
-              <Form :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
+              <Form description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
               </Form>
             </div>
@@ -114,12 +114,12 @@
           <!-- <DataTable v-if="showRemoval && isEditMode"> -->
           <div class="row">
             <div class="col">
-              <Form :label-cols="4" label="Removal date" class="font-weight-bold">
+              <Form label="Removal date" class="font-weight-bold">
                 <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.removal_date" :state="removalDateState"/>
               </Form>
             </div>
             <div class="col" v-if="showRemovalReason">
-              <Form :label-cols="4" label="Removal reason" class="font-weight-bold">
+              <Form label="Removal reason" class="font-weight-bold">
                 <b-form-select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
               </Form>
             </div>

@@ -6,7 +6,7 @@
     <div class="container">
         <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
           <div class="row">
-            <div class="col" cols="12">
+            <div class="col">
               <Form
                 label="Company name:"
                 label-for="orgAddNameInput">
@@ -21,7 +21,7 @@
           </div>
           <!-- <DataTable class="mt-3"> -->
           <div class="row">
-            <div class="col" cols="12">
+            <div class="col">
               <b-form-group
                 label="Street address:"
                 label-for="orgAddAddressInput">
@@ -33,7 +33,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="City:"
                 label-for="orgAddCityInput">
@@ -43,7 +43,7 @@
                     v-model="orgForm.city"/>
               </b-form-group>
             </div>
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="Province:"
                 label-for="orgAddProvinceInput">
@@ -66,7 +66,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="Postal code:"
                 label-for="orgAddPostalInput">
@@ -79,7 +79,7 @@
           </div>
           <!-- <DataTable class="mt-3"> -->
           <div class="row">
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="Office telephone number:"
                 label-for="orgAddPhoneInput">
@@ -91,7 +91,7 @@
                     v-model="orgForm.main_tel"/>
               </b-form-group>
             </div>
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="Fax number:"
                 label-for="orgAddFaxInput">
@@ -105,7 +105,7 @@
             </div>
           </div>
           <div class="row">
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="Email:"
                 label-for="orgAddEmailInput">
@@ -122,7 +122,7 @@
                 </b-form-invalid-feedback>
               </b-form-group>
             </div>
-            <div class="col" cols="12" md="6">
+            <div class="col">
               <b-form-group
                 label="Website:"
                 label-for="orgAddWebsiteInput">
