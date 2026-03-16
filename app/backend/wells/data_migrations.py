@@ -13,7 +13,6 @@
 """
 import os
 import json
-import pytz
 import logging
 
 from django.utils import timezone

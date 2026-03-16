@@ -12,6 +12,8 @@
     limitations under the License.
 """
 import jwt
+import string
+import secrets
 
 from datetime import datetime
 
@@ -25,6 +27,15 @@ from gwells.roles import roles_to_groups
 from gwells.settings.base import get_env_variable
 
 KEYCLOAK_GOLD_REALM_URL = 'loginproxy.gov.bc.ca/auth/realms/standard'
+
+def make_random_password(length):
+    alphabet = string.ascii_letters + string.digits
+    while True:
+        password = ''.join(secrets.choice(alphabet) for i in range(length))
+        if (any(c.islower() for c in password)
+                and any(c.isupper() for c in password)
+                and sum(c.isdigit() for c in password) >= 3):
+            break
 
 class JwtOidcAuthentication(JWTTokenUserAuthentication):
     """
@@ -119,7 +130,7 @@ class JwtOidcAuthentication(JWTTokenUserAuthentication):
 
         if update:
             # User created, set various values for the 1'st time.
-            user.set_password(User.objects.make_random_password(length=36))
+            user.set_password(make_random_password(36))
 
         # If one of these attributes has changed - do an update.
         for source, target in payload_user_mapping.items():
