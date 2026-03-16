@@ -127,6 +127,32 @@ services:
       - backend
     networks:
       - gwells-network
+
+  caddy:
+    container_name: caddy
+    profiles: ["caddy"]
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: development
+      VITE_FRONTEND_TILE_URL: "http://localhost:8080"
+      VITE_AXIOS_BASE_URL: "/gwells/api/v2/"
+      PORT: 8080
+      LOG_LEVEL: info
+    ports: ["8080:8080"]
+    volumes: ["./app/frontend/Caddyfile:/etc/caddy/Caddyfile"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - gwells-network
   #############################################################################################
   ###                                       Backend                                         ###
   #############################################################################################
