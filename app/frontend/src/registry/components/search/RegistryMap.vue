@@ -35,8 +35,13 @@ import {
 } from '../../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl } from '../../../common/mapbox/controls'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, peopleToGeoJSON } from '../../../common/mapbox/geometry'
-import { mapGetters } from 'vuex'
-import { useRegistryStore } from '@/stores/registry.js'
+import {
+  REQUEST_MAP_POSITION,
+  SEARCH_AGAIN,
+  SEARCH_REGION
+} from '../../store/actions.types'
+import { SET_CURRENT_MAP_BOUNDS } from '../../store/mutations.types'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { setupFeatureTooltips } from '../../../common/mapbox/popup'
 import {
   createRegistrySearchResultPopupElement,
@@ -54,7 +59,6 @@ export default {
   ],
   data () {
     return {
-      registryStore: useRegistryStore(),
       map: null,
       browserUnsupported: false,
       legendLayers: [],
@@ -74,13 +78,18 @@ export default {
     this.map = null
   },
   computed: {
-    requestedMapPosition () { return this.registryStore.requestedMapPosition },
-    searchResponse () { return this.registryStore.searchResponse },
-    currentMapBounds () { return this.registryStore.currentMapBounds },
-    doSearchOnBoundsChange () { return this.registryStore.doSearchOnBoundsChange },
-    limitSearchToCurrentMapBounds () { return this.registryStore.limitSearchToCurrentMapBounds },
-    snapMapToSearchResults () { return this.registryStore.snapMapToSearchResults },
     ...mapGetters(['userRoles']),
+    ...mapGetters('registriesStore', [
+      'requestedMapPosition',
+      'searchResponse',
+      'currentMapBounds',
+      'doSearchOnBoundsChange',
+      'limitSearchToCurrentMapBounds',
+      'snapMapToSearchResults'
+    ]),
+    // hasSearchParams(state) {
+    //  return Object.keys(this.searchQueryParams).length > 0
+    // },
     showUnpublished () {
       return Boolean(this.userRoles.wells.edit)
     }
@@ -168,16 +177,16 @@ export default {
         const mapBounds = this.map.getBounds()
 
         this.$emit('mapLoaded', mapBounds)
-        this.registryStore.setCurrentMapBounds(mapBounds)
+        this.SET_CURRENT_MAP_BOUNDS(mapBounds)
       })
 
       // listen to map move/zoom events
       const mapChangedHandler = debounce(
         e => {
           const bounds = this.map.getBounds()
-          this.registryStore.setCurrentMapBounds(bounds)
+          this.SET_CURRENT_MAP_BOUNDS(bounds)
           if (this.limitSearchToCurrentMapBounds && this.doSearchOnBoundsChange) {
-            this.registryStore.searchAgain()
+            this.SEARCH_AGAIN()
           }
         },
         200
@@ -234,7 +243,7 @@ export default {
       })
       if (features.length > 0) {
         const clickedPolygon = features[0]
-        this.registryStore.searchRegion([clickedPolygon.properties.regional_area_guid])
+        this.SEARCH_REGION([clickedPolygon.properties.regional_area_guid])
       }
     },
     triggerSearchMapArea () {
@@ -312,6 +321,14 @@ export default {
         registryLayerIds: [ REGISTRY_FILL_LAYER_ID ]
       })
     },
+    ...mapActions('registriesStore', [
+      REQUEST_MAP_POSITION,
+      SEARCH_AGAIN,
+      SEARCH_REGION
+    ]),
+    ...mapMutations('registriesStore', [
+      SET_CURRENT_MAP_BOUNDS
+    ])
   },
   watch: {
     requestedMapPosition (requestedMapPosition) {

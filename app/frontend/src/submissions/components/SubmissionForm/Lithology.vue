@@ -62,8 +62,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </tr>
         </thead>
         <tbody>
-          <template v-for="(row, index) in lithologyData" :key="`lithology row ${index}`">
-            <tr :id="`lithologyRow${index}`">
+          <template v-for="(row, index) in lithologyData">
+            <tr :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
               <td class="input-width-small">
                 <form-input
                   :id="`lithologyDepthFrom${index}`"

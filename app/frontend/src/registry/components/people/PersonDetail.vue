@@ -32,7 +32,7 @@
         </div>
         <div class="row">
           <div class="col-12" v-if="error">
-            <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
+            <api-error :error="error" resetter="SET_ERROR"></api-error>
           </div>
         </div>
 
@@ -413,8 +413,9 @@ import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
-import { useRegistryStore } from '@/stores/registry.js'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
+import { SET_DRILLER } from '@/registry/store/mutations.types.js'
+import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types.js'
 import PersonDocuments from './PersonDocuments.vue'
 
 export default {
@@ -460,15 +461,10 @@ export default {
         DRILL: false,
         PUMP: false
       },
-      person_files: {},
-      registryStore: useRegistryStore()
+      person_files: {}
     }
   },
   computed: {
-    error () { return this.registryStore.error },
-    currentDriller () { return this.registryStore.currentDriller },
-    searchResponse () { return this.registryStore.searchResponse },
-    loading () { return this.registryStore.loading },
     files: {
       get: function () {
         return this.upload_files
@@ -540,6 +536,12 @@ export default {
       }
       return notes
     },
+    ...mapGetters('registriesStore', [
+      'error',
+      'currentDriller',
+      'searchResponse',
+      'loading'
+    ]),
     ...mapGetters([
       'user',
       'userRoles'
@@ -558,8 +560,15 @@ export default {
       'fileUploadSuccess',
       'fileUploadFail'
     ]),
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER,
+      FETCH_DRILLER_OPTIONS
+    ]),
     ...mapMutations('documentState', [
       'setFiles'
+    ]),
+    ...mapMutations('registriesStore', [
+      SET_DRILLER
     ]),
     show (key) {
       return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))
@@ -573,7 +582,7 @@ export default {
       return null
     },
     updateRecord () {
-      this.registryStore.fetchDriller(this.$route.params.person_guid)
+      this.FETCH_DRILLER(this.$route.params.person_guid)
       // update changeHistory when company is updated
       if (this.currentDriller && this.$refs.changeHistory) {
         this.$refs.changeHistory.update()
@@ -645,18 +654,21 @@ export default {
   },
   created () {
     if (this.currentDriller.person_guid !== this.$route.params.person_guid) {
-      this.registryStore.setDriller({})
+      // reset the currentDriller object if another driller was previously loaded
+      this[SET_DRILLER]({})
       if (this.searchResponse && this.searchResponse.results && this.searchResponse.results.length) {
+        // use basic info (name etc) from driller list while complete record is being fetched from API
         const driller = this.searchResponse.results.find((item) => {
           return item.person_guid === this.$route.params.person_guid
         })
         if (driller) {
-          this.registryStore.setDriller(driller)
+          this[SET_DRILLER](driller)
         }
       }
     }
+    // always fetch up to date record from API when page loads
     this.updateRecord()
-    this.registryStore.fetchDrillerOptions()
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>

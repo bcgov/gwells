@@ -19,8 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { difference, uniq } from 'lodash-es'
-import { mapGetters } from 'vuex'
-import { useAquiferStore } from '@/stores/aquifers.js'
+import { mapGetters, mapActions } from 'vuex'
 
 import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 import {
@@ -185,17 +184,28 @@ export default {
   },
   mounted () {
     this.$emit('mapLoading')
+
+    // On reset or basic search, clear local params
+    this.unsubscribeAction = this.$store.subscribeAction((action, state) => {
+      if (action.type === `aquiferStore/search/${SEARCH_AQUIFERS}`) {
+        this.hideMapSearchButton()
+      }
+    })
+
     this.initMapBox()
+
     this.listenForReset()
   },
   destroyed () {
+    this.unsubscribeAction()
     this.map.remove()
     this.map = null
   },
   computed: {
     ...mapGetters(['userRoles']),
-    aquiferStore () { return useAquiferStore() },
-    getAquiferNotationsById () { return this.aquiferStore.getAquiferNotationsById },
+    ...mapGetters('aquiferStore/notations', [
+      'getAquiferNotationsById'
+    ]),
     highlightIdsMap () {
       return this.highlightAquiferIds.reduce((obj, aquiferId) => {
         obj[aquiferId] = aquiferId
@@ -210,11 +220,11 @@ export default {
     }
   },
   methods: {
-    fetchNotationsFromDataBC () {
-      this.aquiferStore.fetchNotationsFromDataBC()
-    },
+    ...mapActions('aquiferStore/notations', [
+      'fetchNotationsFromDataBC'
+    ]),
     initMapBox () {
-      this.aquiferStore.fetchNotationsFromDataBC()
+      this.fetchNotationsFromDataBC()
 
       if (!mapboxgl.supported()) {
         this.browserUnsupported = true
@@ -502,11 +512,6 @@ export default {
     }
   },
   watch: {
-    'aquiferStore.searchInProgress' (inProgress) {
-      if (inProgress && this.searchAreaControl) {
-        this.hideMapSearchButton()
-      }
-    },
     highlightAquiferIds (newIds, oldIds) {
       const newlyHighlightedIds = difference(newIds, oldIds)
       const noLongerHighlightedIds = difference(oldIds, newIds)

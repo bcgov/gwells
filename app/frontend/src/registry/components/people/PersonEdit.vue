@@ -170,7 +170,7 @@
 </template>
 
 <script>
-import { useRegistryStore } from '@/stores/registry.js'
+import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
@@ -195,7 +195,6 @@ export default {
 
   data () {
     return {
-      registryStore: useRegistryStore(),
       personalInfoForm: {},
       contactInfoForm: {},
       registrationCompanyForm: {},
@@ -208,13 +207,15 @@ export default {
     }
   },
   computed: {
-    error () { return this.registryStore.error },
-    currentDriller () { return this.registryStore.currentDriller },
     validation () {
       return {
         contact_email: (this.fieldErrors.contact_email && this.fieldErrors.contact_email.length) ? false : null
       }
-    }
+    },
+    ...mapGetters('registriesStore', [
+      'error',
+      'currentDriller'
+    ])
   },
   methods: {
     formReset () {

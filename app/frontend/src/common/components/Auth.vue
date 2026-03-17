@@ -12,7 +12,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
-import { useRegistryStore } from '@/stores/registry.js'
+import { SET_ERROR } from '@/registry/store/mutations.types.js'
 
 export default {
   props: {
@@ -23,8 +23,7 @@ export default {
   },
   data () {
     return {
-      ready: false,
-      registryStore: useRegistryStore()
+      ready: false
     }
   },
   computed: {
@@ -77,7 +76,7 @@ export default {
               }
             }).catch((e) => {
               console.error("keyCloakLogin: ", e)
-              this.registryStore.setError({ error: 'Cannot contact SSO provider' })
+              this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
             })
           })
         } else {
@@ -92,7 +91,7 @@ export default {
             }
           }).catch((e) => {
             console.error("keyCloakLogin: ", e)
-            this.registryStore.setError({ error: 'Cannot contact SSO provider' })
+            this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
           })
         }
       } else {

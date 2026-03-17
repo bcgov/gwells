@@ -354,7 +354,6 @@
 // import AquiferResources from './AquiferResources.vue'
 import { isEmpty, mapValues, cloneDeep } from 'lodash-es'
 import { mapMutations, mapState } from 'vuex'
-import { useAquiferStore } from '@/stores/aquifers.js'
 
 import ApiService from '@/common/services/ApiService.js'
 import { END_OF_TIME_ISO_8601 } from '@/common/helpers/dates.js'
@@ -457,15 +456,16 @@ export default {
       }
       return ''
     },
-    aquiferStore () { return useAquiferStore() },
-    demand_codes () { return this.aquiferStore.demand_codes },
-    aquifer_resource_sections () { return this.aquiferStore.aquifer_resource_sections },
-    known_water_use_codes () { return this.aquiferStore.known_water_use_codes },
-    material_codes () { return this.aquiferStore.material_codes },
-    productivity_codes () { return this.aquiferStore.productivity_codes },
-    quality_concern_codes () { return this.aquiferStore.quality_concern_codes },
-    subtype_codes () { return this.aquiferStore.subtype_codes },
-    vulnerability_codes () { return this.aquiferStore.vulnerability_codes },
+    ...mapState('aquiferStore/aquiferCodes', [
+      'demand_codes',
+      'aquifer_resource_sections',
+      'known_water_use_codes',
+      'material_codes',
+      'productivity_codes',
+      'quality_concern_codes',
+      'subtype_codes',
+      'vulnerability_codes'
+    ]),
     ...mapState('documentState', [
       'isPrivate',
       'upload_files',
@@ -476,7 +476,7 @@ export default {
     }
   },
   methods: {
-    addCodes (payload) { this.aquiferStore.addCodes(payload) },
+    ...mapMutations('aquiferStore/aquiferCodes', ['addCodes']),
     ...mapMutations('documentState', [
       'setFiles',
       'setPrivate',
