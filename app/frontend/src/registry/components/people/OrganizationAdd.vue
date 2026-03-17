@@ -1,7 +1,7 @@
 <template>
   <b-modal id="orgAddModal" title="Add a Company" hide-footer @shown="focusInput()">
     <div class="col-xs-12" v-if="error">
-      <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
+      <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
     <div class="container">
         <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
@@ -164,15 +164,15 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { mapGetters, mapActions } from 'vuex'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-import { useRegistryStore } from '@/stores/registry.js'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
 export default {
   name: 'OrganizationAdd',
   mixins: [inputFormatMixin],
   data () {
     return {
-      registryStore: useRegistryStore(),
       orgForm: {
         name: '',
         street_address: '',
@@ -200,8 +200,8 @@ export default {
         email: (this.fieldErrors.email && this.fieldErrors.email.length) ? false : null
       }
     },
-    error () { return this.registryStore.error },
-    provinceStateOptions () { return this.registryStore.provinceStateOptions }
+    ...mapGetters('registriesStore', ['error']),
+    ...mapGetters('registriesStore', ['provinceStateOptions'])
   },
   methods: {
     onFormSubmit () {
@@ -253,10 +253,13 @@ export default {
         email: []
       }
     },
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER_OPTIONS
+    ])
   },
   created () {
     this.resetFieldErrors()
-    this.registryStore.fetchDrillerOptions()
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>

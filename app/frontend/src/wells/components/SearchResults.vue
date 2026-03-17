@@ -91,8 +91,8 @@
                 {{ row | streetAddressFormat }}
               </template>
               <template v-else-if="column.type === 'select' && Array.isArray(row[column.param])">
-                <template v-for="(value, index) in row[column.param]" :key="`${row.well_tag_number}-${column.param}-${index}`">
-                  <span>
+                <template v-for="(value, index) in row[column.param]">
+                  <span :key="`${row.well_tag_number}-${column.param}-${index}`">
                     {{ value | selectOptionFormat(column, filterSelectOptions[column.id]) }}<span v-if="index < row[column.param].length - 1">, </span>
                   </span>
                 </template>
@@ -134,7 +134,14 @@
 </template>
 
 <script>
-import { useWellsStore } from '@/stores/wells.js'
+import { mapGetters } from 'vuex'
+import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
+import {
+  SET_SEARCH_LIMIT,
+  SET_SEARCH_OFFSET,
+  SET_SEARCH_ORDERING,
+  SET_SEARCH_RESULT_FILTERS
+} from '@/wells/store/mutations.types.js'
 import { FILTER_TRIGGER } from '@/wells/store/triggers.types.js'
 import SearchResultExports from '@/wells/components/SearchResultExports.vue'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
@@ -160,16 +167,19 @@ export default {
     }
   },
   computed: {
-    limit () { return this.wells ? this.wells.searchLimit : 10 },
-    errors () { return this.wells ? this.wells.searchErrors : {} },
-    params () { return this.wells ? this.wells.searchParams : {} },
-    offset () { return this.wells ? this.wells.searchOffset : 0 },
-    ordering () { return this.wells ? this.wells.searchOrdering : '' },
-    pending () { return this.wells ? this.wells.pendingSearch : null },
-    resultFilters () { return this.wells ? this.wells.searchResultFilters : {} },
-    resultColumns () { return this.wells ? this.wells.searchResultColumns : [] },
-    resultCount () { return this.wells ? this.wells.searchResultCount : 0 },
-    results () { return this.wells ? this.wells.searchResults : null },
+    ...mapGetters({
+      limit: 'searchLimit',
+      errors: 'searchErrors',
+      params: 'searchParams',
+      offset: 'searchOffset',
+      ordering: 'searchOrdering',
+      pending: 'pendingSearch',
+      resultFilters: 'searchResultFilters',
+      resultColumns: 'searchResultColumns',
+      resultCount: 'searchResultCount',
+      results: 'searchResults',
+      selectedWells: 'selectedWells'
+    }),
     columns () {
       return this.getFilterFields(this.resultColumns)
     },
@@ -220,29 +230,32 @@ export default {
   },
   methods: {
     setLimit (limit) {
-      this.wells.searchLimit = limit
+      this.$store.commit(SET_SEARCH_LIMIT, limit)
       this.$emit('limit-changed', limit)
 
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     changePage (page) {
       const offset = this.limit * (page - 1)
-      this.wells.searchOffset = offset
+      this.$store.commit(SET_SEARCH_OFFSET, offset)
       this.$emit('page-changed', page)
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     sortResults ({ param, desc }) {
       const sort = `${desc ? '-' : ''}${param}`
-      this.wells.searchOrdering = sort
+      this.$store.commit(SET_SEARCH_ORDERING, sort)
       this.$emit('sort-changed', sort)
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
       const filterGroup = { ...this.searchQueryParams }
-      this.wells.searchResultFilters = filterGroup
+      this.$store.commit(SET_SEARCH_RESULT_FILTERS, filterGroup)
       this.$emit('filter-changed', filterGroup)
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+
+      this.$store.dispatch(SEARCH_WELLS, { trigger: FILTER_TRIGGER })
     },
     initFilterParams () {
       const filterParams = { ...this.emptyFilterParams }
@@ -316,9 +329,8 @@ export default {
     }
   },
   created () {
-    this.wells = useWellsStore()
     if (localStorage && localStorage.getItem('userColumnPreferences')) {
-      this.wells.setSearchResultColumns(JSON.parse(localStorage.getItem('userColumnPreferences')))
+      this.$store.commit(SET_SEARCH_RESULT_COLUMNS, JSON.parse(localStorage.getItem('userColumnPreferences')))
     }
     this.initFilterParams()
   }

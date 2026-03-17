@@ -4,7 +4,7 @@
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
     </b-card>
     <div class="col-xs-12" v-if="error">
-      <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
+      <api-error :error="error" resetter="SET_ERROR"></api-error>
     </div>
     <div class="card">
       <div class="card-body p-md-3 p-2">
@@ -293,7 +293,6 @@ import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-import { useRegistryStore } from '@/stores/registry.js'
 
 export default {
   name: 'PersonDetailEdit',
@@ -305,7 +304,6 @@ export default {
   mixins: [inputFormatMixin],
   data () {
     return {
-      registryStore: useRegistryStore(),
       breadcrumbs: [
         {
           text: 'Registry',
@@ -381,8 +379,10 @@ export default {
         this.setPrivate(value)
       }
     },
-    loading () { return this.registryStore.loading },
-    error () { return this.registryStore.error },
+    ...mapGetters('registriesStore', [
+      'loading',
+      'error'
+    ]),
     ...mapState('documentState', [
       'isPrivate',
       'upload_files'

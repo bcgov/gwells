@@ -124,8 +124,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </th>
         </thead>
         <tbody>
-          <template v-for="(row, index) in screensData" :key="`screen row ${index}`">
-            <tr :id="`screenRow${index}`">
+          <template v-for="(row, index) in screensData">
+            <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"

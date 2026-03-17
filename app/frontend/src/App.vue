@@ -10,8 +10,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { FETCH_CONFIG } from '@/common/store/config.js'
+import { mapGetters } from 'vuex'
 import Header from './common/components/Header.vue'
 import Footer from './common/components/Footer.vue'
 import BackToTop from './common/components/BackToTop.vue'
@@ -26,17 +25,6 @@ export default {
     ...mapGetters([
       'error'
     ])
-  },
-  methods: {
-    ...mapActions([
-      FETCH_CONFIG
-    ])
-  },
-  created () {
-    console.log('New deploy of Gwells')
-    this.FETCH_CONFIG()
-    window._paq = window._paq || []
-    window._paq.push(['trackPageView']) // To track pageview -
   }
 }
 </script>

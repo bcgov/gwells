@@ -117,7 +117,7 @@ services:
       DEBUG: "True"
       VITE_FRONTEND_TILE_URL: "http://localhost:7800"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
-    command: /bin/bash -c "cd /frontend && npm install --legacy-peer-deps && npm run dev"
+    command: /bin/bash -c "cd /frontend && npm install && npm run dev"
     ports:
       - "8080:8080"
     volumes:
@@ -176,10 +176,10 @@ services:
       DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
       # DATABASE_SERVICE_NAME: gwells
       DJANGO_ADMIN_URL: admin
-      DJANGO_DEBUG: "True"
+      DJANGO_DEBUG: "true"
       DJANGO_SECRET_KEY: secret
-      ENABLE_ADDITIONAL_DOCUMENTS: "True"
-      ENABLE_AQUIFERS_SEARCH: "True"
+      ENABLE_ADDITIONAL_DOCUMENTS: "true"
+      ENABLE_AQUIFERS_SEARCH: "true"
       # GWELLS_SERVICE_HOST: "${GWELLS_SERVICE_HOST:-db}"
       # GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
       DATABASE_SERVICE_NAME: db

@@ -56,15 +56,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   </tr>
                 </thead>
                 <tbody>
-                  <template v-for="(row, index) in tableData" :key="`row-${index}`">
-                    <tr v-if="row.isNonAquifer" class="non-aquifer">
+                  <template v-for="(row, index) in tableData">
+                    <tr :key="`non-aquifer${index}`" v-if="row.isNonAquifer" class="non-aquifer">
                       <td colspan="5" class="py-3">
                         Non Aquifer {{ row.nonAquiferStart.toFixed(2) }}m to
                         {{ row.nonAquiferEnd.toFixed(2) }}m
                         ({{ (row.nonAquiferSize).toFixed(2) }}m)
                       </td>
                     </tr>
-                    <tr>
+                    <tr :key="`aquifer-${index}`">
                       <td class="input-width-small py-0 pl-0">
                         <form-input
                           group-class="my-1"

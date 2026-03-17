@@ -94,14 +94,14 @@
                         class="mb-3"
                         :select-size="6">
                         <option value="">All</option>
-                        <template v-for="prov in cityList[formatActivityForCityList]" :key="prov.prov">
-                          <optgroup
-                            v-if="prov.cities && prov.cities.length"
-                            :label="prov.prov"
-                          >
-                            <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
-                          </optgroup>
-                        </template>
+                        <optgroup
+                          v-for="prov in cityList[formatActivityForCityList]"
+                          v-if="prov.cities && prov.cities.length"
+                          :key="prov.prov"
+                          :label="prov.prov"
+                        >
+                          <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
+                        </optgroup>
                     </b-form-select>
                     <b-alert
                       show
@@ -220,7 +220,7 @@
               No results were found.
             </b-col>
             <b-col cols="12" v-if="listError">
-              <api-error :error="listError" :on-clear="() => registryStore.setListError(null)"></api-error>
+              <api-error :error="listError" resetter="SET_LIST_ERROR"></api-error>
             </b-col>
           </b-row>
           <b-row v-if="hasResults">
@@ -251,7 +251,7 @@
 <script>
 import querystring from 'querystring-es3'
 import mapboxgl from 'mapbox-gl'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
 import { omit } from 'lodash'
 import axios from 'axios'
 
@@ -260,7 +260,19 @@ import RegistryMap from '@/registry/components/search/RegistryMap.vue'
 import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
-import { useRegistryStore } from '@/stores/registry.js'
+import {
+  FETCH_CITY_LIST,
+  SEARCH,
+  RESET_SEARCH,
+  FETCH_DRILLER_OPTIONS,
+  REQUEST_MAP_POSITION
+} from '@/registry/store/actions.types'
+import {
+  SET_LOADING,
+  SET_HAS_SEARCHED,
+  SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+  SET_DO_SEARCH_ON_BOUNDS_CHANGE
+} from '@/registry/store/mutations.types'
 
 export default {
   components: {
@@ -277,23 +289,10 @@ export default {
         username: null,
         password: null
       },
-      surveys: [],
-      registryStore: useRegistryStore()
+      surveys: []
     }
   },
   computed: {
-    searchParams () { return this.registryStore.searchParams },
-    drillerOptions () { return this.registryStore.drillerOptions },
-    loading () { return this.registryStore.loading },
-    listError () { return this.registryStore.listError },
-    cityList () { return this.registryStore.cityList },
-    regionOptions () { return this.registryStore.regionOptions },
-    searchResponse () { return this.registryStore.searchResponse },
-    activity () { return this.registryStore.activity },
-    hasSearched () { return this.registryStore.hasSearched },
-    isSearchInProgress () { return this.registryStore.isSearchInProgress },
-    lastSearchedParams () { return this.registryStore.lastSearchedParams },
-    user () { return this.registryStore.user },
     regStatusOptions () {
       let result = [
         { value: '', text: 'All' }
@@ -315,7 +314,7 @@ export default {
       return ''
     },
     activityTitle () {
-// Plain english title for results table
+      // Plain english title for results table
       const activityMap = {
         DRILL: 'Well Driller',
         PUMP: 'Well Pump Installer'
@@ -334,30 +333,59 @@ export default {
     isCommunitySelected () {
       return this.searchParams && this.searchParams.city && this.searchParams.city.filter(c => c !== '').length > 0
     },
-    downloadLinkQS () {
-      if (!this.lastSearchedParams || !this.lastSearchedParams.api) {
-        return ''
+    /*
+    apiSearchParams () {
+      // bundles searchParams into fields compatible with API
+      return {
+        search: this.searchParams.search,
+        city: this.searchParams.city,
+        status: this.searchParams.status,
+        limit: this.searchParams.limit,
+        activity: this.searchParams.activity,
+        subactivities: this.searchParams.subactivities,
+        ordering: this.searchParams.ordering
       }
+    },
+    */
+    downloadLinkQS () {
       return querystring.stringify(omit(this.lastSearchedParams.api, 'limit'))
     },
     hasResults () {
-      return this.searchResponse && this.searchResponse.results && this.searchResponse.results.length > 0
+      return this.searchResponse.results && this.searchResponse.results.length > 0
     },
     refreshOnMapChange: {
-      get () { return this.registryStore.doSearchOnBoundsChange },
-      set (value) { this.registryStore.setDoSearchOnBoundsChange(value) }
+      get () { return this.doSearchOnBoundsChangeFromStore },
+      set (value) { this[SET_DO_SEARCH_ON_BOUNDS_CHANGE](value) }
     },
     limitSearchToCurrentMapBounds: {
-      get () { return this.registryStore.limitSearchToCurrentMapBounds },
-      set (value) { this.registryStore.setLimitSearchToCurrentMapBounds(value) }
+      get () { return this.limitSearchToCurrentMapBoundsFromStore },
+      set (value) { this[SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS](value) }
     },
-    ...mapGetters(['userRoles'])
+    ...mapState('registriesStore', {
+      limitSearchToCurrentMapBoundsFromStore: 'limitSearchToCurrentMapBounds',
+      doSearchOnBoundsChangeFromStore: 'doSearchOnBoundsChange'
+    }),
+    ...mapGetters(['userRoles']),
+    ...mapGetters('registriesStore', [
+      'drillerOptions',
+      'loading',
+      'listError',
+      'cityList',
+      'regionOptions',
+      'searchResponse',
+      'activity',
+      'searchParams',
+      'hasSearched',
+      'isSearchInProgress',
+      'lastSearchedParams'
+    ])
   },
   watch: {
     'searchParams.activity': function (activity) {
-      this.registryStore.setSearchParams(Object.assign({}, this.searchParams, { city: [''] }))
+      // get new city list when user changes activity (well driller or well pump installer)
+      this.searchParams.city = ['']
       this.resetSelectedSubactivities(this.subactivities)
-      this.registryStore.fetchCityList(this.formatActivityForCityList)
+      this.FETCH_CITY_LIST(this.formatActivityForCityList)
     },
     subactivities: function (subactivities) {
       if (!this.searchParams.subactivities || !this.searchParams.subactivities.length) {
@@ -368,17 +396,18 @@ export default {
       this.zoomToSelectedCities(selectedCities)
     },
     'searchParams.region': function (selectedRegions) {
+      // console.log(selectedRegions)
     },
     user: function () {
+      // reset search when user changes (this happens every login or logout)
       this.resetSearch()
     }
   },
   methods: {
     resetSelectedSubactivities (subactivities) {
-      const newSubactivities = subactivities
+      this.searchParams.subactivities = subactivities
         ? subactivities.map(item => item.value)
         : []
-      this.registryStore.setSearchParams(Object.assign({}, this.searchParams, { subactivities: newSubactivities }))
     },
     drillerSearch () {
       const params = this.searchParams
@@ -389,7 +418,7 @@ export default {
       if (params.hasOwnProperty('offset')) {
         delete params.offset
       }
-      this.registryStore.search(params)
+      this.SEARCH(params)
     },
     sortTable (sortCode) {
       if (!this.lastSearchedParams) {
@@ -400,7 +429,7 @@ export default {
       } else {
         this.lastSearchedParams.raw['ordering'] = `${sortCode}`
       }
-      this.registryStore.search(this.lastSearchedParams.raw)
+      this.SEARCH(this.lastSearchedParams.raw)
     },
     downloadFile (e) {
       if (!e.ctrlKey) {
@@ -416,7 +445,7 @@ export default {
     },
     zoomToSelectedCities (selectedCities) {
       if (selectedCities && selectedCities !== '') {
-        const lngLats = []
+        const lngLats = [] // a list of {lat:..., lng:...} objects
         let numResponses = 0
         const onGeocodeSuccess = (resp) => {
           numResponses++
@@ -440,7 +469,7 @@ export default {
         const checkAllGeocodesComplete = () => {
           if (numResponses === selectedCities.length) {
             if (lngLats.length === 1) {
-              this.registryStore.requestMapPosition({ centre: lngLats[0] })
+              this.REQUEST_MAP_POSITION({ centre: lngLats[0] })
             } else if (lngLats.length > 1) {
               // Build a LngLatBounds object that contains the
               // geocoded points representing all the selected cities
@@ -448,7 +477,10 @@ export default {
               lngLats.forEach((lngLats) => {
                 bounds.extend(lngLats)
               })
-              this.registryStore.requestMapPosition({ bounds: bounds })
+              this.REQUEST_MAP_POSITION({ bounds: bounds })
+            } else {
+              // None of the selected cities could be geocoded, so don't adjust the
+              // map position
             }
           }
         }
@@ -462,13 +494,28 @@ export default {
       }
     },
     resetSearch () {
-      this.registryStore.resetSearch()
-    }
+      this[RESET_SEARCH]()
+    },
+    ...mapMutations('registriesStore', [
+      SET_HAS_SEARCHED,
+      SET_LOADING,
+      SET_LIMIT_SEARCH_TO_CURRENT_MAP_BOUNDS,
+      SET_DO_SEARCH_ON_BOUNDS_CHANGE
+    ]),
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER_OPTIONS,
+      FETCH_CITY_LIST,
+      SEARCH,
+      RESET_SEARCH,
+      REQUEST_MAP_POSITION
+    ])
   },
   created () {
-    this.registryStore.fetchCityList(this.formatActivityForCityList)
-    this.registryStore.fetchDrillerOptions()
+    // send request for city list when app is loaded
+    this.FETCH_CITY_LIST(this.formatActivityForCityList)
+    this.FETCH_DRILLER_OPTIONS()
 
+    // Fetch current surveys and add 'registries' surveys (if any) to this.surveys to be displayed
     ApiService.query('surveys').then((response) => {
       response.data.forEach((survey) => {
         if (survey.survey_page === 'r' && survey.survey_enabled) {

@@ -22,7 +22,6 @@ import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { debounce } from 'lodash'
 
 import ApiService from '@/common/services/ApiService.js'
-import { useWellsStore } from '@/stores/wells.js'
 
 import {
   DATABC_ROADS_SOURCE,
@@ -76,7 +75,6 @@ export default {
   data () {
     return {
       map: null,
-      wells: null,
       browserUnsupported: false,
       mapLayers: [
         {
@@ -109,22 +107,19 @@ export default {
   },
   mounted () {
     this.initMapBox()
-    this.wells = useWellsStore()
 
     // When the search is reset - fly the map back to view all of BC
-    if (this.wells.$onAction) {
-      this.unsubscribeAction = this.wells.$onAction(({ name }) => {
-        if (name === 'searchWells') {
-          this.hasMapBeenReset = false
-          this.loadWells()
-        } else if (name === 'resetWellsSearch') {
-          // Check to make sure we don't accidentially reset the map again
-          if (!this.hasMapBeenReset) {
-            this.resetMap()
-          }
+    this.unsubscribeAction = this.$store.subscribeAction((action, state) => {
+      if (action.type === SEARCH_WELLS) {
+        this.hasMapBeenReset = false
+        this.loadWells()
+      } else if (action.type === RESET_WELLS_SEARCH) {
+        // Check to make sure we don't accidentially reset the map again
+        if (!this.hasMapBeenReset) {
+          this.resetMap()
         }
-      })
-    }
+      }
+    })
   },
   destroyed () {
     this.unsubscribeAction()

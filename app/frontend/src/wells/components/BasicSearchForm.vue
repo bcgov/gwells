@@ -50,7 +50,9 @@
 </template>
 
 <script>
-import { useWellsStore } from '@/stores/wells.js'
+import { mapGetters } from 'vuex'
+import { SEARCH_WELLS } from '@/wells/store/actions.types.js'
+import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
 import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import Exports from '@/wells/components/Exports.vue'
 
@@ -60,24 +62,18 @@ export default {
   },
   data () {
     return {
-      searchString: null,
-      wells: null
+      searchString: null
     }
   },
   computed: {
-    searchParams () {
-      return this.wells ? this.wells.searchParams : {}
-    },
-    searchInProgress () {
-      return this.wells ? this.wells.searchInProgress : false
-    }
+    ...mapGetters(['searchParams', 'searchInProgress'])
   },
   methods: {
     handleSubmit () {
       const params = { search: this.searchString }
-      this.wells.setSearchParams(params)
+      this.$store.commit(SET_SEARCH_PARAMS, params)
 
-      this.wells.searchWells({ trigger: SEARCH_TRIGGER, constrain: true })
+      this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: true })
 
       this.$emit('search', params)
     },
@@ -85,7 +81,7 @@ export default {
       this.$emit('reset')
     },
     updateSearchString () {
-      const searchString = this.searchParams?.search
+      const searchString = this.searchParams.search
       this.searchString = searchString || null
     }
   },
@@ -95,7 +91,6 @@ export default {
     }
   },
   created () {
-    this.wells = useWellsStore()
     this.updateSearchString()
   }
 }
