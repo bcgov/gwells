@@ -12,10 +12,14 @@
 <script>
 
 export default {
-  props: ['error', 'resetter'],
+  props: ['error', 'resetter', 'onClear'],
   methods: {
     clearError () {
-      this.$store.commit(this.resetter, null)
+      if (this.onClear) {
+        this.onClear()
+      } else if (this.resetter) {
+        this.$store.commit(this.resetter, null)
+      }
     }
   }
 }
