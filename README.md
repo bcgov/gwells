@@ -1,8 +1,8 @@
-[![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
-
 # Groundwater Wells and Aquifers (GWELLS)
 
-https://apps.nrs.gov.bc.ca/gwells/
+[![img](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+
+<https://apps.nrs.gov.bc.ca/gwells/>
 
 ## Introduction
 
@@ -11,17 +11,18 @@ The Ministry of Environment receives and processes groundwater data and informat
 GWELLS, the new groundwater data repository, aims to improve the user experience when submitting and searching for well information, to improve the quality of the data being submitted, and to improve the overall functionality of the system to meet user and regulatory requirements.
 
 The application is being developed as an open source solution.
+
 ## Table of Contents
 
-1. [Using the GWELLS API](#Using-the-gwells-api)
+1. [Using the GWELLS API](#using-the-gwells-api)
 1. [DataBC Export](#databc-export)
-1. [Developing GWELLS](#Developing-gwells)
+1. [Developing GWELLS](#developing-gwells)
    - [Setup Prerequisites](#setup-prerequisites)
-   - [Running the GWELLS application locally](#Running-the-GWELLS-application-locally)
-   - [Authentication](#Authentication)
-   - [Running tests](#Running-tests)
-   - [Making pull requests](#Making-pull-requests)
-1. [Architecture](#Architecture)
+   - [Running the GWELLS application locally](#running-the-gwells-application-locally)
+   - [Authentication](#authentication)
+   - [Running tests](#running-tests)
+   - [Making pull requests](#making-pull-requests)
+1. [Architecture](#architecture)
 1. [Contributing](#contributing)
    - [Code With Us](#code-with-us)
 1. [License](#license)
@@ -30,7 +31,7 @@ The application is being developed as an open source solution.
 
 GWELLS maintains a REST API where public data relating to wells is made available for other applications and services.
 
-Our Swagger documentation is available at https://apps.nrs.gov.bc.ca/gwells/api/. Some examples of GWELLS endpoints:
+Our Swagger documentation is available at <https://apps.nrs.gov.bc.ca/gwells/api/>. Some examples of GWELLS endpoints:
 
 Wells:
 
@@ -78,7 +79,7 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
 
 For gwells to interact with your local instance of Min.IO add the appropriate settings to your local machines `HOSTS` file:
 
-```
+```bash
 127.0.0.1 minio-public
 127.0.0.1 minio-private
 ```
@@ -89,23 +90,17 @@ Some GWELLS pages (submitting new well reports, adding or editing aquifers, or a
 
 ### Running the GWELLS application locally
 
-- [Clone the GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
-- From the gwells folder run `docker-compose up -d`
+1. Clone the [GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
+2. In the root folder copy .env.template and create .env with the variables from OpenShift
+3. Then, run the application with Docker `docker-compose up -d`
 
-Login to Artifactory for pulling the backend base image:
+<!-- Login to Artifactory for pulling the backend base image:
 
 ```sh
 docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
 ```
 
-Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets)
-
-Then, run the application with Docker:
-
-```sh
-cd gwells
-docker-compose up
-```
+Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets) -->
 
 ### Running GWELLS locally with a connection to Staging's Database
 
@@ -115,43 +110,43 @@ To have a more complete dataset while running locally, you can opt to point the 
 
 2. Using the database secrets from GWELLS' staging namespace on OpenShift, replace the variables in your new `.env.test` file. You'll need to change `ENVIRONMENT` to 'test' as well to ensure the proper `command` is run from the `app/scripts/backend-command-script.sh` file.
 
-    Note: to get the `GWELLS_SERVICE_HOST` and `GWELLS_SERVICE_PORT`, use the `oc` CLI and login to GWELLS' test namespace; run the following command to view the `TransportServer` for the staging database:
+   Note: to get the `GWELLS_SERVICE_HOST` and `GWELLS_SERVICE_PORT`, use the `oc` CLI and login to GWELLS' test namespace; run the following command to view the `TransportServer` for the staging database:
 
-    ```
-    oc project 26e83e-test
+   ```bash
+   oc project 26e83e-test
 
-    oc -n 26e83e-test get ts
-    ```
+   oc -n 26e83e-test get ts
+   ```
 
-    This should print out a `VIRTUALSERVERADDRESS` (the `GWELLS_SERVICE_HOST`) and a `VIRTUALSERVERPORT` (the `GWELLS_SERVICE_PORT`)
+   This should print out a `VIRTUALSERVERADDRESS` (the `GWELLS_SERVICE_HOST`) and a `VIRTUALSERVERPORT` (the `GWELLS_SERVICE_PORT`)
 
-    ```
-    NAME              VIRTUALSERVERADDRESS   VIRTUALSERVERPORT   POOL          POOLPORT   IPAMLABEL   IPAMVSADDRESS   STATUS   AGE
-    yourservice-tsc   142.34.194.68          65555               yourservice   8000                   None            Ok       21d
-    ```
+   ```bash
+   NAME              VIRTUALSERVERADDRESS   VIRTUALSERVERPORT   POOL          POOLPORT   IPAMLABEL   IPAMVSADDRESS   STATUS   AGE
+   yourservice-tsc   142.34.194.68          65555               yourservice   8000                   None            Ok       21d
+   ```
 
-    Your `.env.test` file should look something like this:
+   Your `.env.test` file should look something like this:
 
-    ```
-    # .env for test environment
-    ENVIRONMENT=test
-    DATABASE_USER=<db-user>
-    DATABASE_PASSWORD=<db-password>
-    GWELLS_SERVICE_HOST=142.34.194.68
-    GWELLS_SERVICE_PORT=<port-number>
-    ```
+   ```bash
+   # .env for test environment
+   ENVIRONMENT=test
+   DATABASE_USER=<db-user>
+   DATABASE_PASSWORD=<db-password>
+   GWELLS_SERVICE_HOST=142.34.194.68
+   GWELLS_SERVICE_PORT=<port-number>
+   ```
 
 3. Once `.env.test` has the proper environment variables, run the `docker-compose up` command with the `--env-file` flag:
 
-    ```
-    docker-compose --env-file ./.env.test up
-    ```
+   ```bash
+   docker-compose --env-file ./.env.test up
+   ```
 
 You should now have a local build with a backend that points to staging's database. **Be mindful when saving or changing data to the staging database**.
 
 If you're encountering any issues with the build, ensure that your VPN is connected and working properly.
 
->Minio doesn't download while connected using the VPN. This is a known issue.
+> Minio doesn't download while connected using the VPN. This is a known issue.
 
 ### Running GWELLS in Debug Mode
 
@@ -196,19 +191,19 @@ Steps:
 1. Enter any meaningful name in `Name`
 1. Under the `Connection` tab supply the following values
 
-| Field               | Value    |
-| ------------------- | -------- |
-| Host name / address | `db`     |
-| Port                | `5432`   |
-| Username            | `gwells` |
-| Password            | `test1`  |
+| Field               | Value     |
+| ------------------- | --------  |
+| Host name / address | `db`      |
+| Port                | `5432`    |
+| Username            | `gwells`  |
+| Password            | see .env  |
 
 Visit the following links to browse the API and frontend applications:
 
-- Django REST API development server: http://localhost:8000/gwells/api/
-- Vue frontend development server: http://localhost:8080/
+- Django REST API development server: <http://localhost:8000/gwells/api/>
+- Vue frontend development server: <http://localhost:8080/>
 
-### Running tests:
+### Running tests
 
 For comprehensive testing information visit the [Wiki](https://github.com/bcgov/gwells/wiki/Testing)
 Postman API tests:
@@ -218,13 +213,13 @@ Import the json test collections in the `api-tests/` folder into [Postman](https
 
 Single shapefile, with aquifer ID specified in CLI.
 
-```
+```bash
 docker-compose exec backend python manage.py import_shapefile 2 aquifers/fixtures/shp/shapefile.zip
 ```
 
 Bulk import, requires the AQ_NUMBER attribute on each polygon. Requires a folder with shapefiles to be prepared and passed in (zipped or not). Note: if DEBUG=True, all geometries will be uploaded to a random aquifer instead of the one matching its' number, so we can test locally with a development database.
 
-```
+```bash
 mkdir app/backend/bulk
 mv DATABC_EXPORT_FILE.zip app/backend/bulk/
 
@@ -235,7 +230,7 @@ docker-compose exec backend python manage.py import_bulk_shapefile bulk
 
 To download new licence data from DataBC and merge it into your DB, do
 
-```
+```bash
 docker-compose exec backend python manage.py import_licences
 ```
 
@@ -275,141 +270,65 @@ More documentation for the repository can be found in the following places
 
 ## New pipeline deployment instructions
 
-Dev Environment
--
-Steps before merging Pull Request into 'release':
-  1. Login to OpenShift
+### Dev Environment
 
-  2. Navigate to '26e83e-tools' in projects
+Current processes are set so that a PR merged into `release` branch will automatically trigger a deployment into the dev environment via github webhooks.
 
-  ![alt text](pics/image.png)
+#### Editing webhook settings - Github
 
-  3. Make sure you are in the administrator view
+- To edit the deployment webhook in github, as an admin, go to the settings tab.
 
-  ![alt text](pics/image-1.png)
+- Then go to the webhooks tab.
 
-  4. Go to Builds -> BuildConfigs
+- Find a webhook link with the following pattern:
+  `https://api.silver.devops.gov.bc.ca:6443/apis/build.openshift.io/v1/namespaces/26e83e-tools/buildconfigs/gwells-frontend/webhooks/<<SECRET KEY>>/github`
 
-  ![alt text](pics/image-2.png)
+There are currently two webhooks, both pointing to the tools instance in openshift. One for backend and another for frontend. Note that the URLs have a path variable near the end, which corresponds to a secret key that openshift uses to identify the endpoint.
 
-  5. Find 'gwells-frontend'
+#### Editing webhook settings - Openshift
 
-  ![alt text](pics/image-3.png)
+The webhook secret key value can be modified in Openshift. Under the tools namespace, Workload → Secrets → github-build-webhook is where the key resides, under the key name "WebHookSecretKey"
 
-  6. Click on the YAML tab
+### Deploy to TEST/PROD
 
-  ![alt text](pics/image-4.png)
+#### Steps to promote the current release in DEV to TEST:
 
-  7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'dev'. (It may currently already say dev, or test or prod)
+1. Login to OpenShift
 
-  ![alt text](pics/image-8.png)
+2. Navigate to '26e83e-tools' in projects
+   ![alt text](pics/image.png)
 
-  8. Hit 'save'
+3. Make sure you are in the administrator view
+   ![alt text](pics/image-1.png)
 
-  ![alt text](pics/image-9.png)
+4. Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
+   ![alt text](pics/image-11.png)
 
-  9. You can now merge the Pull Request
-  
-  10. A build for the frontend and backend will now be triggered and automatically deploy to the dev environment once built.
+5. Then select 'promote-to-test'
+   ![alt text](pics/image-12.png)
 
-  Test Environment
-  -
-  Steps before merging Pull Request into 'release':
-  1. Login to OpenShift
+6. Finally Select Actions -> Start
+   ![alt text](pics/image-13.png)
 
-  2. Navigate to '26e83e-tools' in projects
+7. The frontend and backend will then deploy to the test environment
 
-  ![alt text](pics/image.png)
+#### Steps to promote the current TEST into PROD:
 
-  3. Make sure you are in the administrator view
+1. Login to OpenShift
 
-  ![alt text](pics/image-1.png)
+2. Navigate to '26e83e-tools' in projects
+   ![alt text](pics/image.png)
 
-  4. Go to Builds -> BuildConfigs
+3. Make sure you are in the administrator view
+   ![alt text](pics/image-1.png)
 
-  ![alt text](pics/image-2.png)
+4. Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
+   ![alt text](pics/image-11.png)
 
-  5. Find 'gwells-frontend'
+5. Then select 'promote-to-prod'
+   ![alt text](pics/image-15.png)
 
-  ![alt text](pics/image-3.png)
+6. Finally Select Actions -> Start
+   ![alt text](pics/image-13.png)
 
-  6. Click on the YAML tab
-
-  ![alt text](pics/image-4.png)
-
-  7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'test'. (It may currently already say dev, or test or prod)
-
-  ![alt text](pics/image-10.png)
-
-  8. Hit 'save'
-
-  ![alt text](pics/image-9.png)
-
-  9. You can now merge the Pull Request
-
-  Steps after merging Pull Request into 'release':
-
-  1.  Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
-
-  ![alt text](pics/image-11.png)
-
-  2. Then select 'promote-to-test'
-
-  ![alt text](pics/image-12.png)
-
-  3. Finally Select Actions -> Start
-
-  ![alt text](pics/image-13.png)
-
-  4. The frontend and backend will then deploy to the test environment
-
-Prod Environment
-  -
-  Steps before merging Pull Request into 'release':
-  1. Login to OpenShift
-
-  2. Navigate to '26e83e-tools' in projects
-
-  ![alt text](pics/image.png)
-
-  3. Make sure you are in the administrator view
-
-  ![alt text](pics/image-1.png)
-
-  4. Go to Builds -> BuildConfigs
-
-  ![alt text](pics/image-2.png)
-
-  5. Find 'gwells-frontend'
-
-  ![alt text](pics/image-3.png)
-
-  6. Click on the YAML tab
-
-  ![alt text](pics/image-4.png)
-
-  7. Find the 'VITE_AXIOS_BASE_URL' environment variable and change the url to include 'prod'. (It may currently already say dev, or test or prod)
-
-  ![alt text](pics/image-14.png)
-
-  8. Hit 'save'
-
-  ![alt text](pics/image-9.png)
-
-  9. You can now merge the Pull Request
-
-  Steps after merging Pull Request into 'release':
-
-  1.  Once the frontend and backend builds are complete navigate to Pipelines -> Pipelines
-
-  ![alt text](pics/image-11.png)
-
-  2. Then select 'promote-to-prod'
-
-  ![alt text](pics/image-15.png)
-
-  3. Finally Select Actions -> Start
-
-  ![alt text](pics/image-13.png)
-
-  4. The frontend and backend will then deploy to the prod environment
+7. The frontend and backend will then deploy to the prod environment

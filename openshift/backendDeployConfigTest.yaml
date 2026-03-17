@@ -19,6 +19,14 @@ spec:
       timeoutSeconds: 900
       maxUnavailable: 25%
       maxSurge: 25%
+      pre:
+        failurePolicy: Abort
+        execNewPod:
+          command:
+            - /bin/bash
+            - '-c'
+            - './pre-deploy.sh'
+          containerName: gwells-backend
     resources: {}
     activeDeadlineSeconds: 21600
   triggers:
@@ -65,6 +73,10 @@ spec:
             failureThreshold: 10
           terminationMessagePath: /dev/termination-log
           name: gwells-backend
+          command:
+            - /bin/bash
+            - '-c'
+            - 'python3 manage.py runserver 0.0.0.0:8000'
           livenessProbe:
             exec:
               command:

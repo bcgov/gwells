@@ -18,8 +18,7 @@
 import logging
 
 from django.db.models import CharField, Field, EmailField, ForeignKey, \
-    DateField, UUIDField, BooleanField, IntegerField, BigIntegerField, AutoField, DecimalField, TextField
-from django.contrib.postgres.fields import JSONField
+    DateField, UUIDField, BooleanField, IntegerField, BigIntegerField, AutoField, DecimalField, TextField, JSONField
 from django.contrib.gis.db.models import PointField
 
 

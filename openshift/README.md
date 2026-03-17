@@ -71,3 +71,15 @@ The following was tested for staging:
 * `pg_dump -d gwells -Fp -c -C -f /tmp/backup/staging-20201208.sql --exclude-table=spatial_ref_sys`
 * rsync to OCP4 (todo: automate this step)
 * `psql -x -v ON_ERROR_STOP=1 2>&1 < staging-20201208.sql`
+
+# New Notes on Configurations
+
+Everything above is old and may be inaccurate.
+
+The BuildConfigs and DeploymentConfigs in this folder are not synched with OpenShift. **Any changes made to the files must be copied to OpenShift.** To see the most accurate version of these files, check OpenShift.
+
+`gwells-frontend` is configured using `frontendBuildConfig.yaml` and `frontendDeployConfig{ENV}.yaml`. The BuildConfig is found in `26e83e-tools` and the DeploymentConfig is found in the respective environment.
+
+`gwells-backend` is configured using `backendBuildConfig.yaml` and `backendDeployConfig{ENV}.yaml`. The BuildConfig is found in `26e83e-tools` and the DeploymentConfig is found in the respective environment.
+
+`pgtileserv` uses the `pgtileservDeployConfigTemplate.yaml` for all environments. To fill in the environment, replace `${ENV}` with the shortened name (i.e. dev) and `${ENVIRONMENT}` with the full name (i.e. development).

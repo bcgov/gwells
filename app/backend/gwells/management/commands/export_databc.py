@@ -725,7 +725,7 @@ class Command(BaseCommand):
 
     def upload_files(self, files, version):
         """Upload files to S3 bucket."""
-        is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) is '1'
+        is_secure = get_env_variable('S3_USE_SECURE', '1', warn=False) == '1'
         minio_client = Minio(get_env_variable('S3_HOST'),
                              access_key=get_env_variable('S3_PUBLIC_ACCESS_KEY'),
                              secret_key=get_env_variable('S3_PUBLIC_SECRET_KEY'),

@@ -24,26 +24,10 @@ spec:
         failurePolicy: Abort
         execNewPod:
           command:
-            - pwd
-          env:
-            - name: PGDATABASE
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-name
-            - name: PGUSER
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-user
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: gwells-pg12-development
-                  key: database-password
-            - name: PGHOST
-              value: gwells-pg12-development
-          containerName: gwells-app-development
+            - /bin/bash
+            - '-c'
+            - './pre-deploy.sh'
+          containerName: gwells-backend
     resources: {}
     activeDeadlineSeconds: 21600
   triggers:
@@ -89,7 +73,11 @@ spec:
             successThreshold: 1
             failureThreshold: 10
           terminationMessagePath: /dev/termination-log
-          name: gwells-app-development
+          name: gwells-backend
+          command:
+            - /bin/bash
+            - '-c'
+            - 'python3 manage.py runserver 0.0.0.0:8000'
           livenessProbe:
             exec:
               command:

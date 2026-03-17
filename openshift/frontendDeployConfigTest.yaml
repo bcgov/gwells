@@ -2,7 +2,6 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: gwells-frontend
-  generation: 5
   namespace: 26e83e-test
   labels:
     app: gwells-frontend
@@ -25,8 +24,7 @@ spec:
         from:
           kind: ImageStreamTag
           namespace: 26e83e-tools
-          name: "gwells-application:latest"
-        lastTriggeredImage: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421"
+          name: "gwells-application:test"
     - type: ConfigChange
   replicas: 1
   revisionHistoryLimit: 10
@@ -41,15 +39,15 @@ spec:
     spec:
       containers:
         - name: gwells-frontend
-          image: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:eebf7876ed63cd28d2ffc54b7805f0a6e60135153bebd282657fd123d91ef421"
+          image: "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:1146deaa947715dc3e3be04bc383ab42539996cc9bebc4d9cf4fd304ce1090a9"
           ports:
             - containerPort: 8080
               protocol: TCP
           env:
+            - name: VITE_FRONTEND_TILE_URL
+              value: 'https://gwells-staging.apps.silver.devops.gov.bc.ca/gwells/tiles'
             - name: VITE_AXIOS_BASE_URL
-              value: "https://gwells-backend-26e83e-test.apps.silver.devops.gov.bc.ca/gwells/api/v2/"
-            - name: VITE_VECTOR_TILE_BASE_URL
-              value: "https://gwells.apps.silver.devops.gov.bc.ca/gwells/tiles/"
+              value: 'https://gwells-backend-26e83e-test.apps.silver.devops.gov.bc.ca/gwells/api/v2/'
           resources:
             limits:
               cpu: 50m
@@ -65,27 +63,3 @@ spec:
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
-status:
-  observedGeneration: 5
-  details:
-    message: config change
-    causes:
-      - type: ConfigChange
-  availableReplicas: 1
-  unavailableReplicas: 0
-  latestVersion: 4
-  updatedReplicas: 1
-  conditions:
-    - type: Available
-      status: "True"
-      lastUpdateTime: "2025-04-09T22:17:58Z"
-      lastTransitionTime: "2025-04-09T22:17:58Z"
-      message: Deployment config has minimum availability.
-    - type: Progressing
-      status: "True"
-      lastUpdateTime: "2025-04-09T22:18:00Z"
-      lastTransitionTime: "2025-04-09T22:17:52Z"
-      reason: NewReplicationControllerAvailable
-      message: replication controller "gwells-frontend-4" successfully rolled out
-  replicas: 1
-  readyReplicas: 1

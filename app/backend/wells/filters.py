@@ -170,7 +170,7 @@ class AnyOrAllFilterSet(filters.FilterSet):
         real_fields = [
             (name, filter_.field)
             for name, filter_ in self.filters.items()]
-        match_any_field = forms.NullBooleanField(label='Match any',
+        match_any_field = forms.BooleanField(label='Match any',
                                                  help_text='If true, match any rather '
                                                  'than all of the filters given.',
                                                  required=False,

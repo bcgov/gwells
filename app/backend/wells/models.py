@@ -30,12 +30,9 @@ from gwells.models.lithology import (
     LithologyDescriptionCode, LithologyColourCode, LithologyHardnessCode,
     LithologyMaterialCode, BedrockMaterialCode, BedrockMaterialDescriptorCode, LithologyStructureCode,
     LithologyMoistureCode, SurficialMaterialCode)
-from gwells.db_comments.patch_fields import patch_fields
 
 
 # from aquifers.models import Aquifer
-
-patch_fields()
 
 
 WELL_STATUS_CODE_CONSTRUCTION = 'NEW'

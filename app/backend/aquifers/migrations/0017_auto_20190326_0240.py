@@ -3,7 +3,7 @@
 import datetime
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 import django.utils.timezone
 
 
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('effective_date', models.DateTimeField(
                     default=django.utils.timezone.now)),
                 ('expiry_date', models.DateTimeField(default=datetime.datetime(
-                    9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                    9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
             ],
             options={
                 'verbose_name_plural': 'Water Rights Purpose Codes',

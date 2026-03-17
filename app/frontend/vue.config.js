@@ -17,15 +17,4 @@ module.exports = {
     },
   },
   transpileDependencies: ["@geolonia/mbgl-gesture-handling"],
-  devServer: {
-    proxy: {
-      "^/tiles/": {
-        target: import.meta.env.VECTOR_TILE_SERVER || "http://localhost:7800/",
-        pathRewrite: {
-          "^/tiles/": "/",
-        },
-        changeOrigin: true,
-      },
-    },
-  },
 };

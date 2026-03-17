@@ -40,7 +40,7 @@ spec:
     type: Git
     git:
       uri: "https://www.github.com/bcgov/gwells.git"
-      ref: release
+      ref: main
     contextDir: app/frontend
   triggers:
     - type: ConfigChange

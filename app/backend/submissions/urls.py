@@ -11,7 +11,7 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 """
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.decorators.cache import never_cache
 
 from submissions.views import (SubmissionsOptions, SubmissionListAPIView, SubmissionConstructionAPIView,
@@ -23,31 +23,31 @@ from gwells.urls import api_path_prefix
 urlpatterns = [
 
     # Submissions form options
-    url(api_path_prefix() + r'/submissions/options$',
+    re_path(api_path_prefix() + r'/submissions/options$',
         never_cache(SubmissionsOptions.as_view()), name='submissions-options'),
 
     # Submissions list
-    url(api_path_prefix() + r'/submissions$',
+    re_path(api_path_prefix() + r'/submissions$',
         never_cache(SubmissionListAPIView.as_view()), name='submissions-list'),
     # Submission
-    url(api_path_prefix() + r'/submissions/(?P<filing_number>[0-9]+)$',
+    re_path(api_path_prefix() + r'/submissions/(?P<filing_number>[0-9]+)$',
         never_cache(SubmissionGetAPIView.as_view()), name='submissions-get'),
     # Construction submission
-    url(api_path_prefix() + r'/submissions/construction$',
+    re_path(api_path_prefix() + r'/submissions/construction$',
         never_cache(SubmissionConstructionAPIView.as_view()), name='CON'),
     # Alteration submission
-    url(api_path_prefix() + r'/submissions/alteration$',
+    re_path(api_path_prefix() + r'/submissions/alteration$',
         never_cache(SubmissionAlterationAPIView.as_view()), name='ALT'),
     # Decommission submission
-    url(api_path_prefix() + r'/submissions/decommission$',
+    re_path(api_path_prefix() + r'/submissions/decommission$',
         never_cache(SubmissionDecommissionAPIView.as_view()), name='DEC'),
     # Edit submission
-    url(api_path_prefix() + r'/submissions/staff_edit$',
+    re_path(api_path_prefix() + r'/submissions/staff_edit$',
         never_cache(SubmissionStaffEditAPIView().as_view()), name='STAFF_EDIT'),
     # Document Uploading (submission records)
-    url(api_path_prefix() + r'/submissions/(?P<submission_id>[0-9]+)/presigned_put_url$',
+    re_path(api_path_prefix() + r'/submissions/(?P<submission_id>[0-9]+)/presigned_put_url$',
         never_cache(PreSignedDocumentKey.as_view()), name='submissions-pre-signed-url'),
     # Send email notification when Coordinates are changed on drinking well
-     url(api_path_prefix() + r'/submissions/editwater$',
+     re_path(api_path_prefix() + r'/submissions/editwater$',
         never_cache(EmailNotification.as_view()), name='send_email')
 ]

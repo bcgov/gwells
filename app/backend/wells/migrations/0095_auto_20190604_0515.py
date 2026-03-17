@@ -3,7 +3,7 @@
 import datetime
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 import django.utils.timezone
 import gwells.db_comments.model_mixins
 import wells.data_migrations
@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('update_date', models.DateTimeField(default=django.utils.timezone.now)),
                 ('display_order', models.PositiveIntegerField()),
                 ('effective_date', models.DateTimeField(default=django.utils.timezone.now)),
-                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=utc))),
+                ('expiry_date', models.DateTimeField(default=datetime.datetime(9999, 12, 31, 23, 59, 59, 999999, tzinfo=timezone.utc))),
                 ('drive_shoe_code', models.CharField(editable=False, max_length=100, primary_key=True, serialize=False)),
                 ('description', models.CharField(max_length=100)),
             ],

@@ -7,42 +7,42 @@
 }
 
 :8080 {
-	handle /gwells/tiles/* {
-		reverse_proxy {$VECTOR_TILE_BASE_URL}
-	}
 	log
-	handle {
-		root * /srv
+	root * /srv
+	encode zstd gzip
 
-		route {
-			# Template only the Vite JS bundle(s) to inject env vars at serve-time.
-			# Uses custom delimiters to avoid collisions with `{{ ... }}` that may appear in minified code.
-			handle /assets/*.js {
-				# Templates modifies the response body, so strip headers that would be invalid.
-				header {
-					-Content-Length
-					-Etag
-					Cache-Control "no-store"
-				}
-				templates {
-					mime application/javascript text/javascript
-					between "___CADDY_TEMPLATE_START___" "___CADDY_TEMPLATE_END___"
-				}
-				file_server
-			}
+	@js path /assets/*.js
 
-			# All other hashed assets served normally
-			handle /assets/* {
-				file_server
-			}
-
-			handle {
-				try_files {path} /index.html
-				file_server
-			}
+	handle @js {
+		header {
+			-Content-Length
+			-Etag
+			Cache-Control "no-store"
 		}
+		templates {
+			mime application/javascript text/javascript
+			between "___CADDY_TEMPLATE_START___" "___CADDY_TEMPLATE_END___"
+		}
+		file_server
+	}
 
-		encode zstd gzip
+	# All other hashed assets served normally
+	handle /assets/* {
+		file_server
+	}
+
+	# Proxy API requests to your backend
+	handle /gwells/api/v2/* {
+		reverse_proxy backend:8000
+	}
+
+	handle /postgis_ftw.gwells_well_view/* {
+		reverse_proxy tileserv:7800
+	}
+
+	handle {
+		try_files {path} /index.html
+		file_server
 	}
 }
 
