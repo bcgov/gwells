@@ -89,11 +89,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import smoothScroll from 'smoothscroll'
 import querystring from 'querystring'
 
-import { SEARCH } from '@/registry/store/actions.types'
+import { useRegistryStore } from '@/stores/registry.js'
 import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
 import DrillerRegistrationStatus from '@/registry/components/search/table-helpers/DrillerRegistrationStatus.vue'
 import DrillerContactInfo from '@/registry/components/search/table-helpers/DrillerContactInfo.vue'
@@ -113,10 +113,7 @@ export default {
   },
   data () {
     return {
-      // fields for the table headings
-      // visible denotes whether field should be visible to public or admin only
-      // activity denotes what fields should be displayed for what activity (driller, installer etc.)
-      // activity: 'all' is displayed for all activities
+      registryStore: useRegistryStore(),
       fields: [
         {
           name: 'Name',
@@ -172,14 +169,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles']),
-    ...mapGetters('registriesStore', [
-      'loading',
-      'isSearchInProgress',
-      'listError',
-      'searchResponse',
-      'activity'
-    ])
+    loading () { return this.registryStore.loading },
+    isSearchInProgress () { return this.registryStore.isSearchInProgress },
+    listError () { return this.registryStore.listError },
+    searchResponse () { return this.registryStore.searchResponse },
+    activity () { return this.registryStore.activity },
+    ...mapGetters(['userRoles'])
   },
   watch: {
   },
@@ -209,7 +204,7 @@ export default {
       if (!query) {
         throw new Error('query parameter is required.')
       }
-      this.SEARCH(querystring.parse(query))
+      this.registryStore.search(querystring.parse(query))
     },
     fieldSortable (field) {
       return Boolean(field.sortable && field.sortCode)
@@ -224,11 +219,8 @@ export default {
      */
     scrollToTableTop () {
       smoothScroll(this.$el, 100)
-    },
-    ...mapActions('registriesStore', [
-      SEARCH
-    ])
-  }
+    }
+}
 }
 </script>
 

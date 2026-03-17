@@ -198,9 +198,8 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
-import { SET_ERROR } from '@/registry/store/mutations.types'
-import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
+import { mapGetters } from 'vuex'
+import { useRegistryStore } from '@/stores/registry.js'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
 
@@ -211,6 +210,7 @@ export default {
   },
   data () {
     return {
+      registryStore: useRegistryStore(),
       breadcrumbs: [
         {
           text: 'Registry',
@@ -234,9 +234,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions('registriesStore', [
-      FETCH_DRILLER_OPTIONS
-    ]),
     applicationReset () {
       this.registration = null
       this.applicationFormValue = null
@@ -269,7 +266,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$store.commit(SET_ERROR, error.response)
+          this.registryStore.setError(error.response)
         })
     },
     focusCancelModal () {
@@ -287,7 +284,7 @@ export default {
           this.applicationReset()
         }).catch((error) => {
           this.applicationSaving = false
-          this.$store.commit(SET_ERROR, { status: 'Error saving application' })
+          this.registryStore.setError({ status: 'Error saving application' })
           console.error(error)
         })
       }
@@ -354,15 +351,13 @@ export default {
     ...mapGetters([
       'userRoles'
     ]),
-    ...mapGetters('registriesStore', [
-      'loading',
-      'error',
-      'currentDriller',
-      'drillerOptions'
-    ])
+    loading () { return this.registryStore.loading },
+    error () { return this.registryStore.error },
+    currentDriller () { return this.registryStore.currentDriller },
+    drillerOptions () { return this.registryStore.drillerOptions }
   },
   created () {
-    this.FETCH_DRILLER_OPTIONS()
+    this.registryStore.fetchDrillerOptions()
     this.applicationReset()
   }
 }
