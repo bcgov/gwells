@@ -14,19 +14,6 @@ import Keycloak from 'keycloak-js'
 import Vue from 'vue'
 
 export default {
-  _app: null,
-
-  setApp (app) {
-    this._app = app
-  },
-
-  _setKeycloak (instance) {
-    Vue.prototype.$keycloak = instance
-    if (this._app?.config?.globalProperties) {
-      this._app.config.globalProperties.$keycloak = instance
-    }
-  },
-
   getInstance: function () {
     /**
      * Returns a promise that resolves to an instance of Keycloak.
@@ -46,7 +33,7 @@ export default {
               'auth-server-url': authServerUrl
             } = response.data
 
-            const keycloak = new Keycloak({
+            Vue.prototype.$keycloak = new Keycloak({
               url: authServerUrl,
               realm,
               clientId,
@@ -55,12 +42,12 @@ export default {
               publicClient,
               confidentialPort
             })
-            this._setKeycloak(keycloak)
-            resolve(keycloak)
+
+            resolve(Vue.prototype.$keycloak)
           })
           .catch(error => {
             console.error(error)
-            this._setKeycloak({})
+            Vue.prototype.$keycloak = {}
             resolve(Vue.prototype.$keycloak)
           })
       } else {

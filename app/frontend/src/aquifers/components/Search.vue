@@ -176,9 +176,8 @@
 import mapboxgl from 'mapbox-gl'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash-es'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
 import smoothScroll from 'smoothscroll'
-import { useAquiferStore } from '@/stores/aquifers.js'
 
 import ApiService from '@/common/services/ApiService.js'
 import {
@@ -309,29 +308,31 @@ export default {
       return this.resultsTableData.length
     },
     ...mapGetters(['userRoles']),
-    aquiferStore () {
-      return useAquiferStore()
-    },
-    queryParams () { return this.aquiferStore.queryParams },
-    searchParams () { return this.aquiferStore.searchParams },
-    searchResults () { return this.aquiferStore.searchResults },
-    searchErrors () { return this.aquiferStore.searchErrors },
-    searchInProgress () { return this.aquiferStore.searchInProgress },
-    searchPerformed () { return this.aquiferStore.searchPerformed },
-    searchMapCentre () { return this.aquiferStore.searchMapCentre },
-    searchMapZoom () { return this.aquiferStore.searchMapZoom },
-    resourceSections () { return this.aquiferStore.sections }
+    ...mapGetters('aquiferStore/search', ['queryParams', 'searchParams', 'searchResults']),
+    ...mapState('aquiferStore/search', [
+      'searchErrors',
+      'searchInProgress',
+      'searchPerformed',
+      'searchMapCentre',
+      'searchMapZoom'
+    ]),
+    ...mapState('aquiferStore', {
+      resourceSections: 'sections'
+    })
   },
   methods: {
-    [SEARCH_AQUIFERS] (payload) { this.aquiferStore[SEARCH_AQUIFERS](payload) },
-    [SET_CONSTRAIN_SEARCH] (v) { this.aquiferStore[SET_CONSTRAIN_SEARCH](v) },
-    [SET_SEARCH_BOUNDS] (v) { this.aquiferStore[SET_SEARCH_BOUNDS](v) },
-    [RESET_SEARCH] () { this.aquiferStore[RESET_SEARCH]() },
-    [SET_SEARCH_MAP_CENTRE] (v) { this.aquiferStore[SET_SEARCH_MAP_CENTRE](v) },
-    [SET_SEARCH_MAP_ZOOM] (v) { this.aquiferStore[SET_SEARCH_MAP_ZOOM](v) },
-    [SET_SELECTED_SECTIONS] (v) { this.aquiferStore[SET_SELECTED_SECTIONS](v) },
-    [SET_MATCH_ANY] (v) { this.aquiferStore[SET_MATCH_ANY](v) },
-    addSections (payload) { this.aquiferStore.addSections(payload) },
+    ...mapActions('aquiferStore/search', [SEARCH_AQUIFERS]),
+    ...mapMutations('aquiferStore/search', [
+      SET_CONSTRAIN_SEARCH,
+      SET_SEARCH_BOUNDS,
+      SET_CONSTRAIN_SEARCH,
+      RESET_SEARCH,
+      SET_SEARCH_MAP_CENTRE,
+      SET_SEARCH_MAP_ZOOM,
+      SET_SELECTED_SECTIONS,
+      SET_MATCH_ANY
+    ]),
+    ...mapMutations('aquiferStore', ['addSections']),
     navigateToNew () {
       this.$router.push({ name: 'new' })
     },

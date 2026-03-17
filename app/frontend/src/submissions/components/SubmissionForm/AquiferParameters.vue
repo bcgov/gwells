@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <thead>
         </thead>
         <tbody>
-          <template v-for="(aquiferParameter, index) in aquiferParametersData" :key="`aquifer-param-${index}`">
+          <template v-for="(aquiferParameter, index) in aquiferParametersData">
             <div class="bordered-table">
               <tr>
                 <th class="font-weight-normal top-row-no-border" scope="col">Start Date of Test</th>

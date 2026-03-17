@@ -323,12 +323,13 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
-import { useRegistryStore } from '@/stores/registry.js'
+import { FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 
 export default {
   name: 'OrganizationEdit',
@@ -340,7 +341,6 @@ export default {
   mixins: [inputFormatMixin],
   data () {
     return {
-      registryStore: useRegistryStore(),
       breadcrumbs: [
         {
           text: 'Registry',
@@ -414,8 +414,7 @@ export default {
       // returns true or false if any of the fields changed. Uses fieldsChanged() method above
       return (Object.keys(this.fieldsChanged).map(x => this.fieldsChanged[x]).includes(true))
     },
-    provinceStateOptions () { return this.registryStore.provinceStateOptions },
-    regionOptions () { return this.registryStore.regionOptions }
+    ...mapGetters('registriesStore', ['provinceStateOptions', 'regionOptions'])
   },
   watch: {
     selectedCompany (val) {
@@ -549,10 +548,13 @@ export default {
         this.companyDeleteError = e.response.data
       })
     },
+    ...mapActions('registriesStore', [
+      FETCH_DRILLER_OPTIONS
+    ])
   },
   created () {
     this.loadCompanies()
-    this.registryStore.fetchDrillerOptions()
+    this.FETCH_DRILLER_OPTIONS()
   }
 }
 </script>
