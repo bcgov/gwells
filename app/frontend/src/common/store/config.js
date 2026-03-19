@@ -1,9 +1,10 @@
 import ApiService from '@/common/services/ApiService.js'
+import { defineStore } from 'pinia'
 
 export const SET_CONFIG = 'SET_CONFIG'
 export const FETCH_CONFIG = 'FETCH_CONFIG'
 
-const config = ({
+const config = defineStore({
   state: {
     config: null
   },

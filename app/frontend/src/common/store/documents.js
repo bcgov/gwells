@@ -13,8 +13,9 @@
 */
 
 import ApiService from '@/common/services/ApiService.js'
+import { defineStore } from 'pinia'
 
-export default ({
+export default defineStore({
   state: () => ({
     isPrivate: false,
     upload_files: [],

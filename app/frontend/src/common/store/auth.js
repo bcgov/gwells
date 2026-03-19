@@ -1,6 +1,7 @@
+import { defineStore } from 'pinia'
 export const SET_KEYCLOAK = 'SET_KEYCLOAK'
 
-const auth = ({
+const auth = defineStore({
   state: () => ({
     keycloak: null
   }),
