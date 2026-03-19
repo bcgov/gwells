@@ -21,7 +21,7 @@
         :multiple="multiple"
         @change="updateValue($event)"
     >
-      <template slot="first" v-if="placeholder">
+      <template v-slot:first v-if="placeholder">
         <option :value="null">{{ placeholder }}</option>
       </template>
     </b-form-select>

@@ -73,7 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               value-field="province_state_code"
               text-field="description"
               :state="errors['owner_province_state'] ? false : null">
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null" disabled>Select a province</option>
             </template>
           </b-form-select>

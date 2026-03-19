@@ -42,9 +42,9 @@ export default {
 </script>
 
 <style lang="scss">
-  @import './common/common.scss';
-  @import './common/mapbox.scss';
-  @import './common/assets/css/ie10-viewport-bug-workaround.css';
+  @use './common/common.scss' as *;
+  @use './common/mapbox.scss' as *;
+  @use './common/assets/css/ie10-viewport-bug-workaround.css' as *;
 
   @media (min-width: 1500px) {
     .container {

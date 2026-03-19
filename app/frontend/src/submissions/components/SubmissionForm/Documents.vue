@@ -365,7 +365,7 @@ export default {
     toggleAttachmentLengthRequired (index) {
       const instance = this.attachmentsData[index]
       instance.length_required = !instance.length_required
-      Vue.set(this.attachmentsData, index, instance)
+      this.attachmentsData[index] = instance
     },
     getAttachmentError (index) {
       return this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']

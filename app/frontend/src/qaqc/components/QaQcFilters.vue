@@ -183,7 +183,7 @@ export default {
     },
     applyNullFilter () {
       // Set the field to a special value that represents 'null'
-      this.$set(this.localValue, this.paramNames[0], 'null')
+      this.localValue[this.paramNames[0]] = 'null'
       // Emit an update event (or directly apply the filter if handled within the component)
       this.applyFilter()
     },

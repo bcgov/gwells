@@ -53,7 +53,7 @@
         @input="updateParamValue(paramNames[0], $event)"
         @focus.native="$emit('focus', true)"
         @blur.native="$emit('blur', true)">
-        <template slot="first">
+        <template v-slot:first>
           <option :value="null">{{ placeholder || '----------' }}</option>
         </template>
       </b-form-select>

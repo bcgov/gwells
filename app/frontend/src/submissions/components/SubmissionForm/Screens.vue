@@ -105,23 +105,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="table-responsive">
       <table class="table table-sm" aria-describedby="screenDetails">
         <thead>
-          <th class="font-weight-normal">
-            <div>From ft (bgl)</div>
-          </th>
-          <th class="font-weight-normal">
-            <div>To ft (bgl)</div>
-          </th>
-          <th class="font-weight-normal">
-            Diameter (in)
-          </th>
-          <th class="font-weight-normal">
-            Screen Assembly Type
-          </th>
-          <th class="font-weight-normal">
-            Slot Size
-          </th>
-          <th>
-          </th>
+          <tr>
+            <th class="font-weight-normal">
+              <div>From ft (bgl)</div>
+            </th>
+            <th class="font-weight-normal">
+              <div>To ft (bgl)</div>
+            </th>
+            <th class="font-weight-normal">
+              Diameter (in)
+            </th>
+            <th class="font-weight-normal">
+              Screen Assembly Type
+            </th>
+            <th class="font-weight-normal">
+              Slot Size
+            </th>
+            <th>
+            </th>
+          </tr>
         </thead>
         <tbody>
           <template v-for="(row, index) in screensData" :key="`screen row ${index}`">
