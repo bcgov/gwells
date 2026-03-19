@@ -1,14 +1,9 @@
 export const SET_KEYCLOAK = 'SET_KEYCLOAK'
 
-const auth = {
-  state: {
+const auth = ({
+  state: () => ({
     keycloak: null
-  },
-  mutations: {
-    [SET_KEYCLOAK] (state, payload) {
-      state.keycloak = payload
-    }
-  },
+  }),
   getters: {
     keycloak (state) {
       return state.keycloak
@@ -71,7 +66,12 @@ const auth = {
     authenticated (state) {
       return Boolean(state.keycloak && state.keycloak.authenticated)
     }
+  },
+  actions: {
+    [SET_KEYCLOAK] (payload) {
+      this.keycloak = payload
+    }
   }
-}
+})
 
 export default auth

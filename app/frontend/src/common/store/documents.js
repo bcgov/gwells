@@ -14,9 +14,8 @@
 
 import ApiService from '@/common/services/ApiService.js'
 
-export default {
-  namespaced: true,
-  state: {
+export default ({
+  state: () => ({
     isPrivate: false,
     upload_files: [],
     files_uploading: false,
@@ -27,36 +26,36 @@ export default {
     shapefile_upload_message: '',
     shapefile_upload_success: false,
     shapefile: null
-  },
+  }),
   actions: {
-    uploadShapefile (context, payload) {
-      const file = context.state.shapefile
+    uploadShapefile (payload) {
+      const file = this.state.shapefile
       let formData = new FormData()
       formData.append('geometry', file)
       const url = `${payload.documentType}/${payload.recordId}/geometry`
-      context.commit('setShapefileUploading', true)
+      this.commit('setShapefileUploading', true)
       return ApiService.post(url, formData)
         .then(() => {
-          context.commit('setShapefileUploadSuccess', true)
-          context.commit('setShapefileUploadMessage', '')
+          this.commit('setShapefileUploadSuccess', true)
+          this.commit('setShapefileUploadMessage', '')
         })
         .catch(e => {
-          context.commit('setShapefileUploading', false)
-          context.commit('setShapefileUploadSuccess', false)
+          this.commit('setShapefileUploading', false)
+          this.commit('setShapefileUploadSuccess', false)
           console.error('failed to save shapefile', e.response)
-          context.commit('setShapefileUploadMessage', e.response.data.message || 'Server Error')
+          this.commit('setShapefileUploadMessage', e.response.data.message || 'Server Error')
           throw e
         })
     },
-    uploadFiles (context, payload) {
-      context.commit('setFilesUploading', true)
+    uploadFiles (payload) {
+      this.commit('setFilesUploading', true)
       let documentType = payload.documentType
       let recordId = payload.recordId
-      const files = payload.files || context.state.upload_files
+      const files = payload.files || this.state.upload_files
       const fileNames = payload.fileNames || []
 
       // Driller documents are always private
-      let isPrivate = context.state.isPrivate
+      let isPrivate = this.state.isPrivate
       if (documentType === 'drillers') {
         isPrivate = true
       }
@@ -99,91 +98,89 @@ export default {
                 })
                 .catch(error => {
                   console.log(error)
-                  context.commit('addError', error)
+                  this.commit('addError', error)
                   return Promise.reject(error)
                 })
             })
             .catch(error => {
               console.log(error)
-              context.commit('addError', error)
+              this.commit('addError', error)
             })
         })
       }, Promise.resolve())
     },
-    fileUploadSuccess (context) {
-      context.commit('setFilesUploading', false)
-      context.commit('setFileUploadSuccess', true)
-      context.commit('setFiles', [])
-      context.commit('setPrivate', false)
+    fileUploadSuccess () {
+      this.commit('setFilesUploading', false)
+      this.commit('setFileUploadSuccess', true)
+      this.commit('setFiles', [])
+      this.commit('setPrivate', false)
       setTimeout(() => {
-        context.commit('setFileUploadSuccess', false)
+        this.commit('setFileUploadSuccess', false)
       }, 5000)
     },
-    fileUploadFail (context) {
-      context.commit('setFilesUploading', false)
-      context.commit('setFileUploadError', true)
-      context.commit('setFileUploadSuccess', false)
-      context.commit('setFiles', [])
-      context.commit('setPrivate', false)
+    fileUploadFail () {
+      this.commit('setFilesUploading', false)
+      this.commit('setFileUploadError', true)
+      this.commit('setFileUploadSuccess', false)
+      this.commit('setFiles', [])
+      this.commit('setPrivate', false)
     },
-    shapefileUploadSuccess (context) {
-      context.commit('setShapefileUploadSuccess')
+    shapefileUploadSuccess () {
+      this.commit('setShapefileUploadSuccess')
     },
-    shapefileUploadFail (context) {
-      context.commit('setShapefileUploadSuccess')
+    shapefileUploadFail () {
+      this.commit('setShapefileUploadSuccess')
     },
-    resetUploadFiles (context) {
-      context.commit('setFiles', [])
+    resetUploadFiles () {
+      this.commit('setFiles', [])
     },
-    clearUploadShapeFileMessage (context) {
-      context.commit('setShapefileUploadMessage', '')
+    clearUploadShapeFileMessage () {
+      this.commit('setShapefileUploadMessage', '')
     },
-    clearUploadFilesMessage (context) {
-      context.commit('clearErrors')
-    }
-  },
-  mutations: {
-    addError (state, payload) {
-      state.file_upload_errors.push(payload)
+    clearUploadFilesMessage () {
+      this.commit('clearErrors')
     },
-    clearErrors (state) {
-      state.file_upload_errors = []
-      state.file_upload_error = false
+    addError (payload) {
+      this.file_upload_errors.push(payload)
     },
-    setShapefileUploadMessage (state, payload) {
-      state.shapefile_upload_message = payload
+    clearErrors () {
+      this.file_upload_errors = []
+      this.file_upload_error = false
     },
-    setFilesUploading (state, payload) {
-      state.files_uploading = payload
+    setShapefileUploadMessage (payload) {
+      this.shapefile_upload_message = payload
     },
-    setShapefileUploading (state, payload) {
-      state.shapefile_uploading = payload
+    setFilesUploading (payload) {
+      this.files_uploading = payload
     },
-    setFileUploadError (state, payload) {
-      state.file_upload_error = payload
+    setShapefileUploading (payload) {
+      this.shapefile_uploading = payload
     },
-    setFileUploadSuccess (state, payload) {
-      state.file_upload_success = payload
+    setFileUploadError (payload) {
+      this.file_upload_error = payload
     },
-    setShapefileUploadSuccess (state, payload) {
-      state.shapefile_uploading = false
-      state.shapefile_upload_success = payload
+    setFileUploadSuccess (payload) {
+      this.file_upload_success = payload
     },
-    setFiles (state, payload) {
+    setShapefileUploadSuccess (payload) {
+      this.shapefile_uploading = false
+      this.shapefile_upload_success = payload
+    },
+    setFiles (payload) {
       if (payload.length > 0) {
-        state.upload_files.push(...payload)
+        this.upload_files.push(...payload)
       } else {
-        state.upload_files = payload
+        this.upload_files = payload
       }
     },
-    setShapefile (state, payload) {
-      state.shapefile = payload
+    setShapefile (payload) {
+      this.shapefile = payload
     },
-    removeFile (state, file) {
-      state.upload_files = state.upload_files.filter(item => item !== file)
+    removeFile (file) {
+      this.upload_files = this.upload_files.filter(item => item !== file)
     },
-    setPrivate (state, payload) {
-      state.isPrivate = payload
+    setPrivate (payload) {
+      this.isPrivate = payload
     }
   }
-}
+})
