@@ -59,7 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="filterPackMaterial"
           label="Filter Pack Material"
           select
-          :options="codes.filter_pack_material"
+          :options="codes?.filter_pack_material"
           text-field="description"
           value-field="filter_pack_material_code"
           v-model="filterPackMaterialInput"
@@ -73,7 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="filterPackMaterialSize"
           label="Filter Pack Material Size"
           select
-          :options="codes.filter_pack_material_size"
+          :options="codes?.filter_pack_material_size"
           text-field="description"
           value-field="filter_pack_material_size_code"
           v-model="filterPackMaterialSizeInput"
@@ -87,7 +87,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -134,10 +134,17 @@ export default {
     filterPackMaterialSizeInput: 'filterPackMaterialSize'
   },
   data () {
-    return {}
+    return {
+      submissionStore: null
+    }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

@@ -57,7 +57,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               id="drillingMethod"
               :label="drillingMethodsLabel"
               select
-              :options="codes.drilling_methods"
+              :options="codes?.drilling_methods"
               value-field="drilling_method_code"
               text-field="description"
               hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
@@ -76,7 +76,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               value-field="well_orientation_code"
               text-field="description"
               placeholder="Select Orientation"
-              :options="codes.well_orientation_codes"
+              :options="codes?.well_orientation_codes"
               :errors="errors['well_orientation_status']"
               :loaded="fieldsLoaded['well_orientation_status']">
             </form-input>
@@ -87,7 +87,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -146,7 +146,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore?.codes
+    }
   }
 }
 </script>

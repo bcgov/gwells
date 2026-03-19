@@ -62,10 +62,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { SET_SEARCH_RESULT_COLUMNS } from '@/wells/store/mutations.types.js'
-import { RESET_WELLS_SEARCH } from '@/wells/store/actions.types.js'
-import { DEFAULT_COLUMNS } from '@/wells/store'
+import { useWellsStore } from '@/stores/wells.js'
 
 const RESULT_COLUMNS = [
   'wellTagNumber',
@@ -200,7 +197,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ selectedColumnIds: 'searchResultColumns' }),
+    selectedColumnIds () {
+      return this.wells ? this.wells.searchResultColumns : []
+    },
     availableColumnIds () {
       return RESULT_COLUMNS.filter(
         columnId => this.columnData[columnId] !== undefined)
@@ -273,7 +272,7 @@ export default {
         return this.columnOrders[columnA] - this.columnOrders[columnB]
       })
       localStorage.setItem('userColumnPreferences', JSON.stringify(columnIds))
-      this.$store.commit(SET_SEARCH_RESULT_COLUMNS, columnIds)
+      this.wells.setSearchResultColumns(columnIds)
       this.hideModal()
     },
     cancelChanges () {
@@ -290,11 +289,20 @@ export default {
     }
     this.initColumnOrders()
     // listen for reset wells search so we can adjust our selected search columns
-    this.$store.subscribeAction((action, state) => {
-      if (action.type === RESET_WELLS_SEARCH) {
-        this.$nextTick(() => { this.handleReset() })
-      }
-    })
+    this.wells = useWellsStore()
+    if (this.wells.$onAction) {
+      this.unsubscribeAction = this.wells.$onAction(({ name }) => {
+        if (name === 'resetWellsSearch') {
+          this.$nextTick(() => { this.handleReset() })
+        }
+      })
+    }
+  }
+  ,
+  beforeUnmount () {
+    if (this.unsubscribeAction) {
+      this.unsubscribeAction()
+    }
   }
 }
 </script>

@@ -24,22 +24,25 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
-import { FETCH_WELL_DOWNLOAD_LINKS } from '@/wells/store/actions.types.js'
+import { useWellsStore } from '@/stores/wells.js'
 
 export default {
+  data () {
+    return {
+      wells: null
+    }
+  },
   computed: {
-    ...mapGetters({
-      files: 'wellFileDownloads'
-    }),
-    hasFiles() {
-      console.log('Files:', this.files);
-      return this.files && this.files.length > 0;
+    files () {
+      return this.wells ? this.wells.wellFileDownloads : []
+    },
+    hasFiles () {
+      return this.files && this.files.length > 0
     }
   },
   created () {
-    this.$store.dispatch(FETCH_WELL_DOWNLOAD_LINKS)
+    this.wells = useWellsStore()
+    this.wells.fetchWellDownloadLinks()
   },
   methods: {
     format_date (dateString) {

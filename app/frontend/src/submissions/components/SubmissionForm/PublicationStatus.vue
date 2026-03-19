@@ -31,7 +31,7 @@ limitations under the License.
         <b-form-group id="wellPublicationStatusCodeInput">
           <b-form-select
             v-model="wellPublicationStatusCodeInput"
-            :options="codes.well_publication_status_codes"
+            :options="codes?.well_publication_status_codes"
             value-field="well_publication_status_code"
             text-field="well_publication_status_code"
             :errors="errors['well_publication_status']"
@@ -47,7 +47,7 @@ limitations under the License.
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
@@ -81,8 +81,18 @@ export default {
       isInput: false
     }
   },
+  data () {
+    return {
+      submissionStore: null
+    }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   },
   methods: {
   },

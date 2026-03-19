@@ -68,7 +68,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       group-class="mt-1 mb-0"
                       select
                       :id="`decommissionMaterial${index}`"
-                      :options="codes.decommission_materials"
+                      :options="codes?.decommission_materials"
                       text-field="description"
                       value-field="code"
                       placeholder="Select material"
@@ -116,7 +116,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -152,13 +152,16 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       confirmRemoveModal: false,
       closureDescriptionSetData: [],
       rowIndexToRemove: null
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    codes () {
+      return this.submissionStore.codes
+    },
     computedClosureDescriptionSet () {
       return [...this.closureDescriptionSetData]
     }
@@ -224,6 +227,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     if (!this.closureDescriptionSet.length) {
       for (let i = 0; i < 10; i++) {
         this.addClosureRow()

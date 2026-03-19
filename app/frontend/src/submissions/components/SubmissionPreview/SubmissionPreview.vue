@@ -588,7 +588,12 @@ export default {
   ],
   data () {
     return {
+      submissionStore: null
     }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
+    this.fetchFiles()
   },
   methods: {
     fetchFiles () {
@@ -598,11 +603,11 @@ export default {
       this.upload_files.splice(index, 1)
     }
   },
-  created () {
-    this.fetchFiles()
-  },
   computed: {
-    ...mapGetters(['codes', 'userRoles']),
+    codes () {
+      return this.submissionStore.codes
+    },
+    ...mapGetters(['userRoles']),
     ...mapState('documentState', [
       'upload_files'
     ]),

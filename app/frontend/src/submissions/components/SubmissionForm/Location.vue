@@ -222,7 +222,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </fieldset>
 </template>
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import ApiService from '../../../common/services/ApiService'
@@ -275,12 +275,16 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       wellAddressHints: [],
       sameAsOwnerAddress: false,
       addressSuggestions: [],
       isLoadingSuggestions: false,
       TOOLTIP_TEXT: TOOLTIP_TEXT
     }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
     districtCodes () {
@@ -302,7 +306,10 @@ export default {
         })
       )
     },
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
+
   },
   watch: {
     sameAsOwnerAddress (val) {

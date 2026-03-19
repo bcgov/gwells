@@ -69,7 +69,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             aria-describedby="ownerProvinceInvalidFeedback">
           <b-form-select
               v-model="ownerProvinceInput"
-              :options="codes.province_codes"
+              :options="codes?.province_codes"
               value-field="province_state_code"
               text-field="description"
               :state="errors['owner_province_state'] ? false : null">
@@ -109,7 +109,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import inputFormatMixin from '@/common/inputFormatMixin.js'
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
@@ -160,12 +160,18 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       addressSuggestions: [],
       isLoadingSuggestions: false
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   },
   methods: {
     /**

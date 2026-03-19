@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="linerMaterial"
             label="Liner Material"
             select
-            :options="codes.liner_material_codes"
+            :options="codes?.liner_material_codes"
             v-model="linerMaterialInput"
             text-field="description"
             value-field="code"
@@ -148,7 +148,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -192,6 +192,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       linerPerforationsData: []
@@ -246,7 +247,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    codes () {
+      return this.submissionStore.codes
+    },
     computedLinerPerforations () {
       return [...this.linerPerforationsData]
     }
@@ -261,6 +264,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // When component created, add an initial row of lithology.
     if (!this.linerPerforations.length) {
       for (let i = 0; i < 3; i++) {
