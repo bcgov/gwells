@@ -104,8 +104,9 @@
 <script>
 import ApiService from '@/common/services/ApiService.js'
 import { mapGetters } from 'vuex'
+import { defineStore } from 'pinia'
 
-export default {
+export default defineStore({
   name: 'Surveys',
   data () {
     return {
@@ -231,7 +232,7 @@ export default {
     this.getSurveys()
     this.resetForm()
   }
-}
+})
 </script>
 
 <style>
