@@ -21,10 +21,7 @@ export default {
   },
 
   _setKeycloak (instance) {
-    Vue.prototype.$keycloak = instance
-    if (this._app?.config?.globalProperties) {
-      this._app.config.globalProperties.$keycloak = instance
-    }
+    app.config.globalProperties.$keycloak = instance
   },
 
   getInstance: function () {
@@ -33,7 +30,7 @@ export default {
      */
 
     return new Promise((resolve, reject) => {
-      if (!Vue.prototype.$keycloak) {
+      if (!app.config.globalProperties.$keycloak) {
         ApiService.query('keycloak', {})
           .then(response => {
             const {
@@ -61,11 +58,11 @@ export default {
           .catch(error => {
             console.error(error)
             this._setKeycloak({})
-            resolve(Vue.prototype.$keycloak)
+            resolve(app.config.globalProperties.$keycloak)
           })
       } else {
         // Keycloak has already been loaded, so just resolve the object.
-        resolve(Vue.prototype.$keycloak)
+        resolve(app.config.globalProperties.$keycloak)
       }
     })
   },

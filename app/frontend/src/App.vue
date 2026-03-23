@@ -11,7 +11,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { FETCH_CONFIG } from '@/common/store/config.js'
+import { useCommonStore } from '@/stores/common.js'
 import Header from './common/components/Header.vue'
 import Footer from './common/components/Footer.vue'
 import BackToTop from './common/components/BackToTop.vue'
@@ -22,19 +22,19 @@ export default {
     'gwells-footer': Footer,
     BackToTop
   },
+  data () {
+    return {
+      commonStore: useCommonStore()
+    }
+  },
   computed: {
     ...mapGetters([
       'error'
     ])
   },
-  methods: {
-    ...mapActions([
-      FETCH_CONFIG
-    ])
-  },
   created () {
     console.log('New deploy of Gwells')
-    this.FETCH_CONFIG()
+    this.commonStore.fetchConfig()
     window._paq = window._paq || []
     window._paq.push(['trackPageView']) // To track pageview -
   }

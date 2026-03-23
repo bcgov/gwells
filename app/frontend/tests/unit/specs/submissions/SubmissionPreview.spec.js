@@ -1,6 +1,6 @@
 import '../../mocks/mapbox-gl'
 import Vuex from 'vuex'
-import documentState from '@/common/store/documents.js'
+import useCommonStore from '@/stores/common.js'
 import SubmissionPreview from '@/submissions/components/SubmissionPreview/SubmissionPreview.vue'
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 
@@ -17,7 +17,7 @@ describe('filterBlankRows', () => {
     }
     store = new Vuex.Store({
       getters,
-      modules: { documentState }
+      modules: { useCommonStore }
     })
   })
   it('Removes blank rows and objects containing only empty strings for tables', () => {

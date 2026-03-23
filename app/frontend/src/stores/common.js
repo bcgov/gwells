@@ -11,12 +11,21 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-
-import ApiService from '@/common/services/ApiService.js'
 import { defineStore } from 'pinia'
+import ApiService from '@/common/services/ApiService.js'
 
-export default defineStore({
+export const SET_KEYCLOAK = 'SET_KEYCLOAK'
+export const SET_CONFIG = 'SET_CONFIG'
+
+export const useCommonStore = defineStore({
   state: () => ({
+    // was common/auth.js
+    keycloak: null,
+
+    // was common/config.js
+    config: null,
+
+    // was common/documents.js
     isPrivate: false,
     upload_files: [],
     files_uploading: false,
@@ -28,7 +37,103 @@ export default defineStore({
     shapefile_upload_success: false,
     shapefile: null
   }),
+
+  getters: {
+    // ---- Auth ----
+    keycloak (state) {
+      return state.keycloak
+    },
+    userRoles (state) {
+      if (state.keycloak && state.keycloak.authenticated) {
+        // map SSO roles to web app permissions
+        // IMPORTANT: One should be relying on SSO composite roles (which can be found alongside all of the
+        // granular roles on Common Hosted SSO) to assign the appropriate roles.
+        // e.g. We don't need to understand what a Statutory Authority is here, we should
+        // only be concerned if the right to edit/approve is set. It's up to keycloak to associate some
+        // group called Statutory Authority with the edit/approve roles.
+
+        // NOTE: keycloak.js comes with hasResourceRole(role, resource) for checking if the user has a
+        // particular role, but it doesn't seem to look at the correct JWT so using it will return false
+        // even if the user does have that role.
+        // Instead, we have to look at the "raw" list of roles contained inside the keycloak instance.
+        const clientRoles = state.keycloak.idTokenParsed['client_roles']
+        return {
+          registry: {
+            view: clientRoles.includes('registries_viewer'),
+            edit: clientRoles.includes('registries_edit'),
+            approve: clientRoles.includes('registries_approve'),
+            admin: clientRoles.includes('gwells_admin') || clientRoles.includes('admin') // Prod v. Dev
+          },
+          wells: {
+            view: clientRoles.includes('wells_viewer'),
+            edit: clientRoles.includes('wells_edit'),
+            approve: clientRoles.includes('wells_approve')
+          },
+          submissions: {
+            view: clientRoles.includes('wells_submission_viewer'),
+            edit: clientRoles.includes('wells_submission'),
+            approve: clientRoles.includes('wells_approve')
+          },
+          aquifers: {
+            edit: clientRoles.includes('aquifers_edit')
+          },
+          surveys: {
+            edit: clientRoles.includes('surveys_edit')
+          },
+          bulk: {
+            wellAquiferCorrelation: clientRoles.includes('bulk_well_aquifer_correlation_upload'),
+            wellDocuments: clientRoles.includes('bulk_well_documents_upload'),
+            aquiferDocuments: clientRoles.includes('bulk_aquifer_documents_upload'),
+            verticalAquiferExtents: clientRoles.includes('bulk_vertical_aquifer_extents_upload')
+          }
+        }
+      } else {
+        return {
+          registry: {},
+          wells: {},
+          submissions: {},
+          aquifers: {},
+          surveys: {},
+          bulk: {}
+        }
+      }
+    },
+    authenticated (state) {
+      return Boolean(state.keycloak && state.keycloak.authenticated)
+    },
+
+    // ---- Config ----
+    config (state) {
+      return state.config
+    },
+  },
+
   actions: {
+    // ---- Auth ----
+    [SET_KEYCLOAK] (payload) {
+      this.keycloak = payload
+    },
+
+    // ---- Config ----
+    fetchConfig (params) {
+      // We only fetch config if we don't have a copy cached
+      if (this.getters.config === null) {
+        return new Promise((resolve, reject) => {
+          ApiService.query('config', params)
+            .then((response) => {
+              this.SET_CONFIG(response.data)
+            })
+            .catch((error) => {
+              reject(error)
+            })
+        })
+      }
+    },
+    SET_CONFIG (payload) {
+      this.config = payload
+    },
+
+    // ---- Documents ----
     uploadShapefile (payload) {
       const file = this.state.shapefile
       let formData = new FormData()
@@ -185,3 +290,5 @@ export default defineStore({
     }
   }
 })
+
+export default useCommonStore

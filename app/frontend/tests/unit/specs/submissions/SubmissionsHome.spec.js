@@ -2,7 +2,7 @@ import '../../mocks/mapbox-gl'
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import VueRouter from 'vue-router'
-import documentState from '@/common/store/documents.js'
+import useCommonStore from '@/stores/common.js'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
 
 import { FETCH_CODES, FETCH_WELL_TAGS } from '@/submissions/store/actions.types.js'
@@ -30,7 +30,7 @@ describe('SubmissionsHome.vue', () => {
       state: {},
       actions,
       getters,
-      modules: { documentState }
+      modules: { useCommonStore }
     })
   })
 

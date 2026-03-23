@@ -17,9 +17,8 @@ import Vuex from 'vuex'
 import { merge } from 'lodash'
 
 import WellDetail from '@/wells/views/WellDetail.vue'
-import auth from '@/common/store/auth.js'
+import { useCommonStore } from '@/stores/common.js'
 import wellsStore from '@/wells/store/index.js'
-import documentState from '@/common/store/documents.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -32,7 +31,7 @@ describe('WellDetail.vue', () => {
   const component = (options, storeState = {}) => {
     const store = new Vuex.Store({
       getters,
-      modules: { auth, wellsStore, documentState }
+      modules: { useCommonStore, wellsStore }
     })
     store.replaceState(merge(store.state, storeState))
 

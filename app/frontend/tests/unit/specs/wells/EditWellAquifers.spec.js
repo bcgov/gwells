@@ -16,7 +16,7 @@ import Vuex from 'vuex'
 import { merge } from 'lodash'
 
 import EditWellAquifers from '@/wells/views/EditWellAquifers.vue'
-import auth from '@/common/store/auth.js'
+import { useCommonStore } from '@/stores/common.js'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -24,7 +24,7 @@ localVue.use(Vuex)
 describe('EditWellAquifers.vue', () => {
   const component = (options, storeState = {}) => {
     const store = new Vuex.Store({
-      modules: { auth }
+      modules: { useCommonStore }
     })
     store.replaceState(merge(store.state, storeState))
 

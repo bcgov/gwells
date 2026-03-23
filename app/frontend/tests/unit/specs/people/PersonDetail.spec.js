@@ -4,7 +4,7 @@ import VueMoment from 'vue-moment'
 import moxios from 'moxios'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
-import documentState from '@/common/store/documents.js'
+import { useCommonStore } from '@/stores/common.js'
 import { SET_DRILLER } from '@/registry/store/mutations.types'
 import { FETCH_DRILLER, FETCH_DRILLER_OPTIONS } from '@/registry/store/actions.types'
 import fakePerson from '../fakePerson'
@@ -15,7 +15,7 @@ localVue.use(VueMoment)
 
 const GET_DEFAULT_STORE_MODULES = () => {
   return {
-    documentState,
+    useCommonStore,
     auth: {
       getters: {
         user: () => null,
