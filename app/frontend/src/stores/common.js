@@ -14,9 +14,6 @@
 import { defineStore } from 'pinia'
 import ApiService from '@/common/services/ApiService.js'
 
-export const SET_KEYCLOAK = 'SET_KEYCLOAK'
-export const SET_CONFIG = 'SET_CONFIG'
-
 export const useCommonStore = defineStore({
   state: () => ({
     // was common/auth.js
@@ -40,9 +37,6 @@ export const useCommonStore = defineStore({
 
   getters: {
     // ---- Auth ----
-    keycloak (state) {
-      return state.keycloak
-    },
     userRoles (state) {
       if (state.keycloak && state.keycloak.authenticated) {
         // map SSO roles to web app permissions
@@ -110,7 +104,7 @@ export const useCommonStore = defineStore({
 
   actions: {
     // ---- Auth ----
-    [SET_KEYCLOAK] (payload) {
+    setKeycloak (payload) {
       this.keycloak = payload
     },
 
@@ -121,7 +115,7 @@ export const useCommonStore = defineStore({
         return new Promise((resolve, reject) => {
           ApiService.query('config', params)
             .then((response) => {
-              this.SET_CONFIG(response.data)
+              this.setConfig(response.data)
             })
             .catch((error) => {
               reject(error)
@@ -129,7 +123,7 @@ export const useCommonStore = defineStore({
         })
       }
     },
-    SET_CONFIG (payload) {
+    setConfig (payload) {
       this.config = payload
     },
 
