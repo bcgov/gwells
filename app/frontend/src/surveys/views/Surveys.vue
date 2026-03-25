@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-card v-if="userRoles && userRoles.surveys.edit" class="container">
+    <b-card v-if="commonStore.userRoles && commonStore.userRoles.surveys.edit" class="container">
       <fieldset>
         <legend id="surveyList">Current Surveys</legend>
         <b-table
@@ -103,10 +103,9 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
-import { defineStore } from 'pinia'
+import { useCommonStore } from '@/stores/common.js'
 
-export default defineStore({
+export default {
   name: 'Surveys',
   data () {
     return {
@@ -155,6 +154,7 @@ export default defineStore({
     }
   },
   computed: {
+    commonStore () { return useCommonStore() },
     // transform the pageMapping object into an array of objects of the format { value: x, text: y },
     // where x is a key of pageMapping.
     pageOptions () {
@@ -169,8 +169,7 @@ export default defineStore({
     },
     totalSurveys () {
       return this.currentSurveys.length
-    },
-    ...mapGetters(['userRoles'])
+    }
   },
   methods: {
     submitForm () {
@@ -232,7 +231,7 @@ export default defineStore({
     this.getSurveys()
     this.resetForm()
   }
-})
+}
 </script>
 
 <style>
