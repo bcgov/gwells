@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/store/common.js'
 import Auth from '@/common/components/Auth.vue'
 export default {
   components: {
@@ -67,9 +67,9 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['userRoles', 'config']),
+    commonStore () { return useCommonStore() },
     hasConfig () {
-      return Boolean(this.config)
+      return Boolean(this.commonStore.config)
     },
     getEnvironmentMessage () {
       /**
@@ -82,15 +82,15 @@ export default {
     show () {
       const adminMeta = document.head.querySelector('meta[name="show.admin"]')
       let bulk = false
-      if (this.userRoles.bulk) {
-        bulk = Object.values(this.userRoles.bulk).some(x => x)
+      if (this.commonStore.userRoles.bulk) {
+        bulk = Object.values(this.commonStore.userRoles.bulk).some(x => x)
       }
       return {
-        dataEntry: this.hasConfig && this.userRoles.submissions.edit === true,
+        dataEntry: this.hasConfig && this.commonStore.userRoles.submissions.edit === true,
         admin: adminMeta ? adminMeta.content === 'true' : false,
-        aquifers: this.hasConfig && this.config.enable_aquifers_search === true,
-        surveys: this.hasConfig && this.userRoles.surveys.edit === true,
-        qaqc: this.hasConfig && this.userRoles.submissions.edit === true,
+        aquifers: this.hasConfig && this.commonStore.config.enable_aquifers_search === true,
+        surveys: this.hasConfig && this.commonStore.userRoles.surveys.edit === true,
+        qaqc: this.hasConfig && this.commonStore.userRoles.submissions.edit === true,
         bulk
       }
     }
