@@ -14,8 +14,8 @@
         :value-field="valueField"
         :text-field="textField"
         :class="inputClass"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)"
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)"
         :disabled="disabled"
         :required="required"
         :multiple="multiple"
@@ -43,8 +43,8 @@
         :formatter="formatter"
         :lazy-formatter="lazyFormatter"
         @input="updateValue($event)"
-        @focus.native="$emit('focus', true)"
-        @blur.native="$emit('blur', true)"
+        @focus="$emit('focus', true)"
+        @blur="$emit('blur', true)"
         :placeholder="placeholder"/>
     <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
       <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
@@ -108,6 +108,7 @@ export default {
       required: false
     } // if changed to true, change contextual state temporarily (e.g. flash green on valid input)
   },
+  emits: ['focus', 'blur'],
   data () {
     return {
       updated: false

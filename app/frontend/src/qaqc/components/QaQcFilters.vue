@@ -23,7 +23,7 @@
         :placeholder="placeholder || 'Filter...'"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter.native="applyFilter()" />
+        @keyup.enter="applyFilter()" />
       <b-form-input
         v-else-if="type === 'number'"
         type="text"
@@ -33,7 +33,7 @@
         :placeholder="placeholder || 'Filter...'"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter.native="applyFilter()" />
+        @keyup.enter="applyFilter()" />
       <b-form-select
         v-else-if="type === 'select' || type === 'radio'"
         :id="`${id}Input`"
@@ -44,7 +44,7 @@
         :value-field="valueField"
         :text-field="textField"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter.native="applyFilter()" />
+        @keyup.enter="applyFilter()" />
       <b-col v-else-if="type === 'nullcheck'">
         <b-button
           variant="button"
@@ -70,7 +70,7 @@
         :placeholder="`${ type === 'range' ? 'From' : 'YYYY/MM/DD'}`"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter.native="applyFilter()" />
+        @keyup.enter="applyFilter()" />
     </b-col>
     <b-col sm="5" v-if="type === 'range' || type === 'dateRange'">
       <b-form-input
@@ -81,7 +81,7 @@
         :placeholder="`${ type === 'range' ? 'To' : 'YYYY/MM/DD'}`"
         :disabled="isActive"
         v-model="localValue[paramNames[1]]"
-        @keyup.enter.native="applyFilter()" />
+        @keyup.enter="applyFilter()" />
     </b-col>
     <b-col v-if="type !== 'nullcheck'" :sm="(type === 'text') ? 3 : 2">
       <b-button
@@ -124,6 +124,7 @@ export default {
     },
     placeholder: String
   },
+  emits: ['input'],
   data () {
     return {
       localValue: this.getLocalValue()
