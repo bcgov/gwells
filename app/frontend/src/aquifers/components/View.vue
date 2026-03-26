@@ -250,7 +250,7 @@
                 </li>
               </ul>
               <p>
-                <i v-if="licenceDetails.wells_updated">Well info last updated {{ licenceDetails.wells_updated.update_date__max|formatDate }}</i>
+                <i v-if="licenceDetails.wells_updated">Well info last updated {{ formatDate(licenceDetails.wells_updated.update_date__max) }}</i>
               </p>
               <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
               <aquifer-documents :files="aquiferFiles"
@@ -277,13 +277,17 @@
               <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
-                  <dt>Number of groundwater licences</dt>
-                  <dd class="m-0">{{ licenceDetails.licence_count }}</dd>
+                  <dl>
+                    <dt>Number of groundwater licences</dt>
+                    <dd class="m-0">{{ licenceDetails.licence_count }}</dd>
+                  </dl>
                 </li>
                 <li>
-                  <dt>Water withdrawal volume (annual)</dt>
-                  <dd class="m-0" v-if="waterWithdrawlVolume">{{ waterWithdrawlVolume | unitWaterVolume}}</dd>
-                  <dd class="m-0" v-else>No information available.</dd>
+                  <dl>
+                    <dt>Water withdrawal volume (annual)</dt>
+                    <dd class="m-0" v-if="waterWithdrawlVolume">{{ unitWaterVolume(waterWithdrawlVolume) }}</dd>
+                    <dd class="m-0" v-else>No information available.</dd>
+                  </dl>
                 </li>
               </ul>
               <div v-if="licenceDetails.lic_qty.length > 0">
@@ -320,7 +324,7 @@
                   </ul>
                 </template>
               </b-table>
-              <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ licenceDetails.licences_updated.update_date__max|formatDate }}</i></p>
+              <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ formatDate(licenceDetails.licences_updated.update_date__max) }}</i></p>
               <p>
                 Licensing information is obtained from
                 the <a href="https://catalogue.data.gov.bc.ca/dataset/water-rights-licences-public" target="_blank" class="d-print-url">
@@ -342,19 +346,21 @@
                 <div class="aquifer-information-list-divider"></div>
                 <li :key="section.id" v-for="section in aquifer_resource_sections">
                   <div class="advanced-mapping" v-if="section.code === 'M'">
-                    <dt class="text-right">Advanced mapping
-                      <i id="aquifer-advanced-mapping" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-                      <b-popover
-                        target="aquifer-advanced-mapping"
-                        triggers="hover focus"
-                        content="Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed."/>
-                    </dt>
-                    <dd class="m-0">
-                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
-                      </ul>
-                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
-                    </dd>
+                    <dl>
+                      <dt class="text-right">Advanced mapping
+                        <i id="aquifer-advanced-mapping" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+                        <b-popover
+                          target="aquifer-advanced-mapping"
+                          triggers="hover focus"
+                          content="Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed."/>
+                      </dt>
+                      <dd class="m-0">
+                        <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                          <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        </ul>
+                        <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                      </dd>
+                    </dl>
                   </div>
                   <div class="observational-wells" v-else-if="section.key === 'obs-wells'">
                     <dl>
@@ -513,13 +519,15 @@
                     </dl>
                   </div>
                   <div v-else>
-                    <dt class="text-right">{{ section.name }}</dt>
-                    <dd class="m-0">
-                      <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
-                        <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
-                      </ul>
-                      <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
-                    </dd>
+                    <dl>
+                      <dt class="text-right">{{ section.name }}</dt>
+                      <dd class="m-0">
+                        <ul class="p-0 m-0" :key="resource.id" v-for="resource in bySection(record.resources, section)">
+                          <li><a :href="sanitizeResourceUrl(resource.url)" target="_blank" rel="noopener noreferrer" class="d-print-url">{{ resource.name }}</a></li>
+                        </ul>
+                        <p class="m-0" v-if="!bySection(record.resources, section).length">No information available.</p>
+                      </dd>
+                    </dl>
                   </div>
                 </li>
               </ul>
@@ -748,6 +756,14 @@ export default {
     },
     aquiferNotations () {
       return this.getAquiferNotationsById(this.id, this.record.geom)
+    },
+    unitWaterVolume (volume) {
+      return Math.round(volume) + ' cubic metres'
+    },
+    formatDate (value) {
+      if (!value) return ''
+      value = new Date(value)
+      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   watch: {
@@ -763,16 +779,6 @@ export default {
     },
     licenceDetails (newLDetails, oldLDetails) {
       this.setWaterVolume(newLDetails)
-    }
-  },
-  filters: {
-    unitWaterVolume (volume) {
-      return Math.round(volume) + ' cubic metres'
-    },
-    formatDate: function (value) {
-      if (!value) return ''
-      value = new Date(value)
-      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   methods: {

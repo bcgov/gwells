@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                             label="description"
                             index="aquifer_id"
                             @search="onAquiferSearch">
-                            <template slot="no-options">
+                            <template v-slot:no-options>
                               Search for an aquifer by name or id number
                             </template>
                             <template v-slot:cell(option)="option">

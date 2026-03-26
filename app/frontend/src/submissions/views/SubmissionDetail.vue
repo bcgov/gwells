@@ -12,14 +12,14 @@
         </div>
       </div>
       <div v-else>
-        <div v-if="submission.create_date">Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
+        <div v-if="submission.create_date">Filed: {{ moment(submission.create_date, "MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-5">
           <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
             <div
               class="row record"
               v-if="showRow(key, value)">
-              <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt>
+              <dt class="col-12 col-md-6 col-xl-2">{{ readable(key) }}</dt>
               <dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
           </template>
@@ -36,12 +36,8 @@ import { mapGetters } from 'vuex'
 import { useSubmissionStore } from '@/stores/submission.js'
 import ApiService from '@/common/services/ApiService.js'
 
-// adds 'readable' filter
-import inputFormatMixin from '@/common/inputFormatMixin.js'
-
 export default {
   name: 'SubmissionDetail',
-  mixins: [inputFormatMixin],
   data () {
     return {
       loading: false,
@@ -77,7 +73,10 @@ export default {
   },
   computed: {
     codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    ...mapGetters(['userRoles'])
+    ...mapGetters(['userRoles']),
+    readable (val) {
+      return val ? val.charAt(0).toUpperCase() + val.split('_').join(' ').substring(1) : ''
+    }
   },
   methods: {
     fetchSubmission () {

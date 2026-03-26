@@ -181,7 +181,7 @@
                           :key="aquiferId"
                           @search="onAquiferSearch"
                           @input="onAquiferSelected(index)">
-                          <template slot="no-options">
+                          <template v-slot:no-options>
                             Search for an aquifer by name or id number
                           </template>
                           <template v-slot:cell(option)="option">
