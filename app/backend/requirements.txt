@@ -31,5 +31,5 @@ gunicorn==19.9.0
 gevent==23.7.0
 django-settings-export==1.2.1
 lxml==4.9.4
-urllib3==1.26.20
+urllib3==2.6.3
 pyjwt>=2.0,<=2.4.0
