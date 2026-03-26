@@ -216,8 +216,51 @@ export default {
     },
     isReset () {
       return (!this.isBusy && this.results === null)
+    }
+  },
+  methods: {
+    setLimit (limit) {
+      this.wells.searchLimit = limit
+      this.$emit('limit-changed', limit)
+
+      this.wells.searchWells({ trigger: FILTER_TRIGGER })
     },
-    streetAddressFormat (row) {
+    changePage (page) {
+      const offset = this.limit * (page - 1)
+      this.wells.searchOffset = offset
+      this.$emit('page-changed', page)
+      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+    },
+    sortResults ({ param, desc }) {
+      const sort = `${desc ? '-' : ''}${param}`
+      this.wells.searchOrdering = sort
+      this.$emit('sort-changed', sort)
+      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+    },
+    applyFilter ({ id }, values) {
+      this.filterParams[id] = values
+      const filterGroup = { ...this.searchQueryParams }
+      this.wells.searchResultFilters = filterGroup
+      this.$emit('filter-changed', filterGroup)
+      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+    },
+    initFilterParams () {
+      const filterParams = { ...this.emptyFilterParams }
+
+      Object.entries(this.resultFilters).forEach(([param, value]) => {
+        this.columns.forEach(column => {
+          if (column.params.includes(param)) {
+            filterParams[column.id] = { [param]: value }
+          }
+        })
+      })
+
+      this.filterParams = filterParams
+    },
+    searchResultsRowClicked (data) {
+      this.$emit('rowClicked', data)
+    },
+    formatStreetAddress (row) {
       if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
         return `${row.street_address}, ${row.city}`
       } else {
@@ -239,7 +282,7 @@ export default {
 
       return value
     },
-    defaultFormat: (value) => {
+    defaultFormat (value) {
       if (value === null) {
         return ''
       }

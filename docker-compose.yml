@@ -117,7 +117,7 @@ services:
       DEBUG: "True"
       VITE_FRONTEND_TILE_URL: "http://localhost:7800"
       VITE_AXIOS_BASE_URL: "http://localhost:8000/gwells/api/v2/"
-    command: /bin/bash -c "cd /frontend && npm install && npm run dev"
+    command: /bin/bash -c "cd /frontend && npm install --legacy-peer-deps && npm run dev"
     ports:
       - "8080:8080"
     volumes:
