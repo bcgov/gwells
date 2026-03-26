@@ -39,7 +39,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="obsWellStatus"
           label="Observation Well Status"
           select
-          :options="codes.observation_well_status"
+          :options="codes?.observation_well_status"
           :errors="errors['observation_well_status']"
           :loaded="fieldsLoaded['observation_well_status']"
           text-field="obs_well_status_code"
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -98,11 +98,17 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       status: 'False'
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

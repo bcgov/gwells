@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="screenIntake"
           label="Intake"
           select
-          :options="codes.screen_intake_methods"
+          :options="codes?.screen_intake_methods"
           text-field="description"
           value-field="screen_intake_code"
           placeholder="Select intake"
@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="screenType"
           label="Screen Type"
           select
-          :options="codes.screen_types"
+          :options="codes?.screen_types"
           text-field="description"
           value-field="screen_type_code"
           placeholder="Select type"
@@ -54,7 +54,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="screenMaterial"
           label="Screen Material"
           select
-          :options="codes.screen_materials"
+          :options="codes?.screen_materials"
           text-field="description"
           value-field="screen_material_code"
           placeholder="Select material"
@@ -73,7 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="screenOpening"
           label="Screen Opening"
           select
-          :options="codes.screen_openings"
+          :options="codes?.screen_openings"
           text-field="description"
           value-field="screen_opening_code"
           placeholder="Select opening"
@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="screenBottom"
           label="Screen Bottom"
           select
-          :options="codes.screen_bottoms"
+          :options="codes?.screen_bottoms"
           text-field="description"
           value-field="screen_bottom_code"
           placeholder="Select bottom"
@@ -124,8 +124,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </th>
         </thead>
         <tbody>
-          <template v-for="(row, index) in screensData">
-            <tr :key="`screen row ${index}`" :id="`screenRow${index}`">
+          <template v-for="(row, index) in screensData" :key="`screen row ${index}`">
+            <tr :id="`screenRow${index}`">
               <td class="input-width-small py-0">
                 <form-input
                   group-class="my-1"
@@ -166,7 +166,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     aria-label="Screen Assembly Type"
                     v-model="screensData[index].assembly_type"
                     select
-                    :options="codes.screen_assemblies"
+                    :options="codes?.screen_assemblies"
                     text-field="description"
                     value-field="screen_assembly_type_code"
                     placeholder="Select type"
@@ -217,7 +217,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -263,14 +263,20 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       screenSlotSizeSuggestions: ['10', '20', '40', '80'],
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       screensData: []
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    ...mapGetters(['codes']),
+    codes () {
+      return this.submissionStore?.codes
+    },
     computedScreens () {
       return [...this.screensData]
     }

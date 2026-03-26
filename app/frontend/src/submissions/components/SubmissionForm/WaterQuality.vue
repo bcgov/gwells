@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="waterCharacteristicsInput"
           label="Characteristics"
           select
-          :options="codes.water_quality_characteristics"
+          :options="codes?.water_quality_characteristics"
           value-field="code"
           text-field="description"
           hint="Select one or more characteristics. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
@@ -46,7 +46,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="waterQualityColour"
             label="Water Quality Colour"
             select
-            :options="codes.water_quality_colours"
+            :options="codes?.water_quality_colours"
             text-field="description"
             value-field="code"
             placeholder="Select colour"
@@ -79,7 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -126,10 +126,17 @@ export default {
     emsIDInput: 'emsID'
   },
   data () {
-    return {}
+    return {
+      submissionStore: null
+    }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

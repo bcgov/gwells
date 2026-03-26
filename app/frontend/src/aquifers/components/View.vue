@@ -532,9 +532,10 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash-es'
 import * as Sentry from '@sentry/browser'
+import { useAquiferStore } from '@/stores/aquifers.js'
 
 import ApiService from '@/common/services/ApiService.js'
 
@@ -617,12 +618,11 @@ export default {
   },
   computed: {
     ...mapGetters(['userRoles']),
-    ...mapGetters('aquiferStore/view', {
-      uncorrelatedWells: 'wellsWithoutAquiferCorrelation'
-    }),
-    ...mapGetters('aquiferStore/notations', [
-      'getAquiferNotationsById'
-    ]),
+    aquiferStore () {
+      return useAquiferStore()
+    },
+    uncorrelatedWells () { return this.aquiferStore.wellsWithoutAquiferCorrelation },
+    getAquiferNotationsById () { return this.aquiferStore.getAquiferNotationsById },
     ...mapState('documentState', [
       'files_uploading',
       'file_upload_error',
@@ -633,14 +633,10 @@ export default {
       'shapefile_upload_message',
       'shapefile_upload_success'
     ]),
-    ...mapState('aquiferStore/view', [
-      'record',
-      'aquiferFiles',
-      'aquiferWells'
-    ]),
-    ...mapState('aquiferStore/view', {
-      storedId: 'id'
-    }),
+    record () { return this.aquiferStore.record },
+    aquiferFiles () { return this.aquiferStore.aquiferFiles },
+    aquiferWells () { return this.aquiferStore.aquiferWells },
+    storedId () { return this.aquiferStore.storedId },
     id () { return parseInt(this.$route.params.id) || null },
     editMode () { return this.edit },
     viewMode () { return !this.edit },
@@ -788,14 +784,10 @@ export default {
       'clearUploadShapeFileMessage',
       'clearUploadFilesMessage'
     ]),
-    ...mapActions('aquiferStore/view', [
-      'resetAquiferData'
-    ]),
-    ...mapMutations('aquiferStore/view', [
-      'setAquiferRecord',
-      'setAquiferFiles',
-      'setAquiferWells'
-    ]),
+    resetAquiferData () { this.aquiferStore.resetAquiferData() },
+    setAquiferRecord (payload) { this.aquiferStore.setAquiferRecord(payload) },
+    setAquiferFiles (payload) { this.aquiferStore.setAquiferFiles(payload) },
+    setAquiferWells (payload) { this.aquiferStore.setAquiferWells(payload) },
     loadForm () {
       this.loadingForm = true
       ApiService.query(`aquifers/${this.id}/edit`)

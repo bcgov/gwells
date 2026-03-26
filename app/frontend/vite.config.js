@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue2";
+import vue from "@vitejs/plugin-vue";
 import path from "path";
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
@@ -18,7 +18,16 @@ export default defineConfig(({ mode }) => ({
           'process.env.VITE_FRONTEND_TILE_URL': JSON.stringify('___CADDY_TEMPLATE_START___ env "VITE_FRONTEND_TILE_URL" ___CADDY_TEMPLATE_END___'),
         }
       : {},
-  plugins: [vue(),
+  plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          compatConfig: {
+            MODE: 2 // this gets up in vue2 mode
+          }
+        }
+      }
+    }),
     NodeGlobalsPolyfillPlugin({
       process: true,
       buffer: true,
@@ -73,6 +82,7 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
+      "vue": "@vue/compat",
       util: "rollup-plugin-node-polyfills/polyfills/util",
       buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
       events: "rollup-plugin-node-polyfills/polyfills/events",

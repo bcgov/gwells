@@ -38,7 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <form-input
             select
             v-model="wellStatusCodeInput"
-            :options="codes.well_status_codes"
+            :options="codes?.well_status_codes"
             value-field="well_status_code"
             text-field="description"
             label="Well Status"
@@ -56,7 +56,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               aria-describedby="wellClassInvalidFeedback">
             <b-form-select
                 v-model="wellClassInput"
-                :options="codes.well_classes"
+                :options="codes?.well_classes"
                 value-field="well_class_code"
                 text-field="description"
                 :state="errors['well_class'] ? false : null">
@@ -227,6 +227,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import { useSubmissionStore } from '@/stores/submission'
 import { mapGetters } from 'vuex'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -284,9 +285,13 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       wellTagOptions: [],
       MAX_RESULTS: 50
     }
+  },
+  created () {
+    this.submissionStore = useSubmissionStore()
   },
   computed: {
     subclasses () {
@@ -318,7 +323,10 @@ export default {
       // WATER-1589, we disable the subclass dropdown for well classes of WATR_SPPLY and CLS_LP_GEO
       return this.subclasses && (this.wellClass === 'WATR_SPPLY' || this.wellClass === 'CLS_LP_GEO')
     },
-    ...mapGetters(['codes', 'userRoles', 'wells'])
+    codes () {
+      return this.submissionStore.codes
+    },
+    ...mapGetters(['userRoles', 'wells'])
   },
   methods: {
     match (item, search) {

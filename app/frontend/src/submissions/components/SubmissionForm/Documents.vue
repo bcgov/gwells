@@ -159,6 +159,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import { useSubmissionStore } from '@/stores/submission'
 import { mapGetters, mapState, mapMutations } from 'vuex'
 import { omit } from 'lodash'
 
@@ -212,6 +213,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       status: 'False',
       confirmRemoveModal: false,
       rowIndexToRemove: null,
@@ -219,8 +221,14 @@ export default {
       WELL_TAGS: WELL_TAGS
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    ...mapGetters(['codes', 'userRoles']),
+    codes () {
+      return this.submissionStore.codes
+    },
+    ...mapGetters(['userRoles']),
     ...mapState('documentState', [
       'isPrivate',
       'upload_files'

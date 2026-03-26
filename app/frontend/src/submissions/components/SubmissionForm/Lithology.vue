@@ -62,8 +62,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </tr>
         </thead>
         <tbody>
-          <template v-for="(row, index) in lithologyData">
-            <tr :key="`lithology row ${index}`" :id="`lithologyRow${index}`">
+          <template v-for="(row, index) in lithologyData" :key="`lithology row ${index}`">
+            <tr :id="`lithologyRow${index}`">
               <td class="input-width-small">
                 <form-input
                   :id="`lithologyDepthFrom${index}`"
@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="`lithologyDescriptor${index}`"
                     aria-label="Descriptor"
                     select
-                    :options="codes.lithology_descriptors"
+                    :options="codes?.lithology_descriptors"
                     text-field="description"
                     value-field="lithology_description_code"
                     placeholder="Select descriptor"
@@ -114,7 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="`lithologyMoisture${index}`"
                     aria-label="Moisture"
                     select
-                    :options="codes.lithology_moisture_codes"
+                    :options="codes?.lithology_moisture_codes"
                     text-field="description"
                     value-field="lithology_moisture_code"
                     placeholder="Select moisture"
@@ -126,7 +126,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="`lithologyColour${index}`"
                     aria-label="Colour"
                     select
-                    :options="codes.lithology_colours"
+                    :options="codes?.lithology_colours"
                     text-field="description"
                     placeholder="Select colour"
                     value-field="lithology_colour_code"
@@ -138,7 +138,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="`lithologyHardness${index}`"
                     aria-label="Hardness"
                     select
-                    :options="codes.lithology_hardness_codes"
+                    :options="codes?.lithology_hardness_codes"
                     text-field="description"
                     placeholder="Select hardness"
                     value-field="lithology_hardness_code"
@@ -189,6 +189,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import { useSubmissionStore } from '@/stores/submission'
 import { mapGetters } from 'vuex'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -230,6 +231,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       lithSoils: [],
@@ -237,6 +239,9 @@ export default {
     }
   },
   computed: {
+    codes () {
+      return this.submissionStore?.codes
+    },
     ...mapGetters(['codes']),
     computedLithology () {
       return [...this.lithologyData]
@@ -295,6 +300,7 @@ export default {
     },
     lithologyIsEmpty (lithology) {
       return Object.values(lithology).every((x) => !x)
+    this.submissionStore = useSubmissionStore()
     }
   },
   created () {

@@ -58,7 +58,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 
 export default {
   props: {
@@ -81,6 +81,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       submissionsPerPage: 5,
       submissionsPage: 1,
       submissionsBusy: false,
@@ -107,13 +108,18 @@ export default {
       ]
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
     filteredSubmissions () {
       return this.submissionsHistory.filter((i) => {
         return i.well_activity_type !== 'STAFF_EDIT'
       })
     },
-    ...mapGetters(['codes'])
+    codes () {
+      return this.submissionStore.codes
+    }
   }
 }
 </script>

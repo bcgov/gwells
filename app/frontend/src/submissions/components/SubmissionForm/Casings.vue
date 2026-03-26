@@ -75,7 +75,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :aria-describedby="`casingCodeInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_code"
-                    :options="codes.casing_codes"
+                    :options="codes?.casing_codes"
                     value-field="code"
                     text-field="description"
                     :state="getCasingError(index).casing_code ? false : null">
@@ -97,7 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :aria-describedby="`casingMaterialInvalidFeedback${index}`">
                 <b-form-select
                     v-model="casing.casing_material"
-                    :options="codes.casing_materials"
+                    :options="codes?.casing_materials"
                     value-field="code"
                     text-field="description"
                     :state="getCasingError(index).casing_material ? false : null">
@@ -136,7 +136,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   v-model="casing.drive_shoe_status"
                   value-field="drive_shoe_code"
                   text-field="drive_shoe_code"
-                  :options="codes.drive_shoe_codes"
+                  :options="codes?.drive_shoe_codes"
                   :errors="errors['drive_shoe_status']"
                   :loaded="fieldsLoaded['drive_shoe_status']">
                   <template slot="first">
@@ -173,7 +173,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -211,6 +211,7 @@ export default {
   },
   data () {
     return {
+      submissionStore: null,
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       casingsData: []
@@ -276,7 +277,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes']),
+    codes () {
+      return this.submissionStore.codes
+    },
     computedCasings () {
       return [...this.casingsData]
     }
@@ -291,6 +294,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // When component created, add an initial row of casings.
     if (!this.casings.length) {
       for (let i = 0; i < 3; i++) {

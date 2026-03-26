@@ -158,11 +158,13 @@ import { mapGetters } from 'vuex'
 import smoothScroll from 'smoothscroll'
 
 import ApiService from '@/common/services/ApiService.js'
+import { useRegistryStore } from '@/stores/registry.js'
 
 export default {
   name: 'PersonNotes',
   data () {
     return {
+      registryStore: useRegistryStore(),
       noteInput: '',
       submitLoading: false,
       submitSuccess: false,
@@ -177,6 +179,7 @@ export default {
     }
   },
   computed: {
+    currentDriller () { return this.registryStore.currentDriller },
     notes () {
       if (this.currentDriller && this.currentDriller.notes) {
         return this.currentDriller.notes
@@ -188,11 +191,7 @@ export default {
     ...mapGetters([
       'userRoles',
       'keycloak'
-    ]),
-    ...mapGetters('registriesStore', [
-      'currentDriller'
     ])
-
   },
   methods: {
     noteSubmit () {
@@ -289,7 +288,7 @@ export default {
       // focus the "submit" button in the confirm save note popup
       this.$refs.confirmSubmitConfirmBtn.focus()
     }
-  }
+}
 }
 </script>
 

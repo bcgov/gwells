@@ -15,9 +15,8 @@
         <div v-if="submission.create_date">Filed: {{submission.create_date | moment("MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-5">
-          <template v-for="(value, key, i) in submission">
+          <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
             <div
-              :key="`submission data row ${i} value`"
               class="row record"
               v-if="showRow(key, value)">
               <dt class="col-12 col-md-6 col-xl-2">{{key | readable}}</dt>
@@ -34,6 +33,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { useSubmissionStore } from '@/stores/submission.js'
 import ApiService from '@/common/services/ApiService.js'
 
 // adds 'readable' filter
@@ -45,6 +45,7 @@ export default {
   data () {
     return {
       loading: false,
+      submissionStore: null,
       breadcrumbs: [
         {
           text: `Well Search`,
@@ -75,7 +76,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['codes', 'userRoles'])
+    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
+    ...mapGetters(['userRoles'])
   },
   methods: {
     fetchSubmission () {
@@ -103,6 +105,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     this.fetchSubmission()
   }
 }
