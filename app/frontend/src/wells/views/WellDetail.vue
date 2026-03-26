@@ -55,49 +55,49 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </div>
           </legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Tag Number:</span> {{ well.well_tag_number }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Status:</span> {{ well.well_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Tag Number:</span> {{ well_tag_number }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Status:</span> {{ well_status }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Number: </span>
               <a
-                v-if="well.observation_well_number"
+                v-if="observation_well_number"
                 id="obs_well_number"
-                :href="`https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${well.observation_well_number}`"
+                :href="`https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${observation_well_number}`"
                 target="_blank"
-              >{{ well.observation_well_number }}</a>
+              >{{ observation_well_number }}</a>
             </b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ well.identification_plate_number }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Class:</span> {{ well.well_class }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Status:</span> {{ well.observation_well_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ identification_plate_number }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Class:</span> {{ well_class }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Observation Well Status:</span> {{ observation_well_status }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ well.owner_full_name }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well.well_subclass }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ well.ems }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Owner Name:</span> {{ owner_full_name }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Subclass:</span> {{ well_subclass }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Environmental Monitoring System (EMS) ID:</span> {{ ems }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ well.intended_water_use }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Intended Water Use:</span> {{ intended_water_use }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Aquifer Number: </span>
-              <router-link :to="{ name: 'aquifers-view', params: { id: well.aquifer } }">
-                {{ well.aquifer }}
+              <router-link :to="{ name: 'aquifers-view', params: { id: aquifer } }">
+                {{ aquifer }}
               </router-link>
             </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ well.alternative_specs_submitted }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Alternative specs submitted:</span> {{ alternative_specs_submitted }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ nullBooleanToYesNo(well.artesian_conditions) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Condition:</span> {{ booleanToYesNo(artesian_conditions) }}</b-col>
             <b-col cols="12" md="4"><span class="font-weight-bold">Technical Report:</span>
               <a
-                v-if="well.technical_report"
+                v-if="technical_report"
                 id="technical_report"
                 href='https://foirequestform.gov.bc.ca/?general='
                 target="_blank"
                 rel="noopener noreferrer"
               > Report Available</a>
-              <span v-if="!well.technical_report"> N/A</span>
+              <span v-if="!technical_report"> N/A</span>
             </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ nullBooleanToYesNo(well.drinking_water_protection_area_ind) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ booleanToYesNo(drinking_water_protection_area_ind) }}</b-col>
           </b-row>
         </fieldset>
 
@@ -134,10 +134,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
           <legend>Licensing Information</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ wellLicence.status }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number{{ wellLicence.number.length > 1 ? "s" : "" }}:</span>&nbsp;
-              <a v-for="(licence, index) in wellLicence.number" :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${licence}`" target="_blank">
-                {{ licence}}{{ index + 1 < wellLicence.number.length ? ", " : ""}}
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ recordLicence?.status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Licence Number{{ recordLicence.number.length > 1 ? "s" : "" }}:</span>&nbsp;
+              <a v-for="(licence, index) in recordLicence.number" :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${licence}`" target="_blank">
+                {{ licence}}{{ index + 1 < recordLicence.number.length ? ", " : ""}}
               </a>
             </b-col>
             <b-col cols="12" md="4"></b-col>
@@ -150,10 +150,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" md="6" xl="5">
               <b-row>
-                <b-col><span class="font-weight-bold">Street Address:</span> {{ well.street_address }}</b-col>
+                <b-col><span class="font-weight-bold">Street Address:</span> {{ street_address }}</b-col>
               </b-row>
               <b-row>
-                <b-col><span class="font-weight-bold">Town/City:</span> {{ well.city }}</b-col>
+                <b-col><span class="font-weight-bold">Town/City:</span> {{ city }}</b-col>
               </b-row>
               <b-row>
                 <b-col>
@@ -163,57 +163,57 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       <tbody>
                         <tr>
                           <th class="w-50">Lot</th>
-                          <td>{{ well.legal_lot }}</td>
+                          <td>{{ legal_lot }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Plan</th>
-                          <td>{{ well.legal_plan }}</td>
+                          <td>{{ legal_plan }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">District Lot</th>
-                          <td>{{ well.legal_district_lot }}</td>
+                          <td>{{ legal_district_lot }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Block</th>
-                          <td>{{ well.legal_block }}</td>
+                          <td>{{ legal_block }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Section</th>
-                          <td>{{ well.legal_section }}</td>
+                          <td>{{ legal_section }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Township</th>
-                          <td>{{ well.legal_township }}</td>
+                          <td>{{ legal_township }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Range</th>
-                          <td>{{ well.legal_range }}</td>
+                          <td>{{ legal_range }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Land District</th>
-                          <td>{{ well.land_district }}</td>
+                          <td>{{ land_district }}</td>
                         </tr>
                         <tr>
                           <th class="w-50">Property Identification Description (PID)</th>
-                          <td>{{ well.legal_pid }}</td>
+                          <td>{{ legal_pid }}</td>
                         </tr>
                       </tbody>
                     </table>
                     <div>
-                      <span class="font-weight-bold">Description of Well Location:</span> {{ well.well_location_description }}
+                      <span class="font-weight-bold">Description of Well Location:</span> {{ well_location_description }}
                     </div>
                   </div>
                 </b-col>
               </b-row>
             </b-col>
             <b-col cols="12" md="6" xl="6" offset-xl="1">
-              <single-well-map :latitude="well.latitude" :longitude="well.longitude"/>
+              <single-well-map :latitude="latitude" :longitude="longitude"/>
               <div class="font-weight-bold mt-5">
                 Geographic Coordinates - North American Datum of 1983 (NAD 83)
               </div>
               <b-row>
-                <b-col cols="12" md="4"><span class="font-weight-bold">Latitude:</span> {{well.latitude}}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Longitude:</span> {{well.longitude}}</b-col>
+                <b-col cols="12" md="4"><span class="font-weight-bold">Latitude:</span> {{latitude}}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Longitude:</span> {{longitude}}</b-col>
               </b-row>
               <b-row>
                 <b-col cols="12" md="4"><span class="font-weight-bold">UTM Easting:</span> {{ UTM.easting ? Math.round(UTM.easting) : ''}}</b-col>
@@ -221,7 +221,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-row>
               <b-row>
                 <b-col cols="12" md="4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Coordinate Acquisition Code:</span> {{well.coordinate_acquisition_code}}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Coordinate Acquisition Code:</span> {{coordinate_acquisition_code}}</b-col>
               </b-row>
             </b-col>
           </b-row>
@@ -235,7 +235,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             striped
             small
             bordered
-            :items="well.submission_work_dates"
+            :items="submission_work_dates"
             responsive
             show-empty
             empty-text="There has been no activity related to this well."
@@ -245,11 +245,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           >
             <template v-slot:cell(create_date)="data">
               <div>
-                {{ moment(data.item.create_date, "MMMM Do YYYY [at] LT") }}
+                {{ formatDate(data.item.create_date, "MMMM Do YYYY [at] LT") }}
               </div>
             </template>
           </b-table>
-          <b-pagination v-if="!!well.submission_work_dates && well.submission_work_dates.length > submissionsPerPage" size="md" :total-rows="well.submission_work_dates.length" v-model="submissionsPage" :per-page="submissionsPerPage" />
+          <b-pagination v-if="!!submission_work_dates && submission_work_dates.length > submissionsPerPage" size="md" :total-rows="submission_work_dates.length" v-model="submissionsPage" :per-page="submissionsPerPage" />
         </fieldset>
 
         <fieldset id="well_work_dates_fieldset" class="my-3 detail-section">
@@ -268,32 +268,32 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_completion_data_fieldset" class="my-3 detail-section">
           <legend>Well Completion Data</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ excludeZeroDecimals(well.total_depth_drilled) }} {{ well.total_depth_drilled ? 'ft bgl':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ excludeZeroDecimals(well.well_yield) }} {{ well.well_yield ? 'USgpm':'' }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ excludeZeroDecimals(well.static_water_level) }} {{ well.static_water_level ? 'feet btoc': ''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ excludeZeroDecimals(total_depth_drilled) }} {{ total_depth_drilled ? 'ft bgl':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ excludeZeroDecimals(well_yield) }} {{ well_yield ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ excludeZeroDecimals(static_water_level) }} {{ static_water_level ? 'feet btoc': ''}}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ excludeZeroDecimals(well.finished_well_depth) }} {{ well.finished_well_depth ? 'ft bgl':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well.well_cap_type }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ excludeZeroDecimals(well.artesian_flow) }} {{ well.artesian_flow ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Finished Well Depth:</span> {{ excludeZeroDecimals(finished_well_depth) }} {{ finished_well_depth ? 'ft bgl':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Cap:</span> {{ well_cap_type }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Flow:</span> {{ excludeZeroDecimals(artesian_flow) }} {{ artesian_flow ? 'USgpm':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ excludeZeroDecimals(well.final_casing_stick_up) }} {{ well.final_casing_stick_up ? 'inches':''}}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well.well_disinfected_status }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure (head):</span> {{ excludeZeroDecimals(well.artesian_pressure_head) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ excludeZeroDecimals(final_casing_stick_up) }} {{ final_casing_stick_up ? 'inches':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Well Disinfected Status:</span> {{ well_disinfected_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure (head):</span> {{ excludeZeroDecimals(artesian_pressure_head) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ excludeZeroDecimals(well.bedrock_depth) }} {{ well.bedrock_depth ? 'feet bgl':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ excludeZeroDecimals(bedrock_depth) }} {{ bedrock_depth ? 'feet bgl':''}}</b-col>
             <b-col cols="12" md="4">
-              <span class="font-weight-bold">Drilling Method<span v-if="well.drilling_methods && well.drilling_methods.length > 1">s</span>:</span>
-              <span v-for="(method, index) in well.drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+              <span class="font-weight-bold">Drilling Method<span v-if="drilling_methods && drilling_methods.length > 1">s</span>:</span>
+              <span v-for="(method, index) in drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
             </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure (PSI):</span> {{ excludeZeroDecimals(well.artesian_pressure) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Artesian Pressure (PSI):</span> {{ excludeZeroDecimals(artesian_pressure) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ excludeZeroDecimals(well.ground_elevation) }} {{ well.ground_elevation ? 'feet':'' }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ well.ground_elevation_method }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well.well_orientation_status }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Ground elevation:</span> {{ excludeZeroDecimals(ground_elevation) }} {{ ground_elevation ? 'feet':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Method of determining elevation:</span> {{ ground_elevation_method }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Orientation of Well:</span> {{ well_orientation_status }}</b-col>
           </b-row>
         </fieldset>
 
@@ -303,7 +303,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             striped
             small
             bordered
-            :items="well.lithologydescription_set"
+            :items="lithologydescription_set"
             show-empty
             :fields="lithology_fields">
             <template v-slot:cell(start)="data">{{ excludeZeroDecimals(data.item.start) }}</template>
@@ -319,7 +319,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 striped
                 small
                 bordered
-                :items="well.casing_set"
+                :items="casing_set"
                 :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe']"
                 show-empty>
 
@@ -341,18 +341,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="surface_seal_fieldset" class="my-3 detail-section">
           <legend>Surface Seal and Backfill Details</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', well.surface_seal_material) }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', well.backfill_above_surface_seal) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', surface_seal_material) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', backfill_above_surface_seal) }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', well.surface_seal_method) }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Depth:</span> {{ excludeZeroDecimals(well.backfill_depth) }} {{ well.backfill_depth ? 'feet':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', surface_seal_method) }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Depth:</span> {{ excludeZeroDecimals(backfill_depth) }} {{ backfill_depth ? 'feet':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ excludeZeroDecimals(well.surface_seal_thickness) }} {{ well.surface_seal_thickness ? 'inches':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ excludeZeroDecimals(surface_seal_thickness) }} {{ surface_seal_thickness ? 'inches':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ excludeZeroDecimals(well.surface_seal_depth) }} {{ well.surface_seal_depth ? 'feet':''}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ excludeZeroDecimals(surface_seal_depth) }} {{ surface_seal_depth ? 'feet':''}}</b-col>
           </b-row>
         </fieldset>
 
@@ -361,15 +361,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" md="6">
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Material:</span> {{ codeToDescription('liner_materials', well.liner_material) }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Material:</span> {{ codeToDescription('liner_materials', liner_material) }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Diameter:</span> {{ excludeZeroDecimals(well.liner_diameter) }} {{ well.liner_diameter ? 'inches':'' }}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ excludeZeroDecimals(well.liner_thickness) }} {{ well.liner_thickness ? 'inches':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Diameter:</span> {{ excludeZeroDecimals(liner_diameter) }} {{ liner_diameter ? 'inches':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner Thickness:</span> {{ excludeZeroDecimals(liner_thickness) }} {{ liner_thickness ? 'inches':'' }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner from:</span> {{ excludeZeroDecimals(well.liner_from) }} {{ well.liner_from ? '(ft bgl)':'' }}</b-col>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Liner to:</span> {{ excludeZeroDecimals(well.liner_to) }} {{ well.liner_to ? '(ft bgl)':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner from:</span> {{ excludeZeroDecimals(liner_from) }} {{ liner_from ? '(ft bgl)':'' }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Liner to:</span> {{ excludeZeroDecimals(liner_to) }} {{ liner_to ? '(ft bgl)':'' }}</b-col>
               </b-row>
             </b-col>
             <b-col cols="12" md="6">
@@ -378,7 +378,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   striped
                   small
                   bordered
-                  :items="well.linerperforation_set"
+                  :items="linerperforation_set"
                   :fields="['from', 'to']"
                   show-empty
               >
@@ -396,19 +396,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" md="4">
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', well.screen_intake_method) }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', screen_intake_method) }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Type:</span> {{ codeToDescription('screen_types', well.screen_type) }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Type:</span> {{ codeToDescription('screen_types', screen_type) }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Material:</span> {{ codeToDescription('screen_materials', well.screen_material) }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Material:</span> {{ codeToDescription('screen_materials', screen_material) }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Opening:</span> {{ codeToDescription('screen_openings', well.screen_opening) }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Opening:</span> {{ codeToDescription('screen_openings', screen_opening) }}</b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" md="6"><span class="font-weight-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', well.screen_bottom) }}</b-col>
+                <b-col cols="12" md="6"><span class="font-weight-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', screen_bottom) }}</b-col>
               </b-row>
             </b-col>
             <b-col cols="12" md="8">
@@ -417,7 +417,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   striped
                   small
                   bordered
-                  :items="well.screen_set"
+                  :items="screen_set"
                   :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
                   show-empty
                   >
@@ -438,9 +438,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-row>
             <b-col cols="12" md="4">
               <span class="font-weight-bold">Developed by:</span>
-              <span v-for="(method, index) in well.development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+              <span v-for="(method, index) in development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
             </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Development Total Duration:</span> {{ excludeZeroDecimals(well.development_hours) }} {{ well.development_hours ? 'hours':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Development Total Duration:</span> {{ excludeZeroDecimals(development_hours) }} {{ development_hours ? 'hours':'' }}</b-col>
           </b-row>
         </fieldset>
 
@@ -448,32 +448,32 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <legend>Well Yield</legend>
 
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Method:</span> {{ codeToDescription('yield_estimation_methods', well.yield_estimation_method) }} </b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{ excludeZeroDecimals(well.yield_estimation_rate) }} {{ well.yield_estimation_rate ? 'USgpm':'' }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{ excludeZeroDecimals(well.yield_estimation_duration) }} {{ well.yield_estimation_duration ? 'hours':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', yield_estimation_method)}} </b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Rate:</span> {{ excludeZeroDecimals(yield_estimation_rate) }} {{ yield_estimation_rate ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Estimation Duration:</span> {{ excludeZeroDecimals(yield_estimation_duration) }} {{ yield_estimation_duration ? 'hours':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{ excludeZeroDecimals(well.static_level_before_test) }} {{ well.static_level_before_test ? 'ft (btoc)':'' }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{ excludeZeroDecimals(well.drawdown) }} {{ well.drawdown ? 'ft (btoc)':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{ excludeZeroDecimals(static_level_before_test) }} {{ static_level_before_test ? 'ft (btoc)':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Drawdown:</span> {{ excludeZeroDecimals(drawdown) }} {{ drawdown ? 'ft (btoc)':'' }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{ nullBooleanToYesNo(well.hydro_fracturing_performed) }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{ excludeZeroDecimals(well.hydro_fracturing_yield_increase) }} {{ well.hydro_fracturing_yield_increase ? 'USgpm':'' }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{booleanToYesNo(hydro_fracturing_performed)}}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{ excludeZeroDecimals(hydro_fracturing_yield_increase) }} {{ hydro_fracturing_yield_increase ? 'USgpm':'' }}</b-col>
           </b-row>
         </fieldset>
 
         <fieldset id="well_decommissioning_fieldset" class="my-3 detail-section">
           <legend>Well Decommission Information</legend>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ well.decommission_reason }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ well.decommission_method }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ decommission_reason }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Method of Decommission:</span> {{ decommission_method }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ well.decommission_sealant_material }}</b-col>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material:</span> {{ well.decommission_backfill_material }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Sealant Material:</span> {{ decommission_sealant_material }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Backfill Material:</span> {{ decommission_backfill_material }}</b-col>
           </b-row>
           <b-row>
-            <b-col cols="12" md="4"><span class="font-weight-bold">Decommission Details:</span> {{ well.decommission_details }}</b-col>
+            <b-col cols="12" md="4"><span class="font-weight-bold">Decommission Details:</span> {{ decommission_details }}</b-col>
           </b-row>
         </fieldset>
 
@@ -484,7 +484,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 striped
                 small
                 bordered
-                :items="well.aquifer_parameters_set"
+                :items="aquifer_parameters_set"
                 :fields="[
                   { key: 'start_date_pumping_test', label: 'Start Date' },
                   { key: 'pumping_test_description', label: 'Description' },
@@ -552,7 +552,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_comments_fieldset" class="my-3 detail-section">
           <legend>Comments</legend>
           <p>
-            {{ well.comments ? well.comments : 'No comments submitted' }}
+            {{ comments ? comments : 'No comments submitted' }}
           </p>
         </fieldset>
 
@@ -575,6 +575,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapStores } from 'pinia'
+
+import moment from 'moment'
 
 import SingleWellMap from '@/wells/components/SingleWellMap.vue'
 import Documents from '@/wells/components/Documents.vue'
@@ -585,6 +588,8 @@ import { FETCH_CODES } from '@/submissions/store/actions.types.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 import { TOOLTIP_TEXT } from '@/common/constants.js'
+import { useWellsStore } from '@/stores/wells.js'
+import { booleanToYesNo, excludeZeroDecimals } from '../../common/filters'
 
 export default {
   name: 'WellDetail',
@@ -632,15 +637,30 @@ export default {
     }
   },
   computed: {
+    ...mapStores(useWellsStore),
+    well_tag_number () { return this.wellsStore.wellRecord?.well_tag_number ?? '' },
+    well_status () { return this.wellsStore.wellRecord?.well_status ?? '' },
+    observation_well_number () { return this.wellsStore.wellRecord?.observation_well_number ?? '' },
+    identification_plate_number () { return this.wellsStore.wellRecord?.identification_plate_number ?? '' },
+    well_class () { return this.wellsStore.wellRecord?.well_class ?? '' },
+    owner_full_name () { return this.wellsStore.wellRecord?.owner_full_name ?? '' },
+    well_subclass () { return this.wellsStore.wellRecord?.well_subclass ?? '' },
+    ems () { return this.wellsStore.wellRecord?.ems ?? '' },
+    intended_water_use () { return this.wellsStore.wellRecord?.intended_water_use ?? '' },
+    aquifer () { return this.wellsStore.wellRecord?.aquifer ?? '' },
+    alternative_specs_submitted () { return this.wellsStore.wellRecord?.alternative_specs_submitted ?? '' },
+    artesian_conditions () { return this.wellsStore.wellRecord?.artesian_conditions ?? false },
+    drinking_water_protection_area_ind () { return this.wellsStore.wellRecord?.drinking_water_protection_area_ind ?? false },
+    recordLicence () { return this.wellLicence ?? { status: '', number: [] } },
     id () { return parseInt(this.$route.params.id) || null },
     wellDates () {
       return [{
-        construction_start_date: this.well.construction_start_date,
-        construction_end_date: this.well.construction_end_date,
-        alteration_start_date: this.well.alteration_start_date,
-        alteration_end_date: this.well.alteration_end_date,
-        decommission_start_date: this.well.decommission_start_date,
-        decommission_end_date: this.well.decommission_end_date
+        construction_start_date: this.construction_start_date,
+        construction_end_date: this.construction_end_date,
+        alteration_start_date: this.alteration_start_date,
+        alteration_end_date: this.alteration_end_date,
+        decommission_start_date: this.decommission_start_date,
+        decommission_end_date: this.decommission_end_date
       }]
     },
     errorNotFound () {
@@ -673,9 +693,22 @@ export default {
     isUnpublished () {
       return !this.well.is_published
     },
-    ...mapGetters(['userRoles', 'config', 'well', 'wellLicence', 'storedWellId', 'codes'])
+    ...mapGetters(['userRoles', 'config', 'codes'])
   },
   methods: {
+    booleanToYesNo (value) {
+      return booleanToYesNo(value)
+    },
+    excludeZeroDecimals (value) {
+      return excludeZeroDecimals(value)
+    },
+    formatDate (value, format) {
+      if (!value) {
+        return ''
+      }
+      const m = moment(value)
+      return m.isValid() ? m.format(format) : ''
+    },
     handlePrint () {
       window.print()
     },
@@ -683,7 +716,7 @@ export default {
       this.loading = true
       this.error = null
 
-      this[RESET_WELL_DATA]()
+      this.wellsStore.resetWellData();
 
       return Promise.all([
         ApiService.get('wells', this.id).then((response) => {
@@ -696,8 +729,11 @@ export default {
           return response.data || {}
         })
       ]).then(([wellData, licenceData]) => {
-        this[SET_WELL_RECORD](wellData)
-        this[SET_WELL_LICENCE](licenceData)
+        this.wellsStore.setWellRecord(wellData);
+        this.recordLicence = licenceData;
+        console.log('wellData', wellData);
+        console.log('licenceData', licenceData);
+        console.log('state', this.wellsStore.wellRecord)
       }).finally(() => {
         this.loading = false
       })
@@ -713,8 +749,6 @@ export default {
         }
       })
     },
-    ...mapMutations([ SET_WELL_RECORD, SET_WELL_LICENCE ]),
-    ...mapActions([ RESET_WELL_DATA ])
   },
   watch: {
     id () {
@@ -724,6 +758,7 @@ export default {
     }
   },
   created () {
+    this.wellsStore
     this.fetchSurveys()
     this.$store.dispatch(FETCH_CODES)
     if (this.id === null) {
