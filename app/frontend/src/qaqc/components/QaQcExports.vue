@@ -23,6 +23,7 @@
 
 <script>
 import querystring from 'querystring-es3' // Using ES module compatible version
+import { useQAQCStore } from '@/stores/qaqc'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 export default {
