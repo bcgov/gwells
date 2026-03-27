@@ -264,14 +264,16 @@ router.replace = function replace (location) {
 }
 
 router.beforeEach((to, from, next) => {
-  if (!Vue.prototype.$keycloak) {
+  if (!authenticate.$keycloak) {
     authenticate.authenticate(store).then((kc) => {
       if (kc.authenticated) {
         Sentry.setUser({ username: kc.tokenParsed.preferred_username })
       }
       nextTick(() => next())
     }).catch((e) => {
-      nextTick(() => next({ name: 'wells-home' }))
+      if (to.name !== 'wells-home') {
+        nextTick(() => next({ name: 'wells-home' }))
+      }
     })
   } else {
     nextTick(() => next())
