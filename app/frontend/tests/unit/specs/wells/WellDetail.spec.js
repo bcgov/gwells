@@ -54,13 +54,11 @@ describe('WellDetail.vue', () => {
       methods: {
         fetchWellData: jest.fn()
       },
-      filters: {
-        excludeZeroDecimals: jest.fn()
-      },
       computed: {
         id () {
           return id
-        }
+        },
+        excludeZeroDecimals: jest.fn()
       },
       ...options
     })

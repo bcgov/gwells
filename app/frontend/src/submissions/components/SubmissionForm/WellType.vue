@@ -60,7 +60,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 value-field="well_class_code"
                 text-field="description"
                 :state="errors['well_class'] ? false : null">
-              <template slot="first">
+              <template v-slot:first>
                 <option :value="null">Select class</option>
               </template>
             </b-form-select>
@@ -83,7 +83,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 text-field="description"
                 :disabled="wellSubclassDisabled"
                 :state="errors['well_subclass'] ? false : null">
-              <template slot="first">
+              <template v-slot:first>
                 <option :value="null">Select subclass</option>
               </template>
             </b-form-select>
@@ -123,7 +123,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               @search="onWellTagSearch"
               ref="wellTagNumber"
               @search:blur="handleSearchBlur">
-              <template slot="no-options">
+              <template v-slot:no-options>
                   Search by well tag number or owner name
               </template>
               <template v-slot:cell(option)="option">

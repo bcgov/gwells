@@ -83,7 +83,6 @@ app.use(VueNoty, {
 });
 app.use(BootstrapVue);
 app.use(VueMoment);
-app.use(filters);
 
 // Register global components
 app.component("v-select", vSelect);
@@ -118,6 +117,10 @@ if (isProduction()) {
 app.config.productionTip = false;
 app.config.devtools = import.meta.env.MODE !== "production";
 app.config.performance = import.meta.env.MODE !== "production";
+
+app.config.globalProperties.excludeZeroDecimals = filters.excludeZeroDecimals;
+app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
+app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
 
 // Mount app
 app.mount("#app");

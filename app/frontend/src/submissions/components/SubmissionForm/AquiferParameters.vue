@@ -281,7 +281,7 @@ export default {
     toggleAquiferParametersLengthRequired (index) {
       const instance = this.aquiferParametersData[index]
       instance.length_required = !instance.length_required
-      Vue.set(this.aquiferParametersData, index, instance)
+      this.aquiferParametersData[index] = instance
     },
     getAquiferParametersError (index) {
       if (this.errors && 'aquifer_parameters_set' in this.errors && index in this.errors['aquifer_parameters_set']) {

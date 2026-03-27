@@ -36,7 +36,7 @@ limitations under the License.
             text-field="well_publication_status_code"
             :errors="errors['well_publication_status']"
             :loaded="fieldsLoaded['well_publication_status']">
-            <template slot="first">
+            <template v-slot:first>
               <option :value="null" disabled>Select Publication Status</option>
             </template>
           </b-form-select>

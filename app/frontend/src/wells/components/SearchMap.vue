@@ -126,7 +126,7 @@ export default {
       })
     }
   },
-  destroyed () {
+  unmounted () {
     this.unsubscribeAction()
     this.map.remove()
     this.map = null
@@ -426,8 +426,8 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "mapbox-gl/dist/mapbox-gl.css";
-@import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+@use "mapbox-gl/dist/mapbox-gl.css" as *;
+@use "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css" as *;
 
 #wells-search-map {
   height: 600px;

@@ -17,7 +17,7 @@
               {{history_item[0].user}}
               Edited this Well on
               <time :datetime="history_item[0].date">
-                {{history_item[0].date | moment("MMMM Do YYYY [at] LT")}}
+                {{ moment(history_item[0].date, "MMMM Do YYYY [at] LT")}}
               </time>
               <div
                 style="margin-left:20px; width: 75%;"
@@ -25,7 +25,7 @@
                 v-for="(item, key) in history_item"
                 :key="`history-item-${key}-in-version ${index}`">
                 <div v-if="isTable(item)" class="mt-2">
-                  {{ item.type | formatKey | readable }} changed to:
+                  {{ readable(formatKey(item.type)) }} changed to:
                   <div v-if="item.diff != null && item.diff.length > 0">
                     <b-table
                       responsive
@@ -55,9 +55,9 @@
                   </div>
                 </div>
                 <div class="mt-2" v-else>
-                  {{ item.type | formatKey | readable }}
-                  {{ item.action == 'Added' ? 'set' : 'changed'}} to {{ item.diff | booleanToYesNo | formatValue }}
-                  <span v-if="item.action != 'Added'">from {{ item.prev | booleanToYesNo | formatValue }}</span>
+                  {{ readable(formatKey(item.type)) }}
+                  {{ item.action == 'Added' ? 'set' : 'changed'}} to {{ formatValue(booleanToYesNo(item.diff)) }}
+                  <span v-if="item.action != 'Added'">from {{ formatValue(booleanToYesNo(item.prev)) }}</span>
                 </div>
               </div>
             </div>
@@ -66,7 +66,7 @@
         <div class="font-weight-bold mt-3" v-if="showHistory">
           {{create_user}}
           created this well on
-          {{create_date | moment("MMMM Do YYYY [at] LT")}}
+          {{ moment(create_date, "MMMM Do YYYY [at] LT")}}
         </div>
         <div v-if="loading">
           <b-row><b-col>Loading history...</b-col></b-row>
@@ -131,9 +131,7 @@ export default {
     },
     isTable ({ diff, prev }) {
       return (Array.isArray(diff) && diff.length > 0) || (Array.isArray(prev) && prev.length > 0)
-    }
-  },
-  filters: {
+    },
     readable (val) {
       val = val || ''
 

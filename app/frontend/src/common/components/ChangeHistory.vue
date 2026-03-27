@@ -16,7 +16,7 @@
                 <span class="font-weight-bold">{{ version.user }}</span>
                   {{ version.created ? "created" : "edited" }}
                   {{ version.name ? version.name : 'record' }}
-                  ({{ version.date | moment("MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
+                  ({{ moment(version.date, "MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
                 <div class="ml-4">
                   <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
                   <div
@@ -24,7 +24,7 @@
                       v-if="!(value === '' && version.prev[key] === null)"
                       :key="`history-item-${key}-in-version ${index}`">
                     <div v-if="isTable(value)" class="mt-2">
-                      {{ key | formatKey | readable }} changed to:
+                      {{ readable(formatKey(key)) }} changed to:
                       <div v-if="value != null && value.length > 0">
                         <b-table
                           responsive
@@ -54,7 +54,7 @@
                       </div>
                     </div>
                     <div v-else>
-                      {{ key | readable }} changed from {{ version.prev[key] | booleanToYesNo | formatValue }} to {{ value | booleanToYesNo | formatValue }}
+                      {{ readable(key) }} changed from {{ formatValue(booleanToYesNo(version.prev[key])) }} to {{ formatValue(booleanToYesNo(value)) }}
                     </div>
                   </div>
                 </div>
@@ -123,9 +123,7 @@ export default {
     },
     isTable (arr) {
       return Array.isArray(arr) && arr.length > 0
-    }
-  },
-  filters: {
+    },
     readable (val) {
       val = val || ''
 
