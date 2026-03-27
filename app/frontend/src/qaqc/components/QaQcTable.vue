@@ -298,34 +298,6 @@ export default {
     },
     isBusy () {
       return (this.pending !== null)
-    },
-    selectOptionFormat (value, column, options = null) {
-      if (value === undefined || value === null || value === '') {
-        return ''
-      }
-
-      const valueProp = column.valueField || 'value'
-      const textProp = column.textField || 'text'
-      const selectOptions = column.options || options
-      const optionsMatch = selectOptions.find(option => option[valueProp] === value.toString())
-      if (optionsMatch) {
-        return optionsMatch[textProp]
-      }
-
-      return value
-    },
-    defaultFormat: (value) => {
-      if (value === null) {
-        return ''
-      }
-      return value
-    },
-    streetAddressFormat (row) {
-      if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
-        return `${row.street_address}, ${row.city}`
-      } else {
-        return row.street_address
-      }
     }
   },
   methods: {
@@ -399,6 +371,34 @@ export default {
     safeUrl (wellTagNumber) {
       const url = sanitizeUrl(`/gwells/well/${wellTagNumber}`)
       return encodeURI(url)
+    },
+    selectOptionFormat (value, column, options = null) {
+      if (value === undefined || value === null || value === '') {
+        return ''
+      }
+
+      const valueProp = column.valueField || 'value'
+      const textProp = column.textField || 'text'
+      const selectOptions = column.options || options
+      const optionsMatch = selectOptions.find(option => option[valueProp] === value.toString())
+      if (optionsMatch) {
+        return optionsMatch[textProp]
+      }
+
+      return value
+    },
+    defaultFormat: (value) => {
+      if (value === null) {
+        return ''
+      }
+      return value
+    },
+    streetAddressFormat (row) {
+      if (row.city !== undefined && row.city !== null && row.city.toString().trim() !== '') {
+        return `${row.street_address}, ${row.city}`
+      } else {
+        return row.street_address
+      }
     }
   },
   watch: {

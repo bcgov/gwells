@@ -95,32 +95,6 @@ export default {
         person: 'drillers'
       }
       return endpointMap[this.resource] || this.resource
-    },
-    readable (val) {
-      val = val || ''
-
-      // some GIS data is returned in field 'geom' by default.
-      // for the history view, we can translate that to 'Location'
-      if (val.toLowerCase() === 'geom') {
-        return 'Location'
-      }
-
-      return val.split('_').map((word) => {
-        return word.charAt(0).toUpperCase() + word.substring(1)
-      }).join(' ')
-    },
-    formatKey (val) {
-      return val
-    },
-    formatValue (val) {
-      // takes a single value and returns a string in a human readable format.
-      // if val started as something that would be displayed as an empty space,
-      // we return 'none' instead so we can form a complete sentence.
-      // e.g. Province changed from none to British Columbia
-      if (val === undefined || val === null || val === '') {
-        return 'none'
-      }
-      return val
     }
   },
   watch: {
@@ -149,6 +123,32 @@ export default {
     },
     isTable (arr) {
       return Array.isArray(arr) && arr.length > 0
+    },
+    readable (val) {
+      val = val || ''
+
+      // some GIS data is returned in field 'geom' by default.
+      // for the history view, we can translate that to 'Location'
+      if (val.toLowerCase() === 'geom') {
+        return 'Location'
+      }
+
+      return val.split('_').map((word) => {
+        return word.charAt(0).toUpperCase() + word.substring(1)
+      }).join(' ')
+    },
+    formatKey (val) {
+      return val
+    },
+    formatValue (val) {
+      // takes a single value and returns a string in a human readable format.
+      // if val started as something that would be displayed as an empty space,
+      // we return 'none' instead so we can form a complete sentence.
+      // e.g. Province changed from none to British Columbia
+      if (val === undefined || val === null || val === '') {
+        return 'none'
+      }
+      return val
     }
   },
   created () {

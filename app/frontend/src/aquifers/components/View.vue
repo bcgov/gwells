@@ -756,14 +756,6 @@ export default {
     },
     aquiferNotations () {
       return this.getAquiferNotationsById(this.id, this.record.geom)
-    },
-    unitWaterVolume (volume) {
-      return Math.round(volume) + ' cubic metres'
-    },
-    formatDate (value) {
-      if (!value) return ''
-      value = new Date(value)
-      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   },
   watch: {
@@ -984,6 +976,14 @@ export default {
     sanitizeResourceUrl (url) {
       const sanitized = sanitizeUrl(url)
       return encodeURI(sanitized)
+    },
+    unitWaterVolume (volume) {
+      return Math.round(volume) + ' cubic metres'
+    },
+    formatDate (value) {
+      if (!value) return ''
+      value = new Date(value)
+      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
     }
   }
 }
