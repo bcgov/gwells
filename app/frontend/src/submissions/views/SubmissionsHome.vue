@@ -22,7 +22,7 @@ governing permissions and limitations under the License. */
       </b-card>
       <div
         class="card"
-        v-if="userRoles.wells.edit || userRoles.submissions.edit"
+        v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit"
       >
         <div class="card-body">
           <b-alert
@@ -117,7 +117,7 @@ governing permissions and limitations under the License. */
           </b-form>
         </div>
       </div>
-      <div class="card" v-else-if="!$keycloak.authenticated">
+      <div class="card" v-else-if="!commonStore.$keycloak.authenticated">
         <div class="card-body">
           <p>Please log in to continue.</p>
         </div>
@@ -128,7 +128,8 @@ governing permissions and limitations under the License. */
 
 <script>
 import Vue from "vue";
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
+import { useCommonStore } from '@/stores/common.js'
 import { useSubmissionStore } from "@/stores/submission.js";
 import { diff } from "deep-diff";
 import { camelCase } from "lodash";
@@ -158,7 +159,6 @@ export default {
   data() {
     return {
       compareForm: {},
-      submissionStore: null,
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
       events: new Vue({
         el: "activity-submission-form",
@@ -183,7 +183,7 @@ export default {
       return components;
     },
     isStaffEdit() {
-      return this.activityType === "STAFF_EDIT" && this.userRoles.wells.edit;
+      return this.activityType === "STAFF_EDIT" && this.commonStore.userRoles.wells.edit;
     },
     breadcrumbs() {
       const breadcrumbs = [];
@@ -226,8 +226,8 @@ export default {
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;
     },
-    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    ...mapGetters(["userRoles", "well", "keycloak"]),
+    submissionStore () { return useSubmissionStore() },
+    commonStore () { return useCommonStore() },
     ...mapState("documentState", [
       "files_uploading",
       "file_upload_error",
@@ -419,7 +419,7 @@ export default {
 
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
-      const PATH = this.codes.activity_types.find(
+      const PATH = this.submissionStore.codes.activity_types.find(
         (item) => item.code === this.activityType
       ).path;
       ApiService.post(PATH, data)
@@ -1175,7 +1175,6 @@ export default {
     },
   },
   created() {
-    this.submissionStore = useSubmissionStore();
     this.setupPage();
     this.fetchSurveys();
     // connect our before window unload event listener

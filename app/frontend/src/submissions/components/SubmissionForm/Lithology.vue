@@ -190,8 +190,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
-import { mapGetters } from 'vuex'
-
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 import Lithology from '@/submissions/components/lithology.js'
@@ -231,7 +229,6 @@ export default {
   },
   data () {
     return {
-      submissionStore: null,
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       lithSoils: [],
@@ -239,10 +236,10 @@ export default {
     }
   },
   computed: {
+    submissionStore () { return useSubmissionStore },
     codes () {
       return this.submissionStore?.codes
     },
-    ...mapGetters(['codes']),
     computedLithology () {
       return [...this.lithologyData]
     }
@@ -300,7 +297,6 @@ export default {
     },
     lithologyIsEmpty (lithology) {
       return Object.values(lithology).every((x) => !x)
-    this.submissionStore = useSubmissionStore()
     }
   },
   created () {

@@ -240,7 +240,6 @@ export default {
   },
   data () {
     return {
-      submissionStore: null,
       confirmRemoveModal: false,
       rowIndexToRemove: null,
       aquiferParametersData: []
@@ -314,6 +313,7 @@ export default {
     }
   },
   computed: {
+    submissionStore () { return useSubmissionStore() },
     codes () {
       return this.submissionStore.codes
     },
@@ -331,7 +331,6 @@ export default {
     }
   },
   created () {
-    this.submissionStore = useSubmissionStore()
     // When component created, add an initial row of aquiferParameters.
     if (!this.aquiferParameters.length) {
       for (let i = 0; i < 1; i++) {

@@ -32,7 +32,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/store/common.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 export default {
   mixins: [inputBindingsMixin],
@@ -44,10 +44,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     show () {
       return {
-        edit: this.userRoles.submissions.edit || this.userRoles.wells.edit
+        edit: this.commonStore.userRoles.submissions.edit || this.commonStore.userRoles.wells.edit
       }
     }
   }

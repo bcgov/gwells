@@ -115,7 +115,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <label>Well Tag Number (if known) <span class="font-weight-bold"></span></label>
             <v-select
               v-model="wellTagNumberInput"
-              :disabled="wells === null"
+              :disabled="useCommonStore.wells === null"
               id="wellTagNumberSelect"
               :filterable="false"
               label="well_tag_number"
@@ -228,7 +228,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -326,7 +326,7 @@ export default {
     codes () {
       return this.submissionStore.codes
     },
-    ...mapGetters(['userRoles', 'wells'])
+    commonStore () { return useCommonStore() }
   },
   methods: {
     match (item, search) {
@@ -336,14 +336,14 @@ export default {
     onWellTagSearch (search, loading) {
       // Only do search if something has been typed.
       this.wellTagOptions = []
-      if (search && search.length >= 1 && this.wells) {
+      if (search && search.length >= 1 && this.useCommonStore.wells) {
         // Save time, by converting to uppercase for search only once.
         search = search.toUpperCase()
         // We iterate manually instead of using .filter in order that we can limit the number
         // of search results, and run faster.
-        for (let i = 0; i < this.wells.length && this.wellTagOptions.length < this.MAX_RESULTS; ++i) {
-          if (this.match(this.wells[i], search)) {
-            this.wellTagOptions.push(this.wells[i])
+        for (let i = 0; i < this.useCommonStore.wells.length && this.wellTagOptions.length < this.MAX_RESULTS; ++i) {
+          if (this.match(this.useCommonStore.wells[i], search)) {
+            this.wellTagOptions.push(this.useCommonStore.wells[i])
           }
         }
       }

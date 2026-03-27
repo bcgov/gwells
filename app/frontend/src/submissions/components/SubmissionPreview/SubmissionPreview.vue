@@ -566,7 +566,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapState } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'
@@ -607,12 +608,12 @@ export default {
     codes () {
       return this.submissionStore.codes
     },
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     ...mapState('documentState', [
       'upload_files'
     ]),
     canEditWells () {
-      return this.userRoles.wells.edit
+      return this.useCommonStore.userRoles.wells.edit
     },
     wellSubclass () {
       let subclassCodes = []

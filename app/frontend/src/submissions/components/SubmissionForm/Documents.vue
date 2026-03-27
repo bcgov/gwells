@@ -160,7 +160,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
-import { mapGetters, mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations } from 'vuex'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
@@ -228,7 +228,6 @@ export default {
     codes () {
       return this.submissionStore.codes
     },
-    ...mapGetters(['userRoles']),
     ...mapState('documentState', [
       'isPrivate',
       'upload_files'

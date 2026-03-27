@@ -584,7 +584,7 @@ import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
-import { FETCH_CODES } from '@/submissions/store/actions.types.js'
+import { useSubmissionStore } from '@/stores/submission.js'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 import { TOOLTIP_TEXT } from '@/common/constants.js'
@@ -760,7 +760,7 @@ export default {
   created () {
     this.wellsStore
     this.fetchSurveys()
-    this.$store.dispatch(FETCH_CODES)
+    this.useSubmissionStore.fetchCodes()
     if (this.id === null) {
       this.error = `Unable to load well '${this.id}'`
     }
