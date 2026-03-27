@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { useCommonStore } from '@/store/common.js'
+import { useCommonStore } from '@/stores/common'
 import Auth from '@/common/components/Auth.vue'
 export default {
   components: {
