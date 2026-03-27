@@ -73,10 +73,7 @@ export default {
   },
   computed: {
     codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    ...mapGetters(['userRoles']),
-    readable (val) {
-      return val ? val.charAt(0).toUpperCase() + val.split('_').join(' ').substring(1) : ''
-    }
+    ...mapGetters(['userRoles'])
   },
   methods: {
     fetchSubmission () {
@@ -101,6 +98,9 @@ export default {
       }
 
       return true
+    },
+    readable (val) {
+      return val ? val.charAt(0).toUpperCase() + val.split('_').join(' ').substring(1) : ''
     }
   },
   created () {

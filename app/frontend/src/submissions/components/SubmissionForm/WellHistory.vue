@@ -108,6 +108,29 @@ export default {
       // If it is kept in the list of history items then the user will see a lot of repeating "x
       // changed from none". It is a given that the history starts at something - not from nothing.
       return this.history.slice(0, -1)
+    }
+  },
+  methods: {
+    toggleShow (e) {
+      this.showHistory = !this.showHistory
+      if (this.showHistory && !this.loading && (!this.loaded || e.ctrlKey)) {
+        this.update()
+      }
+    },
+    update () {
+      this.loading = true
+      ApiService.history('wells', this.wellTagNumber).then((response) => {
+        this.history = response.data.history || []
+        this.create_user = response.data.create_user
+        this.create_date = response.data.create_date
+        this.loading = false
+        this.loaded = true
+      }).catch(() => {
+        this.loading = false
+      })
+    },
+    isTable ({ diff, prev }) {
+      return (Array.isArray(diff) && diff.length > 0) || (Array.isArray(prev) && prev.length > 0)
     },
     readable (val) {
       val = val || ''
@@ -142,29 +165,6 @@ export default {
         return 'none'
       }
       return val
-    }
-  },
-  methods: {
-    toggleShow (e) {
-      this.showHistory = !this.showHistory
-      if (this.showHistory && !this.loading && (!this.loaded || e.ctrlKey)) {
-        this.update()
-      }
-    },
-    update () {
-      this.loading = true
-      ApiService.history('wells', this.wellTagNumber).then((response) => {
-        this.history = response.data.history || []
-        this.create_user = response.data.create_user
-        this.create_date = response.data.create_date
-        this.loading = false
-        this.loaded = true
-      }).catch(() => {
-        this.loading = false
-      })
-    },
-    isTable ({ diff, prev }) {
-      return (Array.isArray(diff) && diff.length > 0) || (Array.isArray(prev) && prev.length > 0)
     }
   },
   created () {
