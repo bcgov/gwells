@@ -12,7 +12,7 @@
     limitations under the License.
 */
 <template>
-  <div v-if="resultCount > 0 && resultCount < maxExportSize">
+  <div v-if="qaqcStore.resultCount > 0 && qaqcStore.resultCount < maxExportSize">
     <h3>Export qaqc results</h3>
     <div class="button-container">
       <a @click="handleExportClickEvent('xlsx')" class="qaqc-download-button">Excel</a>
@@ -23,7 +23,6 @@
 
 <script>
 import querystring from 'querystring-es3' // Using ES module compatible version
-import { mapGetters } from 'vuex'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
 export default {
@@ -36,29 +35,21 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      bounds: 'qaqcBounds',
-      params: 'qaqcParams',
-      ordering: 'qaqcOrdering',
-      resultFilters: 'qaqcResultFilters',
-      resultCount: 'qaqcResultCount',
-      resultColumns: 'qaqcResultColumns',
-      selectedTab: 'qaqcSelectedTab'
-    }),
+    qaqcStore () { return useQAQCStore() },
     fullQueryString () {
       const queryParams = {
-        ...this.params,
-        ordering: this.ordering,
+        ...this.qaqcStore.params,
+        ordering: this.qaqcStore.ordering,
         fields: this.exportFields.join(',')
       }
-      if (Object.entries(this.resultFilters).length > 0) {
-        queryParams.filter_group = JSON.stringify(this.resultFilters)
+      if (Object.entries(this.qaqcStore.resultFilters).length > 0) {
+        queryParams.filter_group = JSON.stringify(this.qaqcStore.resultFilters)
       }
 
       return querystring.stringify(queryParams)
     },
     exportFields () {
-      return this.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
+      return this.qaqcStore.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
     },
     csvExportUrl () {
       return this.getExportUrl('csv')
@@ -68,7 +59,7 @@ export default {
     },
     exportBaseUrl () {
       // Dynamically set the base URL based on the activeTable prop
-      switch (this.selectedTab) {
+      switch (this.qaqcStore.selectedTab) {
         case 0: // record compliance
           return `${import.meta.env.VITE_AXIOS_BASE_URL}qaqc/recordcompliance/download`
         case 1: // mislocated wells
