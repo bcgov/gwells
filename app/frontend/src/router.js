@@ -267,21 +267,16 @@ router.replace = function replace (location) {
 }
 
 router.beforeEach((to, from, next) => {
-  const commonStore = useCommonStore()
-    const proceed = () => {
-    nextTick(() => next())
-  }
-  const redirect = () => {
-    nextTick(() => next({ name: 'wells-home' }))
-  }
-  if (!commonStore.keycloak) {
-    authenticate.authenticate().then((kc) => {
+  if (!authenticate.$keycloak) {
+    authenticate.authenticate(store).then((kc) => {
       if (kc.authenticated) {
         Sentry.setUser({ username: kc.tokenParsed.preferred_username })
       }
       proceed()
     }).catch((e) => {
-      redirect()
+      if (to.name !== 'wells-home') {
+        nextTick(() => next({ name: 'wells-home' }))
+      }
     })
   } else {
     proceed()
