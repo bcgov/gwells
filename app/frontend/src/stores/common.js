@@ -14,7 +14,7 @@
 import { defineStore } from 'pinia'
 import ApiService from '@/common/services/ApiService.js'
 
-export const useCommonStore = defineStore({
+export const useCommonStore = defineStore('common', {
   state: () => ({
     // was common/auth.js
     keycloak: null,
@@ -111,7 +111,7 @@ export const useCommonStore = defineStore({
     // ---- Config ----
     fetchConfig (params) {
       // We only fetch config if we don't have a copy cached
-      if (this.getters.config === null) {
+      if (this.config === null) {
         return new Promise((resolve, reject) => {
           ApiService.query('config', params)
             .then((response) => {
@@ -129,33 +129,33 @@ export const useCommonStore = defineStore({
 
     // ---- Documents ----
     uploadShapefile (payload) {
-      const file = this.state.shapefile
+      const file = this.shapefile
       let formData = new FormData()
       formData.append('geometry', file)
       const url = `${payload.documentType}/${payload.recordId}/geometry`
-      this.commit('setShapefileUploading', true)
+      this.shapefile_uploading = true
       return ApiService.post(url, formData)
         .then(() => {
-          this.commit('setShapefileUploadSuccess', true)
-          this.commit('setShapefileUploadMessage', '')
+          this.shapefile_upload_success = true
+          this.shapefile_upload_message = ''
         })
         .catch(e => {
-          this.commit('setShapefileUploading', false)
-          this.commit('setShapefileUploadSuccess', false)
+          this.shapefile_uploading = false
+          this.shapefile_upload_success = false
           console.error('failed to save shapefile', e.response)
-          this.commit('setShapefileUploadMessage', e.response.data.message || 'Server Error')
+          this.shapefile_upload_message = e.response.data.message || 'Server Error'
           throw e
         })
     },
     uploadFiles (payload) {
-      this.commit('setFilesUploading', true)
+      this.files_uploading = true
       let documentType = payload.documentType
       let recordId = payload.recordId
-      const files = payload.files || this.state.upload_files
+      const files = payload.files || this.upload_files
       const fileNames = payload.fileNames || []
 
       // Driller documents are always private
-      let isPrivate = this.state.isPrivate
+      let isPrivate = this.isPrivate
       if (documentType === 'drillers') {
         isPrivate = true
       }
@@ -198,47 +198,46 @@ export const useCommonStore = defineStore({
                 })
                 .catch(error => {
                   console.log(error)
-                  this.commit('addError', error)
+                  this.addError(error)
                   return Promise.reject(error)
                 })
             })
             .catch(error => {
               console.log(error)
-              this.commit('addError', error)
+              this.addError(error)
             })
         })
       }, Promise.resolve())
     },
     fileUploadSuccess () {
-      this.commit('setFilesUploading', false)
-      this.commit('setFileUploadSuccess', true)
-      this.commit('setFiles', [])
-      this.commit('setPrivate', false)
+      this.files_uploading = false
+      this.file_upload_success = true
+      this.upload_files = []
+      this.isPrivate = false
       setTimeout(() => {
-        this.commit('setFileUploadSuccess', false)
+        this.file_upload_success = false
       }, 5000)
     },
     fileUploadFail () {
-      this.commit('setFilesUploading', false)
-      this.commit('setFileUploadError', true)
-      this.commit('setFileUploadSuccess', false)
-      this.commit('setFiles', [])
-      this.commit('setPrivate', false)
+      this.files_uploading = true
+      this.file_upload_success = false
+      this.upload_files = []
+      this.isPrivate = false
     },
     shapefileUploadSuccess () {
-      this.commit('setShapefileUploadSuccess')
+      this.setShapefileUploadSuccess()
     },
     shapefileUploadFail () {
-      this.commit('setShapefileUploadSuccess')
+      this.shapefile_upload_success = false
     },
     resetUploadFiles () {
-      this.commit('setFiles', [])
+      this.upload_files = []
     },
     clearUploadShapeFileMessage () {
-      this.commit('setShapefileUploadMessage', '')
+      this.shapefile_upload_message = ''
     },
     clearUploadFilesMessage () {
-      this.commit('clearErrors')
+      this.clearErrors()
     },
     addError (payload) {
       this.file_upload_errors.push(payload)
