@@ -50,7 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 @search="onPersonSearch"
                 ref="personResponsible"
                 @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
-              <template slot="no-options">
+              <template v-slot:no-options>
                   Type to search registry...
               </template>
               <template v-slot:cell(selected-option)="option">
@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               @search="onCompanyOfPersonResponsibleSearch"
               ref="companyOfPersonResponsible"
               @search:blur="handleSearchBlur(companyOfPersonResponsibleOptions, $refs.companyOfPersonResponsible, 'companyOfPersonResponsibleInput')">
-              <template slot="no-options">
+              <template v-slot:no-options>
                   Search by company name
               </template>
             </v-select>

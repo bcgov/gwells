@@ -499,7 +499,7 @@ export default {
     this.scrolled = window.scrollY > 100
     window.addEventListener('scroll', this.handleScroll)
   },
-  beforeDestroy () {
+  beforeUnmount () {
     window.removeEventListener('scroll', this.handleScroll)
   }
 }

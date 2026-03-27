@@ -103,9 +103,11 @@
               <div class="table-responsive">
                 <table id="classification-table" class="table">
                   <thead>
-                    <th>Classification</th>
-                    <th>Register Status</th>
-                    <th>Date Registered</th>
+                    <tr>
+                      <th>Classification</th>
+                      <th>Register Status</th>
+                      <th>Date Registered</th>
+                    </tr>
                   </thead>
                   <tbody>
                     <tr

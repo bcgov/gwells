@@ -52,7 +52,7 @@ export default {
 
     this.initMapBox()
   },
-  destroyed () {
+  unmounted () {
     this.map.remove()
     this.map = null
   },
@@ -115,7 +115,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "mapbox-gl/dist/mapbox-gl.css";
+@use "mapbox-gl/dist/mapbox-gl.css" as *;
 
 #single-well-map {
   height: 500px;

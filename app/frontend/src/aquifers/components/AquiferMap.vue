@@ -188,7 +188,7 @@ export default {
     this.initMapBox()
     this.listenForReset()
   },
-  destroyed () {
+  unmounted () {
     this.map.remove()
     this.map = null
   },
@@ -541,8 +541,8 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "mapbox-gl/dist/mapbox-gl.css";
-@import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+@use "mapbox-gl/dist/mapbox-gl.css" as *;
+@use "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css" as *;
 
 #aquifer-search-map {
   height: 600px;

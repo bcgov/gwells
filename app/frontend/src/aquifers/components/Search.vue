@@ -131,8 +131,8 @@
             :fields="aquiferListFields"
             :items="resultsTableData"
             :show-empty="emptyResults"
-            :sort-by.sync="sortBy"
-            :sort-desc.sync="sortDesc"
+            v-model:sort-by="sortBy"
+            v-model:sort-desc="sortDesc"
             empty-text="No aquifers could be found"
             striped
             outlined
@@ -147,7 +147,7 @@
               {{row.item.name}}
             </template>
             <template v-slot:cell(retire_date)="row">
-              <span :title="row.item.retire_date">{{ row.item.retire_date | moment("MMMM Do YYYY [at] LT") }}</span>
+              <span :title="row.item.retire_date">{{ moment(row.item.retire_date, "MMMM Do YYYY [at] LT") }}</span>
             </template>
             <template v-slot:table-busy>
               <div class="text-center my-2">
