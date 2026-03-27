@@ -148,7 +148,7 @@
       :disabled="isBusy"
       :total-rows="qaqcStore.resultCount"
       :value="currentPage"
-      :per-page="limit"
+      :per-page="qaqcStore.limit"
       @input="changePage($event)"/>
   </div>
 </template>
