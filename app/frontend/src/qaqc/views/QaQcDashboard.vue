@@ -24,7 +24,6 @@ export default {
   computed: {
     submissionStore() { return useSubmissionStore() },
     qaqcStore () { return useQAQCStore() },
-    submissionStore() { return useSubmissionStore() },
     currentTab: {
       get () {
         return this.qaqcStore.selectedTab
