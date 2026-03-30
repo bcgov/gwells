@@ -21,6 +21,7 @@ export default {
     QaQcTable
   },
   computed: {
+    submissionStore() { return useSubmissionStore() },
     currentTab: {
       get () {
         return this.$store.state.selectedTab
@@ -31,8 +32,7 @@ export default {
     }
   },
   created () {
-    const submissionStore = this.submissionStore
-    submissionStore.fetchCodes()
+    this.submissionStore.fetchCodes()
   }
 }
 </script>

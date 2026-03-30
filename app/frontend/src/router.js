@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Vue, { nextTick } from 'vue'
 import * as Sentry from '@sentry/browser'
+import { useCommonStore } from '@/stores/common.js'
 
 import authenticate from '@/common/authenticate.js'
 import AuthGuard from './authGuard.js'
@@ -264,15 +265,19 @@ router.replace = function replace (location) {
 }
 
 router.beforeEach((to, from, next) => {
-  if (!authenticate.$keycloak) {
-    authenticate.authenticate(store).then((kc) => {
+  const commonStore = useCommonStore()
+  if (!commonStore.keycloak) {
+    authenticate.authenticate().then((kc) => {
       if (kc.authenticated) {
         Sentry.setUser({ username: kc.tokenParsed.preferred_username })
       }
       nextTick(() => next())
     }).catch((e) => {
+      console.error('Authentication failed:', e)
       if (to.name !== 'wells-home') {
         nextTick(() => next({ name: 'wells-home' }))
+      } else {
+        nextTick(() => next())
       }
     })
   } else {
