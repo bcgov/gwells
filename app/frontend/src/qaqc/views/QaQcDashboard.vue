@@ -22,6 +22,7 @@ export default {
     QaQcTable
   },
   computed: {
+    submissionStore() { return useSubmissionStore() },
     qaqcStore () { return useQAQCStore() },
     submissionStore() { return useSubmissionStore() },
     currentTab: {
