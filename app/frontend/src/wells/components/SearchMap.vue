@@ -58,6 +58,8 @@ import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import { mapGetters } from 'vuex'
 import { useCommonStore } from '@/stores/common.js'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
+import { useCommonStore } from '@/stores/common'
+import { useQAQCStore } from '../../stores/qaqc'
 
 const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
   'well_tag_number',
@@ -134,12 +136,13 @@ export default {
   },
   computed: {
     commonStore () { return useCommonStore() },
+    qaqcStore () { return useQAQCStore() },
     ...mapGetters(['searchQueryParams']),
-    hasSearchParams (state) {
-      return Object.keys(this.searchQueryParams).length > 0
+    hasSearchParams () {
+      return Object.keys(this.qaqcStore.searchQueryParams).length > 0
     },
     showUnpublished () {
-      return Boolean(this.commonStore.userRoles.wells.edit)
+      return Boolean(this.commonStore?.userRoles.wells.edit)
     }
   },
   methods: {

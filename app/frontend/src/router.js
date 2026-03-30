@@ -1,13 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Vue, { nextTick } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
-import Vue, { nextTick } from 'vue'
+import { nextTick } from 'vue'
 import * as Sentry from '@sentry/browser'
 import { useCommonStore } from '@/stores/common.js'
 
 import authenticate from '@/common/authenticate.js'
 import AuthGuard from './authGuard.js'
-import { store } from './store/index.js'
 
 // Aquifers components
 import AquiferSearch from '@/aquifers/components/Search.vue'

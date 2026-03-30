@@ -91,14 +91,12 @@ app.use(pinia);
 
 if (isProduction()) {
   app.use(VueMatomo, {
-  app.use(VueMatomo, {
     host: PRODUCTION_MATOMO_HOST,
     siteId: 2,
     router: router,
     domains: "apps.nrs.gov.bc.ca",
   });
 } else if (isStaging()) {
-  app.use(VueMatomo, {
   app.use(VueMatomo, {
     host: TEST_MATOMO_HOST,
     siteId: 1,
