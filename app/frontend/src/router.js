@@ -270,7 +270,7 @@ router.beforeEach((to, from, next) => {
       if (kc.authenticated) {
         Sentry.setUser({ username: kc.tokenParsed.preferred_username })
       }
-      proceed()
+      nextTick(() => next())
     }).catch((e) => {
       console.error('Authentication failed:', e)
       if (to.name !== 'wells-home') {
@@ -280,7 +280,7 @@ router.beforeEach((to, from, next) => {
       }
     })
   } else {
-    proceed()
+    nextTick(() => next())
   }
 })
 
