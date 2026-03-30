@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { useAquiferStore } from '@/stores/aquifers.js'
 
 import {
@@ -192,11 +192,11 @@ export default {
     this.map = null
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     aquiferStore () { return useAquiferStore() },
     getAquiferNotationsById () { return this.aquiferStore.getAquiferNotationsById },
     showUnpublished () {
-      return Boolean(this.userRoles.aquifers.edit)
+      return Boolean(this.commonStore.userRoles.aquifers.edit)
     }
   },
   methods: {

@@ -287,7 +287,7 @@
         </div>
       </b-container>
     </b-card>
-    <div class="card container" v-else-if="!$keycloak.authenticated">
+    <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
       </div>
@@ -301,7 +301,8 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
+import { mapMutations, mapState, mapActions } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { debounce } from 'lodash-es'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -354,9 +355,9 @@ export default {
       'isPrivate',
       'upload_files'
     ]),
-    ...mapGetters(['userRoles', 'keycloak']),
+    commonStore () { return useCommonStore() },
     perms () {
-      return this.userRoles.bulk || {}
+      return this.commonStore.userRoles.bulk || {}
     },
     behaviourPicked () {
       return this.behaviour !== null

@@ -176,7 +176,7 @@
 import mapboxgl from 'mapbox-gl'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash-es'
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import smoothScroll from 'smoothscroll'
 import { useAquiferStore } from '@/stores/aquifers.js'
 
@@ -308,7 +308,7 @@ export default {
     searchResultCount () {
       return this.resultsTableData.length
     },
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     aquiferStore () {
       return useAquiferStore()
     },
@@ -373,7 +373,7 @@ export default {
           name: 'Aquifer notations',
           code: AQUIFER_NOTATION_CODE
         })
-        if (this.userRoles.aquifers.edit) {
+        if (this.commonStore.userRoles.aquifers.edit) {
           sections.push({
             name: 'Unpublished aquifers',
             code: UNPUBLISHED_AQUIFERS

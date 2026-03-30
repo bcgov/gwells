@@ -35,7 +35,7 @@ import {
 } from '../../../common/mapbox/layers'
 import { LegendControl, BoxZoomControl } from '../../../common/mapbox/controls'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, peopleToGeoJSON } from '../../../common/mapbox/geometry'
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { useRegistryStore } from '@/stores/registry.js'
 import { setupFeatureTooltips } from '../../../common/mapbox/popup'
 import {
@@ -80,9 +80,9 @@ export default {
     doSearchOnBoundsChange () { return this.registryStore.doSearchOnBoundsChange },
     limitSearchToCurrentMapBounds () { return this.registryStore.limitSearchToCurrentMapBounds },
     snapMapToSearchResults () { return this.registryStore.snapMapToSearchResults },
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     showUnpublished () {
-      return Boolean(this.userRoles.wells.edit)
+      return Boolean(this.commonStore.userRoles.wells.edit)
     }
   },
   methods: {

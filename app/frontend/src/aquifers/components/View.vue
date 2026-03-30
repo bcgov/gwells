@@ -87,7 +87,7 @@
                     <div>
                       <b-button
                         variant="default"
-                        v-if="userRoles.aquifers.edit"
+                        v-if="commonStore.aquifers.edit"
                         v-on:click.prevent="navigateToEdit">
                         <span title="Edit" class="fa fa-edit"/> Edit
                       </b-button>
@@ -540,7 +540,8 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash-es'
 import * as Sentry from '@sentry/browser'
 import { useAquiferStore } from '@/stores/aquifers.js'
@@ -625,7 +626,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     aquiferStore () {
       return useAquiferStore()
     },

@@ -186,7 +186,7 @@
         </b-button-group>
       </b-container>
     </b-card>
-    <div class="card container" v-else-if="!$keycloak.authenticated">
+    <div class="card container" v-else-if="!commonStore.$keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
       </div>
@@ -203,7 +203,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import Papa from 'papaparse'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 
 const MAX_NUMBER_OF_ROWS = 4000
 
@@ -298,9 +298,9 @@ export default {
     'api-error': APIErrorMessage
   },
   computed: {
-    ...mapGetters(['userRoles', 'keycloak']),
+    commonStore () { return useCommonStore() },
     perms () {
-      return this.userRoles.bulk || {}
+      return this.commonStore.userRoles.bulk || {}
     },
     hasCSVErrors () {
       return this.csvErrors.length > 0
