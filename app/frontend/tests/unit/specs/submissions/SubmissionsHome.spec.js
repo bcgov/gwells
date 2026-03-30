@@ -4,8 +4,7 @@ import Vuex from 'vuex'
 import VueRouter from 'vue-router'
 import useCommonStore from '@/stores/common.js'
 import SubmissionsHome from '@/submissions/views/SubmissionsHome.vue'
-
-import { FETCH_CODES, FETCH_WELL_TAGS } from '@/submissions/store/actions.types.js'
+import { useSubmissionStore } from '@/stores/submission'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
@@ -23,8 +22,8 @@ describe('SubmissionsHome.vue', () => {
       userRoles: () => ({ wells: { edit: true }, submissions: { edit: true } })
     }
     actions = {
-      [FETCH_CODES]: jest.fn(),
-      [FETCH_WELL_TAGS]: jest.fn()
+      fetchCodes: jest.fn(),
+      fetchWellTags: jest.fn()
     }
     store = new Vuex.Store({
       state: {},
@@ -41,6 +40,6 @@ describe('SubmissionsHome.vue', () => {
       router,
       sync: false
     })
-    expect(actions[FETCH_CODES]).toHaveBeenCalled()
+    expect(actions.fetchCodes()).toHaveBeenCalled()
   })
 })
