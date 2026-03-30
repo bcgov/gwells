@@ -88,7 +88,6 @@
                       <b-button
                         variant="default"
                         v-if="commonStore.aquifers.edit"
-                        v-if="commonStore.aquifers.edit"
                         v-on:click.prevent="navigateToEdit">
                         <span title="Edit" class="fa fa-edit"/> Edit
                       </b-button>
