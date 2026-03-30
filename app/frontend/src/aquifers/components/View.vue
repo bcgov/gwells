@@ -37,18 +37,18 @@
           This aquifer is unpublished and will be hidden from DataBC, iMapBC, the GWELLS Aquifer
           Search, the GWELLS Aquifer Summary and the CSV/XLS export.
         </b-alert>
-        <b-alert show v-if="files_uploading || shapefile_uploading">File Upload In Progress...</b-alert>
-        <b-alert show v-if="!files_uploading && file_upload_error" variant="danger">
+        <b-alert show v-if="commonStore.files_uploading || commonStore.shapefile_uploading">File Upload In Progress...</b-alert>
+        <b-alert show v-if="!commonStore.files_uploading && commonStore.file_upload_error" variant="danger">
           There was an error uploading the documents
         </b-alert>
-        <b-alert show v-if="!files_uploading && file_upload_success" variant="success">
+        <b-alert show v-if="!commonStore.files_uploading && commonStore.file_upload_success" variant="success">
           Successfully uploaded all documents
         </b-alert>
-        <b-alert show v-if="shapefile_upload_success & !shapefile_uploading" variant="success">
+        <b-alert show v-if="commonStore.shapefile_upload_success & !commonStore.shapefile_uploading" variant="success">
           Shapefile uploaded.
         </b-alert>
-        <b-alert show v-if="!shapefile_upload_success & !shapefile_uploading && shapefile_upload_message" variant="danger">
-          There was an error uploading the shapefile: {{ shapefile_upload_message }}.
+        <b-alert show v-if="!commonStore.shapefile_upload_success & !commonStore.shapefile_uploading && commonStore.shapefile_upload_message" variant="danger">
+          There was an error uploading the shapefile: {{ commonStore.shapefile_upload_message }}.
         </b-alert>
         <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
           Aquifer {{ id }}'s information successfully updated.
@@ -540,7 +540,6 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
 import { useCommonStore } from '@/stores/common.js'
 import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash-es'
 import * as Sentry from '@sentry/browser'
@@ -632,16 +631,6 @@ export default {
     },
     uncorrelatedWells () { return this.aquiferStore.wellsWithoutAquiferCorrelation },
     getAquiferNotationsById () { return this.aquiferStore.getAquiferNotationsById },
-    ...mapState('documentState', [
-      'files_uploading',
-      'file_upload_error',
-      'file_upload_success',
-      'upload_files',
-      'shapefile',
-      'shapefile_uploading',
-      'shapefile_upload_message',
-      'shapefile_upload_success'
-    ]),
     record () { return this.aquiferStore.record },
     aquiferFiles () { return this.aquiferStore.aquiferFiles },
     aquiferWells () { return this.aquiferStore.aquiferWells },
@@ -775,14 +764,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions('documentState', [
-      'uploadFiles',
-      'uploadShapefile',
-      'fileUploadSuccess',
-      'fileUploadFail',
-      'clearUploadShapeFileMessage',
-      'clearUploadFilesMessage'
-    ]),
     resetAquiferData () { this.aquiferStore.resetAquiferData() },
     setAquiferRecord (payload) { this.aquiferStore.setAquiferRecord(payload) },
     setAquiferFiles (payload) { this.aquiferStore.setAquiferFiles(payload) },
@@ -826,8 +807,8 @@ export default {
     },
     save () {
       this.showSaveSuccess = false
-      this.clearUploadShapeFileMessage()
-      this.clearUploadFilesMessage()
+      this.commonStore.clearUploadShapeFileMessage()
+      this.commonStore.clearUploadFilesMessage()
       this.fieldErrors = {}
       let writableRecord = cloneDeep(this.form)
       delete writableRecord.licence_details
@@ -841,23 +822,23 @@ export default {
     },
     finishSavingFiles () {
       const promises = []
-      if (this.upload_files.length > 0) {
+      if (this.commonStore.upload_files.length > 0) {
         const filePromise = this.uploadFiles({
           documentType: 'aquifers',
           recordId: this.id
         }).then(() => {
-          this.fileUploadSuccess()
-          this.fetchFiles()
+          this.commonStore.fileUploadSuccess()
+          this.commonStore.fetchFiles()
         }).catch((error) => {
           Sentry.captureException(error)
-          this.fileUploadFail()
+          this.commonStore.fileUploadFail()
           throw error
         })
         promises.push(filePromise)
       }
 
-      if (this.shapefile) {
-        const shapeFilePromise = this.uploadShapefile({
+      if (this.commonStore.shapefile) {
+        const shapeFilePromise = this.commonStore.uploadShapefile({
           documentType: 'aquifers',
           recordId: this.id
         }).then(() => {
@@ -916,11 +897,11 @@ export default {
         })
     },
     fetchFiles (id = this.id) {
-      this.loadingFiles = true
+      this.commonStore.loadingFiles = true
       return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.setAquiferFiles(response.data)
-          this.loadingFiles = false
+          this.commonStore.loadingFiles = false
         })
     },
     fetchWells (id = this.id) {

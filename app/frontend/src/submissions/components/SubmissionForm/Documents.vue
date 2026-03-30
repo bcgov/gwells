@@ -160,7 +160,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
-import { mapState, mapMutations } from 'vuex'
 import { useCommonStore } from '@/stores/common.js'
 import { omit } from 'lodash'
 
@@ -222,33 +221,24 @@ export default {
       WELL_TAGS: WELL_TAGS
     }
   },
-  created () {
-    this.submissionStore = useSubmissionStore()
-  },
   computed: {
-    codes () {
-      return this.submissionStore.codes
-    },
+    submissionStore () { return useSubmissionStore() },
     commonStore () { return useCommonStore() },
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files'
-    ]),
     files: {
       get: function () {
-        return this.upload_files
+        return this.commonStore.upload_files
       },
       set: function (value) {
-        this.setFiles(value)
+        this.commonStore.setFiles(value)
         this.$emit('setFormValueChanged')
       }
     },
     privateDocument: {
       get: function () {
-        return this.isPrivate
+        return this.commonStore.isPrivate
       },
       set: function (value) {
-        this.setPrivate(value)
+        this.commonStore.setPrivate(value)
       }
     },
     computedAttachments () {
@@ -285,11 +275,6 @@ export default {
     this.addRow()
   },
   methods: {
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate',
-      'removeFile'
-    ]),
     handleFileDelete (value, doc_status, e) {
       e.preventDefault()
       let tag = this.form.well && isNaN(this.form.well) ? this.form.well.well_tag_number : this.form.well

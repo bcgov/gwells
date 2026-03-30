@@ -71,7 +71,7 @@
                     <li v-if="multiBehaviourPicked" :class="{active: multiActiveStep === 'three'}">Add more aquifers as needed.</li>
                     <li :class="{active: multiActiveStep === 'four' || keyedActiveStep === 'two'}">
                       Click “Submit” to upload the
-                      <plural :count="multiBehaviourPicked ? upload_files.length : numAquiferDocuments">
+                      <plural :count="multiBehaviourPicked ? commonStore.upload_files.length : numAquiferDocuments">
                         <template #zero>
                           documents
                         </template>
@@ -144,7 +144,7 @@
                     <b-col md="3">
                       <b-form-file
                         multiple
-                        :key="`file-upload-${upload_files.length}`"
+                        :key="`file-upload-${commonStore.upload_files.length}`"
                         @input="filesPicked"/>
                     </b-col>
                     <b-col md="9">
@@ -301,7 +301,6 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapActions } from 'vuex'
 import { useCommonStore } from '@/stores/common.js'
 import { debounce } from 'lodash-es'
 
@@ -351,10 +350,6 @@ export default {
     plural: Plural
   },
   computed: {
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files'
-    ]),
     commonStore () { return useCommonStore() },
     perms () {
       return this.commonStore.userRoles.bulk || {}
@@ -370,10 +365,10 @@ export default {
     },
     privateDocument: {
       get: function () {
-        return this.isPrivate
+        return this.commonStore.isPrivate
       },
       set: function (value) {
-        this.setPrivate(value)
+        this.commonStore.setPrivate(value)
       }
     },
     aquiferIds () {
@@ -385,7 +380,7 @@ export default {
     aquiferDocuments () {
       const docs = {}
 
-      this.upload_files.forEach((file) => {
+      this.commonStore.upload_files.forEach((file) => {
         const aquiferId = this.parseAquiferIdFromFileName(file.name)
         if (aquiferId) {
           docs[aquiferId] = docs[aquiferId] || []
@@ -423,7 +418,7 @@ export default {
     submitButtonIsDisabled () {
       if (this.isSaving) {
         return true
-      } else if (this.upload_files.length === 0) {
+      } else if (this.commonStore.upload_files.length === 0) {
         return true
       } else if (this.unknonwnAquiferIdsExist) {
         return true
@@ -437,7 +432,7 @@ export default {
     multiActiveStep () {
       if (!this.multiBehaviourPicked) { return null }
 
-      if (this.upload_files.length === 0) {
+      if (this.commonStore.upload_files.length === 0) {
         return 'one'
       } else if (this.aquiferIds.length === 0) {
         return 'two'
@@ -450,7 +445,7 @@ export default {
     keyedActiveStep () {
       if (!this.keyedBehaviourPicked) { return null }
 
-      if (this.upload_files.length === 0) {
+      if (this.commonStore.upload_files.length === 0) {
         return 'one'
       }
 
@@ -463,19 +458,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate',
-      'removeFile'
-    ]),
-    ...mapActions('documentState', [
-      'uploadFiles',
-      'fileUploadSuccess',
-      'fileUploadFail',
-      'clearUploadFilesMessage'
-    ]),
     save () {
-      this.clearUploadFilesMessage()
+      this.commonStore.clearUploadFilesMessage()
 
       this.showSaveSuccess = false
       this.apiError = null
@@ -490,17 +474,17 @@ export default {
       }
 
       promise.then(() => {
-        this.fileUploadSuccess()
-        this.handleSaveSuccess()
+        this.commonStore.fileUploadSuccess()
+        this.commonStore.handleSaveSuccess()
       }).catch((error) => {
-        this.fileUploadFail()
+        this.commonStore.fileUploadFail()
         this.handleApiError(error)
         throw error
       })
     },
     uploadAllFilesForAllAquifers () {
       return this.aquiferIds.reduce((previousPromise, aquiferId) => {
-        return this.uploadFiles({
+        return this.commonStore.uploadFiles({
           documentType: 'aquifers',
           recordId: aquiferId
         })
@@ -523,7 +507,7 @@ export default {
 
           const fileNames = files.map((file) => this.fileNameWithoutPrefix(file.name))
 
-          return this.uploadFiles({
+          return this.commonStore.uploadFiles({
             documentType: 'aquifers',
             recordId: aquiferId,
             files,
@@ -655,7 +639,7 @@ export default {
       // Only setFiles when files > 0 because setFiles will empty the
       // upload_files collection if sent an empty array.
       if (files.length > 0) {
-        this.setFiles(files)
+        this.commonStore.setFiles(files)
       }
     }
   }

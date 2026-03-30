@@ -59,7 +59,8 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
+import { useCommonStore } from '@/stores/common'
 import getLongFormLabel from '@/common/helpers/getLongFormLabel'
 
 export default {
@@ -88,7 +89,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles', 'keycloak'])
+    commonStore () { return useCommonStore() }
   },
   methods: {
     // If file download is unsuccessful will retry up to 5 times or untill successful

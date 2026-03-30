@@ -56,6 +56,7 @@ import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
 import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 
 const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
@@ -132,12 +133,13 @@ export default {
     this.map = null
   },
   computed: {
-    ...mapGetters(['userRoles', 'searchQueryParams']),
+    commonStore () { return useCommonStore() },
+    ...mapGetters(['searchQueryParams']),
     hasSearchParams (state) {
       return Object.keys(this.searchQueryParams).length > 0
     },
     showUnpublished () {
-      return Boolean(this.userRoles.wells.edit)
+      return Boolean(this.commonStore.userRoles.wells.edit)
     }
   },
   methods: {

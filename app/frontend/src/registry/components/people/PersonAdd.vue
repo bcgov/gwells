@@ -129,9 +129,9 @@
                     v-model="files"
                     multiple
                     plain/>
-                  <div class="mt-3" v-if="upload_files.length > 0">
+                  <div class="mt-3" v-if="commonStore.upload_files.length > 0">
                     <b-list-group>
-                      <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+                      <b-list-group-item v-for="(f, index) in commonStore.upload_files" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
                 </b-form-group>
@@ -288,7 +288,6 @@
 
 <script>
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
-import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
@@ -367,37 +366,24 @@ export default {
     },
     files: {
       get: function () {
-        return this.upload_files
+        return this.commonStore.upload_files
       },
       set: function (value) {
-        this.setFiles(value)
+        this.commonStore.setFiles(value)
       }
     },
     privateDocument: {
       get: function () {
-        return this.isPrivate
+        return this.commonStore.isPrivate
       },
       set: function (value) {
-        this.setPrivate(value)
+        this.commonStore.setPrivate(value)
       }
     },
     loading () { return this.registryStore.loading },
-    error () { return this.registryStore.error },
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files'
-    ])
+    error () { return this.registryStore.error }
   },
   methods: {
-    ...mapActions('documentState', [
-      'fileUploadSuccess',
-      'fileUploadFail',
-      'uploadFiles'
-    ]),
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate'
-    ]),
     clearFieldErrors () {
       this.fieldErrors = {
         contact_email: []
@@ -444,15 +430,15 @@ export default {
       personData['registrations'] = registrations
 
       ApiService.post('drillers', personData).then((response) => {
-        if (this.upload_files.length > 0) {
-          this.uploadFiles({
+        if (this.commonStore.upload_files.length > 0) {
+          this.commonStore.uploadFiles({
             documentType: 'drillers',
             recordId: response.data.person_guid
           }).then(() => {
-            this.fileUploadSuccess()
+            this.commonStore.fileUploadSuccess()
             this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
           }).catch((error) => {
-            this.fileUploadFail()
+            this.commonStore.fileUploadFail()
             console.error(error)
           })
         } else {

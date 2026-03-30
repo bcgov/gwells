@@ -45,7 +45,7 @@
               </li>
               <li :class="{active: keyedActiveStep === 'two'}">
                 Click “Submit” to upload the
-                <plural :count="upload_files.length">
+                <plural :count="commonStore.upload_files.length">
                   <template #zero>
                     documents
                   </template>
@@ -81,7 +81,7 @@
                     <b-form-file
                       multiple
                       :disabled="isSaving"
-                      :key="`file-upload-${upload_files.length}`"
+                      :key="`file-upload-${commonStore.upload_files.length}`"
                       @input="filesPicked"/>
                   </b-col>
                   <b-col md="9">
@@ -116,7 +116,7 @@
                 <b-table
                   :items="wellTableData"
                   :fields="wellTableFields"
-                  v-if="upload_files.length > 0"
+                  v-if="commonStore.upload_files.length > 0"
                   :show-empty="wellTableData.length === 0"
                   empty-text="No documents with well tag numbers"
                   striped>
@@ -172,7 +172,6 @@
 </template>
 
 <script>
-import { mapMutations, mapState, mapActions } from 'vuex'
 import { useCommonStore } from '@/stores/common.js'
 import { difference } from 'lodash-es'
 
@@ -222,20 +221,16 @@ export default {
     plural: Plural
   },
   computed: {
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files'
-    ]),
     commonStore () { return useCommonStore() },
     perms () {
       return this.commonStore.userRoles.bulk || {}
     },
     privateDocument: {
       get: function () {
-        return this.isPrivate
+        return this.commonStore.isPrivate
       },
       set: function (value) {
-        this.setPrivate(value)
+        this.commonStore.setPrivate(value)
       }
     },
     wellTagNumbers () {
@@ -247,7 +242,7 @@ export default {
     wellDocuments () {
       const docs = {}
 
-      this.upload_files.forEach((file) => {
+      this.commonStore.upload_files.forEach((file) => {
         const wellTagNumber = this.parseWellIdFromFileName(file.name)
         if (wellTagNumber) {
           docs[wellTagNumber] = docs[wellTagNumber] || []
@@ -267,7 +262,7 @@ export default {
         let existingFiles = []
 
         if (wellTagNumber in this.existingFiles) {
-          existingFiles = this.existingFiles[wellTagNumber][this.isPrivate ? 'private' : 'public']
+          existingFiles = this.existingFiles[wellTagNumber][this.commonStore.isPrivate ? 'private' : 'public']
         }
 
         return {
@@ -321,7 +316,7 @@ export default {
       return true
     },
     keyedActiveStep () {
-      if (this.upload_files.length === 0) {
+      if (this.commonStore.upload_files.length === 0) {
         return 'one'
       }
 
@@ -337,19 +332,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate',
-      'removeFile'
-    ]),
-    ...mapActions('documentState', [
-      'uploadFiles',
-      'fileUploadSuccess',
-      'fileUploadFail',
-      'clearUploadFilesMessage'
-    ]),
     save () {
-      this.clearUploadFilesMessage()
+      this.commonStore.clearUploadFilesMessage()
 
       this.showSaveSuccess = false
       this.apiError = null
@@ -384,7 +368,7 @@ export default {
 
           const fileNames = files.map((file) => this.fileNameWithoutPrefix(file.name))
 
-          return this.uploadFiles({
+          return this.commonStore.uploadFiles({
             documentType: 'wells',
             recordId: wellTagNumber,
             files,
@@ -416,7 +400,7 @@ export default {
       this.apiValidationErrors = {}
       this.isSaving = false
       this.unknownWellIds = null
-      this.setFiles([])
+      this.commonStore.setFiles([])
       this.wellsList = [null]
     },
     restart () {
@@ -504,7 +488,7 @@ export default {
       // Only setFiles when files > 0 because setFiles will empty the
       // upload_files collection if sent an empty array.
       if (files.length > 0) {
-        this.setFiles(files)
+        this.commonStore.setFiles(files)
       }
     }
   }

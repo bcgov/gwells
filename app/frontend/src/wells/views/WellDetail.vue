@@ -124,7 +124,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <div><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
                 <div><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
                 <div><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
-                <div v-if="config && config.enable_documents"><a class="jump_link" href="#documents_fieldset">Documentation</a></div>
+                <div v-if="commonStore.config && commonStore.config.enable_documents"><a class="jump_link" href="#documents_fieldset">Documentation</a></div>
                 <div><a class="jump_link" href="#disclaimer_fieldset">Disclaimer</a></div>
               </b-col>
             </b-row>
@@ -574,8 +574,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { mapStores } from 'pinia'
+import { useCommonStore } from '@/stores/common.js'
+import { useSubmissionStore } from '@/stores/submission.js'
 
 import moment from 'moment'
 
@@ -584,7 +585,6 @@ import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
-import { useSubmissionStore } from '@/stores/submission'
 import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
 import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 import { TOOLTIP_TEXT } from '@/common/constants.js'
@@ -668,7 +668,7 @@ export default {
     },
     show () {
       return {
-        edit: !!this.config && this.userRoles.wells.edit === true
+        edit: !!this.commonStore.config && this.commonStore.userRoles.wells.edit === true
       }
     },
     UTM () {
@@ -693,7 +693,8 @@ export default {
     isUnpublished () {
       return !this.well.is_published
     },
-    ...mapGetters(['userRoles', 'config', 'codes'])
+    commonStore () { return useCommonStore() },
+    submissionStore () { return useSubmissionStore() }
   },
   methods: {
     booleanToYesNo (value) {

@@ -481,12 +481,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </p>
     </fieldset>
 
-    <fieldset v-if="upload_files && upload_files.length > 0">
+    <fieldset v-if="commonStore.upload_files && commonStore.upload_files.length > 0">
       <legend>Documents to Upload</legend>
       <b-row>
         <b-col cols="12" lg="8">
           <b-list-group>
-            <b-list-group-item v-for="(f, index) in upload_files" :key="index">
+            <b-list-group-item v-for="(f, index) in commonStore.upload_files" :key="index">
               {{f.file ? f.file.name.replace('null', '{ASSIGNED_WELL_ID}') : f.name}}
               <a
                 class="fa fa-trash fa-lg"
@@ -566,7 +566,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapState } from 'vuex'
 import { useCommonStore } from '@/stores/common.js'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
@@ -601,7 +600,7 @@ export default {
       this.$emit('fetchFiles')
     },
     handleDelete (index) {
-      this.upload_files.splice(index, 1)
+      this.commonStore.upload_files.splice(index, 1)
     }
   },
   computed: {
@@ -609,9 +608,6 @@ export default {
       return this.submissionStore.codes
     },
     commonStore () { return useCommonStore() },
-    ...mapState('documentState', [
-      'upload_files'
-    ]),
     canEditWells () {
       return this.commonStore.userRoles.wells.edit
     },
