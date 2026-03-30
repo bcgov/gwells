@@ -32,7 +32,7 @@
         </div>
       </b-col>
       <b-col sm="4" class="form-inline">
-        Show <b-form-select class="mx-1" :value="limit" @input="setLimit($event)" :options="limitOptions" /> results
+        Show <b-form-select class="mx-1" :value="qaqcStore.limit" @input="setLimit($event)" :options="limitOptions" /> results
       </b-col>
     </b-row>
     <div class="table-responsive">
@@ -106,7 +106,7 @@
           </tr>
         </tbody>
         <tbody role="rowgroup" v-else>
-          <tr v-for="row in results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
+          <tr v-for="row in qaqcStore.results" :key="row.well_tag_number" @mousedown="searchResultsRowClicked(row)">
             <td v-for="column in columns" :key="column.id" class="data">
               <template v-if="column.param === 'well_tag_number'">
                 <a :href="safeUrl(row.well_tag_number)" @click.prevent="openInNewTab(row.well_tag_number)">{{ row.well_tag_number }}</a>
@@ -138,35 +138,27 @@
         </tbody>
       </table>
     </div>
-    <div class="my-3" v-if="resultCount > 0">
-      <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
+    <div class="my-3" v-if="qaqcStore.resultCount > 0">
+      <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ qaqcStore.resultCount }} {{ qaqcStore.resultCount === 1 ? 'record' : 'records'}}.</div>
       <qaqc-exports class="my-3" :field-data="searchFields" />
     </div>
     <b-pagination
       class="mt-3"
       size="md"
       :disabled="isBusy"
-      :total-rows="resultCount"
+      :total-rows="qaqcStore.resultCount"
       :value="currentPage"
-      :per-page="limit"
+      :per-page="qaqcStore.limit"
       @input="changePage($event)"/>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { QAQC_SEARCH } from '@/qaqc/store/actions.types.js'
-import {
-  SET_QAQC_LIMIT,
-  SET_QAQC_OFFSET,
-  SET_QAQC_ORDERING,
-  SET_QAQC_RESULT_FILTERS
-} from '@/qaqc/store/mutations.types.js'
-import { FILTER_TRIGGER } from '@/qaqc/store/triggers.types.js'
 import QaQcFilters from '@/qaqc/components/QaQcFilters.vue'
 import QaQcExports from '@/qaqc/components/QaQcExports.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
 import { sanitizeUrl } from '@braintree/sanitize-url'
+import { useQAQCStore } from '@/stores/qaqc'
 
 export default {
   mixins: [filterMixin],
@@ -197,27 +189,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      limit: 'qaqcLimit',
-      errors: 'qaqcErrors',
-      params: 'qaqcParams',
-      offset: 'qaqcOffset',
-      ordering: 'qaqcOrdering',
-      pending: 'qaqcPendingSearch',
-      resultFilters: 'qaqcResultFilters',
-      resultColumns: 'qaqcResultColumns',
-      resultCount: 'qaqcResultCount',
-      results: 'qaqcResults'
-      // selectedWells: 'selectedWells'
-    }),
+    qaqcStore () { return useQAQCStore() },
     currentPage () {
-      return Math.ceil(this.offset / this.limit) + 1
+      return Math.ceil(this.qaqcStore.offset / this.qaqcStore.limit) + 1
     },
     dateColumn () {
       return this.columns.find(column => column.param === 'create_date')
     },
     columns () {
-      return this.getFilterFields(this.resultColumns)
+      return this.getFilterFields(this.qaqcStore.resultColumns)
     },
     excludedFilterColumns () {
       return ['latitude', 'longitude']
@@ -225,15 +205,15 @@ export default {
     // currentRecordsCountEnd is the last visible record number in the table of wells
     // (e.g. the 10 in 'showing 1 to 10 of 25 records')
     currentRecordsCountEnd () {
-      if (this.results === null) {
+      if (this.qaqcStore.results === null) {
         return 0
       }
-      return (this.currentPage - 1) * this.limit + this.results.length
+      return (this.currentPage - 1) * this.qaqcStore.limit + this.qaqcStore.results.length
     },
     // currentRecordsCountStart is the starting record number in the table of wells
     // (e.g. the 1 in 'showing 1 to 10 of 25 records')
     currentRecordsCountStart () {
-      return (this.currentPage - 1) * this.limit + 1
+      return (this.currentPage - 1) * this.qaqcStore.limit + 1
     },
     columnLabels () {
       // Define a mapping for updated labels
@@ -273,66 +253,67 @@ export default {
     },
     orderingParam () {
       if (this.orderingDesc) {
-        return this.ordering.substr(1)
+        return this.qaqcStore.ordering.substr(1)
       } else {
-        return this.ordering
+        return this.qaqcStore.ordering
       }
     },
     columnCount () {
-      return this.resultColumns.length
+      return this.qaqcStore.resultColumns.length
     },
     orderingDesc () {
-      return this.ordering.startsWith('-')
+      return this.qaqcStore.ordering.startsWith('-')
     },
     hasResultErrors () {
       return Object.entries(this.resultErrors).length > 0
     },
     resultErrors () {
-      return this.errors.filter_group || {}
+      return this.qaqcStore.errors.filter_group || {}
     },
     isReset () {
-      return (!this.isBusy && this.results === null)
+      return (!this.isBusy && this.qaqcStore.results === null)
     },
     isEmpty () {
-      return (!this.isBusy && this.results !== null && this.resultCount === 0)
+      return (!this.isBusy && this.qaqcStore.results !== null && this.qaqcStore.resultCount === 0)
     },
     isBusy () {
-      return (this.pending !== null)
+      return (this.qaqcStore.pendingSearch !== null)
     }
   },
   methods: {
     setLimit (limit) {
-      this.$store.commit(SET_QAQC_LIMIT, limit)
+      this.qaqcStore.setLimit(limit)
       this.$emit('limit-changed', limit)
 
-      this.$store.dispatch(QAQC_SEARCH, { trigger: FILTER_TRIGGER })
+      this.qaqcStore.search()
     },
     changePage (page) {
-      const offset = this.limit * (page - 1)
-      this.$store.commit(SET_QAQC_OFFSET, offset)
+      const offset = this.qaqcStore.limit * (page - 1)
+
+      this.qaqcStore.setOffset(offset)
       this.$emit('page-changed', page)
 
-      this.$store.dispatch(QAQC_SEARCH, { trigger: FILTER_TRIGGER })
+      this.qaqcStore.search()
     },
     sortResults ({ param, desc }) {
       const sort = `${desc ? '-' : ''}${param}`
-      this.$store.commit(SET_QAQC_ORDERING, sort)
+      this.qaqcStore.setOrdering(sort)
       this.$emit('sort-changed', sort)
 
-      this.$store.dispatch(QAQC_SEARCH, { trigger: FILTER_TRIGGER })
+      this.qaqcStore.search()
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
       const filterGroup = { ...this.searchQueryParams }
-      this.$store.commit(SET_QAQC_RESULT_FILTERS, filterGroup)
+      this.qaqcStore.setResultFilters(filterGroup)
       this.$emit('filter-changed', filterGroup)
 
-      this.$store.dispatch(QAQC_SEARCH, { trigger: FILTER_TRIGGER })
+      this.qaqcStore.search()
     },
     initFilterParams () {
       const filterParams = { ...this.emptyFilterParams }
 
-      Object.entries(this.resultFilters).forEach(([param, value]) => {
+      Object.entries(this.qaqcStore.resultFilters).forEach(([param, value]) => {
         this.columns.forEach(column => {
           if (column.params.includes(param)) {
             filterParams[column.id] = { [param]: value }
@@ -402,13 +383,13 @@ export default {
     }
   },
   watch: {
-    resultFilters (newFilters) {
+    'qaqcStore.resultFilters' (newFilters) {
       // on reset (empty filters), clear state
       if (Object.entries(newFilters).length === 0 && newFilters.constructor === Object) {
         this.clearFilterParams()
       }
     },
-    resultColumns (newColumns, oldColumns) {
+    'qaqcStore.resultColumns' (newColumns, oldColumns) {
       const removedColumnIds = oldColumns.filter(colId => !newColumns.includes(colId))
       const removedWithFilters = removedColumnIds.filter(columnId => {
         return this.filterParams[columnId] !== undefined && Object.entries(this.filterParams[columnId]).length > 0
