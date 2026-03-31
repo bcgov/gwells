@@ -44,7 +44,7 @@
       <div v-if="publicHighlightedFiles.length === 0 && publicFiles.length === 0">
         No additional documentation available for this aquifer.
       </div>
-      <div class="internal-documents mt-5" v-if="userRoles.aquifers.edit">
+      <div class="internal-documents mt-5" v-if="commonStore.userRoles.aquifers.edit">
         <h5>Internal documentation - authorized access only</h5>
         <div v-if="error">
           {{error}}
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
@@ -120,7 +120,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     shouldHighlightPublicFiles () {
       return this.highlightRegexp !== null
     },

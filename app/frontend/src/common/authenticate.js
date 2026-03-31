@@ -10,8 +10,8 @@
   limitations under the License.
  */
 import ApiService from '@/common/services/ApiService.js'
+import { useCommonStore } from '@/stores/common.js'
 import Keycloak from 'keycloak-js'
-import Vue from 'vue'
 
 export default {
   _app: null,
@@ -21,7 +21,6 @@ export default {
   },
 
   _setKeycloak (instance) {
-    Vue.prototype.$keycloak = instance
     if (this._app?.config?.globalProperties) {
       this._app.config.globalProperties.$keycloak = instance
     }
@@ -33,7 +32,7 @@ export default {
      */
 
     return new Promise((resolve, reject) => {
-      if (!Vue.prototype.$keycloak) {
+      if (!this._app.config.globalProperties.$keycloak) {
         ApiService.query('keycloak', {})
           .then(response => {
             const {
@@ -61,11 +60,11 @@ export default {
           .catch(error => {
             console.error(error)
             this._setKeycloak({})
-            resolve(Vue.prototype.$keycloak)
+            resolve(this._app.config.globalProperties.$keycloak)
           })
       } else {
         // Keycloak has already been loaded, so just resolve the object.
-        resolve(Vue.prototype.$keycloak)
+        resolve(this._app.config.globalProperties.$keycloak)
       }
     })
   },
@@ -117,10 +116,12 @@ export default {
     })
   },
 
-  authenticate: function (store) {
+  authenticate: function () {
     /**
      * Return a promise that resolves on completion of authentication.
      */
+    const commonStore = useCommonStore()
+
     return new Promise((resolve, reject) => {
       this.getInstance()
         .then(async (instance) => {
@@ -152,7 +153,7 @@ export default {
                   // We update the store reference only after wiring up the API. (Someone might be waiting
                   // for login to complete before taking some action. )
                   // Assumes that store passed in includes a 'SET_KEYCLOAK' mutation!
-                  store.commit('SET_KEYCLOAK', instance)
+                  commonStore.setKeycloak(instance)
                   this.scheduleRenewal(instance)
                   resolve(instance)
                 }).catch(() => {
@@ -161,13 +162,13 @@ export default {
                   instance.clearToken()
                   // We update the store reference only after wiring up the API. (Someone might be waiting
                   // for login to complete before taking some action. )
-                  store.commit('SET_KEYCLOAK', instance)
+                  commonStore.setKeycloak(instance)
                   resolve(instance)
                 })
               } else {
                 // We may have failed to authenticate, for many reasons, e.g. - it may be we never logged in,
                 // or have an expired token.
-                store.commit('SET_KEYCLOAK', instance)
+                commonStore.setKeycloak(instance)
                 resolve(instance)
               }
             } catch (error) {

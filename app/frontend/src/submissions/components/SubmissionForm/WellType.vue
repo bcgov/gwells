@@ -228,7 +228,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -323,10 +323,11 @@ export default {
       // WATER-1589, we disable the subclass dropdown for well classes of WATR_SPPLY and CLS_LP_GEO
       return this.subclasses && (this.wellClass === 'WATR_SPPLY' || this.wellClass === 'CLS_LP_GEO')
     },
+    commonStore () { return useCommonStore() },
+    submissionStore () { return useSubmissionStore() },
     codes () {
       return this.submissionStore.codes
-    },
-    ...mapGetters(['userRoles', 'wells'])
+    }
   },
   methods: {
     match (item, search) {
@@ -336,14 +337,14 @@ export default {
     onWellTagSearch (search, loading) {
       // Only do search if something has been typed.
       this.wellTagOptions = []
-      if (search && search.length >= 1 && this.wells) {
+      if (search && search.length >= 1 && this.submissionStore.wells) {
         // Save time, by converting to uppercase for search only once.
         search = search.toUpperCase()
         // We iterate manually instead of using .filter in order that we can limit the number
         // of search results, and run faster.
-        for (let i = 0; i < this.wells.length && this.wellTagOptions.length < this.MAX_RESULTS; ++i) {
-          if (this.match(this.wells[i], search)) {
-            this.wellTagOptions.push(this.wells[i])
+        for (let i = 0; i < this.submissionStore.wells.length && this.wellTagOptions.length < this.MAX_RESULTS; ++i) {
+          if (this.match(this.submissionStore.wells[i], search)) {
+            this.wellTagOptions.push(this.submissionStore.wells[i])
           }
         }
       }

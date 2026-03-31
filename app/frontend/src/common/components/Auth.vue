@@ -1,16 +1,16 @@
 <template>
   <div>
-    <span v-if="authenticated" class="userLoggedInText text-light">
+    <span v-if="commonStore.authenticated" class="userLoggedInText text-light">
       {{ keycloak.tokenParsed.name }}
     </span>
     <b-btn  variant="light" size="sm" :id="`${id}-logout-button`" :disabled="!ready" @click="buttonClicked()">
-      {{authenticated ? 'Log out' : 'Log in'}}
+      {{commonStore.authenticated ? 'Log out' : 'Log in'}}
     </b-btn>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import ApiService from '@/common/services/ApiService.js'
 import { useRegistryStore } from '@/stores/registry.js'
 
@@ -28,11 +28,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['keycloak', 'authenticated', 'config'])
+    commonStore () { return useCommonStore() }
   },
   methods: {
     buttonClicked () {
-      if (this.authenticated) {
+      if (this.commonStore.authenticated) {
         this.keyCloakLogout()
       } else {
         this.keyCloakLogin()
@@ -60,19 +60,19 @@ export default {
     //   }
     // },
     keyCloakLogin () {
-      if (!this.keycloak.authenticated) {
-        if (!this.keycloak.didInitialize) {
-          console.log('keyCloakLogin: ', this.keycloak.didInitialize)
-          this.keycloak.init({
+      if (!this.commonStore.keycloak.authenticated) {
+        if (!this.commonStore.keycloak.didInitialize) {
+          console.log('keyCloakLogin: ', this.commonStore.keycloak.didInitialize)
+          this.commonStore.keycloak.init({
             checkLoginIframe: false
           }).then(() => {
-            this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+            this.commonStore.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
               if (authenticated) {
-                ApiService.authHeader('JWT', this.keycloak.token)
+                ApiService.authHeader('JWT', this.commonStore.keycloak.token)
                 if (window.localStorage) {
-                  localStorage.setItem('token', this.keycloak.token)
-                  localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-                  localStorage.setItem('idToken', this.keycloak.idToken)
+                  localStorage.setItem('token', this.commonStore.keycloak.token)
+                  localStorage.setItem('refreshToken', this.commonStore.keycloak.refreshToken)
+                  localStorage.setItem('idToken', this.commonStore.keycloak.idToken)
                 }
               }
             }).catch((e) => {
@@ -81,13 +81,13 @@ export default {
             })
           })
         } else {
-          this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+          this.commonStore.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
             if (authenticated) {
-              ApiService.authHeader('JWT', this.keycloak.token)
+              ApiService.authHeader('JWT', this.commonStore.keycloak.token)
               if (window.localStorage) {
-                localStorage.setItem('token', this.keycloak.token)
-                localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-                localStorage.setItem('idToken', this.keycloak.idToken)
+                localStorage.setItem('token', this.commonStore.keycloak.token)
+                localStorage.setItem('refreshToken', this.commonStore.keycloak.refreshToken)
+                localStorage.setItem('idToken', this.commonStore.keycloak.idToken)
               }
             }
           }).catch((e) => {
@@ -96,27 +96,27 @@ export default {
           })
         }
       } else {
-        this.keycloak.updateToken(30)
+        this.commonStore.keycloak.updateToken(30)
       }
     },
     keyCloakLogout () {
       // This should log the user out, but unfortunately does not delete the cookie storing the user
       // token.
-      this.keycloak.clearToken()
+      this.commonStore.keycloak.clearToken()
       ApiService.authHeader()
       if (window.localStorage) {
         localStorage.removeItem('token')
         localStorage.removeItem('refreshToken')
         localStorage.removeItem('idToken')
       }
-      this.keycloak.logout() // This redirects the user to a logout screen.
+      this.commonStore.keycloak.logout() // This redirects the user to a logout screen.
     }
   },
   watch: {
     keycloak (kc) {
       if (kc) {
-        if (window._paq && this.authenticated) {
-          window._paq.push(['setCustomVariable', 1, 'userType', this.keycloak.tokenParsed.identity_provider])
+        if (window._paq && this.commonStore.authenticated) {
+          window._paq.push(['setCustomVariable', 1, 'userType', this.commonStore.keycloak.tokenParsed.identity_provider])
         }
         this.ready = true
       }

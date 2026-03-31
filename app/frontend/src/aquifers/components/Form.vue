@@ -353,8 +353,8 @@
 <script>
 // import AquiferResources from './AquiferResources.vue'
 import { isEmpty, mapValues, cloneDeep } from 'lodash-es'
-import { mapMutations, mapState } from 'vuex'
 import { useAquiferStore } from '@/stores/aquifers.js'
+import { useCommonStore } from '@/stores/common.js'
 
 import ApiService from '@/common/services/ApiService.js'
 import { END_OF_TIME_ISO_8601 } from '@/common/helpers/dates.js'
@@ -421,26 +421,26 @@ export default {
     },
     uploadFiles: {
       get: function () {
-        return this.upload_files
+        return this.commonStore.uploadFiles
       },
       set: function (value) {
-        this.setFiles(value)
+        this.commonStore.setFiles(value)
       }
     },
     shape: {
       get: function () {
-        return this.shapefile
+        return this.commonStore.shapefile
       },
       set: function (value) {
-        this.setShapefile(value)
+        this.commonStore.setShapefile(value)
       }
     },
     privateDocument: {
       get: function () {
-        return this.isPrivate
+        return this.commonStore.isPrivate
       },
       set: function (value) {
-        this.setPrivate(value)
+        this.commonStore.setPrivate(value)
       }
     },
     statusMessage () {
@@ -458,6 +458,7 @@ export default {
       return ''
     },
     aquiferStore () { return useAquiferStore() },
+    commonStore () { return useCommonStore() },
     demand_codes () { return this.aquiferStore.demand_codes },
     aquifer_resource_sections () { return this.aquiferStore.aquifer_resource_sections },
     known_water_use_codes () { return this.aquiferStore.known_water_use_codes },
@@ -466,22 +467,12 @@ export default {
     quality_concern_codes () { return this.aquiferStore.quality_concern_codes },
     subtype_codes () { return this.aquiferStore.subtype_codes },
     vulnerability_codes () { return this.aquiferStore.vulnerability_codes },
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files',
-      'shapefile'
-    ]),
     fieldDisabled () {
       return this.loadingData
     }
   },
   methods: {
     addCodes (payload) { this.aquiferStore.addCodes(payload) },
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate',
-      'setShapefile'
-    ]),
     handleAddResource () {
       this.record.resources.push({
         name: '',

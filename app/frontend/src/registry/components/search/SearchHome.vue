@@ -251,7 +251,6 @@
 <script>
 import querystring from 'querystring-es3'
 import mapboxgl from 'mapbox-gl'
-import { mapGetters } from 'vuex'
 import { omit } from 'lodash'
 import axios from 'axios'
 
@@ -261,6 +260,7 @@ import SearchTable from '@/registry/components/search/SearchTable.vue'
 import LegalText from '@/registry/components/Legal.vue'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import { useRegistryStore } from '@/stores/registry.js'
+import { useCommonStore } from '@/stores/common.js'
 
 export default {
   components: {
@@ -278,10 +278,12 @@ export default {
         password: null
       },
       surveys: [],
-      registryStore: useRegistryStore()
+      registryStore: useRegistryStore(),
+      commonStore: useCommonStore()
     }
   },
   computed: {
+    userRoles () { return this.commonStore.userRoles },
     searchParams () { return this.registryStore.searchParams },
     drillerOptions () { return this.registryStore.drillerOptions },
     loading () { return this.registryStore.loading },
@@ -350,8 +352,7 @@ export default {
     limitSearchToCurrentMapBounds: {
       get () { return this.registryStore.limitSearchToCurrentMapBounds },
       set (value) { this.registryStore.setLimitSearchToCurrentMapBounds(value) }
-    },
-    ...mapGetters(['userRoles'])
+    }
   },
   watch: {
     'searchParams.activity': function (activity) {

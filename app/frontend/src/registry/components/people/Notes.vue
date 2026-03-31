@@ -2,7 +2,7 @@
   <div class="card" ref="noteSection">
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
-      <div class="mt-3" v-if="userRoles.registry.edit">
+      <div class="mt-3" v-if="commonStore.userRoles.registry.edit">
         <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
           <b-form-group
               id="noteInputGroup"
@@ -146,7 +146,7 @@
             </p>
             <div class="crud-options">
               <b-btn
-                :disabled="keycloak.idTokenParsed.display_name !== note.author"
+                :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteEditHandler(note)"
                 size="sm"
                 variant="primary"
@@ -155,7 +155,7 @@
                 Edit
               </b-btn>
               <b-btn
-                :disabled="!userRoles.registry.admin && keycloak.idTokenParsed.display_name !== note.author"
+                :disabled="!commonStore.userRoles.registry.admin && commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteDeleteHandler(note)"
                 size="sm"
                 variant="danger"
@@ -171,7 +171,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import smoothScroll from 'smoothscroll'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -221,7 +220,7 @@ export default {
       }
       return typeMap[this.type]
     },
-    ...mapGetters(['userRoles', 'keycloak'])
+    commonStore () { return useCommonStore() },
   },
   methods: {
     deleteNote () {

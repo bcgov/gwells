@@ -143,7 +143,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
@@ -196,7 +196,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles'])
+    commonStore () { return useCommonStore() },
   },
   methods: {
     onPersonSearch (search, loading) {

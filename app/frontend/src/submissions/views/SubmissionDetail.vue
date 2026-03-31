@@ -3,7 +3,7 @@
   <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 container d-print-none">
     <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
   </b-card>
-  <b-card v-if="userRoles.wells.edit || userRoles.submissions.edit" class="container p-1">
+  <b-card v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit" class="container p-1">
     <b-card-body>
       <h1>Activity Report Summary</h1>
       <div v-if="loading">
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { useSubmissionStore } from '@/stores/submission.js'
 import ApiService from '@/common/services/ApiService.js'
 
@@ -73,7 +73,7 @@ export default {
   },
   computed: {
     codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    ...mapGetters(['userRoles'])
+    commonStore () { return useSubmissionStore() },
   },
   methods: {
     fetchSubmission () {

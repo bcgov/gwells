@@ -21,9 +21,8 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import { cloneDeep, merge, omit } from 'lodash'
 
-import auth from '@/common/store/auth.js'
+import { useCommonStore } from '@/stores/common.js'
 import aquiferStore from '@/aquifers/store/index.js'
-import documentState from '@/common/store/documents.js'
 import ViewComponent from '@/aquifers/components/View.vue'
 
 jest.mock('axios')
@@ -107,7 +106,7 @@ describe('View Component', () => {
 
   const component = (options, storeState = {}) => {
     const store = new Vuex.Store({
-      modules: { auth, aquiferStore, documentState }
+      modules: { useCommonStore, aquiferStore }
     })
     store.replaceState(merge(cloneDeep(store.state), cloneDeep(storeState)))
 

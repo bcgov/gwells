@@ -85,7 +85,7 @@
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
-                      v-if="userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
+                      v-if="commonStore.userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
                   </b-col>
                 </b-row>
                 <b-row class="row" v-if="classification && classification.registries_subactivity">
@@ -198,7 +198,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { useRegistryStore } from '@/stores/registry.js'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
@@ -348,9 +348,7 @@ export default {
     removalReason () {
       return this.application ? this.application.removal_reason : null
     },
-    ...mapGetters([
-      'userRoles'
-    ]),
+    commonStore () { return useCommonStore() },
     loading () { return this.registryStore.loading },
     error () { return this.registryStore.error },
     currentDriller () { return this.registryStore.currentDriller },

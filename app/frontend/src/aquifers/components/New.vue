@@ -38,7 +38,7 @@
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import AquiferForm from './Form.vue'
-import { mapActions, mapState } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 
 export default {
   components: {
@@ -46,9 +46,7 @@ export default {
     'aquifer-form': AquiferForm
   },
   computed: {
-    ...mapState('documentState', [
-      'upload_files'
-    ])
+    commonStore () { return useCommonStore() },
   },
   data () {
     return {
@@ -61,24 +59,19 @@ export default {
     }
   },
   methods: {
-    ...mapActions('documentState', [
-      'uploadFiles',
-      'fileUploadSuccess',
-      'fileUploadFail'
-    ]),
     navigateToView () {
       this.$router.push({ name: 'home' })
     },
     handleSuccess ({ data }) {
-      if (this.upload_files.length > 0) {
-        this.uploadFiles({
+      if (this.commonStore.uploadFiles.length > 0) {
+        this.commonStore.uploadFiles({
           documentType: 'aquifers',
           recordId: data.aquifer_id
         }).then((values) => {
-          this.fileUploadSuccess()
+          this.commonStore.fileUploadSuccess()
           this.$router.push({ name: 'aquifers-view', params: { id: data.aquifer_id } })
         }).catch((error) => {
-          this.fileUploadFail()
+          this.commonStore.fileUploadFail()
           console.error(error)
         })
       } else {

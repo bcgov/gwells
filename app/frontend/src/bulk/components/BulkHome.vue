@@ -56,12 +56,12 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 export default {
   computed: {
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     perms () {
-      return this.userRoles.bulk || {}
+      return this.commonStore.userRoles.bulk || {}
     },
     noPerm () {
       return Object.values(this.perms).every(x => !x)

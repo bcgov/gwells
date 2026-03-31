@@ -19,8 +19,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import mapboxgl from 'mapbox-gl'
 import GestureHandling from '@geolonia/mbgl-gesture-handling'
 import { difference, uniq } from 'lodash-es'
-import { mapGetters } from 'vuex'
 import { useAquiferStore } from '@/stores/aquifers.js'
+import { useCommonStore } from '@/stores/common.js'
 
 import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 import {
@@ -193,7 +193,7 @@ export default {
     this.map = null
   },
   computed: {
-    ...mapGetters(['userRoles']),
+    commonStore () { return useCommonStore() },
     aquiferStore () { return useAquiferStore() },
     getAquiferNotationsById () { return this.aquiferStore.getAquiferNotationsById },
     highlightIdsMap () {
@@ -203,10 +203,10 @@ export default {
       }, {})
     },
     showUnpublishedAquifers () {
-      return Boolean(this.userRoles.aquifers.edit)
+      return Boolean(this.commonStore.userRoles.aquifers.edit)
     },
     showUnpublishedWells () {
-      return Boolean(this.userRoles.wells.edit)
+      return Boolean(this.commonStore.userRoles.wells.edit)
     }
   },
   methods: {

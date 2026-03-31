@@ -13,7 +13,7 @@
 
 // Import your table components
 import QaQcTable from '../components/QaQcTable.vue'
-import { FETCH_CODES } from '@/submissions/store/actions.types.js'
+import { useSubmissionStore } from '@/stores/submission'
 import { useQAQCStore } from '@/stores/qaqc'
 
 export default {
@@ -22,6 +22,7 @@ export default {
     QaQcTable
   },
   computed: {
+    submissionStore() { return useSubmissionStore() },
     qaqcStore () { return useQAQCStore() },
     currentTab: {
       get () {
@@ -33,7 +34,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch(FETCH_CODES)
+    this.submissionStore.fetchCodes()
   }
 }
 </script>

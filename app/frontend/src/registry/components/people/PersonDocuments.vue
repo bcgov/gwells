@@ -9,7 +9,7 @@
       </div>
     </div>
     <div v-else>
-      <div class="row no-gutters" v-if="userRoles.registry.edit">
+      <div class="row no-gutters" v-if="commonStore.userRoles.registry.edit">
         <div class="col-md-12">
           <h4>Internal documentation - authorized access only</h4>
           <div v-if="error">
@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
@@ -64,7 +64,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRoles'])
+    commonStore () { return useCommonStore() }
   },
   methods: {
     showModal () {

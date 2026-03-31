@@ -13,6 +13,8 @@
 */
 /* Shared logic for handling search filters. */
 import { mapGetters } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
+import { useSubmissionStore } from '@/stores/submission.js'
 import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC } from '../../../common/constants'
 const SEARCH_FIELDS = {
   matchAny: {
@@ -992,18 +994,18 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'codes',
       'drillerNames',
       'organizationNames',
-      'userRoles'
     ]),
+    commonStore () { return useCommonStore() },
+    submissionStore () { return useSubmissionStore() },
     searchFields () {
       const fields = { ...SEARCH_FIELDS }
       Object.keys(fields).forEach(k => {
         fields[k].sortParam = fields[k].sortParam || fields[k].param
       })
 
-      if (!(this.userRoles.wells && this.userRoles.wells.view)) {
+      if (!(this.commonStore.userRoles.wells && this.commonStore.userRoles.wells.view)) {
         Object.entries(fields).forEach(([fieldId, field]) => {
           if (field.authenticated) {
             delete fields[fieldId]
@@ -1014,10 +1016,10 @@ export default {
       return fields
     },
     landDistrictOptions () {
-      if (this.codes.land_district_codes === undefined || (this.codes.land_district_codes && Object.entries(this.codes.land_district_codes).length === 0)) {
+      if (this.submissionStore.codes.land_district_codes === undefined || (this.submissionStore.codes.land_district_codes && Object.entries(this.submissionStore.codes.land_district_codes).length === 0)) {
         return []
       }
-      return this.codes.land_district_codes.map((district) => {
+      return this.submissionStore.codes.land_district_codes.map((district) => {
         return {
           value: district.land_district_code,
           text: `${district.land_district_code} - ${district.name}`
@@ -1025,11 +1027,11 @@ export default {
       })
     },
     wellSubclassOptions () {
-      if (!this.codes.well_classes) {
+      if (!this.submissionStore.codes.well_classes) {
         return []
       }
       const options = []
-      this.codes.well_classes.forEach((wellClass) => {
+      this.submissionStore.codes.well_classes.forEach((wellClass) => {
         wellClass.wellsubclasscode_set.forEach((wellSubclass) => {
           options.push({
             value: wellSubclass.well_subclass_guid,
@@ -1042,40 +1044,40 @@ export default {
     },
     filterSelectOptions () {
       const options = {
-        aquiferLithology: this.codes.aquifer_lithology_codes || [],
-        coordinateAcquisitionCode: this.codes.coordinate_acquisition_codes || [],
-        decommissionMethod: this.codes.decommission_methods || [],
-        developmentMethods: this.codes.development_methods || [],
-        drillingMethods: this.codes.drilling_methods || [],
-        filterPackMaterial: this.codes.filter_pack_material || [],
-        filterPackMaterialSize: this.codes.filter_pack_material_size || [],
-        groundElevationMethod: this.codes.ground_elevation_methods || [],
-        intendedWaterUse: this.codes.intended_water_uses || [],
-        boundaryEffect: this.codes.boundary_effect_codes || [],
-        pumpingTestDescription: this.codes.pumping_test_description_codes || [],
+        aquiferLithology: this.submissionStore.codes.aquifer_lithology_codes || [],
+        coordinateAcquisitionCode: this.submissionStore.codes.coordinate_acquisition_codes || [],
+        decommissionMethod: this.submissionStore.codes.decommission_methods || [],
+        developmentMethods: this.submissionStore.codes.development_methods || [],
+        drillingMethods: this.submissionStore.codes.drilling_methods || [],
+        filterPackMaterial: this.submissionStore.codes.filter_pack_material || [],
+        filterPackMaterialSize: this.submissionStore.codes.filter_pack_material_size || [],
+        groundElevationMethod: this.submissionStore.codes.ground_elevation_methods || [],
+        intendedWaterUse: this.submissionStore.codes.intended_water_uses || [],
+        boundaryEffect: this.submissionStore.codes.boundary_effect_codes || [],
+        pumpingTestDescription: this.submissionStore.codes.pumping_test_description_codes || [],
         landDistrict: this.landDistrictOptions,
-        licencedStatus: this.codes.licenced_status_codes || [],
-        linerMaterial: this.codes.liner_material_codes || [],
-        observationWellStatus: this.codes.observation_well_status || [],
+        licencedStatus: this.submissionStore.codes.licenced_status_codes || [],
+        linerMaterial: this.submissionStore.codes.liner_material_codes || [],
+        observationWellStatus: this.submissionStore.codes.observation_well_status || [],
         orgResponsibleGuid: this.organizationNames || [],
-        ownerProvince: this.codes.province_codes || [],
+        ownerProvince: this.submissionStore.codes.province_codes || [],
         personResponsibleGuid: this.drillerNames || [],
-        publicationStatus: this.codes.well_publication_status_codes || [],
-        screenIntakeMethod: this.codes.screen_intake_methods || [],
-        screenBottom: this.codes.screen_bottoms || [],
-        screenMaterial: this.codes.screen_materials || [],
-        screenOpening: this.codes.screen_openings || [],
-        screenType: this.codes.screen_types || [],
-        surfaceSealMaterial: this.codes.surface_seal_materials || [],
-        surfaceSealMethod: this.codes.surface_seal_methods || [],
-        waterQualityCharacteristics: this.codes.water_quality_characteristics || [],
-        waterQualityColour: this.codes.water_quality_colours || [],
-        wellActivityType: this.codes.activity_types || [],
-        wellClass: this.codes.well_classes || [],
-        wellDisinfectedStatus: this.codes.well_disinfected_codes || [],
-        wellStatus: this.codes.well_status_codes || [],
+        publicationStatus: this.submissionStore.codes.well_publication_status_codes || [],
+        screenIntakeMethod: this.submissionStore.codes.screen_intake_methods || [],
+        screenBottom: this.submissionStore.codes.screen_bottoms || [],
+        screenMaterial: this.submissionStore.codes.screen_materials || [],
+        screenOpening: this.submissionStore.codes.screen_openings || [],
+        screenType: this.submissionStore.codes.screen_types || [],
+        surfaceSealMaterial: this.submissionStore.codes.surface_seal_materials || [],
+        surfaceSealMethod: this.submissionStore.codes.surface_seal_methods || [],
+        waterQualityCharacteristics: this.submissionStore.codes.water_quality_characteristics || [],
+        waterQualityColour: this.submissionStore.codes.water_quality_colours || [],
+        wellActivityType: this.submissionStore.codes.activity_types || [],
+        wellClass: this.submissionStore.codes.well_classes || [],
+        wellDisinfectedStatus: this.submissionStore.codes.well_disinfected_codes || [],
+        wellStatus: this.submissionStore.codes.well_status_codes || [],
         wellSubclass: this.wellSubclassOptions,
-        yieldEstimationMethod: this.codes.yield_estimation_methods || [],
+        yieldEstimationMethod: this.submissionStore.codes.yield_estimation_methods || [],
         naturalResourceRegion: ['Northeast', 'West Coast', 'South Coast', 'Omineca',
           'Skeena', 'Thompson-Okanagan', 'Cariboo', 'Kootenay']
       }

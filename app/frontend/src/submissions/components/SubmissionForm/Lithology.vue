@@ -190,7 +190,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
-import { mapGetters } from 'vuex'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
@@ -239,10 +238,10 @@ export default {
     }
   },
   computed: {
+    submissionStore () { return useSubmissionStore() },
     codes () {
       return this.submissionStore?.codes
     },
-    ...mapGetters(['codes']),
     computedLithology () {
       return [...this.lithologyData]
     }

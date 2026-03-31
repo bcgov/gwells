@@ -45,7 +45,7 @@
               </li>
               <li :class="{active: keyedActiveStep === 'two'}">
                 Click “Submit” to upload the
-                <plural :count="upload_files.length">
+                <plural :count="commonStore.uploadFiles.length">
                   <template #zero>
                     documents
                   </template>
@@ -81,7 +81,7 @@
                     <b-form-file
                       multiple
                       :disabled="isSaving"
-                      :key="`file-upload-${upload_files.length}`"
+                      :key="`file-upload-${commonStore.uploadFiles.length}`"
                       @input="filesPicked"/>
                   </b-col>
                   <b-col md="9">
@@ -95,7 +95,7 @@
                 </b-row>
                 <table id="files-to-upload">
                   <tbody>
-                    <tr v-for="(file, index) in upload_files" :key="index" :class="{ error: fileIsInvalid(file) }">
+                    <tr v-for="(file, index) in uploadFiles" :key="index" :class="{ error: fileIsInvalid(file) }">
                       <td><input type="button" value="remove" :disabled="isSaving" @click.prevent="removeFile(file)"/></td>
                       <td>{{file.name}}</td>
                       <td>{{formatFileSize(file.size)}}</td>
@@ -116,7 +116,7 @@
                 <b-table
                   :items="wellTableData"
                   :fields="wellTableFields"
-                  v-if="upload_files.length > 0"
+                  v-if="commonStore.uploadFiles.length > 0"
                   :show-empty="wellTableData.length === 0"
                   empty-text="No documents with well tag numbers"
                   striped>
@@ -158,7 +158,7 @@
         </div>
       </b-container>
     </b-card>
-    <div class="card container" v-else-if="!$keycloak.authenticated">
+    <div class="card container" v-else-if="!commonStore.$keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
       </div>
@@ -172,7 +172,7 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapState, mapActions } from 'vuex'
+import { useCommonStore } from '@/stores/common.js'
 import { difference } from 'lodash-es'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -221,20 +221,16 @@ export default {
     plural: Plural
   },
   computed: {
-    ...mapState('documentState', [
-      'isPrivate',
-      'upload_files'
-    ]),
-    ...mapGetters(['userRoles', 'keycloak']),
+    commonStore () { return useCommonStore() },
     perms () {
-      return this.userRoles.bulk || {}
+      return this.commonStore.userRoles.bulk || {}
     },
     privateDocument: {
       get: function () {
-        return this.isPrivate
+        return this.commonStore.isPrivate
       },
       set: function (value) {
-        this.setPrivate(value)
+        this.commonStore.setPrivate(value)
       }
     },
     wellTagNumbers () {
@@ -246,7 +242,7 @@ export default {
     wellDocuments () {
       const docs = {}
 
-      this.upload_files.forEach((file) => {
+      this.commonStore.uploadFiles.forEach((file) => {
         const wellTagNumber = this.parseWellIdFromFileName(file.name)
         if (wellTagNumber) {
           docs[wellTagNumber] = docs[wellTagNumber] || []
@@ -266,7 +262,7 @@ export default {
         let existingFiles = []
 
         if (wellTagNumber in this.existingFiles) {
-          existingFiles = this.existingFiles[wellTagNumber][this.isPrivate ? 'private' : 'public']
+          existingFiles = this.existingFiles[wellTagNumber][this.commonStore.isPrivate ? 'private' : 'public']
         }
 
         return {
@@ -320,7 +316,7 @@ export default {
       return true
     },
     keyedActiveStep () {
-      if (this.upload_files.length === 0) {
+      if (this.commonStore.uploadFiles.length === 0) {
         return 'one'
       }
 
@@ -328,7 +324,7 @@ export default {
     }
   },
   watch: {
-    upload_files () {
+    uploadFiles () {
       const wellTagNumbers = Object.keys(this.wellDocuments).map((id) => parseInt(id, 10))
 
       this.checkWellTagNumbers(wellTagNumbers)
@@ -336,19 +332,8 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('documentState', [
-      'setFiles',
-      'setPrivate',
-      'removeFile'
-    ]),
-    ...mapActions('documentState', [
-      'uploadFiles',
-      'fileUploadSuccess',
-      'fileUploadFail',
-      'clearUploadFilesMessage'
-    ]),
     save () {
-      this.clearUploadFilesMessage()
+      this.commonStore.clearUploadFilesMessage()
 
       this.showSaveSuccess = false
       this.apiError = null
@@ -383,7 +368,7 @@ export default {
 
           const fileNames = files.map((file) => this.fileNameWithoutPrefix(file.name))
 
-          return this.uploadFiles({
+          return this.commonStore.uploadFiles({
             documentType: 'wells',
             recordId: wellTagNumber,
             files,
@@ -415,7 +400,7 @@ export default {
       this.apiValidationErrors = {}
       this.isSaving = false
       this.unknownWellIds = null
-      this.setFiles([])
+      this.commonStore.setFiles([])
       this.wellsList = [null]
     },
     restart () {
@@ -501,9 +486,9 @@ export default {
     },
     filesPicked (files) {
       // Only setFiles when files > 0 because setFiles will empty the
-      // upload_files collection if sent an empty array.
+      // uploadFiles collection if sent an empty array.
       if (files.length > 0) {
-        this.setFiles(files)
+        this.commonStore.setFiles(files)
       }
     }
   }

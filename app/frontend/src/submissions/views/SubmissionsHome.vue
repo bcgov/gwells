@@ -22,7 +22,7 @@ governing permissions and limitations under the License. */
       </b-card>
       <div
         class="card"
-        v-if="userRoles.wells.edit || userRoles.submissions.edit"
+        v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit"
       >
         <div class="card-body">
           <b-alert
@@ -117,7 +117,7 @@ governing permissions and limitations under the License. */
           </b-form>
         </div>
       </div>
-      <div class="card" v-else-if="!$keycloak.authenticated">
+      <div class="card" v-else-if="!commonStore.$keycloak.authenticated">
         <div class="card-body">
           <p>Please log in to continue.</p>
         </div>
@@ -128,7 +128,7 @@ governing permissions and limitations under the License. */
 
 <script>
 import Vue from "vue";
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import { useSubmissionStore } from "@/stores/submission.js";
 import { diff } from "deep-diff";
 import { camelCase } from "lodash";
@@ -183,7 +183,7 @@ export default {
       return components;
     },
     isStaffEdit() {
-      return this.activityType === "STAFF_EDIT" && this.userRoles.wells.edit;
+      return this.activityType === "STAFF_EDIT" && this.commonStore.userRoles.wells.edit;
     },
     breadcrumbs() {
       const breadcrumbs = [];
@@ -226,22 +226,12 @@ export default {
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;
     },
+    submissionStore() { return useSubmissionStore() },
+    commonStore () { return useCommonStore() },
     codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    ...mapGetters(["userRoles", "well", "keycloak"]),
-    ...mapState("documentState", [
-      "files_uploading",
-      "file_upload_error",
-      "file_upload_success",
-      "upload_files",
-    ]),
+    ...mapGetters(["well"]),
   },
   methods: {
-    ...mapActions("documentState", [
-      "uploadFiles",
-      "fileUploadSuccess",
-      "fileUploadFail",
-      "resetUploadFiles",
-    ]),
     ...mapActions([RESET_WELL_DATA]),
 
     editWater(coords) {
@@ -396,7 +386,7 @@ export default {
         }
       );
       // Check to see if we are currently saving this form. If so - don't try to POST again
-      if (this.formSubmitLoading) {
+      if (this.commonStore.formSubmitLoading) {
         return;
       }
 
@@ -406,10 +396,10 @@ export default {
       }
 
       let testEnv = false;
-      this.formSubmitLoading = true;
-      this.formSubmitSuccess = false;
-      this.formSubmitError = false;
-      this.formSubmitSuccessWellTag = null;
+      this.commonStore.formSubmitLoading = true;
+      this.commonStore.formSubmitSuccess = false;
+      this.commonStore.formSubmitError = false;
+      this.commonStore.formSubmitSuccessWellTag = null;
       this.errors = {};
       // Save notification
       const savingNotification = this.$noty.info(
@@ -438,8 +428,8 @@ export default {
               `/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}&testEnv=${testEnv}`
             ).then((response) => {});
           }
-          this.formSubmitSuccess = true;
-          this.formSubmitSuccessWellTag = response.data.well;
+          this.commonStore.formSubmitSuccess = true;
+          this.commonStore.formSubmitSuccessWellTag = response.data.well;
 
           this.$emit("formSaved");
           // Save completed notification
@@ -482,26 +472,26 @@ export default {
           // Set initial form fields for comparison with user input changes
           Object.assign(this.compareForm, this.form);
 
-          if (this.upload_files.length > 0) {
+          if (this.commonStore.uploadFiles.length > 0) {
             if (response.data.filing_number) {
               this.$noty.info(
                 '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',
                 { timeout: false }
               );
-              this.uploadFiles({
+              this.commonStore.uploadFiles({
                 documentType: "submissions",
                 recordId: response.data.filing_number,
               })
                 .then(() => {
-                  this.fileUploadSuccess();
-                  this.fetchFiles();
+                  this.commonStore.fileUploadSuccess();
+                  this.commonStore.fetchFiles();
                   this.$noty.success(
                     '<div class="notifyText">Successfully uploaded all files.</div>',
                     { killer: true }
                   );
                 })
                 .catch((error) => {
-                  this.fileUploadFail();
+                  this.commonStore.fileUploadFail();
                   console.error(error);
                   this.$noty.error(
                     '<div class="notifyText">Error uploading files.</div>',
@@ -513,7 +503,7 @@ export default {
                 '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',
                 { timeout: false }
               );
-              this.uploadFiles({
+              this.commonStore.uploadFiles({
                 documentType: "wells",
                 recordId: response.data.well,
               })
@@ -522,11 +512,11 @@ export default {
                     '<div class="notifyText">Successfully uploaded all files.</div>',
                     { killer: true }
                   );
-                  this.fileUploadSuccess();
-                  this.fetchFiles();
+                  this.commonStore.fileUploadSuccess();
+                  this.commonStore.fetchFiles();
                 })
                 .catch((error) => {
-                  this.fileUploadFail();
+                  this.commonStore.fileUploadFail();
                   console.error(error);
                   this.$noty.error(
                     '<div class="notifyText">Error uploading files.</div>',
@@ -1033,7 +1023,7 @@ export default {
       });
     },
     handleExitPreviewAfterSubmit() {
-      this.formSubmitSuccess = false;
+      this.commonStore.formSubmitSuccess = false;
       this.resetForm();
       this.preview = false;
       this.step = 1;
@@ -1042,7 +1032,7 @@ export default {
       });
     },
     fetchFiles() {
-      this.uploadedFiles = {};
+      this.commonStore.uploadedFiles = {};
 
       // this.form.well is sometimes the tag number, and sometimes an object. This detects which is which
       let tag =
@@ -1060,7 +1050,7 @@ export default {
       Object.assign(this.$data, initialState());
       this.resetForm();
       this.submissionStore.fetchCodes();
-      this.resetUploadFiles();
+      this.commonStore.resetUploadFiles();
       if (this.$route.params.id) {
         this.setWellTagNumber(this.$route.params.id);
       }
@@ -1075,7 +1065,7 @@ export default {
         this.activityType = "CON";
         this.formIsFlat = true;
       }
-      this.fetchFiles();
+      this.commonStore.fetchFiles();
       // Set initial form fields for comparison with user input changes
       Object.assign(this.compareForm, this.form);
     },

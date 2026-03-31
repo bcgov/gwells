@@ -13,13 +13,13 @@
       </b-row>
     </div>
     <div v-else class="card">
-      <div class="col-xs-12" v-if="files_uploading">
+      <div class="col-xs-12" v-if="commonStore.filesUploading">
         <b-alert show>File Upload In Progress...</b-alert>
       </div>
-      <div class="col-xs-12" v-if="!files_uploading && file_upload_error">
-        <b-alert show variant="warning" >File Upload Errors: {{file_upload_errors.map((e) => e.response.statusText)}}</b-alert>
+      <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.file_upload_error">
+        <b-alert show variant="warning" >File Upload Errors: {{commonStore.fileUploadErrors.map((e) => e.response.statusText)}}</b-alert>
       </div>
-      <div class="col-xs-12" v-if="!files_uploading && file_upload_success">
+      <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.fileUploadSuccess">
         <b-alert show variant="success" >Successfully uploaded all files</b-alert>
       </div>
       <div class="card-body p-2 p-md-3">
@@ -48,12 +48,12 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editPerson = !editPerson"
-                  v-if="currentDriller.person_guid && userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
+                  v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
               </div>
             </div>
             <person-edit
                   section="person"
-                  v-if="editPerson && userRoles.registry.edit"
+                  v-if="editPerson && commonStore.userRoles.registry.edit"
                   :record="currentDriller.person_guid"
                   @updated="editPerson = false; updateRecord()"
                   @canceled="editPerson = false"></person-edit>
@@ -142,7 +142,7 @@
               <b-row v-else>
                 <b-col>
                   <b-button
-                          v-if="userRoles.registry.edit"
+                          v-if="commonStore.userRoles.registry.edit"
                           type="button"
                           variant="primary"
                           size="sm"
@@ -162,7 +162,7 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editRegistration = (editRegistration === (index + 1) ? 0 : (index + 1))"
-                  v-if="userRoles.registry.edit">
+                  v-if="commonStore.userRoles.registry.edit">
                   <span><i class="fa fa-edit"></i> Edit</span>
                   </button>
               </div>
@@ -171,7 +171,7 @@
               class="mb-4"
               section="registration"
               :record="registration"
-              v-if="editRegistration === (index + 1) && userRoles.registry.edit"
+              v-if="editRegistration === (index + 1) && commonStore.userRoles.registry.edit"
               @updated="editRegistration = 0; updateRecord()"
               @canceled="editRegistration = 0"></person-edit>
             <div v-if="editRegistration !== (index + 1)">
@@ -195,7 +195,7 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
-                  v-if="currentDriller.person_guid && userRoles.registry.edit">
+                  v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit">
                   <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add company</span>
                   <span v-else><i class="fa fa-refresh"></i> Change company</span>
                   </button>
@@ -204,7 +204,7 @@
             <person-edit
               section="company"
               :record="registration"
-              v-if="editCompany === (index + 1) && userRoles.registry.edit"
+              v-if="editCompany === (index + 1) && commonStore.userRoles.registry.edit"
               @updated="editCompany = 0; updateRecord()"
               @canceled="editCompany = 0"></person-edit>
             <div v-if="registration.organization && editCompany !== (index + 1)">
@@ -280,7 +280,7 @@
         </div>
 
         <!-- new registrations -->
-        <div class="card mb-3" v-if="userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
+        <div class="card mb-3" v-if="commonStore.userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
           <div class="card-body p-2 p-md-3">
             <div
                 v-for="(item, index) in registrationOptions.filter((item) => {
@@ -326,13 +326,13 @@
                   class="btn btn-light btn-sm registries-edit-btn"
                   type="button"
                   @click="editContact = !editContact"
-                  v-if="currentDriller.person_guid && userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
+                  v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
               </div>
             </div>
             <person-edit
               section="contact"
               :record="currentDriller.person_guid"
-              v-if="editContact && userRoles.registry.edit"
+              v-if="editContact && commonStore.userRoles.registry.edit"
               @updated="editContact = false; updateRecord()"
               @canceled="editContact = false"></person-edit>
             <div v-if="!editContact">
@@ -370,9 +370,9 @@
                     v-model="files"
                     multiple
                     plain/>
-                  <div class="mt-3" v-if="upload_files.length > 0">
+                  <div class="mt-3" v-if="uploadFiles.length > 0">
                     <b-list-group>
-                      <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+                      <b-list-group-item v-for="(f, index) in uploadFiles" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
                 </b-form-group>
@@ -386,7 +386,7 @@
               </b-col>
             </b-row>
             <div slot="modal-footer">
-              <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.upload_files.length === 0">
+              <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.uploadFiles.length === 0">
                 Save
               </b-btn>
               <b-btn variant="light" @click="cancelUploadAttachments" >
@@ -415,7 +415,7 @@ import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters, mapActions, mapMutations, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import { useRegistryStore } from '@/stores/registry.js'
 import PersonDocuments from './PersonDocuments.vue'
 
@@ -473,10 +473,10 @@ export default {
     loading () { return this.registryStore.loading },
     files: {
       get: function () {
-        return this.upload_files
+        return this.uploadFiles
       },
       set: function (value) {
-        this.setFiles(value)
+        this.commonStore.setFiles(value)
       }
     },
     showSpinner () {
@@ -542,27 +542,12 @@ export default {
       }
       return notes
     },
+    commonStore () { return useCommonStore() },
     ...mapGetters([
-      'user',
-      'userRoles'
-    ]),
-    ...mapState('documentState', [
-      'files_uploading',
-      'file_upload_error',
-      'file_upload_errors',
-      'file_upload_success',
-      'upload_files'
+      'user'
     ])
   },
   methods: {
-    ...mapActions('documentState', [
-      'uploadFiles',
-      'fileUploadSuccess',
-      'fileUploadFail'
-    ]),
-    ...mapMutations('documentState', [
-      'setFiles'
-    ]),
     show (key) {
       return ((key === 'PUMP' && this.pumpApplication) || (key === 'DRILL' && this.drillApplication))
     },
@@ -620,19 +605,19 @@ export default {
       })
     },
     cancelUploadAttachments () {
-      this.setFiles([])
+      this.commonStore.setFiles([])
     },
     uploadAttachments () {
-      if (this.upload_files.length > 0) {
-        this.uploadFiles({
+      if (this.uploadFiles.length > 0) {
+        this.commonStore.uploadFiles({
           documentType: 'drillers',
           recordId: this.currentDriller.person_guid
         }).then(() => {
-          this.fileUploadSuccess()
+          this.commonStore.fileUploadSuccess()
           this.fetchFiles()
           window.scrollTo(0, 0)
         }).catch((error) => {
-          this.fileUploadFail()
+          this.commonStore.fileUploadFail()
           console.error(error)
           window.scrollTo(0, 0)
         })
