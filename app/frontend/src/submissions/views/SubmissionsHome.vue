@@ -472,7 +472,7 @@ export default {
           // Set initial form fields for comparison with user input changes
           Object.assign(this.compareForm, this.form);
 
-          if (this.commonStore.upload_files.length > 0) {
+          if (this.commonStore.uploadFiles.length > 0) {
             if (response.data.filing_number) {
               this.$noty.info(
                 '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',

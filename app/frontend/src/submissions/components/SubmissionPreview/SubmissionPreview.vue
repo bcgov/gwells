@@ -481,12 +481,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </p>
     </fieldset>
 
-    <fieldset v-if="commonStore.upload_files && commonStore.upload_files.length > 0">
+    <fieldset v-if="commonStore.uploadFiles && commonStore.uploadFiles.length > 0">
       <legend>Documents to Upload</legend>
       <b-row>
         <b-col cols="12" lg="8">
           <b-list-group>
-            <b-list-group-item v-for="(f, index) in commonStore.upload_files" :key="index">
+            <b-list-group-item v-for="(f, index) in commonStore.uploadFiles" :key="index">
               {{f.file ? f.file.name.replace('null', '{ASSIGNED_WELL_ID}') : f.name}}
               <a
                 class="fa fa-trash fa-lg"
@@ -600,7 +600,7 @@ export default {
       this.$emit('fetchFiles')
     },
     handleDelete (index) {
-      this.commonStore.upload_files.splice(index, 1)
+      this.commonStore.uploadFiles.splice(index, 1)
     }
   },
   computed: {

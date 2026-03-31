@@ -129,9 +129,9 @@
                     v-model="files"
                     multiple
                     plain/>
-                  <div class="mt-3" v-if="commonStore.upload_files.length > 0">
+                  <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
                     <b-list-group>
-                      <b-list-group-item v-for="(f, index) in commonStore.upload_files" :key="index">{{f.name}}</b-list-group-item>
+                      <b-list-group-item v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
                 </b-form-group>
@@ -366,7 +366,7 @@ export default {
     },
     files: {
       get: function () {
-        return this.commonStore.upload_files
+        return this.commonStore.uploadFiles
       },
       set: function (value) {
         this.commonStore.setFiles(value)
@@ -430,7 +430,7 @@ export default {
       personData['registrations'] = registrations
 
       ApiService.post('drillers', personData).then((response) => {
-        if (this.commonStore.upload_files.length > 0) {
+        if (this.commonStore.uploadFiles.length > 0) {
           this.commonStore.uploadFiles({
             documentType: 'drillers',
             recordId: response.data.person_guid

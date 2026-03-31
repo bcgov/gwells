@@ -37,18 +37,18 @@
           This aquifer is unpublished and will be hidden from DataBC, iMapBC, the GWELLS Aquifer
           Search, the GWELLS Aquifer Summary and the CSV/XLS export.
         </b-alert>
-        <b-alert show v-if="commonStore.files_uploading || commonStore.shapefile_uploading">File Upload In Progress...</b-alert>
-        <b-alert show v-if="!commonStore.files_uploading && commonStore.file_upload_error" variant="danger">
+        <b-alert show v-if="commonStore.filesUploading || commonStore.shapefileUploading">File Upload In Progress...</b-alert>
+        <b-alert show v-if="!commonStore.filesUploading && commonStore.file_upload_error" variant="danger">
           There was an error uploading the documents
         </b-alert>
-        <b-alert show v-if="!commonStore.files_uploading && commonStore.file_upload_success" variant="success">
+        <b-alert show v-if="!commonStore.filesUploading && commonStore.fileUploadSuccess" variant="success">
           Successfully uploaded all documents
         </b-alert>
-        <b-alert show v-if="commonStore.shapefile_upload_success & !commonStore.shapefile_uploading" variant="success">
+        <b-alert show v-if="commonStore.shapefileUploadSuccess & !commonStore.shapefileUploading" variant="success">
           Shapefile uploaded.
         </b-alert>
-        <b-alert show v-if="!commonStore.shapefile_upload_success & !commonStore.shapefile_uploading && commonStore.shapefile_upload_message" variant="danger">
-          There was an error uploading the shapefile: {{ commonStore.shapefile_upload_message }}.
+        <b-alert show v-if="!commonStore.shapefileUploadSuccess & !commonStore.shapefileUploading && commonStore.shapefileUploadMessage" variant="danger">
+          There was an error uploading the shapefile: {{ commonStore.shapefileUploadMessage }}.
         </b-alert>
         <b-alert variant="success" :show="showSaveSuccess" id="aquifer-success-alert">
           Aquifer {{ id }}'s information successfully updated.
@@ -822,7 +822,7 @@ export default {
     },
     finishSavingFiles () {
       const promises = []
-      if (this.commonStore.upload_files.length > 0) {
+      if (this.commonStore.uploadFiles.length > 0) {
         const filePromise = this.uploadFiles({
           documentType: 'aquifers',
           recordId: this.id

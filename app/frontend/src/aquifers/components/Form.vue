@@ -421,7 +421,7 @@ export default {
     },
     uploadFiles: {
       get: function () {
-        return this.commonStore.upload_files
+        return this.commonStore.uploadFiles
       },
       set: function (value) {
         this.commonStore.setFiles(value)

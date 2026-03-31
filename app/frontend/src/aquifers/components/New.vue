@@ -63,7 +63,7 @@ export default {
       this.$router.push({ name: 'home' })
     },
     handleSuccess ({ data }) {
-      if (this.commonStore.upload_files.length > 0) {
+      if (this.commonStore.uploadFiles.length > 0) {
         this.commonStore.uploadFiles({
           documentType: 'aquifers',
           recordId: data.aquifer_id

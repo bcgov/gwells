@@ -13,13 +13,13 @@
       </b-row>
     </div>
     <div v-else class="card">
-      <div class="col-xs-12" v-if="commonStore.files_uploading">
+      <div class="col-xs-12" v-if="commonStore.filesUploading">
         <b-alert show>File Upload In Progress...</b-alert>
       </div>
-      <div class="col-xs-12" v-if="!commonStore.files_uploading && commonStore.file_upload_error">
-        <b-alert show variant="warning" >File Upload Errors: {{commonStore.file_upload_errors.map((e) => e.response.statusText)}}</b-alert>
+      <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.file_upload_error">
+        <b-alert show variant="warning" >File Upload Errors: {{commonStore.fileUploadErrors.map((e) => e.response.statusText)}}</b-alert>
       </div>
-      <div class="col-xs-12" v-if="!commonStore.files_uploading && commonStore.file_upload_success">
+      <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.fileUploadSuccess">
         <b-alert show variant="success" >Successfully uploaded all files</b-alert>
       </div>
       <div class="card-body p-2 p-md-3">
@@ -370,9 +370,9 @@
                     v-model="files"
                     multiple
                     plain/>
-                  <div class="mt-3" v-if="upload_files.length > 0">
+                  <div class="mt-3" v-if="uploadFiles.length > 0">
                     <b-list-group>
-                      <b-list-group-item v-for="(f, index) in upload_files" :key="index">{{f.name}}</b-list-group-item>
+                      <b-list-group-item v-for="(f, index) in uploadFiles" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
                 </b-form-group>
@@ -386,7 +386,7 @@
               </b-col>
             </b-row>
             <div slot="modal-footer">
-              <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.upload_files.length === 0">
+              <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.uploadFiles.length === 0">
                 Save
               </b-btn>
               <b-btn variant="light" @click="cancelUploadAttachments" >
@@ -473,7 +473,7 @@ export default {
     loading () { return this.registryStore.loading },
     files: {
       get: function () {
-        return this.upload_files
+        return this.uploadFiles
       },
       set: function (value) {
         this.commonStore.setFiles(value)
@@ -608,7 +608,7 @@ export default {
       this.commonStore.setFiles([])
     },
     uploadAttachments () {
-      if (this.upload_files.length > 0) {
+      if (this.uploadFiles.length > 0) {
         this.commonStore.uploadFiles({
           documentType: 'drillers',
           recordId: this.currentDriller.person_guid

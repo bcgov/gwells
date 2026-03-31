@@ -24,14 +24,14 @@ export const useCommonStore = defineStore('common', {
 
     // was common/documents.js
     isPrivate: false,
-    upload_files: [],
-    files_uploading: false,
-    file_upload_errors: [],
+    uploadFiles: [],
+    filesUploading: false,
+    fileUploadErrors: [],
     file_upload_error: false,
-    file_upload_success: false,
-    shapefile_uploading: false,
-    shapefile_upload_message: '',
-    shapefile_upload_success: false,
+    fileUploadSuccess: false,
+    shapefileUploading: false,
+    shapefileUploadMessage: '',
+    shapefileUploadSuccess: false,
     shapefile: null
   }),
 
@@ -94,12 +94,7 @@ export const useCommonStore = defineStore('common', {
     },
     authenticated (state) {
       return Boolean(state.keycloak && state.keycloak.authenticated)
-    },
-
-    // ---- Config ----
-    config (state) {
-      return state.config
-    },
+    }
   },
 
   actions: {
@@ -133,25 +128,25 @@ export const useCommonStore = defineStore('common', {
       let formData = new FormData()
       formData.append('geometry', file)
       const url = `${payload.documentType}/${payload.recordId}/geometry`
-      this.shapefile_uploading = true
+      this.shapefileUploading = true
       return ApiService.post(url, formData)
         .then(() => {
-          this.shapefile_upload_success = true
-          this.shapefile_upload_message = ''
+          this.shapefileUploadSuccess = true
+          this.shapefileUploadMessage = ''
         })
         .catch(e => {
-          this.shapefile_uploading = false
-          this.shapefile_upload_success = false
+          this.shapefileUploading = false
+          this.shapefileUploadSuccess = false
           console.error('failed to save shapefile', e.response)
-          this.shapefile_upload_message = e.response.data.message || 'Server Error'
+          this.shapefileUploadMessage = e.response.data.message || 'Server Error'
           throw e
         })
     },
     uploadFiles (payload) {
-      this.files_uploading = true
+      this.filesUploading = true
       let documentType = payload.documentType
       let recordId = payload.recordId
-      const files = payload.files || this.upload_files
+      const files = payload.files || this.uploadFiles
       const fileNames = payload.fileNames || []
 
       // Driller documents are always private
@@ -210,73 +205,73 @@ export const useCommonStore = defineStore('common', {
       }, Promise.resolve())
     },
     fileUploadSuccess () {
-      this.files_uploading = false
-      this.file_upload_success = true
-      this.upload_files = []
+      this.filesUploading = false
+      this.fileUploadSuccess = true
+      this.uploadFiles = []
       this.isPrivate = false
       setTimeout(() => {
-        this.file_upload_success = false
+        this.fileUploadSuccess = false
       }, 5000)
     },
     fileUploadFail () {
-      this.files_uploading = true
-      this.file_upload_success = false
-      this.upload_files = []
+      this.filesUploading = true
+      this.fileUploadSuccess = false
+      this.uploadFiles = []
       this.isPrivate = false
     },
     shapefileUploadSuccess () {
       this.setShapefileUploadSuccess()
     },
     shapefileUploadFail () {
-      this.shapefile_upload_success = false
+      this.shapefileUploadSuccess = false
     },
     resetUploadFiles () {
-      this.upload_files = []
+      this.uploadFiles = []
     },
     clearUploadShapeFileMessage () {
-      this.shapefile_upload_message = ''
+      this.shapefileUploadMessage = ''
     },
     clearUploadFilesMessage () {
       this.clearErrors()
     },
     addError (payload) {
-      this.file_upload_errors.push(payload)
+      this.fileUploadErrors.push(payload)
     },
     clearErrors () {
-      this.file_upload_errors = []
+      this.fileUploadErrors = []
       this.file_upload_error = false
     },
     setShapefileUploadMessage (payload) {
-      this.shapefile_upload_message = payload
+      this.shapefileUploadMessage = payload
     },
     setFilesUploading (payload) {
-      this.files_uploading = payload
+      this.filesUploading = payload
     },
     setShapefileUploading (payload) {
-      this.shapefile_uploading = payload
+      this.shapefileUploading = payload
     },
     setFileUploadError (payload) {
       this.file_upload_error = payload
     },
     setFileUploadSuccess (payload) {
-      this.file_upload_success = payload
+      this.fileUploadSuccess = payload
     },
     setShapefileUploadSuccess (payload) {
-      this.shapefile_uploading = false
-      this.shapefile_upload_success = payload
+      this.shapefileUploading = false
+      this.shapefileUploadSuccess = payload
     },
     setFiles (payload) {
       if (payload.length > 0) {
-        this.upload_files.push(...payload)
+        this.uploadFiles.push(...payload)
       } else {
-        this.upload_files = payload
+        this.uploadFiles = payload
       }
     },
     setShapefile (payload) {
       this.shapefile = payload
     },
     removeFile (file) {
-      this.upload_files = this.upload_files.filter(item => item !== file)
+      this.uploadFiles = this.uploadFiles.filter(item => item !== file)
     },
     setPrivate (payload) {
       this.isPrivate = payload

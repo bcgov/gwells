@@ -45,7 +45,7 @@
               </li>
               <li :class="{active: keyedActiveStep === 'two'}">
                 Click “Submit” to upload the
-                <plural :count="commonStore.upload_files.length">
+                <plural :count="commonStore.uploadFiles.length">
                   <template #zero>
                     documents
                   </template>
@@ -81,7 +81,7 @@
                     <b-form-file
                       multiple
                       :disabled="isSaving"
-                      :key="`file-upload-${commonStore.upload_files.length}`"
+                      :key="`file-upload-${commonStore.uploadFiles.length}`"
                       @input="filesPicked"/>
                   </b-col>
                   <b-col md="9">
@@ -95,7 +95,7 @@
                 </b-row>
                 <table id="files-to-upload">
                   <tbody>
-                    <tr v-for="(file, index) in upload_files" :key="index" :class="{ error: fileIsInvalid(file) }">
+                    <tr v-for="(file, index) in uploadFiles" :key="index" :class="{ error: fileIsInvalid(file) }">
                       <td><input type="button" value="remove" :disabled="isSaving" @click.prevent="removeFile(file)"/></td>
                       <td>{{file.name}}</td>
                       <td>{{formatFileSize(file.size)}}</td>
@@ -116,7 +116,7 @@
                 <b-table
                   :items="wellTableData"
                   :fields="wellTableFields"
-                  v-if="commonStore.upload_files.length > 0"
+                  v-if="commonStore.uploadFiles.length > 0"
                   :show-empty="wellTableData.length === 0"
                   empty-text="No documents with well tag numbers"
                   striped>
@@ -242,7 +242,7 @@ export default {
     wellDocuments () {
       const docs = {}
 
-      this.commonStore.upload_files.forEach((file) => {
+      this.commonStore.uploadFiles.forEach((file) => {
         const wellTagNumber = this.parseWellIdFromFileName(file.name)
         if (wellTagNumber) {
           docs[wellTagNumber] = docs[wellTagNumber] || []
@@ -316,7 +316,7 @@ export default {
       return true
     },
     keyedActiveStep () {
-      if (this.commonStore.upload_files.length === 0) {
+      if (this.commonStore.uploadFiles.length === 0) {
         return 'one'
       }
 
@@ -324,7 +324,7 @@ export default {
     }
   },
   watch: {
-    upload_files () {
+    uploadFiles () {
       const wellTagNumbers = Object.keys(this.wellDocuments).map((id) => parseInt(id, 10))
 
       this.checkWellTagNumbers(wellTagNumbers)
@@ -486,7 +486,7 @@ export default {
     },
     filesPicked (files) {
       // Only setFiles when files > 0 because setFiles will empty the
-      // upload_files collection if sent an empty array.
+      // uploadFiles collection if sent an empty array.
       if (files.length > 0) {
         this.commonStore.setFiles(files)
       }
