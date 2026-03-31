@@ -22,12 +22,8 @@ export default {
     'gwells-footer': Footer,
     BackToTop
   },
-  data () {
-    return {
-      commonStore: useCommonStore()
-    }
-  },
   computed: {
+    commonStore () { return useCommonStore() },
     submissionStore () { return useSubmissionStore() }
   },
   created () {

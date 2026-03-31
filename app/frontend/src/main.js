@@ -44,7 +44,10 @@ const PRODUCTION_MATOMO_HOST =
 const TEST_MATOMO_HOST =
   "https://water-matomo-staging.apps.silver.devops.gov.bc.ca";
 
-const isProduction = () => window.location.href.includes(PRODUCTION_GWELLS_URL);
+const PRODUCTION_GWELLS_HOST = new URL(PRODUCTION_GWELLS_URL).hostname;
+const isProduction = () =>
+  window.location.hostname === PRODUCTION_GWELLS_HOST &&
+  window.location.pathname.startsWith(BASE_PATH);
 const isStaging = () =>
   window.location.pathname.includes(BASE_PATH) &&
   STAGING_GWELLS_URLS.includes(window.location.hostname);
@@ -80,7 +83,6 @@ app.use(VueNoty, {
 });
 app.use(BootstrapVue);
 app.use(VueMoment);
-app.use(filters);
 
 // Register global components
 app.component("v-select", vSelect);
@@ -115,6 +117,10 @@ if (isProduction()) {
 app.config.productionTip = false;
 app.config.devtools = import.meta.env.MODE !== "production";
 app.config.performance = import.meta.env.MODE !== "production";
+
+app.config.globalProperties.excludeZeroDecimals = filters.excludeZeroDecimals;
+app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
+app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
 
 // Mount app
 app.mount("#app");

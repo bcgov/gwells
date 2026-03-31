@@ -8,7 +8,7 @@ COPY . .
 
 RUN set -x
 RUN cd /app/frontend
-RUN npm install --legacy-peer-deps
+RUN npm ci
 RUN npm install -g serve
 RUN npm run build
 
