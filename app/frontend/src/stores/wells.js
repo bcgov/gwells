@@ -113,7 +113,7 @@ export const useWellsStore = defineStore('wells', {
 		},
 
 		async fetchDrillerNames () {
-			if (this.drillerNames.length === 0) {
+			if (this.drillerNames?.length === 0) {
 				try {
 					const response = await ApiService.query('drillers/names')
 					this.drillerNames = response.data
@@ -134,7 +134,7 @@ export const useWellsStore = defineStore('wells', {
 		},
 
 		async fetchOrganizationNames () {
-			if (this.organizationNames.length === 0) {
+			if (this.organizationNames?.length === 0) {
 				try {
 					const response = await ApiService.query('organizations/names')
 					this.organizationNames = response.data
