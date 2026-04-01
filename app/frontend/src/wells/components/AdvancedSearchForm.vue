@@ -19,7 +19,7 @@
           <h3>{{ section.header }}</h3>
         </b-col>
       </b-row>
-      <search-filter
+      <!-- <search-filter
         v-for="field in getFilterFields(section.fields)"
         :key="field.id"
         :type="field.type"
@@ -31,7 +31,7 @@
         :value-field="field.valueField"
         :text-field="field.textField"
         :any-value-checkbox="field.anyValueBoolean"
-        v-model="filterParams[field.id]" />
+        v-model="filterParams[field.id]" /> -->
     </div>
     <b-row>
       <b-col class="my-3">
@@ -44,7 +44,7 @@
         <h3>Additional Fields</h3>
       </b-col>
     </b-row>
-    <search-filter
+    <!-- <search-filter
       v-for="field in selectedAdditionalFilters"
       :key="field.id"
       :type="field.type"
@@ -58,7 +58,7 @@
       :any-value-checkbox="field.anyValueBoolean"
       v-model="filterParams[field.id]"
       @remove="removeSelectedFilter(field.id)"
-      removable />
+      removable /> -->
     <b-row>
       <b-col sm="9" class="mb-1">
         <b-form-select id="additionalFilterInput" v-model="selectedFilterId">
@@ -88,6 +88,8 @@ import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
 import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
+import { useWellsStore } from '@/stores/wells'
+import wellsStore from '../store'
 
 const ADDITIONAL_FILTER_SECTIONS = [
   { header: 'Well Class',
@@ -230,10 +232,22 @@ export default {
   },
   computed: {
     ...mapGetters({
-      errors: 'searchErrors',
+      // errors: 'searchErrors',
       searchParams: 'searchParams',
-      searchInProgress: 'searchInProgress'
+      // searchInProgress: 'searchInProgress'
     }),
+    wellsStore () {
+      return useWellsStore()
+    },
+    errors () {
+      return this.wellsStore.searchErrors
+    },
+    // searchParams () {
+    //   return this.wellsStore.searchParams
+    // },
+    searchInProgress () {
+      return this.wellsStore.searchInProgress
+    },
     defaultFilterIds () {
       return reduceSections(this.defaultFilterSections)
     },
