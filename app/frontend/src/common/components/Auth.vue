@@ -1,7 +1,7 @@
 <template>
   <div>
     <span v-if="commonStore.authenticated" class="userLoggedInText text-light">
-      {{ keycloak.tokenParsed.name }}
+      {{ commonStore.keycloak.tokenParsed.name }}
     </span>
     <b-btn  variant="light" size="sm" :id="`${id}-logout-button`" :disabled="!ready" @click="buttonClicked()">
       {{commonStore.authenticated ? 'Log out' : 'Log in'}}
@@ -38,27 +38,6 @@ export default {
         this.keyCloakLogin()
       }
     },
-    // keyCloakLogin () {
-    //   // Only initialize if not already initialized
-    //   if (!this.keycloak.authenticated) {
-    //     this.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
-    //       if (authenticated) {
-    //         ApiService.authHeader('JWT', this.keycloak.token)
-    //         if (window.localStorage) {
-    //           localStorage.setItem('token', this.keycloak.token)
-    //           localStorage.setItem('refreshToken', this.keycloak.refreshToken)
-    //           localStorage.setItem('idToken', this.keycloak.idToken)
-    //         }
-    //       }
-    //     }).catch((e) => {
-    //       console.error('keyCloakLogin: ', e)
-    //       this.$store.commit(SET_ERROR, { error: 'Cannot contact SSO provider' })
-    //     })
-    //   } else {
-    //     // If already authenticated, just refresh the token
-    //     this.keycloak.updateToken(30)
-    //   }
-    // },
     keyCloakLogin () {
       if (!this.commonStore.keycloak.authenticated) {
         if (!this.commonStore.keycloak.didInitialize) {
@@ -66,7 +45,7 @@ export default {
           this.commonStore.keycloak.init({
             checkLoginIframe: false
           }).then(() => {
-            this.commonStore.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+            this.commonStore.keycloak.login({ idpHint: this.commonStore.config.sso_idp_hint }).then((authenticated) => {
               if (authenticated) {
                 ApiService.authHeader('JWT', this.commonStore.keycloak.token)
                 if (window.localStorage) {
@@ -81,7 +60,7 @@ export default {
             })
           })
         } else {
-          this.commonStore.keycloak.login({ idpHint: this.config.sso_idp_hint }).then((authenticated) => {
+          this.commonStore.keycloak.login({ idpHint: this.commonStore.config.sso_idp_hint }).then((authenticated) => {
             if (authenticated) {
               ApiService.authHeader('JWT', this.commonStore.keycloak.token)
               if (window.localStorage) {
@@ -113,7 +92,7 @@ export default {
     }
   },
   watch: {
-    keycloak (kc) {
+    'commonStore.keycloak' (kc) {
       if (kc) {
         if (window._paq && this.commonStore.authenticated) {
           window._paq.push(['setCustomVariable', 1, 'userType', this.commonStore.keycloak.tokenParsed.identity_provider])

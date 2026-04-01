@@ -38,7 +38,7 @@
           Search, the GWELLS Aquifer Summary and the CSV/XLS export.
         </b-alert>
         <b-alert show v-if="commonStore.filesUploading || commonStore.shapefileUploading">File Upload In Progress...</b-alert>
-        <b-alert show v-if="!commonStore.filesUploading && commonStore.file_upload_error" variant="danger">
+        <b-alert show v-if="!commonStore.filesUploading && commonStore.fileUploadError" variant="danger">
           There was an error uploading the documents
         </b-alert>
         <b-alert show v-if="!commonStore.filesUploading && commonStore.fileUploadSuccess" variant="success">
@@ -87,7 +87,7 @@
                     <div>
                       <b-button
                         variant="default"
-                        v-if="commonStore.aquifers.edit"
+                        v-if="commonStore.userRoles.aquifers.edit"
                         v-on:click.prevent="navigateToEdit">
                         <span title="Edit" class="fa fa-edit"/> Edit
                       </b-button>
@@ -823,12 +823,12 @@ export default {
     finishSavingFiles () {
       const promises = []
       if (this.commonStore.uploadFiles.length > 0) {
-        const filePromise = this.uploadFiles({
+        const filePromise = this.commonStore.uploadTheFiles({
           documentType: 'aquifers',
           recordId: this.id
         }).then(() => {
-          this.commonStore.fileUploadSuccess()
-          this.commonStore.fetchFiles()
+          this.commonStore.fileUploadSucceeded()
+          this.fetchFiles()
         }).catch((error) => {
           Sentry.captureException(error)
           this.commonStore.fileUploadFail()
@@ -897,11 +897,11 @@ export default {
         })
     },
     fetchFiles (id = this.id) {
-      this.commonStore.loadingFiles = true
+      this.loadingFiles = true
       return ApiService.query(`aquifers/${id}/files`)
         .then((response) => {
           this.setAquiferFiles(response.data)
-          this.commonStore.loadingFiles = false
+          this.loadingFiles = false
         })
     },
     fetchWells (id = this.id) {
