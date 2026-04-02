@@ -17,6 +17,8 @@ import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
 import VueNoty from "vuejs-noty";
 import BootstrapVue from "bootstrap-vue";
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -80,6 +82,11 @@ app.use(VueNoty, {
   timeout: 1800,
 });
 app.use(BootstrapVue);
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura
+  }
+});
 app.use(VueMoment);
 
 // Register global components
