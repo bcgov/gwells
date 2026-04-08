@@ -13,98 +13,98 @@
 */
 <template>
   <div class="container">
-    <b-card no-body class="mb-3">
+    <Card no-body class="mb-3">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
+    </Card>
     <div class="card">
       <div class="card-body">
         <!-- Display loading spinner if application is null -->
         <div v-if="applicationLoading">
-          <b-row>
-            <b-col md="12">
+          <tr>
+            <td>
               <div class="fa-2x text-center">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
-            </b-col>
-          </b-row>
+            </td>
+          </tr>
         </div>
         <!-- Display application detail once loaded -->
         <div v-else>
           <div v-if="currentDriller != {} && registration != null">
             <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
-            <b-col md="12" class="pl-0" v-if="classification">
+            <td class="pl-0" v-if="classification">
               <h5>Certification - {{ classification }}</h5>
-            </b-col>
+            </td>
           </div>
           <div v-if="editClassification">
-            <b-form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
-              <b-modal
+            <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+              <Dialog
                   v-model="confirmCancelModal"
                   centered
                   title="Confirm cancel"
                   @shown="focusCancelModal"
                   :return-focus="$refs.cancelClassification">
                 Your changes are not saved. Are you sure you want to discard your changes?
-                <div slot="modal-footer">
-                  <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                <template #footer>
+                  <Button severity="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
                     Cancel
-                  </b-btn>
-                  <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
+                  </Button>
+                  <Button severity="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
                     Discard
-                  </b-btn>
-                </div>
-              </b-modal>
-              <b-row>
-                <b-col>
+                  </Button>
+                </template>
+              </Dialog>
+              <tr>
+                <td>
                   <application-edit
                     :activity="activity"
                     :value="applicationFormValue"
                     mode="edit"
                     v-on:isValid="onApplicationIsValid"
                     v-on:close="confirmCancelModal=true"/>
-                </b-col>
-              </b-row>
-              <b-row class="mt-3">
-                <b-col>
+                </td>
+              </tr>
+              <tr class="mt-3">
+                <td>
                   <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
                   <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
-                </b-col>
-              </b-row>
-            </b-form>
+                </td>
+              </tr>
+            </Form>
           </div>
           <div v-else>
             <div class="card mb-3">
               <div class="card-body">
-                <b-row>
-                  <b-col md="9">
+                <tr>
+                  <td>
                     <h5>Classification &amp; Qualifications</h5>
-                  </b-col>
-                  <b-col md="3" class="text-right">
+                  </td>
+                  <td class="text-right">
                     <button
                       class="btn btn-light btn-sm registries-edit-btn"
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
                       v-if="commonStore.userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
-                  </b-col>
-                </b-row>
-                <b-row class="row" v-if="classification && classification.registries_subactivity">
-                  <b-col md="12" class="registry-item">
+                  </td>
+                </tr>
+                <tr class="row" v-if="classification && classification.registries_subactivity">
+                  <td class="registry-item">
                     <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
                     <span class="registry-subtle">
                       (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
                     </span>
                     </h4>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="1"><span class="registry-label">Issued by:</span></b-col>
-                  <b-col md="4">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
-                  <b-col md="2"><span class="registry-label">Certificate number:</span></b-col>
-                  <b-col md="3">{{ application.primary_certificate_no }}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="8" class="pl-3 pt-3">
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="registry-label">Issued by:</span></td>
+                  <td>{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</td>
+                  <td><span class="registry-label">Certificate number:</span></td>
+                  <td>{{ application.primary_certificate_no }}</td>
+                </tr>
+                <tr>
+                  <td class="pl-3 pt-3">
                       <b-form-group
                           :label="`Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification`"
                           label-for="qualifications"
@@ -112,73 +112,73 @@
                       <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="qualificationOptions" v-model="qualifications" disabled>
                       </b-form-checkbox-group>
                     </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
                     <h5>Adjudication</h5>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
                     Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item pr-0">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="registry-item pr-0">
                     <span class="registry-label">Date application received:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_recieved_date" md="2">
+                  </td>
+                  <td v-if="application && application.application_recieved_date">
                       {{ application.application_recieved_date }}
-                  </b-col>
-                  <b-col v-else>Unknown</b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item">
+                  </td>
+                  <td v-else>Unknown</td>
+                </tr>
+                <tr>
+                  <td class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_outcome_date" md="2">
+                  </td>
+                  <td v-if="application && application.application_outcome_date">
                     {{ application.application_outcome_date }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                  <b-col md="2" class="registry-item">
+                  </td>
+                  <td v-else>Unknown</td>
+                  <td class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
-                  </b-col>
-                  <b-col v-if="application && application.current_status" md="2">
+                  </td>
+                  <td v-if="application && application.current_status">
                     {{ application.current_status.description }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2" class="registry-item">
+                  </td>
+                  <td v-else>Unknown</td>
+                  <td v-if="application && application.current_status && application.current_status.code === 'NA'" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
-                  </b-col>
-                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2">
+                  </td>
+                  <td v-if="application && application.current_status && application.current_status.code === 'NA'">
                     <span v-if="application.reason_denied">
                       {{ application.reason_denied }}
                     </span>
                     <span v-else>
                       Unknown
                     </span>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item">
+                  </td>
+                </tr>
+                <tr>
+                  <td class="registry-item">
                     <span class="registry-label">Notification date:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_outcome_notification_date" md="2">
+                  </td>
+                  <td v-if="application && application.application_outcome_notification_date">
                     {{ application.application_outcome_notification_date }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                </b-row>
-                <b-row v-if="removalDate || removalReason">
-                  <b-col class="pt-3"><h6>Removal of classification from register</h6></b-col>
-                </b-row>
-                <b-row v-if="removalDate || removalReason">
-                  <b-col md="2"><span class="registry-label">Removal date:</span></b-col>
-                  <b-col md="2">{{removalDate}}</b-col>
-                  <b-col md="2"><span class="registry-label">Removal reason:</span></b-col>
-                  <b-col v-if="removalReason">{{removalReason.description}}</b-col>
-                  <b-col v-else>Unknown</b-col>
-                </b-row>
+                  </td>
+                  <td v-else>Unknown</td>
+                </tr>
+                <tr v-if="removalDate || removalReason">
+                  <td class="pt-3"><h6>Removal of classification from register</h6></td>
+                </tr>
+                <tr v-if="removalDate || removalReason">
+                  <td><span class="registry-label">Removal date:</span></td>
+                  <td>{{removalDate}}</td>
+                  <td><span class="registry-label">Removal reason:</span></td>
+                  <td v-if="removalReason">{{removalReason.description}}</td>
+                  <td v-else>Unknown</td>
+                </tr>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">

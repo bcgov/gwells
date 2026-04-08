@@ -19,6 +19,8 @@ import VueNoty from "vuejs-noty";
 import BootstrapVue from "bootstrap-vue";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
+import { Button, InputText, Card, Message, Panel, Select, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup } from 'primevue';
+import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -92,6 +94,18 @@ app.use(VueMoment);
 // Register global components
 app.component("v-select", vSelect);
 app.component("form-input", FormInput);
+// PrimeVue components
+app.component("Button", Button);
+app.component("InputText", InputText);
+app.component("Card", Card);
+app.component("Message", Message);
+app.component("Panel", Panel);
+app.component("Select", Select);
+app.component("RadioButton", RadioButton);
+app.component("RadioButtonGroup", RadioButtonGroup);
+app.component("Checkbox", Checkbox);
+app.component("CheckboxGroup", CheckboxGroup);
+app.component("Form", Form);
 
 const pinia = createPinia();
 app.use(pinia);
