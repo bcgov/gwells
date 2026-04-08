@@ -12,10 +12,12 @@
     limitations under the License.
 */
 /* Shared logic for handling search filters. */
-import { mapGetters } from 'vuex'
+import { mapStores } from 'pinia'
 import { useCommonStore } from '@/stores/common.js'
 import { useSubmissionStore } from '@/stores/submission.js'
+import useWellsStore from '@/stores/wells'
 import { WELL_TAGS_PRIVATE, WELL_TAGS_PUBLIC } from '../../../common/constants'
+
 const SEARCH_FIELDS = {
   matchAny: {
     param: 'match_any',
@@ -993,12 +995,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'drillerNames',
-      'organizationNames',
-    ]),
-    commonStore () { return useCommonStore() },
-    submissionStore () { return useSubmissionStore() },
+    ...mapStores(useCommonStore, useSubmissionStore, useWellsStore),
     searchFields () {
       const fields = { ...SEARCH_FIELDS }
       Object.keys(fields).forEach(k => {
@@ -1059,9 +1056,9 @@ export default {
         licencedStatus: this.submissionStore.codes.licenced_status_codes || [],
         linerMaterial: this.submissionStore.codes.liner_material_codes || [],
         observationWellStatus: this.submissionStore.codes.observation_well_status || [],
-        orgResponsibleGuid: this.organizationNames || [],
+        orgResponsibleGuid: this.wellsStore.organizationNames || [],
         ownerProvince: this.submissionStore.codes.province_codes || [],
-        personResponsibleGuid: this.drillerNames || [],
+        personResponsibleGuid: this.wellsStore.drillerNames || [],
         publicationStatus: this.submissionStore.codes.well_publication_status_codes || [],
         screenIntakeMethod: this.submissionStore.codes.screen_intake_methods || [],
         screenBottom: this.submissionStore.codes.screen_bottoms || [],

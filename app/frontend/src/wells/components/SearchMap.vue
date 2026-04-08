@@ -50,15 +50,13 @@ import { createWellPopupElement } from '../popup'
 import { PulsingWellImage, PulsingArtesianWellImage, PulsingClosedWellImage } from '../../common/mapbox/images'
 import { DEFAULT_MAP_ZOOM, CENTRE_LNG_LAT_BC, buildWellsGeoJSON, convertLngLatBoundsToDirectionBounds, boundsCompletelyContains } from '../../common/mapbox/geometry'
 
-import { RESET_WELLS_SEARCH, SEARCH_WELLS } from '../../wells/store/actions.types'
-
 import wellsAllLegendSrc from '../../common/assets/images/wells-all.svg'
 import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.svg'
 import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
-import { mapGetters } from 'vuex'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 import { useCommonStore } from '@/stores/common'
-import { useQAQCStore } from '../../stores/qaqc'
+import { useQAQCStore } from '@/stores/qaqc'
+import { mapStores } from 'pinia'
 
 const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
   'well_tag_number',
@@ -134,9 +132,7 @@ export default {
     this.map = null
   },
   computed: {
-    commonStore () { return useCommonStore() },
-    qaqcStore () { return useQAQCStore() },
-    ...mapGetters(['searchQueryParams']),
+    ...mapStores(useCommonStore, useQAQCStore),
     hasSearchParams () {
       return Object.keys(this.qaqcStore.searchQueryParams).length > 0
     },

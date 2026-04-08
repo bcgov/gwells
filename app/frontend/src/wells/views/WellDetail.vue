@@ -585,8 +585,6 @@ import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
-import { RESET_WELL_DATA } from '@/wells/store/actions.types.js'
-import { SET_WELL_RECORD, SET_WELL_LICENCE } from '@/wells/store/mutations.types.js'
 import { TOOLTIP_TEXT } from '@/common/constants.js'
 import { useWellsStore } from '@/stores/wells.js'
 import { booleanToYesNo, excludeZeroDecimals } from '../../common/filters'
@@ -637,7 +635,7 @@ export default {
     }
   },
   computed: {
-    ...mapStores(useWellsStore),
+    ...mapStores(useCommonStore, useSubmissionStore, useWellsStore),
     well_tag_number () { return this.wellsStore.wellRecord?.well_tag_number ?? '' },
     well_status () { return this.wellsStore.wellRecord?.well_status ?? '' },
     observation_well_number () { return this.wellsStore.wellRecord?.observation_well_number ?? '' },
@@ -693,8 +691,6 @@ export default {
     isUnpublished () {
       return !this.well.is_published
     },
-    commonStore () { return useCommonStore() },
-    submissionStore () { return useSubmissionStore() }
   },
   methods: {
     booleanToYesNo (value) {
@@ -759,10 +755,8 @@ export default {
     }
   },
   created () {
-    this.wellsStore
     this.fetchSurveys()
-    const submissionStore = this.submissionStore
-    submissionStore.fetchCodes()
+    this.submissionStore.fetchCodes()
     if (this.id === null) {
       this.error = `Unable to load well '${this.id}'`
     }

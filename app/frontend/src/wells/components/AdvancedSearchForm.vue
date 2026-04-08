@@ -19,19 +19,19 @@
           <h3>{{ section.header }}</h3>
         </b-col>
       </b-row>
-      <!-- <search-filter
+      <search-filter
         v-for="field in getFilterFields(section.fields)"
         :key="field.id"
         :type="field.type"
         :id="`${field.id}Filter`"
         :param-names="field.params"
         :label="field.label"
-        :errors="errors[field.param]"
+        :errors="wellsStore.searchErrors[field.param]"
         :options="field.options || filterSelectOptions[field.id]"
         :value-field="field.valueField"
         :text-field="field.textField"
         :any-value-checkbox="field.anyValueBoolean"
-        v-model="filterParams[field.id]" /> -->
+        v-model="filterParams[field.id]" />
     </div>
     <b-row>
       <b-col class="my-3">
@@ -44,21 +44,21 @@
         <h3>Additional Fields</h3>
       </b-col>
     </b-row>
-    <!-- <search-filter
+    <search-filter
       v-for="field in selectedAdditionalFilters"
       :key="field.id"
       :type="field.type"
       :id="`${field.id}Filter`"
       :param-names="field.params"
       :label="field.label"
-      :errors="errors[field.param]"
+      :errors="wellsStore.searchErrors[field.param]"
       :options="field.options || filterSelectOptions[field.id]"
       :value-field="field.valueField"
       :text-field="field.textField"
       :any-value-checkbox="field.anyValueBoolean"
       v-model="filterParams[field.id]"
       @remove="removeSelectedFilter(field.id)"
-      removable /> -->
+      removable />
     <b-row>
       <b-col sm="9" class="mb-1">
         <b-form-select id="additionalFilterInput" v-model="selectedFilterId">
@@ -76,14 +76,6 @@
 </template>
 
 <script>
-import { useSubmissionStore } from '@/stores/submission'
-import {
-  FETCH_DRILLER_NAMES,
-  FETCH_ORGANIZATION_NAMES,
-  RESET_WELLS_SEARCH,
-  SEARCH_WELLS
-} from '@/wells/store/actions.types.js'
-import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
 import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
@@ -320,8 +312,7 @@ export default {
     }
   },
   created () {
-    const submissionStore = this.submissionStore
-    submissionStore.fetchCodes()
+    this.submissionStore.fetchCodes()
     this.wellsStore.fetchDrillerNames()
     this.wellsStore.fetchOrganizationNames()
 
@@ -337,15 +328,6 @@ export default {
         });
       }
     })
-    /*
-    this.$store.subscribeAction((action, state) => {
-      if (action.type === RESET_WELLS_SEARCH ||
-          (action.type === SEARCH_WELLS && state.wellsStore.searchParams.search !== undefined && state.wellsStore.searchParams.search !== null)) {
-        this.filterParamsReset()
-        this.selectedFilterIds = []
-      }
-    })
-    */
   }
 }
 </script>

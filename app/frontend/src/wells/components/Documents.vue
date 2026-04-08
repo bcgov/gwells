@@ -59,7 +59,6 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import { mapActions } from 'vuex'
 import { useCommonStore } from '@/stores/common'
 import getLongFormLabel from '@/common/helpers/getLongFormLabel'
 
@@ -117,9 +116,6 @@ export default {
       this.loading = false
     },
 
-    ...mapActions('documentState',
-      ['removeFileFromStore']
-    ),
     callLongFormLabel (shortFormLabel) {
       return getLongFormLabel(shortFormLabel)
     },
@@ -139,9 +135,6 @@ export default {
       const isPrivate = this.fileType === 'private'
 
       ApiService.deleteFile(`wells/${this.wellTag}/delete_document?filename=${this.file}&private=${isPrivate}`)
-        .then(() => {
-          this.removeFileFromStore(this.file)
-        })
     }
   },
   created () {

@@ -9,7 +9,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
  */
-export const SET_ERROR = 'SET_ERROR'
 export const SET_SEARCH_BOUNDS = 'SET_SEARCH_BOUNDS'
 export const SET_SEARCH_ERRORS = 'SET_SEARCH_ERRORS'
 export const SET_SEARCH_RESULTS = 'SET_SEARCH_RESULTS'
