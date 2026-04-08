@@ -22,7 +22,7 @@
             <template v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`">
               <td :id="`drillerName${index}`">
                 <router-link
-                  v-if="commonStore.commonStore.userRoles.registry.view"
+                  v-if="commonStore.userRoles.registry.view"
                   :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
                     {{ driller.surname }}, {{ driller.first_name }}
                 </router-link>
@@ -54,7 +54,7 @@
               <td :id="`certAuth${index}`">
                 <driller-certificate-authority :driller="driller" :activity="activity"/>
               </td>
-              <td v-if="commonStore.commonStore.userRoles.registry.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
+              <td v-if="commonStore.userRoles.registry.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
                 <driller-registration-status :driller="driller" :activity="activity"/>
               </td>
             </template>
@@ -174,7 +174,7 @@ export default {
     listError () { return this.registryStore.listError },
     searchResponse () { return this.registryStore.searchResponse },
     activity () { return this.registryStore.activity },
-    commonStore () { return useRegistryStore() },
+    commonStore () { return useCommonStore() },
   },
   watch: {
   },

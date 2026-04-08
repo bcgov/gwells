@@ -43,7 +43,7 @@
               id="aquifers-add"
               class="pull-right"
               v-on:click="navigateToNew"
-              v-if="userRoles.aquifers.edit"
+              v-if="commonStore.userRoles.aquifers.edit"
               variant="primary">
               Add new Aquifer
             </b-button>

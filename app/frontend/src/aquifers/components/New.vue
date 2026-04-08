@@ -64,11 +64,11 @@ export default {
     },
     handleSuccess ({ data }) {
       if (this.commonStore.uploadFiles.length > 0) {
-        this.commonStore.uploadFiles({
+        this.commonStore.uploadTheFiles({
           documentType: 'aquifers',
           recordId: data.aquifer_id
         }).then((values) => {
-          this.commonStore.fileUploadSuccess()
+          this.commonStore.fileUploadSucceeded()
           this.$router.push({ name: 'aquifers-view', params: { id: data.aquifer_id } })
         }).catch((error) => {
           this.commonStore.fileUploadFail()

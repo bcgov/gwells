@@ -117,7 +117,7 @@ governing permissions and limitations under the License. */
           </b-form>
         </div>
       </div>
-      <div class="card" v-else-if="!commonStore.$keycloak.authenticated">
+      <div class="card" v-else-if="!commonStore.keycloak.authenticated">
         <div class="card-body">
           <p>Please log in to continue.</p>
         </div>
@@ -386,7 +386,7 @@ export default {
         }
       );
       // Check to see if we are currently saving this form. If so - don't try to POST again
-      if (this.commonStore.formSubmitLoading) {
+      if (this.formSubmitLoading) {
         return;
       }
 
@@ -396,10 +396,10 @@ export default {
       }
 
       let testEnv = false;
-      this.commonStore.formSubmitLoading = true;
-      this.commonStore.formSubmitSuccess = false;
-      this.commonStore.formSubmitError = false;
-      this.commonStore.formSubmitSuccessWellTag = null;
+      this.formSubmitLoading = true;
+      this.formSubmitSuccess = false;
+      this.formSubmitError = false;
+      this.formSubmitSuccessWellTag = null;
       this.errors = {};
       // Save notification
       const savingNotification = this.$noty.info(
@@ -428,8 +428,8 @@ export default {
               `/submissions/editwater?well_tag_number=${data.well}&latitude=${data.latitude}&longitude=${data.longitude}&initialLongitude=${this.initialLongitude}&initialLatitude=${this.initialLatitude}&testEnv=${testEnv}`
             ).then((response) => {});
           }
-          this.commonStore.formSubmitSuccess = true;
-          this.commonStore.formSubmitSuccessWellTag = response.data.well;
+          this.formSubmitSuccess = true;
+          this.formSubmitSuccessWellTag = response.data.well;
 
           this.$emit("formSaved");
           // Save completed notification
@@ -478,13 +478,13 @@ export default {
                 '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',
                 { timeout: false }
               );
-              this.commonStore.uploadFiles({
+              this.commonStore.uploadTheFiles({
                 documentType: "submissions",
                 recordId: response.data.filing_number,
               })
                 .then(() => {
-                  this.commonStore.fileUploadSuccess();
-                  this.commonStore.fetchFiles();
+                  this.commonStore.fileUploadSucceeded();
+                  this.fetchFiles();
                   this.$noty.success(
                     '<div class="notifyText">Successfully uploaded all files.</div>',
                     { killer: true }
@@ -503,7 +503,7 @@ export default {
                 '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',
                 { timeout: false }
               );
-              this.commonStore.uploadFiles({
+              this.commonStore.uploadTheFiles({
                 documentType: "wells",
                 recordId: response.data.well,
               })
@@ -512,8 +512,8 @@ export default {
                     '<div class="notifyText">Successfully uploaded all files.</div>',
                     { killer: true }
                   );
-                  this.commonStore.fileUploadSuccess();
-                  this.commonStore.fetchFiles();
+                  this.commonStore.fileUploadSucceeded();
+                  this.fetchFiles();
                 })
                 .catch((error) => {
                   this.commonStore.fileUploadFail();
@@ -1023,7 +1023,7 @@ export default {
       });
     },
     handleExitPreviewAfterSubmit() {
-      this.commonStore.formSubmitSuccess = false;
+      this.formSubmitSuccess = false;
       this.resetForm();
       this.preview = false;
       this.step = 1;
@@ -1065,7 +1065,7 @@ export default {
         this.activityType = "CON";
         this.formIsFlat = true;
       }
-      this.commonStore.fetchFiles();
+      this.fetchFiles();
       // Set initial form fields for comparison with user input changes
       Object.assign(this.compareForm, this.form);
     },

@@ -95,7 +95,7 @@
                 </b-row>
                 <table id="files-to-upload">
                   <tbody>
-                    <tr v-for="(file, index) in uploadFiles" :key="index" :class="{ error: fileIsInvalid(file) }">
+                    <tr v-for="(file, index) in commonStore.uploadFiles" :key="index" :class="{ error: fileIsInvalid(file) }">
                       <td><input type="button" value="remove" :disabled="isSaving" @click.prevent="removeFile(file)"/></td>
                       <td>{{file.name}}</td>
                       <td>{{formatFileSize(file.size)}}</td>
@@ -158,7 +158,7 @@
         </div>
       </b-container>
     </b-card>
-    <div class="card container" v-else-if="!commonStore.$keycloak.authenticated">
+    <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
       </div>
@@ -343,10 +343,10 @@ export default {
 
       this.uploadWellFiles()
         .then(() => {
-          this.fileUploadSuccess()
+          this.commonStore.fileUploadSucceeded()
           this.handleSaveSuccess()
         }).catch((error) => {
-          this.fileUploadFail()
+          this.commonStore.fileUploadFail()
           this.handleApiError(error)
           throw error
         })
@@ -368,7 +368,7 @@ export default {
 
           const fileNames = files.map((file) => this.fileNameWithoutPrefix(file.name))
 
-          return this.commonStore.uploadFiles({
+          return this.commonStore.uploadTheFiles({
             documentType: 'wells',
             recordId: wellTagNumber,
             files,

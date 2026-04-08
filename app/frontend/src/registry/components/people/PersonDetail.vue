@@ -16,7 +16,7 @@
       <div class="col-xs-12" v-if="commonStore.filesUploading">
         <b-alert show>File Upload In Progress...</b-alert>
       </div>
-      <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.file_upload_error">
+      <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.fileUploadError">
         <b-alert show variant="warning" >File Upload Errors: {{commonStore.fileUploadErrors.map((e) => e.response.statusText)}}</b-alert>
       </div>
       <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.fileUploadSuccess">
@@ -370,9 +370,9 @@
                     v-model="files"
                     multiple
                     plain/>
-                  <div class="mt-3" v-if="uploadFiles.length > 0">
+                  <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
                     <b-list-group>
-                      <b-list-group-item v-for="(f, index) in uploadFiles" :key="index">{{f.name}}</b-list-group-item>
+                      <b-list-group-item v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</b-list-group-item>
                     </b-list-group>
                   </div>
                 </b-form-group>
@@ -386,7 +386,7 @@
               </b-col>
             </b-row>
             <div slot="modal-footer">
-              <b-btn variant="primary" @click="uploadAttachments()" :disabled="this.uploadFiles.length === 0">
+              <b-btn variant="primary" @click="uploadAttachments()" :disabled="commonStore.uploadFiles.length === 0">
                 Save
               </b-btn>
               <b-btn variant="light" @click="cancelUploadAttachments" >
@@ -608,12 +608,12 @@ export default {
       this.commonStore.setFiles([])
     },
     uploadAttachments () {
-      if (this.uploadFiles.length > 0) {
-        this.commonStore.uploadFiles({
+      if (this.commonStore.uploadFiles.length > 0) {
+        this.commonStore.uploadTheFiles({
           documentType: 'drillers',
           recordId: this.currentDriller.person_guid
         }).then(() => {
-          this.commonStore.fileUploadSuccess()
+          this.commonStore.fileUploadSucceeded()
           this.fetchFiles()
           window.scrollTo(0, 0)
         }).catch((error) => {

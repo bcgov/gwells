@@ -27,7 +27,7 @@ export const useCommonStore = defineStore('common', {
     uploadFiles: [],
     filesUploading: false,
     fileUploadErrors: [],
-    file_upload_error: false,
+    fileUploadError: false,
     fileUploadSuccess: false,
     shapefileUploading: false,
     shapefileUploadMessage: '',
@@ -142,7 +142,7 @@ export const useCommonStore = defineStore('common', {
           throw e
         })
     },
-    uploadFiles (payload) {
+    uploadTheFiles (payload) {
       this.filesUploading = true
       let documentType = payload.documentType
       let recordId = payload.recordId
@@ -204,7 +204,7 @@ export const useCommonStore = defineStore('common', {
         })
       }, Promise.resolve())
     },
-    fileUploadSuccess () {
+    fileUploadSucceeded () {
       this.filesUploading = false
       this.fileUploadSuccess = true
       this.uploadFiles = []
@@ -218,12 +218,6 @@ export const useCommonStore = defineStore('common', {
       this.fileUploadSuccess = false
       this.uploadFiles = []
       this.isPrivate = false
-    },
-    shapefileUploadSuccess () {
-      this.setShapefileUploadSuccess()
-    },
-    shapefileUploadFail () {
-      this.shapefileUploadSuccess = false
     },
     resetUploadFiles () {
       this.uploadFiles = []
@@ -239,7 +233,7 @@ export const useCommonStore = defineStore('common', {
     },
     clearErrors () {
       this.fileUploadErrors = []
-      this.file_upload_error = false
+      this.fileUploadError = false
     },
     setShapefileUploadMessage (payload) {
       this.shapefileUploadMessage = payload
@@ -251,7 +245,7 @@ export const useCommonStore = defineStore('common', {
       this.shapefileUploading = payload
     },
     setFileUploadError (payload) {
-      this.file_upload_error = payload
+      this.fileUploadError = payload
     },
     setFileUploadSuccess (payload) {
       this.fileUploadSuccess = payload

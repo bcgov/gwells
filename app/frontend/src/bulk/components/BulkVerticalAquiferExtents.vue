@@ -186,7 +186,7 @@
         </b-button-group>
       </b-container>
     </b-card>
-    <div class="card container" v-else-if="!commonStore.$keycloak.authenticated">
+    <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
       </div>

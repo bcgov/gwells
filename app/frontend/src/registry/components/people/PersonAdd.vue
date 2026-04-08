@@ -431,11 +431,11 @@ export default {
 
       ApiService.post('drillers', personData).then((response) => {
         if (this.commonStore.uploadFiles.length > 0) {
-          this.commonStore.uploadFiles({
+          this.commonStore.uploadTheFiles({
             documentType: 'drillers',
             recordId: response.data.person_guid
           }).then(() => {
-            this.commonStore.fileUploadSuccess()
+            this.commonStore.fileUploadSucceeded()
             this.$router.push({ name: 'PersonDetail', params: { person_guid: response.data.person_guid } })
           }).catch((error) => {
             this.commonStore.fileUploadFail()
