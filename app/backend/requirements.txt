@@ -1,4 +1,4 @@
-django==4.2.29
+django==4.2.30
 gdal==3.10.3
 pytz==2024.1
 sqlparse==0.4.4
