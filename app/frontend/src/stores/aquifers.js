@@ -117,8 +117,8 @@ export const useAquiferStore = defineStore('aquifers', {
       }
       return params
     },
-    searchParams (state, getters) {
-      const params = { ...getters.queryParams }
+    searchParams (state) {
+      const params = { ...this.queryParams }
       const s = state.search
       if (s.constrainSearch && s.mapBounds) {
         const b = s.mapBounds
