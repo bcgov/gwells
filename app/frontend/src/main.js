@@ -19,7 +19,7 @@ import VueNoty from "vuejs-noty";
 import BootstrapVue from "bootstrap-vue";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
-import { Button, InputText, Card, Message, Panel, Select, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup } from 'primevue';
+import { Button, InputText, Card, Message, Panel, Select, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox } from 'primevue';
 import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
@@ -86,7 +86,10 @@ app.use(VueNoty, {
 app.use(BootstrapVue);
 app.use(PrimeVue, {
   theme: {
-    preset: Aura
+    preset: Aura,
+    options: {
+      darkModeSelector: false,
+    }
   }
 });
 app.use(VueMoment);
@@ -106,6 +109,7 @@ app.component("RadioButtonGroup", RadioButtonGroup);
 app.component("Checkbox", Checkbox);
 app.component("CheckboxGroup", CheckboxGroup);
 app.component("Form", Form);
+app.component("Listbox", Listbox);
 
 const pinia = createPinia();
 app.use(pinia);
