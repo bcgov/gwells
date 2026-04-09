@@ -159,16 +159,16 @@ export default {
     }
   },
   computed: {
-    limit () { return this.wells ? this.wells.searchLimit : 10 },
-    errors () { return this.wells ? this.wells.searchErrors : {} },
-    params () { return this.wells ? this.wells.searchParams : {} },
-    offset () { return this.wells ? this.wells.searchOffset : 0 },
-    ordering () { return this.wells ? this.wells.searchOrdering : '' },
-    pending () { return this.wells ? this.wells.pendingSearch : null },
-    resultFilters () { return this.wells ? this.wells.searchResultFilters : {} },
-    resultColumns () { return this.wells ? this.wells.searchResultColumns : [] },
-    resultCount () { return this.wells ? this.wells.searchResultCount : 0 },
-    results () { return this.wells ? this.wells.searchResults : null },
+    limit () { return this.wellsStore ? this.wellsStore.searchLimit : 10 },
+    errors () { return this.wellsStore ? this.wellsStore.searchErrors : {} },
+    params () { return this.wellsStore ? this.wellsStore.searchParams : {} },
+    offset () { return this.wellsStore ? this.wellsStore.searchOffset : 0 },
+    ordering () { return this.wellsStore ? this.wellsStore.searchOrdering : '' },
+    pending () { return this.wellsStore ? this.wellsStore.pendingSearch : null },
+    resultFilters () { return this.wellsStore ? this.wellsStore.searchResultFilters : {} },
+    resultColumns () { return this.wellsStore ? this.wellsStore.searchResultColumns : [] },
+    resultCount () { return this.wellsStore ? this.wellsStore.searchResultCount : 0 },
+    results () { return this.wellsStore ? this.wellsStore.searchResults : null },
     columns () {
       return this.getFilterFields(this.resultColumns)
     },
@@ -219,29 +219,29 @@ export default {
   },
   methods: {
     setLimit (limit) {
-      this.wells.searchLimit = limit
+      this.wellsStore.searchLimit = limit
       this.$emit('limit-changed', limit)
 
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+      this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
     },
     changePage (page) {
       const offset = this.limit * (page - 1)
-      this.wells.searchOffset = offset
+      this.wellsStore.searchOffset = offset
       this.$emit('page-changed', page)
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+      this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
     },
     sortResults ({ param, desc }) {
       const sort = `${desc ? '-' : ''}${param}`
-      this.wells.searchOrdering = sort
+      this.wellsStore.searchOrdering = sort
       this.$emit('sort-changed', sort)
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+      this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
     },
     applyFilter ({ id }, values) {
       this.filterParams[id] = values
       const filterGroup = { ...this.searchQueryParams }
-      this.wells.searchResultFilters = filterGroup
+      this.wellsStore.searchResultFilters = filterGroup
       this.$emit('filter-changed', filterGroup)
-      this.wells.searchWells({ trigger: FILTER_TRIGGER })
+      this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
     },
     initFilterParams () {
       const filterParams = { ...this.emptyFilterParams }
@@ -313,9 +313,9 @@ export default {
     }
   },
   created () {
-    this.wells = useWellsStore()
+    this.wellsStore = useWellsStore()
     if (localStorage && localStorage.getItem('userColumnPreferences')) {
-      this.wells.setSearchResultColumns(JSON.parse(localStorage.getItem('userColumnPreferences')))
+      this.wellsStore.setSearchResultColumns(JSON.parse(localStorage.getItem('userColumnPreferences')))
     }
     this.initFilterParams()
   }
