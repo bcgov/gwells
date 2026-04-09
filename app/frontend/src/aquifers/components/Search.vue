@@ -181,16 +181,6 @@ import smoothScroll from 'smoothscroll'
 import { useAquiferStore } from '@/stores/aquifers.js'
 
 import ApiService from '@/common/services/ApiService.js'
-import {
-  SET_CONSTRAIN_SEARCH,
-  SET_SEARCH_BOUNDS,
-  RESET_SEARCH,
-  SET_SEARCH_MAP_ZOOM,
-  SET_SEARCH_MAP_CENTRE,
-  SET_SELECTED_SECTIONS,
-  SET_MATCH_ANY
-} from '../store/mutations.types.js'
-import { SEARCH_AQUIFERS } from '../store/actions.types.js'
 
 import AquiferMap from './AquiferMap.vue'
 import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
@@ -323,14 +313,14 @@ export default {
     resourceSections () { return this.aquiferStore.sections }
   },
   methods: {
-    [SEARCH_AQUIFERS] (payload) { this.aquiferStore[SEARCH_AQUIFERS](payload) },
-    [SET_CONSTRAIN_SEARCH] (v) { this.aquiferStore[SET_CONSTRAIN_SEARCH](v) },
-    [SET_SEARCH_BOUNDS] (v) { this.aquiferStore[SET_SEARCH_BOUNDS](v) },
-    [RESET_SEARCH] () { this.aquiferStore[RESET_SEARCH]() },
-    [SET_SEARCH_MAP_CENTRE] (v) { this.aquiferStore[SET_SEARCH_MAP_CENTRE](v) },
-    [SET_SEARCH_MAP_ZOOM] (v) { this.aquiferStore[SET_SEARCH_MAP_ZOOM](v) },
-    [SET_SELECTED_SECTIONS] (v) { this.aquiferStore[SET_SELECTED_SECTIONS](v) },
-    [SET_MATCH_ANY] (v) { this.aquiferStore[SET_MATCH_ANY](v) },
+    searchAquifers (payload) { this.aquiferStore.searchAquifers(payload) },
+    setConstrainSearch (v) { this.aquiferStore.setConstrainSearch(v) },
+    setSearchBounds (v) { this.aquiferStore.setSearchBounds(v) },
+    resetSearch () { this.aquiferStore.resetSearch() },
+    setSearchMapCentre (v) { this.aquiferStore.setSearchMapCentre(v) },
+    setSearchMapZoom (v) { this.aquiferStore.setSearchMapZoom(v) },
+    setSelectedSections (v) { this.aquiferStore.setSelectedSections(v) },
+    setMatchAny (v) { this.aquiferStore.setMatchAny(v) },
     addSections (payload) { this.aquiferStore.addSections(payload) },
     navigateToNew () {
       this.$router.push({ name: 'new' })
@@ -393,7 +383,7 @@ export default {
       this.matchAny = false
       this.selectedAquiferId = null
       this.showRetiredAquifers = false
-      this[RESET_SEARCH]()
+      this.resetSearch()
       this.$emit('resetLayers')
     },
     triggerSearch (options = {}) {
@@ -407,16 +397,16 @@ export default {
       this.loadingMap = true
 
       this.selectedAquiferId = null
-      this[SET_CONSTRAIN_SEARCH](constrainSearch)
-      this[SEARCH_AQUIFERS]({
+      this.setConstrainSearch(constrainSearch)
+      this.searchAquifers({
         selectedSections: this.selectedSections,
         matchAny: this.matchAny,
         query: this.search
       })
     },
     mapSearch (zoom, bounds) {
-      this[SET_SEARCH_MAP_CENTRE](bounds.getCenter())
-      this[SET_SEARCH_MAP_ZOOM](zoom)
+      this.setSearchMapCentre(bounds.getCenter())
+      this.setSearchMapZoom(zoom)
       this.triggerSearch({ constrain: true })
     },
     updateQueryParams () {
@@ -429,14 +419,14 @@ export default {
     mapMoved (bounds, featuresOnMap, isViewReset) {
       const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
 
-      this[SET_SEARCH_MAP_CENTRE](viewingBC ? null : bounds.getCenter())
-      this[SET_SEARCH_BOUNDS](viewingBC ? null : bounds)
+      this.setSearchMapCentre(viewingBC ? null : bounds.getCenter())
+      this.setSearchBounds(viewingBC ? null : bounds)
       this.updateQueryParams()
     },
     handleMapZoom (zoom, bounds) {
       const viewingBC = containsBounds(bounds, BC_LAT_LNG_BOUNDS)
 
-      this[SET_SEARCH_MAP_ZOOM](viewingBC ? null : zoom)
+      this.setSearchMapZoom(viewingBC ? null : zoom)
       this.updateQueryParams()
     },
     handleRouteChange () {
@@ -444,7 +434,7 @@ export default {
       const emptyQuery = Object.keys(query).length === 0
 
       if (emptyQuery) {
-        this[RESET_SEARCH]()
+        this.resetSearch()
       } else {
         this.updateStoreStateFromQS()
 
@@ -470,20 +460,20 @@ export default {
         const lat = parseFloat(latlng[0]) || null
         const lng = parseFloat(latlng[1]) || null
         if (lat && lng) {
-          this[SET_SEARCH_MAP_CENTRE](new mapboxgl.LngLat(lng, lat))
+          this.setSearchMapCentre(new mapboxgl.LngLat(lng, lat))
         }
       }
       if (query.map_zoom !== undefined) {
-        this[SET_SEARCH_MAP_ZOOM](parseInt(query.map_zoom))
+        this.setSearchMapZoom(parseInt(query.map_zoom))
       }
       if (query.constrain !== undefined) {
-        this[SET_CONSTRAIN_SEARCH](Boolean(query.constrain))
+        this.setConstrainSearch(Boolean(query.constrain))
       }
       if (query.resources__section__code) {
-        this[SET_SELECTED_SECTIONS](query.resources__section__code.split(',').map(code => code.trim()))
+        this.setSelectedSections(query.resources__section__code.split(',').map(code => code.trim()))
       }
       if (query.match_any) {
-        this[SET_MATCH_ANY](Boolean(query.match_any))
+        this.setMatchAny(Boolean(query.match_any))
       }
     },
     searchResultsRowClass (item, type) {

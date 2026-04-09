@@ -44,8 +44,7 @@
     "vue-moment": "^4.1.0",
     "vue-router": "^4.6.4",
     "vue-select": "^4.0.0-beta.6",
-    "vuejs-noty": "^0.1.4",
-    "vuex": "^4.1.0"
+    "vuejs-noty": "^0.1.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.5",

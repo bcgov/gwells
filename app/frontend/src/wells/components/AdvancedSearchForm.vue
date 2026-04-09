@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
+import { SEARCH_TRIGGER } from '@/wells/triggers.types.js'
 import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
 import { useWellsStore } from '@/stores/wells'

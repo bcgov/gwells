@@ -135,7 +135,7 @@
 
 <script>
 import { useWellsStore } from '@/stores/wells.js'
-import { FILTER_TRIGGER } from '@/wells/store/triggers.types.js'
+import { FILTER_TRIGGER } from '@/wells/triggers.types.js'
 import SearchResultExports from '@/wells/components/SearchResultExports.vue'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
 import SearchColumnSelect from '@/wells/components/SearchColumnSelect.vue'
