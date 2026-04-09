@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mapStores } from 'pinia'
 import { useWellsStore } from '@/stores/wells.js'
 import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import Exports from '@/wells/components/Exports.vue'
@@ -65,19 +66,20 @@ export default {
     }
   },
   computed: {
+    ...mapStores(useWellsStore),
     searchParams () {
-      return this.wells ? this.wells.searchParams : {}
+      return this.wellsStore ? this.wellsStore.searchParams : {}
     },
     searchInProgress () {
-      return this.wells ? this.wells.searchInProgress : false
+      return this.wellsStore ? this.wellsStore.searchInProgress : false
     }
   },
   methods: {
     handleSubmit () {
       const params = { search: this.searchString }
-      this.wells.setSearchParams(params)
+      this.wellsStore.setSearchParams(params)
 
-      this.wells.searchWells({ trigger: SEARCH_TRIGGER, constrain: true })
+      this.wellsStore.searchWells({ trigger: SEARCH_TRIGGER, constrain: true })
 
       this.$emit('search', params)
     },
@@ -95,7 +97,6 @@ export default {
     }
   },
   created () {
-    this.wells = useWellsStore()
     this.updateSearchString()
   }
 }

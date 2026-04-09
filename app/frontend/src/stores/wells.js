@@ -74,25 +74,7 @@ export const useWellsStore = defineStore('wells', {
 	}),
 
 	getters: {
-		drillerNames: (state) => state.drillerNames,
-		lastSearchTrigger: (state) => state.lastSearchTrigger,
-		locationSearchResults: (state) => state.locationSearchResults,
-		organizationNames: (state) => state.organizationNames,
-		constrainSearch: (state) => state.constrainSearch,
-		pendingLocationSearch: (state) => state.pendingLocationSearch,
-		hasSearched: (state) => state.hasSearched,
-		pendingSearch: (state) => state.pendingSearch,
 		searchInProgress: (state) => Boolean(state.pendingSearch),
-		searchBounds: (state) => state.searchBounds,
-		searchErrors: (state) => state.searchErrors,
-		searchLimit: (state) => state.searchLimit,
-		searchOffset: (state) => state.searchOffset,
-		searchOrdering: (state) => state.searchOrdering,
-		searchParams: (state) => state.searchParams,
-		searchResultColumns: (state) => state.searchResultColumns,
-		searchResultFilters: (state) => state.searchResultFilters,
-		searchResultCount: (state) => state.searchResultCount,
-		searchResults: (state) => state.searchResults,
 		well: (state) => state.wellRecord,
 		wellLicence: (state) => state.recordLicence,
 		storedWellId: (state) => state.wellId,
@@ -102,9 +84,6 @@ export const useWellsStore = defineStore('wells', {
 	},
 
 	actions: {
-		setSearchParams (payload) {
-			this.searchParams = cleanParams(payload)
-		},
 		async fetchWellDownloadLinks () {
 			if (this.downloads === null) {
 				const response = await ApiService.query('wells/extracts')
@@ -113,7 +92,7 @@ export const useWellsStore = defineStore('wells', {
 		},
 
 		async fetchDrillerNames () {
-			if (this.drillerNames.length === 0) {
+			if (this.drillerNames?.length === 0) {
 				try {
 					const response = await ApiService.query('drillers/names')
 					this.drillerNames = response.data
@@ -123,10 +102,10 @@ export const useWellsStore = defineStore('wells', {
 			}
 		},
 
-    setWellRecord (payload) {
-      this.wellRecord = payload
-      this.wellId = payload.well || null
-    },
+		setWellRecord (payload) {
+		this.wellRecord = payload
+		this.wellId = payload.well || null
+		},
 
 		resetWellData () {
 			this.wellRecord = {}
@@ -134,7 +113,7 @@ export const useWellsStore = defineStore('wells', {
 		},
 
 		async fetchOrganizationNames () {
-			if (this.organizationNames.length === 0) {
+			if (this.organizationNames?.length === 0) {
 				try {
 					const response = await ApiService.query('organizations/names')
 					this.organizationNames = response.data
@@ -173,6 +152,22 @@ export const useWellsStore = defineStore('wells', {
 			this.searchMap.zoom = null
 		},
 
+		setSearchParams (payload) {
+			this.searchParams = cleanParams(payload)
+		},
+
+		setSearchMapCentre (payload) {
+			this.searchMap.center = payload
+		},
+
+		setSearchMapZoom (payload) {
+			this.searchMap.zoom = payload
+		},
+
+		setSearchBounds (payload) {
+			this.searchBounds = payload
+		},
+
 		setSearchResultColumns (payload) {
 			this.searchResultColumns = payload
 		},
@@ -187,6 +182,10 @@ export const useWellsStore = defineStore('wells', {
 
 		setSearchOrdering (payload) {
 			this.searchOrdering = payload
+		},
+
+		setConstrainSearch (payload) {
+			this.constrainSearch = payload
 		},
 
 		setSearchLimit (payload) {

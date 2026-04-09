@@ -415,7 +415,6 @@ import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
 import ApiService from '@/common/services/ApiService.js'
-import { mapGetters } from 'vuex'
 import { useRegistryStore } from '@/stores/registry.js'
 import PersonDocuments from './PersonDocuments.vue'
 
@@ -543,9 +542,6 @@ export default {
       return notes
     },
     commonStore () { return useCommonStore() },
-    ...mapGetters([
-      'user'
-    ])
   },
   methods: {
     show (key) {

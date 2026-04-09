@@ -20,7 +20,6 @@ import BootstrapVue from "bootstrap-vue";
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
-import { store } from "./store/index.js";
 import "@/common/assets/css/bootstrap-theme.min.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 import vSelect from "vue-select";
@@ -74,7 +73,6 @@ if (isProduction()) {
   });
 }
 
-app.use(store);
 app.use(router);
 app.use(VueNoty, {
   layout: "topRight",

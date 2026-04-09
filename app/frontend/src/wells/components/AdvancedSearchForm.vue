@@ -26,7 +26,7 @@
         :id="`${field.id}Filter`"
         :param-names="field.params"
         :label="field.label"
-        :errors="errors[field.param]"
+        :errors="wellsStore.searchErrors[field.param]"
         :options="field.options || filterSelectOptions[field.id]"
         :value-field="field.valueField"
         :text-field="field.textField"
@@ -35,8 +35,8 @@
     </div>
     <b-row>
       <b-col class="my-3">
-        <b-btn variant="primary" type="submit" :disabled="searchInProgress">Search</b-btn>
-        <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>
+        <b-btn variant="primary" type="submit" :disabled="wellsStore.searchInProgress">Search</b-btn>
+        <b-btn variant="dark" type="reset" :disabled="wellsStore.searchInProgress" class="mx-2">Reset</b-btn>
       </b-col>
     </b-row>
     <b-row class="mt-1">
@@ -51,7 +51,7 @@
       :id="`${field.id}Filter`"
       :param-names="field.params"
       :label="field.label"
-      :errors="errors[field.param]"
+      :errors="wellsStore.searchErrors[field.param]"
       :options="field.options || filterSelectOptions[field.id]"
       :value-field="field.valueField"
       :text-field="field.textField"
@@ -76,18 +76,10 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { useSubmissionStore } from '@/stores/submission'
-import {
-  FETCH_DRILLER_NAMES,
-  FETCH_ORGANIZATION_NAMES,
-  RESET_WELLS_SEARCH,
-  SEARCH_WELLS
-} from '@/wells/store/actions.types.js'
-import { SET_SEARCH_PARAMS } from '@/wells/store/mutations.types.js'
 import { SEARCH_TRIGGER } from '@/wells/store/triggers.types.js'
 import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
+import { useWellsStore } from '@/stores/wells'
 
 const ADDITIONAL_FILTER_SECTIONS = [
   { header: 'Well Class',
@@ -229,11 +221,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({
-      errors: 'searchErrors',
-      searchParams: 'searchParams',
-      searchInProgress: 'searchInProgress'
-    }),
+    wellsStore () {
+      return useWellsStore()
+    },
     defaultFilterIds () {
       return reduceSections(this.defaultFilterSections)
     },
@@ -270,9 +260,9 @@ export default {
   },
   methods: {
     handleSubmit () {
-      this.$store.commit(SET_SEARCH_PARAMS, { ...this.searchQueryParams })
+      this.wellsStore.setSearchParams({ ...this.searchQueryParams })
 
-      this.$store.dispatch(SEARCH_WELLS, { trigger: SEARCH_TRIGGER, constrain: true })
+      this.wellsStore.searchWells({ constrain: true, trigger: SEARCH_TRIGGER })
 
       this.$emit('search', this.searchQueryParams)
     },
@@ -305,37 +295,37 @@ export default {
     },
     initFilterParams () {
       const filterParams = { ...this.emptyFilterParams }
-
-      Object.entries(this.searchParams).forEach(([param, value]) => {
-        [...this.defaultFilterFields, ...this.additionalFilterFields].forEach(field => {
-          if (field.params.includes(param)) {
-            filterParams[field.id] = { [param]: value }
-          }
+      if (this.wellsStore.searchParams) {
+        Object.entries(this.wellsStore.searchParams).forEach(([param, value]) => {
+          [...this.defaultFilterFields, ...this.additionalFilterFields].forEach(field => {
+            if (field.params.includes(param)) {
+              filterParams[field.id] = { [param]: value }
+            }
+          })
         })
-      })
+      }
 
       if (filterParams.matchAny.match_any === undefined) {
         filterParams.matchAny.match_any = true
       }
-
       this.filterParams = filterParams
     }
   },
   created () {
-    const submissionStore = this.submissionStore
-    submissionStore.fetchCodes()
-    this.$store.dispatch(FETCH_DRILLER_NAMES)
-    this.$store.dispatch(FETCH_ORGANIZATION_NAMES)
+    this.submissionStore.fetchCodes()
+    this.wellsStore.fetchDrillerNames()
+    this.wellsStore.fetchOrganizationNames()
 
     this.initFilterParams()
     this.initSelectedFilterIds()
 
     // On reset, clear local params
-    this.$store.subscribeAction((action, state) => {
-      if (action.type === RESET_WELLS_SEARCH ||
-          (action.type === SEARCH_WELLS && state.wellsStore.searchParams.search !== undefined && state.wellsStore.searchParams.search !== null)) {
-        this.filterParamsReset()
-        this.selectedFilterIds = []
+    this.wellsStore.$onAction(({ name, store, after }) => {
+      if (name === 'resetWellsSearch' || (name === 'searchWells' && store.searchParams?.search !== undefined && store.searchParams?.search !== null)) {
+        after(() => {
+          this.filterParamsReset()
+          this.selectedFilterIds = []
+        });
       }
     })
   }

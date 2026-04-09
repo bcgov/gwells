@@ -128,8 +128,9 @@ governing permissions and limitations under the License. */
 
 <script>
 import Vue from "vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapStores } from "pinia";
 import { useSubmissionStore } from "@/stores/submission.js";
+import { useWellsStore } from "@/stores/wells.js";
 import { diff } from "deep-diff";
 import { camelCase } from "lodash";
 import smoothScroll from "smoothscroll";
@@ -140,7 +141,6 @@ import SubmissionPreview from "@/submissions/components/SubmissionPreview/Submis
 import filterBlankRows from "@/common/filterBlankRows.js";
 import ActivitySubmissionForm from "@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue";
 import parseErrors from "@/common/helpers/parseErrors.js";
-import { RESET_WELL_DATA } from "@/wells/store/actions.types.js";
 import {
   TYPE_OF_WORK,
   WELL_CLASS,
@@ -170,6 +170,7 @@ export default {
     };
   },
   computed: {
+    ...mapStores(useSubmissionStore, useWellsStore),
     displayFormSection() {
       // returns an object describing which components should be displayed
       // when in "flat form" mode
@@ -226,14 +227,9 @@ export default {
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;
     },
-    submissionStore() { return useSubmissionStore() },
-    commonStore () { return useCommonStore() },
     codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    ...mapGetters(["well"]),
   },
   methods: {
-    ...mapActions([RESET_WELL_DATA]),
-
     editWater(coords) {
       this.initialLatitude = coords.lat;
       this.initialLongitude = coords.lng;
@@ -443,7 +439,7 @@ export default {
             });
             this.events.$emit("well-edited", true);
             this.fetchWellDataForStaffEdit({ reloadPage: false });
-            this[RESET_WELL_DATA]();
+            this.wellsStore.resetWellData();
           } else {
             this.$nextTick(() => {
               this.$noty.success(

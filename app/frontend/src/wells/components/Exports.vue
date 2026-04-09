@@ -25,24 +25,23 @@
 
 <script>
 import { useWellsStore } from '@/stores/wells.js'
+import { mapStores } from 'pinia';
 
 export default {
   data () {
-    return {
-      wells: null
-    }
+    return {}
   },
   computed: {
+    ...mapStores(useWellsStore),
     files () {
-      return this.wells ? this.wells.wellFileDownloads : []
+      return this.wellsStore ? this.wellsStore.wellFileDownloads : []
     },
     hasFiles () {
       return this.files && this.files.length > 0
     }
   },
   created () {
-    this.wells = useWellsStore()
-    this.wells.fetchWellDownloadLinks()
+    this.wellsStore.fetchWellDownloadLinks()
   },
   methods: {
     format_date (dateString) {

@@ -11,12 +11,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 export default {
   props: ['driller', 'activity'],
-  computed: {
-    ...mapGetters(['user'])
-  }
 }
 </script>
 

@@ -59,8 +59,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <map-loading-spinner :loading="loadingMap"/>
 
             <search-map
-              :initialCentre="searchMapCentre"
-              :initialZoom="searchMapZoom"
+              :initialCentre="wellsStore.searchMapCentre"
+              :initialZoom="wellsStore.searchMapZoom"
               :focusedWells="focusedWells"
               @boundsChanged="handleMapBoundsChange"
               @search="handleMapSearch"
@@ -108,10 +108,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-alert>
         </b-col>
       </b-row>
-      <div class="my-5" v-show="hasSearched || hasResultErrors">
+      <div class="my-5" v-show="wellsStore.hasSearched || hasResultErrors">
         <search-results/>
       </div>
-      <div v-if="!hasSearched" class="mt-5">
+      <div v-if="!wellsStore.hasSearched" class="mt-5">
         <p>
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
         </p>
@@ -126,31 +126,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <script>
 import axios from 'axios'
-import querystring from 'querystring'
 import { isEqual } from 'lodash'
 import smoothScroll from 'smoothscroll'
-import { mapGetters } from 'vuex'
+import { mapStores } from 'pinia'
 
 import ApiService from '@/common/services/ApiService.js'
 
-import {
-  RESET_WELLS_SEARCH,
-  // SEARCH_LOCATIONS,
-  SEARCH_WELLS
-} from '@/wells/store/actions.types.js'
-import {
-  SET_SEARCH_LIMIT,
-  SET_SEARCH_OFFSET,
-  SET_SEARCH_ORDERING,
-  SET_SEARCH_PARAMS,
-  SET_SEARCH_RESULT_COLUMNS,
-  SET_SEARCH_RESULT_FILTERS,
-  SET_SEARCH_MAP_CENTRE,
-  SET_SEARCH_MAP_ZOOM,
-  SET_CONSTRAIN_SEARCH,
-  SET_SEARCH_BOUNDS
-} from '@/wells/store/mutations.types.js'
 import { QUERY_TRIGGER, MAP_TRIGGER } from '@/wells/store/triggers.types.js'
+import { useWellsStore } from '@/stores/wells.js'
+import { useQAQCStore } from '@/stores/qaqc'
 
 import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
@@ -186,24 +170,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'hasSearched',
-      'searchErrors',
-      'searchLimit',
-      'searchOffset',
-      'searchOrdering',
-      'searchParams',
-      'searchResults',
-      'searchResultColumns',
-      'searchResultFilters',
-      'searchMapCentre',
-      'searchMapZoom',
-      'constrainSearch',
-      'searchInProgress',
-      'searchQueryParams'
-    ]),
+    ...mapStores(useQAQCStore, useWellsStore),
     hasResultErrors () {
-      return (this.searchErrors.filter_group !== undefined && Object.entries(this.searchErrors.filter_group).length > 0)
+      return (this.wellsStore.searchErrors?.filter_group !== undefined && Object.entries(this.wellsStore.searchErrors.filter_group).length > 0)
     },
     hasSearchParams () {
       return Object.keys(this.searchQueryParams ?? {} ).length > 0
@@ -223,9 +192,9 @@ export default {
 
       this.noWellsInView = false
 
-      this.$store.commit(SET_SEARCH_MAP_CENTRE, isViewReset ? null : centre)
-      this.$store.commit(SET_SEARCH_MAP_ZOOM, isViewReset ? null : zoom)
-      this.$store.commit(SET_SEARCH_BOUNDS, convertLngLatBoundsToDirectionBounds(bounds))
+      this.wellsStore.setSearchMapCentre(isViewReset ? null : centre)
+      this.wellsStore.setSearchMapZoom(isViewReset ? null : zoom)
+      this.wellsStore.setSearchBounds(convertLngLatBoundsToDirectionBounds(bounds))
 
       this.updateQueryParams()
     },
@@ -236,18 +205,18 @@ export default {
         this.loadingMap = true
       }
 
-      this.$store.commit(SET_SEARCH_BOUNDS, convertLngLatBoundsToDirectionBounds(bounds))
-      this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
+      this.wellsStore.setSearchBounds(convertLngLatBoundsToDirectionBounds(bounds))
+      this.wellsStore.searchWells({ trigger: MAP_TRIGGER, constrain: true })
     },
     handleMapClearSearch () {
       this.updateQueryParams()
 
-      this.$store.commit(SET_SEARCH_PARAMS, {})
-      this.$store.commit(SET_SEARCH_RESULT_FILTERS, {})
+      this.wellsStore.setSearchParams({})
+      this.wellsStore.setSearchResultFilters({})
 
-      this.$store.dispatch(SEARCH_WELLS, { trigger: MAP_TRIGGER, constrain: true })
+      this.wellsStore.searchWells({ trigger: MAP_TRIGGER, constrain: true })
     },
-    handleWellsLoaded (numWells) {
+    handleWellsLoaded () {
       this.loadingMap = false
     },
     handleMapError (err) {
@@ -261,10 +230,10 @@ export default {
       if (this.performInitialSearch) {
         this.searchWellsInBC()
 
-        this.$store.commit(SET_SEARCH_BOUNDS, convertLngLatBoundsToDirectionBounds(bounds))
+        this.wellsStore.setSearchBounds(convertLngLatBoundsToDirectionBounds(bounds))
         // if the page loaded with a query, start a search.
         // Otherwise, the search does not need to run (see #1713)
-        this.$store.dispatch(SEARCH_WELLS, { trigger: QUERY_TRIGGER, constrain: true })
+        this.wellsStore.searchWells({ trigger: QUERY_TRIGGER, constrain: true })
       } else {
         this.loadingMap = false
       }
@@ -273,7 +242,7 @@ export default {
       this.updateQueryParams()
 
       const columnsRequested = {
-        'search_columns': this.searchResultColumns.join(',')
+        'search_columns': this.wellsStore.searchResultColumns.join(',')
       }
 
       this.hasManuallySearched = true
@@ -304,7 +273,7 @@ export default {
       this.totalSearchResultsInBC = 0
       this.bcSearchResults = []
 
-      this.$store.dispatch(RESET_WELLS_SEARCH)
+      this.wellsStore.resetWellsSearch()
       // when the URL query is set to null the `handleRouteChange()` method will be triggered
       this.$router.replace({ query: null })
     },
@@ -333,25 +302,25 @@ export default {
       if (query.filter_group !== undefined) {
         try {
           const resultFilters = JSON.parse(query.filter_group)
-          this.$store.commit(SET_SEARCH_RESULT_FILTERS, resultFilters)
+          this.wellsStore.setSearchResultFilters(resultFilters)
         } catch (SyntaxError) {}
 
         delete query.filter_group
       }
       if (query.limit !== undefined) {
-        this.$store.commit(SET_SEARCH_LIMIT, query.limit)
+        this.wellsStore.setSearchLimit(query.limit)
         delete query.limit
       }
       if (query.offset !== undefined) {
-        this.$store.commit(SET_SEARCH_OFFSET, query.offset)
+        this.wellsStore.setSearchOffset(query.offset)
         delete query.offset
       }
       if (query.ordering !== undefined) {
-        this.$store.commit(SET_SEARCH_ORDERING, query.ordering)
+        this.wellsStore.setSearchOrdering(query.ordering)
         delete query.ordering
       }
       if (query.result_columns !== undefined) {
-        this.$store.commit(SET_SEARCH_RESULT_COLUMNS, query.result_columns.split(','))
+        this.wellsStore.setSearchResultColumns(query.result_columns.split(','))
         delete query.result_columns
       }
       if (typeof query.map_centre === 'string') {
@@ -359,20 +328,20 @@ export default {
         const lat = parseFloat(latlng[0]) || null
         const lng = parseFloat(latlng[1]) || null
         if (lat && lng) {
-          this.$store.commit(SET_SEARCH_MAP_CENTRE, { lat, lng })
+          this.wellsStore.setSearchMapCentre({ lat, lng })
         }
         delete query.map_centre
       }
       if (query.map_zoom !== undefined) {
-        this.$store.commit(SET_SEARCH_MAP_ZOOM, parseInt(query.map_zoom))
+        this.wellsStore.setSearchMapZoom(parseInt(query.map_zoom))
         delete query.map_zoom
       }
       if (query.constrain !== undefined) {
-        this.$store.commit(SET_CONSTRAIN_SEARCH, Boolean(query.constrain))
+        this.wellsStore.setConstrainSearch(Boolean(query.constrain))
         delete query.constrain
       }
 
-      this.$store.commit(SET_SEARCH_PARAMS, query)
+      this.wellsStore.setSearchParams(query)
     },
     updateQueryParams () {
       const tabHash = (this.tabIndex === 1) ? 'advanced' : null
@@ -380,28 +349,28 @@ export default {
       this.$router.replace({ query: this.buildQueryParams(), hash: tabHash })
     },
     buildQueryParams () {
-      const query = { ...this.searchParams }
+      const query = { ...this.wellsStore.searchParams }
 
       // If params are completely empty, clear the query string, otherwise add the params to the
       // query string. This allows users to bookmark searches. Only add result params to the query
       // string if we have a search.
       if (Object.keys(query).length > 0) {
-        if (Object.keys(this.searchResultFilters).length > 0) {
-          query.filter_group = JSON.stringify(this.searchResultFilters)
+        if (Object.keys(this.wellsStore.searchResultFilters).length > 0) {
+          query.filter_group = JSON.stringify(this.wellsStore.searchResultFilters)
         }
-        query.result_columns = this.searchResultColumns.join(',')
-        query.limit = String(this.searchLimit)
-        query.offset = String(this.searchOffset)
-        query.ordering = this.searchOrdering
+        query.result_columns = this.wellsStore.searchResultColumns.join(',')
+        query.limit = String(this.wellsStore.searchLimit)
+        query.offset = String(this.wellsStore.searchOffset)
+        query.ordering = this.wellsStore.searchOrdering
       }
-      if (this.searchMapCentre) {
-        query.map_centre = `${this.searchMapCentre.lat.toFixed(6)},${this.searchMapCentre.lng.toFixed(6)}`
+      if (this.wellsStore.searchMapCentre) {
+        query.map_centre = `${this.wellsStore.searchMapCentre.lat.toFixed(6)},${this.wellsStore.searchMapCentre.lng.toFixed(6)}`
       }
-      if (this.searchMapZoom) {
-        query.map_zoom = String(this.searchMapZoom)
+      if (this.wellsStore.searchMapZoom) {
+        query.map_zoom = String(this.wellsStore.searchMapZoom)
       }
-      if (!this.constrainSearch) {
-        query.constrain = String(this.constrainSearch)
+      if (!this.wellsStore.constrainSearch) {
+        query.constrain = String(this.wellsStore.constrainSearch)
       }
 
       return query
@@ -427,7 +396,7 @@ export default {
       this.performInitialSearch = !emptyQuery && !isEqual(query, storeStateAsQS)
 
       if (emptyQuery) {
-        this.$store.dispatch(RESET_WELLS_SEARCH)
+        this.wellsStore.resetWellsSearch()
       } else {
         this.updateStoreStateFromQS()
       }
@@ -482,7 +451,7 @@ export default {
     }
   },
   watch: {
-    searchResults (results) {
+    'wellsStore.searchResults' () {
       this.handleResultsUpdate()
     },
     $route (to, from) {

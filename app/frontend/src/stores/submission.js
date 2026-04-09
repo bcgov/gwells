@@ -12,7 +12,6 @@ export const useSubmissionStore = defineStore('submission', {
 		codes: (state) => state.codes || {
 			land_district_codes: {}
 		},
-		wells: (state) => state.wells,
 		globalError: (state) => state.error
 	},
 
