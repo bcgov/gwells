@@ -15,20 +15,6 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import ApiService from '@/common/services/ApiService.js'
 import { doPolygonsIntersect } from '@/common/mapbox/geometry.js'
-import { SEARCH_AQUIFERS } from '@/aquifers/store/actions.types.js'
-import {
-  SET_SEARCH_BOUNDS,
-  SET_SEARCH_ERRORS,
-  RESET_SEARCH,
-  SET_CONSTRAIN_SEARCH,
-  SET_SEARCH_QUERY,
-  SET_SELECTED_SECTIONS,
-  SET_MATCH_ANY,
-  SET_SEARCH_MAP_CENTRE,
-  SET_SEARCH_MAP_ZOOM,
-  SET_NATURAL_RESOURCE_REGIONS,
-  SET_AQUIFER_NOTATIONS
-} from '@/aquifers/store/mutations.types.js'
 
 const AQUIFER_NOTATION_CODE = 'Notations'
 const UNPUBLISHED_AQUIFERS = 'Unpublished'
@@ -131,8 +117,8 @@ export const useAquiferStore = defineStore('aquifers', {
       }
       return params
     },
-    searchParams (state, getters) {
-      const params = { ...getters.queryParams }
+    searchParams (state) {
+      const params = { ...this.queryParams }
       const s = state.search
       if (s.constrainSearch && s.mapBounds) {
         const b = s.mapBounds
@@ -244,7 +230,7 @@ export const useAquiferStore = defineStore('aquifers', {
     },
 
     // ---- Search ----
-    [SEARCH_AQUIFERS] ({ query, selectedSections, matchAny }) {
+    searchAquifers ({ query, selectedSections, matchAny }) {
       this.search.searchPerformed = true
       this.search.searchInProgress = true
       this.search.searchQuery = query ?? ''
@@ -277,32 +263,25 @@ export const useAquiferStore = defineStore('aquifers', {
           this.search.pendingSearch = null
         })
     },
-
-    [SET_SEARCH_BOUNDS] (payload) {
+    setSearchBounds (payload) {
       this.search.mapBounds = payload
     },
-    [SET_SEARCH_ERRORS] (payload) {
-      this.search.searchErrors = payload
-    },
-    [SET_SEARCH_QUERY] (payload) {
-      this.search.searchQuery = payload || ''
-    },
-    [SET_SELECTED_SECTIONS] (payload) {
+    setSelectedSections (payload) {
       this.search.selectedSections = payload ?? []
     },
-    [SET_MATCH_ANY] (payload) {
+    setMatchAny (payload) {
       this.search.searchMatchAny = payload
     },
-    [SET_SEARCH_MAP_CENTRE] (payload) {
+    setSearchMapCentre (payload) {
       this.search.searchMapCentre = payload
     },
-    [SET_SEARCH_MAP_ZOOM] (payload) {
+    setSearchMapZoom (payload) {
       this.search.searchMapZoom = payload
     },
-    [SET_CONSTRAIN_SEARCH] (payload) {
+    setConstrainSearch (payload) {
       this.search.constrainSearch = payload
     },
-    [RESET_SEARCH] () {
+    resetSearch () {
       this.search.searchResults = []
       this.search.searchQuery = ''
       this.search.selectedSections = []
@@ -343,12 +322,6 @@ export const useAquiferStore = defineStore('aquifers', {
     },
 
     // ---- Notations ----
-    [SET_NATURAL_RESOURCE_REGIONS] (payload) {
-      this.notations.naturalResourceRegions = payload ?? []
-    },
-    [SET_AQUIFER_NOTATIONS] (payload) {
-      this.notations.aquiferNotations = payload ?? []
-    },
     fetchNotationsFromDataBC () {
       if (this.notations.naturalResourceRegions.length <= 0 ||
           this.notations.aquiferNotations.length <= 0) {

@@ -132,7 +132,7 @@ import { mapStores } from 'pinia'
 
 import ApiService from '@/common/services/ApiService.js'
 
-import { QUERY_TRIGGER, MAP_TRIGGER } from '@/wells/store/triggers.types.js'
+import { QUERY_TRIGGER, MAP_TRIGGER } from '@/wells/triggers.types.js'
 import { useWellsStore } from '@/stores/wells.js'
 import { useQAQCStore } from '@/stores/qaqc'
 
