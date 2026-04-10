@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import path from "path";
 import { NodeModulesPolyfillPlugin } from "@esbuild-plugins/node-modules-polyfill";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({ mode }) => ({
   define:
@@ -19,6 +20,7 @@ export default defineConfig(({ mode }) => ({
         }
       : {},
   plugins: [
+    tailwindcss(),
     vue({
       template: {
         compilerOptions: {
