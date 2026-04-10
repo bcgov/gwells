@@ -1,7 +1,7 @@
 <template>
   <div class="registry-search-table">
     <div class="registry-search-table-loading" v-if="loading || isSearchInProgress">
-      <b-spinner/>
+      <ProgressSpinner/>
     </div>
     <div class="table-responsive">
       <table class="table table-striped" id="registry-table">
@@ -9,7 +9,7 @@
           <tr>
             <template v-for="field in fields" :key="field.name">
               <th :class="{[field.class]: true, sortable: fieldSortable(field)}"
-                  v-if="(field.visible === 'public' || commonStore.userRoles.registry.view) && (field.activity === activity || field.activity == 'all')"
+                  v-if="(field.visible === 'public' || commonStore?.userRoles?.registry?.view) && (field.activity === activity || field.activity == 'all')"
                   @click="sortBy(field)">
                 {{field.name}}
                 <i class="fa fa-sort" v-if="field.sortable && field.sortCode"/>
@@ -22,7 +22,7 @@
             <template v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`">
               <td :id="`drillerName${index}`">
                 <router-link
-                  v-if="commonStore.userRoles.registry.view"
+                  v-if="commonStore.userRoles?.registry?.view"
                   :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
                     {{ driller.surname }}, {{ driller.first_name }}
                 </router-link>
@@ -32,7 +32,7 @@
                 <div v-if="driller.registrations && driller.registrations.length">
                   <div
                       v-for="(reg, regIndex) in driller.registrations"
-                      v-if="reg.activity === activity"
+                      v-if="reg?.activity === activity"
                       :key="`reg no ${driller.person_guid} ${regIndex}`">
                     {{ reg.registration_no }}</div>
                 </div>
@@ -54,7 +54,7 @@
               <td :id="`certAuth${index}`">
                 <driller-certificate-authority :driller="driller" :activity="activity"/>
               </td>
-              <td v-if="commonStore.userRoles.registry.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
+              <td v-if="commonStore.userRoles?.registry?.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
                 <driller-registration-status :driller="driller" :activity="activity"/>
               </td>
             </template>

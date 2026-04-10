@@ -19,7 +19,7 @@ import VueNoty from "vuejs-noty";
 import BootstrapVue from "bootstrap-vue";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
-import { Button, InputText, Card, Message, Panel, Select, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox } from 'primevue';
+import { Button, InputText, Card, Message, Panel, Select, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner } from 'primevue';
 import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
