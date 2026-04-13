@@ -8,7 +8,7 @@
             id="noteInputGroup"
             label="Add a note:"
             label-for="noteInput">
-            <b-form-textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></b-form-textarea>
+            <InputText id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></InputText>
           </div>
           <div class="submit-row">
             <Button
@@ -46,8 +46,10 @@
           <!-- Submit Modal -->
           <Dialog
             v-model="confirmSubmitModal"
+            v-model:visible="visible"
             centered
-            title="Confirm save"
+            modal
+            header="Confirm save"
             @shown="focusSubmitModal"
             :return-focus="$refs.noteInputSaveBtn"
           >
@@ -64,8 +66,10 @@
           <!-- Cancellation Modal -->
           <Dialog
               v-model="confirmCancelModal"
+              v-model:visible="visible"
               centered
-              title="Confirm cancel"
+              modal
+              header="Confirm cancel"
               @shown="focusCancelModal"
               :return-focus="$refs.noteInputCancelBtn"
             >
@@ -82,8 +86,10 @@
           <!-- Delete Note Modal  -->
           <Dialog
             v-model="confirmDeleteModal"
+            v-model:visible="visible"
             centered
-            title="Confirm Deletion"
+            modal
+            header="Confirm Deletion"
             @shown="focusDeleteModal"
             :return-focus="$refs.noteInputCancelBtn"
           >
@@ -110,8 +116,10 @@
           <!-- Edit Modal -->
           <Dialog
               v-model="confirmEditNoteModal"
+              v-model:visible="visible"
               centered
-              title="Editing Note"
+              modal
+              header="Editing Note"
               @shown="focusEditNoteModal"
               :return-focus="$refs.noteInputCancelBtn"
             >
@@ -143,7 +151,7 @@
       </div>
       <div id="notesList" ref="notes">
         <div class="mt-5" v-if="!notes || !notes.length">
-          <b-row><b-col>No notes for this record.</b-col></b-row>
+          <tr><td>No notes for this record.</td></tr>
         </div>
         <div class="mt-5 note-container" v-if="notes && notes.length">
           <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">

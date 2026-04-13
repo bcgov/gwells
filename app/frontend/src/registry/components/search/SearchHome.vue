@@ -245,12 +245,12 @@
               <div class="col-xs-12 col-sm-4">
                 <h3>{{ activityTitle }} Results</h3>
               </div>
-              <td cols="12">
+              <div cols="12">
                 To update contact information email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
-              </td>
-              <td cols="12" class="mt-2">
+              </div>
+              <div cols="12" class="mt-2">
                 <registry-table @sort="sortTable"/>
-              </td>
+              </div>
             </tr>
             <div id="searched-registry-download" v-if="hasResults && userRoles.registry.view">
               Download searched well driller or well pump installer:

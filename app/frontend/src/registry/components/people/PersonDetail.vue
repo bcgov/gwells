@@ -1,26 +1,26 @@
 <template>
   <div class="container p-1 p-md-3">
-    <b-card no-body class="mb-3" id="breadcrumbs">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
+    <Card no-body class="mb-3" id="breadcrumbs">
+        <Breadcrumbs :model="breadcrumbs" class="py-0 my-2" />
+    </Card>
     <div v-if="showSpinner">
-      <b-row>
-        <b-col md="12">
+      <tr>
+        <td md="12">
           <div class="fa-2x text-center">
             <i class="fa fa-circle-o-notch fa-spin"></i>
           </div>
-        </b-col>
-      </b-row>
+        </td>
+      </tr>
     </div>
     <div v-else class="card">
       <div class="col-xs-12" v-if="commonStore.filesUploading">
-        <b-alert show>File Upload In Progress...</b-alert>
+        <Message severity="info" show>File Upload In Progress...</Message>
       </div>
       <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.fileUploadError">
-        <b-alert show variant="warning" >File Upload Errors: {{commonStore.fileUploadErrors.map((e) => e.response.statusText)}}</b-alert>
+        <Message show severity="warn" >File Upload Errors: {{commonStore.fileUploadErrors.map((e) => e.response.statusText)}}</Message>
       </div>
       <div class="col-xs-12" v-if="!commonStore.filesUploading && commonStore.fileUploadSuccess">
-        <b-alert show variant="success" >Successfully uploaded all files</b-alert>
+        <Message show severity="success" >Successfully uploaded all files</Message>
       </div>
       <div class="card-body p-2 p-md-3">
         <div v-if="currentDriller != {}">
@@ -124,9 +124,9 @@
                   </tbody>
                 </table>
               </div>
-              <b-row v-if="show(registration.registries_activity)">
-                <b-col>
-                  <b-form @submit.prevent="saveApplication(registration.registries_activity)">
+              <tr v-if="show(registration.registries_activity)">
+                <td>
+                  <Form @submit.prevent="saveApplication(registration.registries_activity)">
                     <application-add
                         class="mb-3"
                         v-on:close="closeApplication(registration.registries_activity)"
@@ -136,20 +136,19 @@
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>
                         <button type="button" class="btn btn-light" @click="closeApplication(registration.registries_activity)">Cancel</button>
                     </application-add>
-                  </b-form>
-                </b-col>
-              </b-row>
-              <b-row v-else>
-                <b-col>
-                  <b-button
-                          v-if="commonStore.userRoles.registry.edit"
-                          type="button"
-                          variant="primary"
-                          size="sm"
-                          v-on:click="addApplication(registration)"
-                          class="mb-3 registries-action-button"><i class="fa fa-plus-square-o"></i> Add classification</b-button>
-                </b-col>
-              </b-row>
+                  </Form>
+                </td>
+              </tr>
+              <tr v-else>
+                <td>
+                  <Button
+                    v-if="commonStore.userRoles.registry.edit"
+                    label="Add classification"
+                    size="small"
+                    v-on:click="addApplication(registration)"
+                    class="mb-3 registries-action-button" />
+                </td>
+              </tr>
             </div>
 
             <!-- Registration information -->
@@ -283,33 +282,36 @@
         <div class="card mb-3" v-if="commonStore.userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
           <div class="card-body p-2 p-md-3">
             <div
-                v-for="(item, index) in registrationOptions.filter((item) => {
-                    return !currentDriller.registrations.some(reg => reg.registries_activity === item.code)
-                  })"
-                :key="`unregistered activity ${index}`">
-              <b-button variant="primary" class="my-1 registries-action-button" :ref="`registerButton${item.code}`" @click="confirmRegisterModal[item.code]=true">
-                Register as a {{ item.desc }}
-              </b-button>
-              <b-modal
+              v-for="(item, index) in registrationOptions.filter((item) => {
+                  return !currentDriller.registrations.some(reg => reg.registries_activity === item.code)
+                })"
+              :key="`unregistered activity ${index}`">
+              <Button
+                label="Register as a {{ item.desc }}"
+                variant="primary"
+                class="my-1 registries-action-button"
+                :ref="`registerButton${item.code}`"
+                @click="confirmRegisterModal[item.code]=true"
+              />
+              <Dialog
                   v-model="confirmRegisterModal[item.code]"
+                  v-model:visible="visible"
                   centered
-                  :title="`Confirm register as ${item.desc}`"
+                  modal
+                  header="`Confirm register as ${item.desc}`"
                   @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].focus()"
                   :return-focus="$refs[`registerButton${item.code}`]">
                 Are you sure you want to register {{ currentDriller.first_name }} {{ currentDriller.surname }} as a {{ item.desc }}?
                 <div slot="modal-footer">
-                  <b-btn
-                      variant="primary"
-                      @click="confirmRegisterModal[item.code]=false;submitRegistration(item.code)"
-                      :ref="`confirmRegisterConfirmBtn${item.code}`"
-                      id="register-confirm">
-                    Confirm
-                  </b-btn>
-                  <b-btn variant="light" @click="confirmRegisterModal[item.code]=false" id="register-cancel">
-                    Cancel
-                  </b-btn>
+                  <Button
+                    label="Confirm"
+                    variant="primary"
+                    @click="confirmRegisterModal[item.code]=false;submitRegistration(item.code)"
+                    :ref="`confirmRegisterConfirmBtn${item.code}`"
+                    id="register-confirm"/>
+                  <Button label="Cancel" variant="light" @click="confirmRegisterModal[item.code]=false" id="register-cancel"/>
                 </div>
-              </b-modal>
+              </Dialog>
             </div>
           </div>
         </div>
@@ -361,37 +363,31 @@
                 <h5 class="card-title mb-3">Attachments</h5>
               </div>
             </div>
-            <b-row class="mt-3">
-              <b-col>
-                <b-form-group
-                  label-cols="4"
-                  label="Upload Documents">
-                  <b-form-file
+            <tr class="mt-3">
+              <td>
+                <label>Upload Documents
+                  <FileUpload
                     v-model="files"
                     multiple
                     plain/>
                   <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
-                    <b-list-group>
-                      <b-list-group-item v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</b-list-group-item>
-                    </b-list-group>
+                    <ul>
+                      <li v-for="(f, index) in uploadFiles" :key="index">{{f.name}}</li>
+                    </ul>
                   </div>
-                </b-form-group>
-              </b-col>
-            </b-row>
-            <b-row class="mt-3">
-              <b-col>
+                </label>
+              </td>
+            </tr>
+            <tr class="mt-3">
+              <td>
                 <person-documents :files="person_files"
                   v-on:fetchFiles="fetchFiles"
                   :guid="currentDriller.person_guid"></person-documents>
-              </b-col>
-            </b-row>
+              </td>
+            </tr>
             <div slot="modal-footer">
-              <b-btn variant="primary" @click="uploadAttachments()" :disabled="commonStore.uploadFiles.length === 0">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="cancelUploadAttachments" >
-                Cancel
-              </b-btn>
+              <Button label="Save" variant="primary" @click="uploadAttachments()" :disabled="variant.uploadFiles.length === 0" />
+              <Button label="Cancel" variant="light" @click="cancelUploadAttachments" />
             </div>
           </div>
         </div>

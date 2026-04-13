@@ -1,7 +1,7 @@
 <template>
   <div class="container p-1 p-md-3">
     <Card no-body class="mb-3">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+      <Breadcrumb :model="breadcrumbs" class="py-0 my-2"></Breadcrumb>
     </Card>
     <div class="col-xs-12" v-if="error">
       <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
@@ -36,11 +36,10 @@
               <td>
                 <div class="field">
                   <label for="contactTelInput" aria-describedby="drillerTelExample">Telephone number:</label>
-                  <InputText
+                  <InputMask
                     id="contactTelInput"
                     type="tel"
-                    :formatter="formatTel"
-                    lazy-formatter
+                    mask="(999) 999-9999"
                     v-model="drillerForm.person.contact_tel"/>
                   <small id="drillerTelExample" class="form-text text-muted">
                     Example: (250) 555-1234
@@ -271,7 +270,6 @@ import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
-import inputFormatMixin from '@/common/inputFormatMixin.js'
 import { useRegistryStore } from '@/stores/registry.js'
 
 export default {
@@ -281,7 +279,6 @@ export default {
     'organization-add': OrganizationAdd,
     'application-add': ApplicationAddEdit
   },
-  mixins: [inputFormatMixin],
   data () {
     return {
       registryStore: useRegistryStore(),

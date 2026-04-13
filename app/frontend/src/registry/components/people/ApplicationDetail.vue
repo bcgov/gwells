@@ -14,7 +14,7 @@
 <template>
   <div class="container">
     <Card no-body class="mb-3">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
+      <Breadcrumb :model="breadcrumbs" class="py-0 my-2"></Breadcrumb>
     </Card>
     <div class="card">
       <div class="card-body">
@@ -40,8 +40,10 @@
             <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
               <Dialog
                   v-model="confirmCancelModal"
+                  v-model:visible="visible"
                   centered
-                  title="Confirm cancel"
+                  modal
+                  header="Confirm cancel"
                   @shown="focusCancelModal"
                   :return-focus="$refs.cancelClassification">
                 Your changes are not saved. Are you sure you want to discard your changes?
@@ -105,13 +107,23 @@
                 </tr>
                 <tr>
                   <td class="pl-3 pt-3">
-                      <b-form-group
-                          :label="`Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification`"
-                          label-for="qualifications"
-                          class="font-weight-bold">
-                      <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="qualificationOptions" v-model="qualifications" disabled>
-                      </b-form-checkbox-group>
-                    </b-form-group>
+                      <label for="qualifications" class="font-weight-bold">
+                        {{ `Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification` }}
+                          <div class="col-12">
+                            <CheckboxGroup v-model="qualifications">
+                              <div v-for="q in qualificationOptions" :key="q.value">
+                                <Checkbox
+                                  inputId="qualifications"
+                                  name="qualifications"
+                                  value="q.value"
+                                  class="fixed-width font-weight-normal"
+                                  disabled
+                                  />
+                                <label :for="q.value">{{ q.text }}</label>
+                              </div>
+                            </CheckboxGroup>
+                          </div>
+                    </label>
                   </td>
                 </tr>
                 <tr>
@@ -311,6 +323,7 @@ export default {
       return []
     },
     qualifications () {
+      console.log(this.application.qualifications)
       if (this.application) {
         return this.application.qualifications
       }

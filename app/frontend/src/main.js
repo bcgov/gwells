@@ -19,7 +19,7 @@ import VueNoty from "vuejs-noty";
 import BootstrapVue from "bootstrap-vue";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
-import { Button, InputText, Card, Message, Panel, Select, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner } from 'primevue';
+import { Button, InputText, InputMask, Card, Message, Panel, Select, MultiSelect, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner, Breadcrumb, Dialog, DataTable, Column, FileUpload } from 'primevue';
 import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
@@ -100,16 +100,24 @@ app.component("form-input", FormInput);
 // PrimeVue components
 app.component("Button", Button);
 app.component("InputText", InputText);
+app.component("InputMask", InputMask)
 app.component("Card", Card);
 app.component("Message", Message);
 app.component("Panel", Panel);
 app.component("Select", Select);
+app.component("MultiSelect", MultiSelect)
 app.component("RadioButton", RadioButton);
 app.component("RadioButtonGroup", RadioButtonGroup);
 app.component("Checkbox", Checkbox);
 app.component("CheckboxGroup", CheckboxGroup);
 app.component("Form", Form);
 app.component("Listbox", Listbox);
+app.component("ProgressSpinner", ProgressSpinner)
+app.component("Breadcrumb", Breadcrumb)
+app.component("Dialog", Dialog)
+app.component("DataTable", DataTable)
+app.component("Column", Column)
+app.component("FileUpload", FileUpload)
 
 const pinia = createPinia();
 app.use(pinia);

@@ -18,8 +18,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="searchResponse.results && searchResponse.results.length" :id="`registry-table-row-${index}`">
-            <template v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`">
+          <template v-if="searchResponse.results && searchResponse.results.length" :id="`registry-table-row-${index}`">
+            <tr v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`">
               <td :id="`drillerName${index}`">
                 <router-link
                   v-if="commonStore.userRoles?.registry?.view"
@@ -57,8 +57,8 @@
               <td v-if="commonStore.userRoles?.registry?.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
                 <driller-registration-status :driller="driller" :activity="activity"/>
               </td>
-            </template>
-          </tr>
+            </tr>
+          </template>
           <tr v-else>
           </tr>
         </tbody>

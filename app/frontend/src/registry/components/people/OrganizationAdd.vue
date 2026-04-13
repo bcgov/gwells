@@ -1,155 +1,133 @@
 <template>
-  <b-modal id="orgAddModal" title="Add a Company" hide-footer @shown="focusInput()">
+  <Dialog id="orgAddModal" v-model:visible="visible" modal header="Add a Company" hide-footer @shown="focusInput()">
     <div class="col-xs-12" v-if="error">
       <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
     </div>
     <div class="container">
-        <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
-          <b-row>
-            <b-col cols="12">
-              <b-form-group
-                label="Company name:"
-                label-for="orgAddNameInput">
-                <b-form-input
-                    id="orgAddNameInput"
+        <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+          <tr>
+            <td cols="12">
+              <label
+                for="orgAddNameInput">Company name:
+                <InputText
                     type="text"
+                    id="orgAddNameInput"
                     v-model="orgForm.name"
                     required
                     ref="orgAddNameInput"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col cols="12">
-              <b-form-group
-                label="Street address:"
-                label-for="orgAddAddressInput">
-                <b-form-input
+              </label>
+            </td>
+          </tr>
+          <tr class="mt-3">
+            <td cols="12">
+              <label for="orgAddAddressInput">Street address:
+                <InputText
+                    type="text"
                     id="orgAddAddressInput"
-                    type="text"
                     v-model="orgForm.street_address"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="City:"
-                label-for="orgAddCityInput">
-                <b-form-input
-                    id="orgAddCityInput"
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td cols="12" md="6">
+              <label for="orgAddCityInput">City:
+                <InputText
                     type="text"
+                    id="orgAddCityInput"
                     v-model="orgForm.city"/>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="Province:"
-                label-for="orgAddProvinceInput">
-                <b-form-select
+              </label>
+            </td>
+            <td cols="12" md="6">
+              <label for="orgAddProvinceInput">Province:
+                <Select
                   id="orgAddProvinceInput"
                   :options="provinceStateOptions"
                   v-model="orgForm.province_state"
                   :state="validation.province_state"
+                  :class="{ 'p-invalid': fieldErrors.province_state }"
                   required>
                   <template v-slot:first>
                     <option :value="null" disabled>Select a province</option>
                   </template>
-                </b-form-select>
-                <b-form-invalid-feedback id="orgAddProvinceFeedback">
+                </Select>
+                <Message id="orgAddProvinceFeedback" class="p-error" v-if="fieldErrors.province_state">
                   <div v-for="(error, index) in fieldErrors.province_state" :key="`urlInput error ${index}`">
                     {{ error }}
                   </div>
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="Postal code:"
-                label-for="orgAddPostalInput">
-                <b-form-input
-                    id="orgAddPostalInput"
+                </Message>
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td cols="12" md="6">
+              <label for="orgAddPostalInput">Postal code:
+                <InputText
+                  type="text"
+                  id="orgAddPostalInput"
+                  v-model="orgForm.postal_code"/>
+              </label>
+            </td>
+          </tr>
+          <tr class="mt-3">
+            <td cols="12" md="6">
+              <label for="orgAddPhoneInput">Office telephone number:
+                <InputMask
                     type="text"
-                    v-model="orgForm.postal_code"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="Office telephone number:"
-                label-for="orgAddPhoneInput">
-                <b-form-input
                     id="orgAddPhoneInput"
-                    type="text"
-                    :formatter="formatTel"
-                    lazy-formatter
+                    mask="(999) 999-9999"
                     v-model="orgForm.main_tel"/>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="Fax number:"
-                label-for="orgAddFaxInput">
-                <b-form-input
-                    id="orgAddFaxInput"
+              </label>
+            </td>
+            <td cols="12" md="6">
+              <label for="orgAddFaxInput">Fax number:
+                <InputMask
                     type="text"
-                    :formatter="formatTel"
-                    lazy-formatter
+                    id="orgAddFaxInput"
+                    mask="(999) 999-9999"
                     v-model="orgForm.fax_tel"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="Email:"
-                label-for="orgAddEmailInput">
-                <b-form-input
+              </label>
+            </td>
+          </tr>
+          <tr>
+            <td cols="12" md="6">
+              <label for="orgAddEmailInput">Email:
+                <InputText
                     id="orgAddEmailInput"
                     type="text"
                     :state="validation.email"
                     aria-describedby="orgAddEmailFeedback"
                     v-model="orgForm.email"/>
-                <b-form-invalid-feedback>
-                  <div v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`">
+                  <Message v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`" severity="error">
                     {{ error }}
-                  </div>
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="6">
-              <b-form-group
-                label="Website:"
-                label-for="orgAddWebsiteInput">
-                <b-form-input
+                  </Message>
+              </label>
+            </td>
+            <td cols="12" md="6">
+              <label for="orgAddWebsiteInput">Website:
+                <InputText
                     id="orgAddWebsiteInput"
                     type="text"
                     :state="validation.website_url"
                     aria-describedby="orgAddWebsiteFeedback websiteInputHelp"
                     v-model="orgForm.website_url"
                     placeholder="e.g.: http://www.example.com"/>
-                <b-form-invalid-feedback>
-                  <div v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`">
+                  <Message v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`" severity="error">
                     {{ error }}
-                  </div>
-                </b-form-invalid-feedback>
-                <b-form-text>
+                  </Message>
+                <div>
                   Use a full website address, including http://
-                </b-form-text>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="my-3">
-            <b-col>
-              <b-button type="submit" class="mr-2" variant="primary" :disabled="orgSubmitLoading">Save</b-button>
-              <b-button type="reset" variant="light" id="orgAddFormResetButton">Cancel</b-button>
-            </b-col>
-          </b-row>
-        </b-form>
-        <b-alert v-if="!!orgSubmitError" show variant="warning" dismissible @dismissed="orgSubmitError=null">
+                </div>
+              </label>
+            </td>
+          </tr>
+          <tr class="my-3">
+            <td>
+              <Button label="save" type="submit" class="mr-2" severity="primary" :disabled="orgSubmitLoading" />
+              <Button label="cancel" type="reset" id="orgAddFormResetButton" />
+            </td>
+          </tr>
+        </Form>
+        <Message v-if="!!orgSubmitError" variant="warning" severity="warn">
           Error creating a new company.
           <div v-for="(value, key, index) in orgSubmitError.data" :key="`submit error ${index}`">
               <span class="text-capitalize">{{ key }}</span>:
@@ -157,19 +135,17 @@
                 v-for="(msg, msgIndex) in value"
                 :key="`submit error msg ${index} ${msgIndex}`">{{ msg }} </span>
             </div>
-        </b-alert>
+        </Message>
     </div>
-  </b-modal>
+  </Dialog>
 </template>
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import inputFormatMixin from '@/common/inputFormatMixin.js'
 import { useRegistryStore } from '@/stores/registry.js'
 
 export default {
   name: 'OrganizationAdd',
-  mixins: [inputFormatMixin],
   data () {
     return {
       registryStore: useRegistryStore(),
