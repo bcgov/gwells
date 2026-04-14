@@ -35,7 +35,7 @@
       </fieldset>
       <fieldset>
         <legend>Add a Survey</legend>
-        <b-form @submit.prevent="submitForm" @reset.prevent="resetForm">
+        <b-form @submit="submitForm" @reset="resetForm">
           <form-input
             id="surveyTextInput"
             label="Survey text"

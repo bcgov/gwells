@@ -4,7 +4,7 @@
       <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
     </div>
     <div class="container">
-        <b-form autocomplete="off" @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+        <b-form autocomplete="off" @submit="onFormSubmit()" @reset="onFormReset()">
           <b-row>
             <b-col cols="12">
               <b-form-group

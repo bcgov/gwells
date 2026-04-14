@@ -3,7 +3,7 @@
 
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
-      <b-form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
+      <b-form @submit="submitPersonForm" @reset="formReset">
         <b-row>
           <b-col cols="12" md="5">
             <b-form-group
@@ -71,7 +71,7 @@
 
     <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
-      <b-form @submit.prevent="submitContactForm">
+      <b-form @submit="submitContactForm">
         <b-row>
           <b-col cols="12" md="4">
             <b-form-group
@@ -129,7 +129,7 @@
 
     <!-- Company -->
     <div v-if="(section === 'company' || section === 'all') && !!record">
-      <b-form @submit.prevent="submitCompanyForm">
+      <b-form @submit="submitCompanyForm">
         <b-form-group
           id="companyInputGroup"
           :label="`${record.activity_description} company:`"
@@ -150,7 +150,7 @@
 
     <!-- Registration -->
     <div v-if="(section === 'registration' || section === 'all') && !!record">
-      <b-form @submit.prevent="submitRegistrationForm">
+      <b-form @submit="submitRegistrationForm">
         <b-form-group
           id="registrationInputGroup"
           label="Registration number:"

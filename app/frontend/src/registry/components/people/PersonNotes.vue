@@ -3,7 +3,7 @@
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
       <div class="mt-3 mb-4" v-if="commonStore.userRoles.registry.edit">
-        <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
+        <b-form @submit="noteSubmitHandler" @reset="noteCancelHandler">
           <b-form-group
               id="noteInputGroup"
               label="Add a note:"

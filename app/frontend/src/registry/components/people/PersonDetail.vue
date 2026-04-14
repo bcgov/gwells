@@ -126,7 +126,7 @@
               </div>
               <b-row v-if="show(registration.registries_activity)">
                 <b-col>
-                  <b-form @submit.prevent="saveApplication(registration.registries_activity)">
+                  <b-form @submit="saveApplication(registration.registries_activity)">
                     <application-add
                         class="mb-3"
                         v-on:close="closeApplication(registration.registries_activity)"

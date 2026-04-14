@@ -37,7 +37,7 @@
             </b-col>
           </div>
           <div v-if="editClassification">
-            <b-form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+            <b-form @submit="saveApplication()" @reset="applicationReset()">
               <b-modal
                   v-model="confirmCancelModal"
                   centered

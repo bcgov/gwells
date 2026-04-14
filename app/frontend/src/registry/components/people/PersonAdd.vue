@@ -9,7 +9,7 @@
     <div class="card">
       <div class="card-body p-md-3 p-2">
           <h5 class="card-title">Add new applicant</h5>
-          <b-form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+          <b-form @submit="onFormSubmit()" @reset="onFormReset()">
             <b-row><b-col><h6 class="font-weight-bold">Personal Information</h6></b-col></b-row>
             <b-row>
               <b-col cols="12" md="5">

@@ -41,7 +41,7 @@ governing permissions and limitations under the License. */
             </p>
           </b-alert>
 
-          <b-form @submit.prevent="confirmSubmit">
+          <b-form @submit="confirmSubmit">
             <!-- if preview === true : Preview -->
             <submission-preview
               v-if="preview"

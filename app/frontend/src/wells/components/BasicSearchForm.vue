@@ -12,7 +12,7 @@
     limitations under the License.
 */
 <template>
-  <b-form @submit.prevent="handleSubmit()" @reset.prevent="handleReset()">
+  <b-form @submit="handleSubmit()" @reset="handleReset()">
     <b-row>
       <b-col>
         <b-form-group>

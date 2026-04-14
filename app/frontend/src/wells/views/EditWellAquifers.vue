@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </ul>
         </b-alert>
 
-        <b-form @submit.prevent="save" @reset.prevent="resetForm" :disabled="isSaving">
+        <b-form @submit="save" @reset="resetForm" :disabled="isSaving">
           <div>
             <div id="vertical-aquifer-extents-table">
               <table class="table table-sm mb-0">

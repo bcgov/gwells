@@ -35,7 +35,7 @@
         <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
       </b-alert>
       <b-form
-        v-on:submit.prevent="triggerSearch()"
+        v-on:submit="triggerSearch()"
         v-on:reset="triggerReset">
         <b-form-row>
           <b-col cols="12" md="12" lg="12" xl="4" class="p-4">

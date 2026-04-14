@@ -136,7 +136,7 @@
               </b-row>
             </b-card>
 
-            <b-form @submit.prevent="save()" @reset.prevent="reset()">
+            <b-form @submit="save()" @reset="reset()">
               <b-row>
                 <b-col md="4" id="documents">
                   <h5>Documents</h5>

@@ -12,7 +12,7 @@
     limitations under the License.
 */
 <template>
-  <b-form @submit.prevent="handleSubmit()" @reset.prevent="handleReset()">
+  <b-form @submit="handleSubmit()" @reset="handleReset()">
     <div v-for="section in defaultFilterSections" :key="section.header">
       <b-row class="mt-1">
         <b-col>

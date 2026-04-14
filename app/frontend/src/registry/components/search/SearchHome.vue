@@ -63,7 +63,7 @@
               Some well drillers and well pump installers may operate in multiple areas throughout B.C.
               For a complete list refer to the results table below.
             </div>
-            <b-form @submit.prevent="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm">
+            <b-form @submit="drillerSearch" @reset="resetSearch({clearDrillers: true})" id="drillerSearchForm">
               <b-form-row>
                 <b-col cols="12">
                   <b-form-group label="Choose professional type:">

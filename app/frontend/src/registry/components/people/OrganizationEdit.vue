@@ -48,7 +48,7 @@
       <!-- Selected company details and edit form fields -->
       <b-card no-body class="p-2 p-md-3" v-if="!!selectedCompany">
         <h6 class="card-subtitle mb-3">Company Information</h6>
-        <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
+        <b-form @submit="submitConfirm" @reset="cancelConfirm">
           <b-row>
             <b-col cols="12" md="5">
                 <b-form-group
