@@ -251,7 +251,7 @@
           stripedRows
           rowhover
           size="small"
-          :value="companyRegistrants"
+          v-model="companyRegistrants"
           tableStyle="min-width: 50rem"
         >
           <Column field="name" header="Name">

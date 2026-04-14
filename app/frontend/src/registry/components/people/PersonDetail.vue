@@ -130,7 +130,7 @@
                     <application-add
                         class="mb-3"
                         v-on:close="closeApplication(registration.registries_activity)"
-                        :value="getApplication(registration.registries_activity)"
+                        :modelValue="getApplication(registration.registries_activity)"
                         :activity="registration.registries_activity"
                         mode="edit">
                         <button type="submit" class="btn btn-primary" variant="primary">Save</button>

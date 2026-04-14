@@ -17,7 +17,7 @@
     </Message>
 
     <!-- Main Registries content -->
-    <Card class="container p-1">
+    <Card>
       <template #title>
         <h1 class="card-title">Search for a Well Driller or Well Pump Installer</h1>
       </template>
@@ -87,7 +87,7 @@
                         <CheckboxGroup v-model="searchParams.subactivities">
                           <div v-for="sub of subactivities" :key="sub.value">
                             <Checkbox
-                              :inputId="subactivitySelector"
+                              inputId="subactivitySelector"
                               name="subactivitySelector"
                               :value="sub.value"
                               style="margin-bottom: 0.5rem; margin-right: 5px"
@@ -111,6 +111,7 @@
                         optionGroupLabel="prov"
                         optionGroupChildren="cities"
                         :virtualScrollerOptions="{ itemSize: 38 }"
+                        :disabled="false"
                         class="mb-3"
                         listStyle="max-height:200px;"
                       >

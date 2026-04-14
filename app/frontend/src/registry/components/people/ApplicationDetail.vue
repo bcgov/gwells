@@ -60,7 +60,7 @@
                 <td>
                   <application-edit
                     :activity="activity"
-                    :value="applicationFormValue"
+                    v-model="applicationFormValue"
                     mode="edit"
                     v-on:isValid="onApplicationIsValid"
                     v-on:close="confirmCancelModal=true"/>
