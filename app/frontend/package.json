@@ -25,7 +25,7 @@
     "@tailwindcss/vite": "^4.2.2",
     "@turf/intersect": "^6.5.0",
     "@vue/compat": "^3.5.30",
-    "axios": "^1.8.3",
+    "axios": "^1.15.0",
     "bootstrap-vue": "^2.23.1",
     "browser-update": "^3.3.8",
     "chart.js": "^4.5.1",
