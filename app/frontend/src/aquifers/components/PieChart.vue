@@ -12,58 +12,34 @@
     limitations under the License.
 */
 
-<style>
-</style>
+<template>
+  <Pie :data="dataValues" :options="options" />
+</template>
 
 <script>
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
 import { Pie } from 'vue-chartjs'
-import { merge } from 'lodash-es'
+
+ChartJS.register(ArcElement, Tooltip, Legend)
 
 export default {
-  extends: Pie,
+  name: 'PieChart',
+  components: {
+    Pie
+  },
   props: ['data', 'labels', 'chartOptions'],
   data () {
     return {
-      defaultChartOptions: {
-        legend: {
-          display: true
-        },
-        tooltips: {
-          enabled: true
-        },
-        layout: {
-          padding: {
-            top: 20
-          }
-        },
-        responsive: true,
-        maintainAspectRatio: true
+      dataValues: {
+        labels: this.$props.labels,
+        datasets: [{
+            backgroundColor: [
+              '#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7'
+              , '#D55E00', '#0072B2', '#EE442F', '#9C9EB5', '#8B7F47'
+            ],
+            data: this.$props.data
+        }]
       }
-    }
-  },
-  watch: {
-    data (newChartData) {
-      this.renderPieChart()
-    },
-    labels (labels) {
-      this.renderPieChart()
-    }
-  },
-  mounted () {
-    this.renderPieChart()
-  },
-  methods: {
-    renderPieChart (newChartData) {
-      this.renderChart({
-        labels: this.labels.map(l => `  ${l}`), // adds two spaces to prevent cut off text
-        datasets: [
-          {
-            // color-blindness safe colors:
-            backgroundColor: ['#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7', '#D55E00', '#0072B2', '#EE442F', '#9C9EB5', '#8B7F47'],
-            data: this.data
-          }
-        ]
-      }, merge({}, this.defaultChartOptions, this.chartOptions))
     }
   }
 }
