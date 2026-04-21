@@ -12,9 +12,9 @@
     limitations under the License.
 */
 <template>
-  <b-form-row class="search-result-filter" :class="`search-result-filter-${type}`">
-    <b-col v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio' || type === 'nullcheck'">
-      <b-form-input
+  <div class="grid grid-cols-2 gap-2 search-result-filter" :class="`search-result-filter-${type}`">
+    <div class="col-span-2" v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio' || type === 'nullcheck'">
+      <InputText
         v-if="type === 'text'"
         type="text"
         :id="`${id}Input`"
@@ -24,7 +24,7 @@
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-      <b-form-input
+      <InputText
         v-else-if="type === 'number'"
         type="text"
         :id="`${id}Input`"
@@ -34,7 +34,7 @@
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-      <b-form-select
+      <Select
         v-else-if="type === 'select' || type === 'radio'"
         :id="`${id}Input`"
         :state="validation"
@@ -45,24 +45,25 @@
         :text-field="textField"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-      <b-col v-else-if="type === 'nullcheck'">
-        <b-button
-          variant="button"
+      <div v-else-if="type === 'nullcheck'">
+        <Button
           class="py-2 px-3"
           :class="{'active-filter-border': isActive, 'active-filter': isActive}"
-          @click.prevent="toggleNullFilter">
+          @click="toggleNullFilter">
           Null Fields
           <span class="fa fa-sm mb-1 pl-1" :class="{'fa-check': !isActive, 'fa-times': isActive}" :aria-label="isActive ? 'Clear' : 'Apply'" />
-        </b-button>
-      </b-col>
+        </Button>
+      </div>
+      <!-- There isn't a replacement. Will need to redo error logic later.
       <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
           {{ error }}
         </div>
       </b-form-invalid-feedback>
-    </b-col>
-    <b-col sm="5" v-if="type === 'range' || type === 'dateRange'">
-      <b-form-input
+      -->
+    </div>
+    <div v-if="type === 'range' || type === 'dateRange'">
+      <InputText
         :type="`${ type === 'range' ? 'number' : 'date'}`"
         :id="`${id}StartInput`"
         :state="validation"
@@ -71,9 +72,9 @@
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-    </b-col>
-    <b-col sm="5" v-if="type === 'range' || type === 'dateRange'">
-      <b-form-input
+    </div>
+    <div v-if="type === 'range' || type === 'dateRange'">
+      <InputText
         :type="`${ type === 'range' ? 'number' : 'date'}`"
         :id="`${id}EndInput`"
         :state="validation"
@@ -82,18 +83,18 @@
         :disabled="isActive"
         v-model="localValue[paramNames[1]]"
         @keyup.enter="applyFilter()" />
-    </b-col>
-    <b-col v-if="type !== 'nullcheck'" :sm="(type === 'text') ? 3 : 2">
-      <b-button
-        variant="link"
+    </div>
+    <div class="col-span-2" v-if="type !== 'nullcheck'" :class="`col-span-${type === 'text' ? 3 : 2}`">
+      <Button
+        variant="text"
         class="py-2 px-0"
         :class="{'apply-filter': !isActive, 'clear-filter': isActive}"
         :disabled="!hasLocalValue"
-        @click.prevent="isActive ? clearFilter() : applyFilter()">
+        @click="isActive ? clearFilter() : applyFilter()">
           <span class="fa fa-lg" :class="{'fa-check': !isActive, 'fa-times': isActive}" :aria-label="isActive ? 'Clear' : 'Apply'" />
-      </b-button>
-    </b-col>
-  </b-form-row>
+      </Button>
+    </div>
+  </div>
 </template>
 
 <script>
