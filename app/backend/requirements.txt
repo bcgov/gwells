@@ -30,6 +30,6 @@ MarkupSafe==2.1.5
 gunicorn==19.9.0
 gevent==23.7.0
 django-settings-export==1.2.1
-lxml==4.9.4
+lxml==6.1.0
 urllib3==1.26.20
 pyjwt>=2.0,<=2.4.0
