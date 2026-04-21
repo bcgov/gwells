@@ -1,11 +1,13 @@
 <template>
   <div id="qaqcDashboard">
     <h1>QA/QC Dashboard</h1>
-    <b-tabs v-model="currentTab" content-class="mt-3">
-      <b-tab title="Record Compliance" active></b-tab>
-      <b-tab title="Mislocated Wells"></b-tab>
-      <b-tab title="Cross Referencing"></b-tab>
-    </b-tabs>
+    <Tabs v-model="currentTab" content-class="mt-3">
+      <TabList>
+        <Tab value="0" active>Record Compliance</Tab>
+        <Tab title="1">Mislocated Wells</Tab>
+        <Tab title="2">Cross Referencing</Tab>
+      </TabList>
+    </Tabs>
     <QaQcTable :tab="currentTab"></QaQcTable>
   </div>
 </template>
