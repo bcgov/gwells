@@ -31,21 +31,19 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'bootstrap/scss/_functions';
-@import 'bootstrap/scss/_variables';
-@import 'bootstrap/scss/mixins/_breakpoints';
 
-.footer {
-  @include media-breakpoint-only(xs) {
-    height: 8.2rem!important;
-    margin-top: 10rem;
-  }
-  @include media-breakpoint-up(sm) {
-    height: 45px!important;
-  }
-  position: absolute;
-  bottom: 0
-}
+// replace with primevue
+// .footer {
+//   @include media-breakpoint-only(xs) {
+//     height: 8.2rem!important;
+//     margin-top: 10rem;
+//   }
+//   @include media-breakpoint-up(sm) {
+//     height: 45px!important;
+//   }
+//   position: absolute;
+//   bottom: 0
+// }
 .footer .nav-item {
   font-size: 13px;
 }
@@ -58,9 +56,10 @@ export default {
 .footer a {
   color: #fff!important;
 }
-footer li+li  {
-  @include media-breakpoint-up(sm) {
-    border-left: 1px solid #4b5e73;
-  }
-}
+// replace with primevue
+// footer li+li  {
+//   @include media-breakpoint-up(sm) {
+//     border-left: 1px solid #4b5e73;
+//   }
+// }
 </style>
