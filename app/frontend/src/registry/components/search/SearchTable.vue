@@ -89,6 +89,7 @@
 </template>
 
 <script>
+import { useCommonStore } from '@/stores/common.js'
 import smoothScroll from 'smoothscroll'
 import querystring from 'querystring'
 
