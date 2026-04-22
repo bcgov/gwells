@@ -99,9 +99,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'bootstrap/scss/_functions';
-@import 'bootstrap/scss/_variables';
-@import 'bootstrap/scss/mixins/_breakpoints';
 
 .navbar {
   margin-bottom: 0px;
@@ -123,11 +120,12 @@ export default {
   -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
   box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
 }
-header li + li {
-  @include media-breakpoint-up(sm) {
-    border-left: 1px solid #607D8B;
-  }
-}
+// replace with primevue
+// header li + li {
+//   @include media-breakpoint-up(sm) {
+//     border-left: 1px solid #607D8B;
+//   }
+// }
 .lvl2-link a {
   padding-top:0;
   padding-bottom:0;
