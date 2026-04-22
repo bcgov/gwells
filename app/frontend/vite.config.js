@@ -21,15 +21,7 @@ export default defineConfig(({ mode }) => ({
       : {},
   plugins: [
     tailwindcss(),
-    vue({
-      template: {
-        compilerOptions: {
-          compatConfig: {
-            MODE: 2 // this gets up in vue2 mode
-          }
-        }
-      }
-    }),
+    vue(),
     NodeGlobalsPolyfillPlugin({
       process: true,
       buffer: true,

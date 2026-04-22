@@ -16,7 +16,6 @@ import { createApp } from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
 import VueNoty from "vuejs-noty";
-import BootstrapVue from "bootstrap-vue";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import { Button, InputText, InputMask, Card, Message, Panel, Select, MultiSelect, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner, Breadcrumb, Dialog, DataTable, Column, FileUpload } from 'primevue';
@@ -24,8 +23,6 @@ import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
-import "@/common/assets/css/bootstrap-theme.min.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
 import VueMoment from "vue-moment";
@@ -83,7 +80,6 @@ app.use(VueNoty, {
   theme: "bootstrap-v4",
   timeout: 1800,
 });
-app.use(BootstrapVue);
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
