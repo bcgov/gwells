@@ -29,8 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <thead>
         </thead>
         <tbody>
-          <template v-for="(aquiferParameter, index) in aquiferParametersData" :key="`aquifer-param-${index}`">
-            <div class="bordered-table">
+          <template class="bordered-table" v-for="(aquiferParameter, index) in aquiferParametersData" :key="`aquifer-param-${index}`">
               <tr>
                 <th class="font-weight-normal top-row-no-border" scope="col">Start Date of Test</th>
                 <th class="font-weight-normal top-row-no-border" scope="col">Test Description</th>
@@ -176,7 +175,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>
-            </div>
           </template>
         </tbody>
       </table>
@@ -201,7 +199,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import Vue from 'vue'
 import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 

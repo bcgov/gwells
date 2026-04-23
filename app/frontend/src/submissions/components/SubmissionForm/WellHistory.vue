@@ -77,7 +77,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
@@ -87,9 +86,12 @@ export default {
       type: Number,
       isInput: false
     },
-    events: {
-      type: Vue
-    }
+    // TBD events handled differently in Vue 3
+    // and not need to be passed a prop
+    // Possibly replace with vue watch.
+    // events: {
+    //   type: Vue
+    // }
   },
   data () {
     return {
