@@ -127,7 +127,6 @@ governing permissions and limitations under the License. */
 </template>
 
 <script>
-import Vue from "vue";
 import { mapStores } from "pinia";
 import { useSubmissionStore } from "@/stores/submission.js";
 import { useWellsStore } from "@/stores/wells.js";
