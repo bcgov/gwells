@@ -3,87 +3,74 @@
     <div class="registry-search-table-loading" v-if="loading || isSearchInProgress">
       <ProgressSpinner/>
     </div>
-    <div class="table-responsive">
-      <table class="table table-striped" id="registry-table">
-        <thead>
-          <tr>
-            <template v-for="field in fields" :key="field.name">
-              <th :class="{[field.class]: true, sortable: fieldSortable(field)}"
-                  v-if="(field.visible === 'public' || commonStore?.userRoles?.registry?.view) && (field.activity === activity || field.activity == 'all')"
-                  @click="sortBy(field)">
-                {{field.name}}
-                <i class="fa fa-sort" v-if="field.sortable && field.sortCode"/>
-              </th>
-            </template>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-if="searchResponse.results && searchResponse.results.length" :id="`registry-table-row-${index}`">
-            <tr v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`">
-              <td :id="`drillerName${index}`">
-                <router-link
-                  v-if="commonStore.userRoles?.registry?.view"
-                  :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
-                    {{ driller.surname }}, {{ driller.first_name }}
-                </router-link>
-                <div v-else class="font-weight-bold">
-                  {{ driller.surname }}, {{ driller.first_name }}
-                </div>
-                <div v-if="driller.registrations && driller.registrations.length">
-                  <div
-                      v-for="(reg, regIndex) in driller.registrations"
-                      v-if="reg?.activity === activity"
-                      :key="`reg no ${driller.person_guid} ${regIndex}`">
-                    {{ reg.registration_no }}</div>
-                </div>
-              </td>
-              <td :id="`personOrg${index}`">
-                <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
-              </td>
-              <td :id="`personAddress${index}`">
-                <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
-              </td>
-              <td :id="`personContact${index}`">
-                <div>
-                  <driller-contact-info :driller="driller" :activity="activity"/>
-                </div>
-              </td>
-              <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
-                <driller-subactivity :driller="driller"/>
-              </td>
-              <td :id="`certAuth${index}`">
-                <driller-certificate-authority :driller="driller" :activity="activity"/>
-              </td>
-              <td v-if="commonStore.userRoles?.registry?.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
-                <driller-registration-status :driller="driller" :activity="activity"/>
-              </td>
-            </tr>
+    <table class="table grid grid-cols-12 w-full mb-4 text-sm text-left text-gray-500" id="registry-table">
+      <thead class="border-b border-gray-200">
+        <tr>
+          <template v-for="field in fields" :key="field.name">
+            <th :class="{[field.class]: true, sortable: fieldSortable(field)}"
+                v-if="(field.visible === 'public' || commonStore?.userRoles?.registry?.view) && (field.activity === activity || field.activity == 'all')"
+                @click="sortBy(field)">
+              {{field.name}}
+              <i class="fa fa-sort" v-if="field.sortable && field.sortCode"/>
+            </th>
           </template>
-          <tr v-else>
+        </tr>
+      </thead>
+      <tbody>
+        <template v-if="searchResponse.results && searchResponse.results.length" :id="`registry-table-row-${index}`">
+          <tr v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`" class="bg-white border-b border-gray-200 even:bg-gray-100">
+            <td :id="`drillerName${index}`">
+              <router-link
+                v-if="commonStore.userRoles?.registry?.view"
+                :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
+                  {{ driller.surname }}, {{ driller.first_name }}
+              </router-link>
+              <div v-else class="font-weight-bold">
+                {{ driller.surname }}, {{ driller.first_name }}
+              </div>
+              <div v-if="driller.registrations && driller.registrations.length">
+                <div
+                    v-for="(reg, regIndex) in driller.registrations"
+                    v-if="reg?.activity === activity"
+                    :key="`reg no ${driller.person_guid} ${regIndex}`">
+                  {{ reg.registration_no }}</div>
+              </div>
+            </td>
+            <td :id="`personOrg${index}`">
+              <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
+            </td>
+            <td :id="`personAddress${index}`">
+              <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
+            </td>
+            <td :id="`personContact${index}`">
+              <div>
+                <driller-contact-info :driller="driller" :activity="activity"/>
+              </div>
+            </td>
+            <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
+              <driller-subactivity :driller="driller"/>
+            </td>
+            <td :id="`certAuth${index}`">
+              <driller-certificate-authority :driller="driller" :activity="activity"/>
+            </td>
+            <td v-if="commonStore.userRoles?.registry?.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
+              <driller-registration-status :driller="driller" :activity="activity"/>
+            </td>
           </tr>
-        </tbody>
-      </table>
+        </template>
+        <tr v-else>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="grid grid-cols-4 gap-4">
+    <div class="col-start-1">
+      <span v-if="searchResponse.results && searchResponse.results.length">Showing <span id="drillersCurrentOffset">{{ searchResponse.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ searchResponse.offset + searchResponse.results.length }}</span> of <span id="drillersTotalResults">{{ searchResponse.count }}</span></span>
     </div>
-    <div class="row">
-      <div class="col-xs-12 col-sm-4">
-        <span v-if="searchResponse.results && searchResponse.results.length">Showing <span id="drillersCurrentOffset">{{ searchResponse.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ searchResponse.offset + searchResponse.results.length }}</span> of <span id="drillersTotalResults">{{ searchResponse.count }}</span></span>
-      </div>
-      <div v-if="searchResponse.results && searchResponse.results.length" class="col-xs-12 col-sm-4 offset-sm-4 offset-md-5 col-md-3">
-        <nav aria-label="List navigation" v-if="searchResponse.results && searchResponse.results.length">
-          <ul class="pagination">
-            <li class="ml-auto">
-              <button type="button" @click="paginationPrev" class="btn btn-default" aria-label="Previous" id="table-pagination-prev" :disabled="!searchResponse.previous">
-                <span aria-hidden="true">Previous</span>
-              </button>
-            </li>
-            <li>
-              <button type="button" @click="paginationNext" class="btn btn-default" aria-label="Next" id="table-pagination-next" :disabled="!searchResponse.next">
-                <span aria-hidden="true">Next</span>
-              </button>
-            </li>
-          </ul>
-        </nav>
-      </div>
+    <div v-if="searchResponse.results && searchResponse.results.length" class="col-end-5 flex justify-end gap-2">
+      <nav aria-label="List navigation" v-if="searchResponse.results && searchResponse.results.length"/>
+      <Button type="button" @click="paginationPrev" label="Previous" id="table-pagination-prev" :disabled="!searchResponse.previous"/>
+      <Button type="button" @click="paginationNext" label="Next" id="table-pagination-next" :disabled="!searchResponse.next"/>
     </div>
   </div>
 </template>
@@ -118,49 +105,49 @@ export default {
         {
           name: 'Name',
           sortCode: 'surname',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'public',
           sortable: true,
           activity: 'all'
         },
         {
           name: 'Company Name',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'public',
           sortable: false,
           activity: 'all'
         },
         {
           name: 'Company Address',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'public',
           sortable: false,
           activity: 'all'
         },
         {
           name: 'Contact Information',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'public',
           sortable: false,
           activity: 'all'
         },
         {
           name: 'Class of Driller',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'public',
           sortable: false,
           activity: 'DRILL'
         },
         {
           name: 'Certificate Issued By',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'public',
           sortable: false,
           activity: 'all'
         },
         {
           name: 'Registration Status',
-          class: 'col-xs-1',
+          class: 'col-span-1',
           visible: 'admin',
           sortable: false,
           activity: 'DRILL'

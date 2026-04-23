@@ -548,7 +548,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           of submission and that contain personal information not covered under this legislation will be deleted.
           <br><br>
           Should you have any questions about the collection or use of this information, please contact the
-          Groundwater Data Specialist, email: <a href = "mailto: groundwater@gov.bc.ca">groundwater@gov.bc.ca.</a>
+          Groundwater Data Specialist, email: <a href = "mailto: groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca.</a>
         </b-col>
       </b-row>
     </fieldset>

@@ -151,7 +151,7 @@
       </div>
       <div id="notesList" ref="notes">
         <div class="mt-5" v-if="!notes || !notes.length">
-          <tr><td>No notes for this record.</td></tr>
+          <p>No notes for this record.</p>
         </div>
         <div class="mt-5 note-container" v-if="notes && notes.length">
           <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">

@@ -3,16 +3,17 @@
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
       <div class="mt-3 mb-4" v-if="commonStore.userRoles.registry.edit">
-        <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
-          <b-form-group
-              id="noteInputGroup"
-              label="Add a note:"
-              label-for="noteInput">
-            <b-form-textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></b-form-textarea>
-          </b-form-group>
-          <div class="submit-row">
-            <b-button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</b-button>
-            <b-button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</b-button>
+        <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
+          <div
+            class="flex flex-col gap-2"
+            id="noteInputGroup"
+            label="Add a note:"
+            label-for="noteInput">
+            <Textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></Textarea>
+          </div>
+          <div class="flex-row">
+            <Button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</Button>
+            <Button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</Button>
             <p
               class="font-weight-bold text-count"
               :class="[invalidNewNoteLength ? 'error': '']"
@@ -20,13 +21,13 @@
               {{ noteInput.length }}/{{ maxNoteLength }}
             </p>
           </div>
-          <b-alert
+          <Message
               class="mt-3"
-              variant="success"
+              severity="success"
               dismissible
               :show="submitSuccess"
-              @dismissed="submitSuccess=false">Note added.</b-alert>
-          <b-modal
+              @dismissed="submitSuccess=false">Note added.</Message>
+          <Dialog
               v-model="confirmSubmitModal"
               centered
               title="Confirm save"
@@ -41,8 +42,8 @@
                 Cancel
               </b-btn>
             </div>
-          </b-modal>
-          <b-modal
+          </Dialog>
+          <Dialog
               v-model="confirmCancelModal"
               centered
               title="Confirm cancel"
@@ -57,9 +58,9 @@
                 Discard
               </b-btn>
             </div>
-          </b-modal>
+          </Dialog>
           <!-- Delete Note Modal  -->
-          <b-modal
+          <Dialog
             v-model="confirmDeleteModal"
             centered
             title="Confirm Deletion"
@@ -85,9 +86,9 @@
                 Delete
               </b-btn>
             </div>
-          </b-modal>
+          </Dialog>
           <!-- Edit Modal -->
-          <b-modal
+          <Dialog
               v-model="confirmEditNoteModal"
               centered
               title="Editing Note"
@@ -114,20 +115,20 @@
                 Submit
               </b-btn>
             </div>
-          </b-modal>
-        </b-form>
+          </Dialog>
+        </Form>
       </div>
       <div id="notesList" ref="notes">
         <div v-if="!notes || !notes.length">
           <b-row><b-col>No notes for this person.</b-col></b-row>
         </div>
-        <div class="mt-5 note-container" v-if="notes && notes.length">
-          <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
+        <div class="mt-5 p-4 border border-gray-200 rounded-lg" v-if="notes && notes.length">
+          <div class="flex flex-row items-center justify-between w-full p-[0.5em] rounded-[4pt] transition-colors duration-200 hover:bg-[#F8F8F8]" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
             <p>
               <span class="font-weight-bold">{{ note.author }}</span> ({{ moment(note.date, "MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
             </p>
-            <div class="crud-options">
+            <div class="flex ml-[0.5em] w-auto">
               <b-btn
                 :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteEditHandler(note)"
@@ -290,36 +291,8 @@ export default {
 </script>
 
 <style lang="scss">
-.crud-options {
-  display: flex;
-  margin-left: 0.5em;
-  width: auto;
-}
-.crud-options button:last-child {
-  margin-left: 0.5em;
-}
-.note {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 0.5em;
-  border-radius: 4pt;
-}
-.note:hover {
-  transition: 0.2s;
-  background-color: #F8F8F8;
-}
-.note p {
-  padding: 0;
-  margin: 0;
-}
 .buttons button:last-child {
   margin-left: 0.5em;
-}
-.wb {
-  word-break: break-all;
 }
 .error {
   color: red;
@@ -328,9 +301,5 @@ export default {
   width: 100%;
   text-align: right;
   padding: 0.5em 1em 0 0;
-}
-.submit-row {
-  display: flex;
-  flex-direction: row;
 }
 </style>

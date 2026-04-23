@@ -1,141 +1,129 @@
 <template>
   <Dialog id="orgAddModal" v-model:visible="visible" modal header="Add a Company" hide-footer @shown="focusInput()">
-    <div class="col-xs-12" v-if="error">
+    <div class="col-span-12" v-if="error">
       <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
     </div>
-    <div class="container">
-        <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
-          <tr>
-            <td cols="12">
-              <label
-                for="orgAddNameInput">Company name:
-                <InputText
-                    type="text"
-                    id="orgAddNameInput"
-                    v-model="orgForm.name"
-                    required
-                    ref="orgAddNameInput"/>
-              </label>
-            </td>
-          </tr>
-          <tr class="mt-3">
-            <td cols="12">
-              <label for="orgAddAddressInput">Street address:
-                <InputText
-                    type="text"
-                    id="orgAddAddressInput"
-                    v-model="orgForm.street_address"/>
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td cols="12" md="6">
-              <label for="orgAddCityInput">City:
-                <InputText
-                    type="text"
-                    id="orgAddCityInput"
-                    v-model="orgForm.city"/>
-              </label>
-            </td>
-            <td cols="12" md="6">
-              <label for="orgAddProvinceInput">Province:
-                <Select
-                  id="orgAddProvinceInput"
-                  :options="provinceStateOptions"
-                  v-model="orgForm.province_state"
-                  :state="validation.province_state"
-                  :class="{ 'p-invalid': fieldErrors.province_state }"
-                  required>
-                  <template v-slot:first>
-                    <option :value="null" disabled>Select a province</option>
-                  </template>
-                </Select>
-                <Message id="orgAddProvinceFeedback" class="p-error" v-if="fieldErrors.province_state">
-                  <div v-for="(error, index) in fieldErrors.province_state" :key="`urlInput error ${index}`">
-                    {{ error }}
-                  </div>
-                </Message>
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td cols="12" md="6">
-              <label for="orgAddPostalInput">Postal code:
-                <InputText
-                  type="text"
-                  id="orgAddPostalInput"
-                  v-model="orgForm.postal_code"/>
-              </label>
-            </td>
-          </tr>
-          <tr class="mt-3">
-            <td cols="12" md="6">
-              <label for="orgAddPhoneInput">Office telephone number:
-                <InputMask
-                    type="text"
-                    id="orgAddPhoneInput"
-                    mask="(999) 999-9999"
-                    v-model="orgForm.main_tel"/>
-              </label>
-            </td>
-            <td cols="12" md="6">
-              <label for="orgAddFaxInput">Fax number:
-                <InputMask
-                    type="text"
-                    id="orgAddFaxInput"
-                    mask="(999) 999-9999"
-                    v-model="orgForm.fax_tel"/>
-              </label>
-            </td>
-          </tr>
-          <tr>
-            <td cols="12" md="6">
-              <label for="orgAddEmailInput">Email:
-                <InputText
-                    id="orgAddEmailInput"
-                    type="text"
-                    :state="validation.email"
-                    aria-describedby="orgAddEmailFeedback"
-                    v-model="orgForm.email"/>
-                  <Message v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`" severity="error">
-                    {{ error }}
-                  </Message>
-              </label>
-            </td>
-            <td cols="12" md="6">
-              <label for="orgAddWebsiteInput">Website:
-                <InputText
-                    id="orgAddWebsiteInput"
-                    type="text"
-                    :state="validation.website_url"
-                    aria-describedby="orgAddWebsiteFeedback websiteInputHelp"
-                    v-model="orgForm.website_url"
-                    placeholder="e.g.: http://www.example.com"/>
-                  <Message v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`" severity="error">
-                    {{ error }}
-                  </Message>
-                <div>
-                  Use a full website address, including http://
+    <div class="grid grid-cols-12 gap-4">
+      <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+        <div class="col-span-12">
+          <label
+            for="orgAddNameInput">Company name:
+            <InputText
+                type="text"
+                id="orgAddNameInput"
+                v-model="orgForm.name"
+                required
+                ref="orgAddNameInput"/>
+          </label>
+        </div>
+        <div class="mt-3 col-span-12">
+          <label for="orgAddAddressInput">Street address:
+            <InputText
+                type="text"
+                id="orgAddAddressInput"
+                v-model="orgForm.street_address"/>
+          </label>
+        </div>
+        <div class="mt-3 col-span-12">
+          <label for="orgAddCityInput">City:
+            <InputText
+                type="text"
+                id="orgAddCityInput"
+                  v-model="orgForm.city"/>
+            </label>
+          <div class="mt-3 col-span-12">
+            <label for="orgAddProvinceInput">Province:
+              <Select
+                id="orgAddProvinceInput"
+                :options="provinceStateOptions"
+                v-model="orgForm.province_state"
+                :state="validation.province_state"
+                :class="{ 'p-invalid': fieldErrors.province_state }"
+                required>
+                <template v-slot:first>
+                  <option :value="null" disabled>Select a province</option>
+                </template>
+              </Select>
+              <Message id="orgAddProvinceFeedback" class="p-error" v-if="fieldErrors.province_state">
+                <div v-for="(error, index) in fieldErrors.province_state" :key="`urlInput error ${index}`">
+                  {{ error }}
                 </div>
-              </label>
-            </td>
-          </tr>
-          <tr class="my-3">
-            <td>
-              <Button label="save" type="submit" class="mr-2" severity="primary" :disabled="orgSubmitLoading" />
-              <Button label="cancel" type="reset" id="orgAddFormResetButton" />
-            </td>
-          </tr>
-        </Form>
-        <Message v-if="!!orgSubmitError" variant="warning" severity="warn">
-          Error creating a new company.
-          <div v-for="(value, key, index) in orgSubmitError.data" :key="`submit error ${index}`">
-              <span class="text-capitalize">{{ key }}</span>:
-              <span
-                v-for="(msg, msgIndex) in value"
-                :key="`submit error msg ${index} ${msgIndex}`">{{ msg }} </span>
-            </div>
-        </Message>
+              </Message>
+            </label>
+          </div>
+        </div>
+        <div class="mt-3 col-span-12">
+          <label for="orgAddPostalInput">Postal code:
+            <InputText
+                type="text"
+                id="orgAddPostalInput"
+                v-model="orgForm.postal_code"/>
+          </label>
+        </div>
+        <div class="mt-3 col-span-12">
+          <label for="orgAddPhoneInput">Office telephone number:
+            <InputMask
+                  type="text"
+                  id="orgAddPhoneInput"
+                  mask="(999) 999-9999"
+                  v-model="orgForm.main_tel"/>
+          </label>
+          <label for="orgAddFaxInput">Fax number:
+            <InputMask
+                type="text"
+                id="orgAddFaxInput"
+                mask="(999) 999-9999"
+                v-model="orgForm.fax_tel"/>
+          </label>
+        </div>
+        <div class="mt-3 grid grid-cols-12 gap-4">
+          <div class="col-span-12 md:col-span-6">
+            <label for="orgAddEmailInput">Email:
+              <InputText
+                  id="orgAddEmailInput"
+                  type="text"
+                  :state="validation.email"
+                  aria-describedby="orgAddEmailFeedback"
+                  v-model="orgForm.email"/>
+                <Message v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`" severity="error">
+                  {{ error }}
+                </Message>
+            </label>
+          </div>
+          <div class="col-span-12 md:col-span-6">
+            <label for="orgAddWebsiteInput">Website:
+              <InputText
+                  id="orgAddWebsiteInput"
+                  type="text"
+                  :state="validation.website_url"
+                  aria-describedby="orgAddWebsiteFeedback websiteInputHelp"
+                  v-model="orgForm.website_url"
+                  placeholder="e.g.: http://www.example.com"/>
+                <Message v-for="(error, index) in fieldErrors.website_url" :key="`urlInput error ${index}`" severity="error">
+                  {{ error }}
+                </Message>
+              <div>
+                Use a full website address, including http://
+              </div>
+            </label>
+          </div>
+        </div>
+        <div class="mt-3 grid grid-cols-12 gap-4">
+          <div class="col-span-12">
+            <Button label="save" type="submit" class="mr-2" severity="primary" :disabled="orgSubmitLoading" />
+            <Button label="cancel" type="reset" id="orgAddFormResetButton" />
+          </div>
+        </div>
+      </Form>
+      <Message v-if="!!orgSubmitError" variant="warning" severity="warn">
+        Error creating a new company.
+        <div v-for="(value, key, index) in orgSubmitError.data" :key="`submit error ${index}`">
+          <span class="text-capitalize">{{ key }}</span>:
+          <span
+            v-for="(msg, msgIndex) in value"
+            :key="`submit error msg ${index} ${msgIndex}`">{{ msg }} </span>
+        </div>
+      </Message>
     </div>
   </Dialog>
 </template>

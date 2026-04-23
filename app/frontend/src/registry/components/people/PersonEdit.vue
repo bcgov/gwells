@@ -4,68 +4,62 @@
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
       <Form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
-        <tr>
-          <td cols="12" md="5">
-            <label
-              id="surnameInputGroup"
-              for="surnameInput">Surname:
-              <InputText
-                id="surnameInput"
-                v-model="personalInfoForm.surname"
-                required/>
-            </label>
-          </td>
-          <td cols="12" md="5" offset-md="1">
-            <label
-              id="firstnameInputGroup"
-              for="firstnameInput">First name:
-              <InputText
-                id="firstnameInput"
-                v-model="personalInfoForm.first_name"
-                required/>
-            </label>
-          </td>
-        </tr>
-        <tr>
-          <td cols="12" md="5">
-            <label
-              id="drillOrcsInputGroup"
-              for="drillORCSInput">Well Driller ORCS:
-              <InputText
-                id="drillORCSInput"
-                v-model="personalInfoForm.well_driller_orcs_no"/>
-              <div id="drillerORCSExample">
-                ORCS format: 38000-25/DRI XXXX X
-              </div>
-            </label>
-          </td>
-          <td cols="12" md="5" offset-md="1">
-            <label
-              id="pumpORCSInputGroup"
-              for="pumpORCSInput">Pump installer ORCS:
-              <InputText
-                id="pumpORCSInput"
-                v-model="personalInfoForm.pump_installer_orcs_no"/>
-              <div id="pumpORCSExample">
-                ORCS format: 38000-25/PUMP XXXX X
-              </div>
-            </label>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-          </td>
-        </tr>
+        <div class="grid grid-cols-12 md-5 gap-4">
+          <label
+            id="surnameInputGroup"
+            for="surnameInput">Surname:
+            <InputText
+              id="surnameInput"
+              v-model="personalInfoForm.surname"
+              required/>
+          </label>
+        </div>
+        <div class="grid grid-cols-12 md-5 gap-4" offset-md="1">
+          <label
+            id="firstnameInputGroup"
+            for="firstnameInput">First name:
+            <InputText
+              id="firstnameInput"
+              v-model="personalInfoForm.first_name"
+              required/>
+          </label>
+        </div>
+        <div class="grid grid-cols-12 md-5 gap-4">
+          <label
+            id="drillOrcsInputGroup"
+            for="drillORCSInput">Well Driller ORCS:
+            <InputText
+              id="drillORCSInput"
+              v-model="personalInfoForm.well_driller_orcs_no"/>
+            <div id="drillerORCSExample">
+              ORCS format: 38000-25/DRI XXXX X
+            </div>
+          </label>
+        </div>
+        <div class="grid grid-cols-12 md-5 gap-4" offset-md="1">
+          <label
+            id="pumpORCSInputGroup"
+            for="pumpORCSInput">Pump installer ORCS:
+            <InputText
+              id="pumpORCSInput"
+              v-model="personalInfoForm.pump_installer_orcs_no"/>
+            <div id="pumpORCSExample">
+              ORCS format: 38000-25/PUMP XXXX X
+            </div>
+          </label>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        </div>
       </Form>
     </div>
 
     <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
       <Form @submit.prevent="submitContactForm">
-        <tr>
-          <td cols="12" md="4">
+        <div>
+          <div class="grid grid-cols-12 md-4 gap-4">
             <label
               id="emailInputGroup"
               for="emailInput">Email Address:
@@ -79,8 +73,8 @@
                 {{ error }}
               </Message>
             </label>
-          </td>
-          <td cols="12" md="4">
+          </div>
+          <div class="grid grid-cols-12 md-4 gap-4">
             <label
               id="telInputGroup"
               for="telInput">Telephone:
@@ -90,8 +84,8 @@
                 mask="(999) 999-9999"
                 v-model="contactInfoForm.contact_tel"/>
             </label>
-          </td>
-          <td cols="12" md="4">
+          </div>
+          <div class="grid grid-cols-12 md-4 gap-4">
             <label
               id="cellInputGroup"
               for="cellInput">Cell:
@@ -101,14 +95,12 @@
                 mask="(999) 999-9999"
                 v-model="contactInfoForm.contact_cell"/>
             </label>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-          </td>
-        </tr>
+          </div>
+        </div>
+        <div class="grid grid-cols-12 md-4 gap-4">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        </div>
       </Form>
     </div>
 

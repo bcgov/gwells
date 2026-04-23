@@ -6,8 +6,8 @@
     <Card title="Manage Companies">
 
       <!-- Company selector (used to select company to edit) -->
-      <tr>
-        <td cols="12" md="7">
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md-7">
           <label for="orgEditSelectDropdown">Select a company:
             <v-select
                 id="orgEditSelectDropdown"
@@ -17,49 +17,49 @@
                 placeholder="Begin typing a company name"
                 ></v-select>
           </label>
-        </td>
-        <td cols="12" md="5">
+        </div>
+        <div class="col-span-12 md-5">
           <Message variant="warning" :show="!!companyListError" @dismissed="companyListError=false" severity="warn">
             Error retrieving list of companies. Please try again later.
           </Message>
-        </td>
-      </tr>
+        </div>
+      </div>
 
       <!-- Add company button (opens 'add company' modal) and success feedback -->
-      <tr>
-        <td>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
           <Button
-            id="orgAddNewButton"
-            type="button"
-            label="Add new company"
-            v-b-modal.orgAddModal
-            size="sm"
-            class="mb-5"
+          id="orgAddNewButton"
+          type="button"
+          label="Add new company"
+          v-b-modal.orgAddModal
+          size="sm"
+          class="mb-5"
           />
           <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-        </td>
-      </tr>
-      <tr>
-        <td>
+        </div>
+      </div>
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12">
           <Message variant="success" severity="success" id="orgAddSuccessAlert" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</Message>
-        </td>
-      </tr>
+        </div>
+      </div>
 
       <!-- Selected company details and edit form fields -->
       <Card no-body class="p-2 p-md-3" v-if="!!selectedCompany">
         <h6 class="card-subtitle mb-3">Company Information</h6>
         <Form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
-          <tr>
-            <td cols="12" md="5">
-                <label for="orgEditNameInput">Company name:
-                  <InputText
-                    type="text"
-                    :disabled="!selectedCompany"
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
+              <label for="orgEditNameInput">Company name:
+                <InputText
+                  type="text"
+                  :disabled="!selectedCompany"
                     id="orgEditNameInput"
                     v-model="companyForm.name"/>
                 </label>
-            </td>
-            <td cols="12" md="5" offset-md="1">
+            </div>
+            <div class="col-span-12 md-5" offset-md="1">
               <label for="orgEditAddressInput">Street address:
                 <InputText
                   :disabled="!selectedCompany"
@@ -67,10 +67,19 @@
                   type="text"
                   v-model="companyForm.street_address"/>
               </label>
-            </td>
-          </tr>
-          <tr>
-            <td cols="12" md="5">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
+              <label for="orgEditCityInput">City:
+                <InputText
+                  :disabled="!selectedCompany"
+                  id="orgEditCityInput"
+                  type="text"
+                  v-model="companyForm.city"/>
+              </label>
+            </div>
+            <div cols="12" md="5">
                 <label for="orgEditCityInput">City:
                   <InputText
                     :disabled="!selectedCompany"
@@ -78,8 +87,8 @@
                     type="text"
                     v-model="companyForm.city"/>
                 </label>
-            </td>
-            <td cols="12" md="5" offset-md="1">
+            </div>
+            <div cols="12" md="5" offset-md="1">
               <label for="orgEditProvinceInput">Province:
                 <Select
                   :disabled="!selectedCompany"
@@ -93,20 +102,20 @@
                   {{ error }}
                 </Message>
               </label>
-            </td>
-          </tr>
-          <tr>
-            <td cols="12" md="5">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
               <label for="orgEditPostalInput">Postal code:
                 <InputText
                   :disabled="!selectedCompany"
                   id="orgEditPostalInput"
                   v-model="companyForm.postal_code"/>
               </label>
-            </td>
-          </tr>
-          <tr class="mt-4">
-            <td cols="12" md="5">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
               <label for="orgEditPhoneInput">Office telephone number:
                 <InputMask
                   :disabled="!selectedCompany"
@@ -114,8 +123,8 @@
                   mask="(999) 999-9999"
                   v-model="companyForm.main_tel"/>
               </label>
-            </td>
-            <td cols="12" md="5" offset-md="1">
+            </div>
+            <div class="col-span-12 md-5" offset-md="1">
               <label for="orgEditFaxInput">Fax number:
                 <InputMask
                   :disabled="!selectedCompany"
@@ -124,10 +133,10 @@
                   mask="(999) 999-9999"
                   v-model="companyForm.fax_tel"/>
               </label>
-            </td>
-          </tr>
-          <tr>
-            <td cols="12" md="5">
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
               <label for="orgEditEmailInput">Email:
                 <InputText
                     id="orgEditEmailInput"
@@ -140,8 +149,8 @@
                   {{ error }}
                 </Message>
               </label>
-            </td>
-            <td cols="12" md="5" offset-md="1">
+            </div>
+            <div class="col-span-12 md-5" offset-md="1">
               <label for="orgEditWebsiteInput">Website:
                 <InputText
                   :disabled="!selectedCompany"
@@ -158,8 +167,8 @@
                   Use a full website address, including http://
                 </div>
               </label>
-            </td>
-            <td cols="12" md="12">
+            </div>
+            <div class="col-span-12 md-12">
               <label for="regionOptions">Region:
                 <MultiSelect
                   name="regionOptions"
@@ -170,21 +179,21 @@
                   filter
                   class="mb-3" />
               </label>
-            </td>
-          </tr>
-          <tr class="mt-3">
-            <td>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
               <Button label="Update" type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged" />
               <Button label="Cancel" type="reset" class="btn btn-light" severity="danger" ref="orgUpdateCancelBtn" :disabled="!selectedCompany || !formChanged" />
-            </td>
-          </tr>
-          <tr>
-            <td>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-4">
+            <div class="col-span-12 md-5">
               <Message class="mt-3" variant="success" severity="success" id="orgUpdateSuccessAlert" :show="companyUpdateSuccess" dismissible @dismissed="companyUpdateSuccess=false">
                 Successfully updated company information.
               </Message>
-            </td>
-          </tr>
+            </div>
+          </div>
 
           <!-- Modals for confirming update/cancel editing -->
            <Dialog

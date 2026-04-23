@@ -20,21 +20,17 @@
       <div class="card-body">
         <!-- Display loading spinner if application is null -->
         <div v-if="applicationLoading">
-          <tr>
-            <td>
-              <div class="fa-2x text-center">
-                <i class="fa fa-circle-o-notch fa-spin"></i>
-              </div>
-            </td>
-          </tr>
+          <div class="fa-2x text-center">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+          </div>
         </div>
         <!-- Display application detail once loaded -->
         <div v-else>
           <div v-if="currentDriller != {} && registration != null">
             <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
-            <td class="pl-0" v-if="classification">
+            <div class="pl-0" v-if="classification">
               <h5>Certification - {{ classification }}</h5>
-            </td>
+            </div>
           </div>
           <div v-if="editClassification">
             <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
@@ -56,57 +52,51 @@
                   </Button>
                 </template>
               </Dialog>
-              <tr>
-                <td>
-                  <application-edit
-                    :activity="activity"
-                    v-model="applicationFormValue"
-                    mode="edit"
-                    v-on:isValid="onApplicationIsValid"
-                    v-on:close="confirmCancelModal=true"/>
-                </td>
-              </tr>
-              <tr class="mt-3">
-                <td>
+              <div>
+                <application-edit
+                  :activity="activity"
+                  v-model="applicationFormValue"
+                  mode="edit"
+                  v-on:isValid="onApplicationIsValid"
+                  v-on:close="confirmCancelModal=true"/>
+              </div>
+              <div class="mt-3">
                   <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
                   <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
-                </td>
-              </tr>
+              </div>
             </Form>
           </div>
           <div v-else>
             <div class="card mb-3">
               <div class="card-body">
-                <tr>
-                  <td>
-                    <h5>Classification &amp; Qualifications</h5>
-                  </td>
-                  <td class="text-right">
+                <div>
+                  <h5>Classification &amp; Qualifications</h5>
+                  <div class="text-right">
                     <button
                       class="btn btn-light btn-sm registries-edit-btn"
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
                       v-if="commonStore.userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
-                  </td>
-                </tr>
-                <tr class="row" v-if="classification && classification.registries_subactivity">
-                  <td class="registry-item">
+                  </div>
+                </div>
+                <div class="row" v-if="classification && classification.registries_subactivity">
+                  <div class="registry-item">
                     <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
                     <span class="registry-subtle">
                       (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
                     </span>
                     </h4>
-                  </td>
-                </tr>
-                <tr>
-                  <td><span class="registry-label">Issued by:</span></td>
-                  <td>{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</td>
-                  <td><span class="registry-label">Certificate number:</span></td>
-                  <td>{{ application.primary_certificate_no }}</td>
-                </tr>
-                <tr>
-                  <td class="pl-3 pt-3">
+                  </div>
+                </div>
+                <div>
+                  <div><span class="registry-label">Issued by:</span></div>
+                  <div>{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</div>
+                  <div><span class="registry-label">Certificate number:</span></div>
+                  <div>{{ application.primary_certificate_no }}</div>
+                </div>
+                <div>
+                  <div class="pl-3 pt-3">
                       <label for="qualifications" class="font-weight-bold">
                         {{ `Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification` }}
                           <div class="col-12">
@@ -124,73 +114,71 @@
                             </CheckboxGroup>
                           </div>
                     </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h5>Adjudication</h5>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
+                  </div>
+                </div>
+                <div>
+                  <h5>Adjudication</h5>
+                </div>
+                <div>
+                  <div>
                     Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
-                  </td>
-                </tr>
-                <tr>
-                  <td class="registry-item pr-0">
+                  </div>
+                </div>
+                <div>
+                  <div class="registry-item pr-0">
                     <span class="registry-label">Date application received:</span>
-                  </td>
-                  <td v-if="application && application.application_recieved_date">
+                  </div>
+                  <div v-if="application && application.application_recieved_date">
                       {{ application.application_recieved_date }}
-                  </td>
-                  <td v-else>Unknown</td>
-                </tr>
-                <tr>
-                  <td class="registry-item">
+                  </div>
+                  <div v-else>Unknown</div>
+                </div>
+                <div>
+                  <div class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
-                  </td>
-                  <td v-if="application && application.application_outcome_date">
+                  </div>
+                  <div v-if="application && application.application_outcome_date">
                     {{ application.application_outcome_date }}
-                  </td>
-                  <td v-else>Unknown</td>
-                  <td class="registry-item">
+                  </div>
+                  <div v-else>Unknown</div>
+                  <div class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
-                  </td>
-                  <td v-if="application && application.current_status">
+                  </div>
+                  <div v-if="application && application.current_status">
                     {{ application.current_status.description }}
-                  </td>
-                  <td v-else>Unknown</td>
-                  <td v-if="application && application.current_status && application.current_status.code === 'NA'" class="registry-item">
+                  </div>
+                  <div v-else>Unknown</div>
+                  <div v-if="application && application.current_status && application.current_status.code === 'NA'" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
-                  </td>
-                  <td v-if="application && application.current_status && application.current_status.code === 'NA'">
+                  </div>
+                  <div v-if="application && application.current_status && application.current_status.code === 'NA'">
                     <span v-if="application.reason_denied">
                       {{ application.reason_denied }}
                     </span>
                     <span v-else>
                       Unknown
                     </span>
-                  </td>
-                </tr>
-                <tr>
-                  <td class="registry-item">
+                  </div>
+                </div>
+                <div>
+                  <div class="registry-item">
                     <span class="registry-label">Notification date:</span>
-                  </td>
-                  <td v-if="application && application.application_outcome_notification_date">
+                  </div>
+                  <div v-if="application && application.application_outcome_notification_date">
                     {{ application.application_outcome_notification_date }}
-                  </td>
-                  <td v-else>Unknown</td>
-                </tr>
-                <tr v-if="removalDate || removalReason">
-                  <td class="pt-3"><h6>Removal of classification from register</h6></td>
-                </tr>
-                <tr v-if="removalDate || removalReason">
-                  <td><span class="registry-label">Removal date:</span></td>
-                  <td>{{removalDate}}</td>
-                  <td><span class="registry-label">Removal reason:</span></td>
-                  <td v-if="removalReason">{{removalReason.description}}</td>
-                  <td v-else>Unknown</td>
-                </tr>
+                  </div>
+                  <div v-else>Unknown</div>
+                </div>
+                <div v-if="removalDate || removalReason">
+                  <div class="pt-3"><h6>Removal of classification from register</h6></div>
+                </div>
+                <div v-if="removalDate || removalReason">
+                  <div><span class="registry-label">Removal date:</span></div>
+                  <div>{{removalDate}}</div>
+                  <div><span class="registry-label">Removal reason:</span></div>
+                  <div v-if="removalReason">{{removalReason.description}}</div>
+                  <div v-else>Unknown</div>
+                </div>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">

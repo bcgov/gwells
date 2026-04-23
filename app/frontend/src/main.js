@@ -18,7 +18,7 @@ import * as Integrations from "@sentry/integrations";
 import VueNoty from "vuejs-noty";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
-import { Button, InputText, InputMask, Card, Message, Panel, Select, MultiSelect, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner, Breadcrumb, Dialog, DataTable, Column, FileUpload } from 'primevue';
+import { Button, InputText, InputMask, Card, Message, Panel, Select, MultiSelect, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner, Breadcrumb, Dialog, DataTable, Column, FileUpload, Textarea } from 'primevue';
 import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
@@ -114,7 +114,7 @@ app.component("Dialog", Dialog)
 app.component("DataTable", DataTable)
 app.component("Column", Column)
 app.component("FileUpload", FileUpload)
-
+app.component("Textarea", Textarea)
 const pinia = createPinia();
 app.use(pinia);
 

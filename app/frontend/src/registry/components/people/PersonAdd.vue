@@ -8,258 +8,227 @@
     </div>
     <div class="card">
       <div class="card-body p-md-3 p-2">
-          <h5 class="card-title">Add new applicant</h5>
-          <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
-            <tr><td><h6 class="font-weight-bold">Personal Information</h6></td></tr>
-            <tr>
-              <td>
-                <div class="field">
-                  <label for="surnameInput">Surname:</label>
-                  <InputText
-                    id="surnameInput"
-                    type="text"
-                    v-model="drillerForm.person.surname"
-                    required/>
+        <h5 class="card-title">Add new applicant</h5>
+        <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+          <h6 class="font-weight-bold">Personal Information</h6>
+          <div class="mb-3">
+            <div class="field">
+              <label for="surnameInput">Surname:</label>
+              <InputText
+                id="surnameInput"
+                type="text"
+                v-model="drillerForm.person.surname"
+                required/>
+            </div>
+            <div class="field">
+              <label for="firstnameInput">First name:</label>
+              <InputText
+                id="firstnameInput"
+                type="text"
+                v-model="drillerForm.person.first_name"
+                required/>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h6 class="font-weight-bold">Contact Information at Company</h6>
+            <div class="field">
+              <label for="contactTelInput" aria-describedby="drillerTelExample">Telephone number:</label>
+              <InputMask
+                  id="contactTelInput"
+                  type="tel"
+                  mask="(999) 999-9999"
+                  v-model="drillerForm.person.contact_tel"/>
+              <small id="drillerTelExample" class="form-text text-muted">
+                Example: (250) 555-1234
+              </small>
+            </div>
+            <div class="field">
+              <label for="contactEmailInput">Email:</label>
+              <InputText
+                id="contactEmailInput"
+                type="email"
+                :state="validation.contact_email"
+                aria-describedby="contactEmailFeedback"
+                v-model="drillerForm.person.contact_email"/>
+              <div id="contactEmailFeedback" class="invalid-feedback">
+                <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
+                  {{ error }}
                 </div>
-                <div class="field">
-                  <label for="firstnameInput">First name:</label>
-                  <InputText
-                    id="firstnameInput"
-                    type="text"
-                    v-model="drillerForm.person.first_name"
-                    required/>
-                </div>
-              </td>
-            </tr>
-            <tr class="mt-3">
-              <td><h6 class="font-weight-bold">Contact Information at Company</h6></td>
-              <td>
-                <div class="field">
-                  <label for="contactTelInput" aria-describedby="drillerTelExample">Telephone number:</label>
-                  <InputMask
-                    id="contactTelInput"
-                    type="tel"
-                    mask="(999) 999-9999"
-                    v-model="drillerForm.person.contact_tel"/>
-                  <small id="drillerTelExample" class="form-text text-muted">
-                    Example: (250) 555-1234
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="contactEmailInput">Email:</label>
-                  <InputText
-                    id="contactEmailInput"
-                    type="email"
-                    :state="validation.contact_email"
-                    aria-describedby="contactEmailFeedback"
-                    v-model="drillerForm.person.contact_email"/>
-                  <div id="contactEmailFeedback" class="invalid-feedback">
-                    <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
-                      {{ error }}
-                    </div>
-                  </div>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><h6 class="font-weight-bold">ORCS File Number</h6></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="field">
-                  <label for="drillerORCSInput" aria-describedby="drillerORCSExample">Well Driller ORCS Number:</label>
-                  <InputText
-                    id="drillerORCSInput"
-                    type="text"
-                    v-model="drillerForm.person.well_driller_orcs_no"/>
-                  <small id="drillerORCSExample">
-                    ORCS format: 38000-25/DRI XXXX X
-                  </small>
-                </div>
-                <div class="field">
-                  <label for="pumpORCSInput" aria-describedby="pumpORCSExample">Pump Installer ORCS Number:</label>
-                  <InputText
-                    id="pumpORCSInput"
-                    type="text"
-                    v-model="drillerForm.person.pump_installer_orcs_no"/>
-                  <small id="pumpORCSExample">
-                    ORCS format: 38000-25/PUMP XXXX X
-                  </small>
-                </div>
-              </td>
-            </tr>
-            <tr class="mt-3">
-              <td>
-                <label for="registrationTypeInput">Register as: </label>
-                <CheckboxGroup id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType">
-                  <Checkbox inputId="registrationTypeInputDrill"
-                    value="DRILL"
-                    v-model="drillerForm.regType"/>
-                  <label for="registrationTypeInputDrill">Well Driller</label>
-                  <Checkbox inputId="registrationTypeInputPump"
-                    value="PUMP"
-                    v-model="drillerForm.regType"/>
-                  <label for="registrationTypeInputPump">Well Pump Installer</label>
-                </CheckboxGroup>
-              </td>
-            </tr>
-            <tr class="mt-3"><td><h6 class="font-weight-bold">Attachments</h6></td></tr>
-            <tr class="mt-3">
-              <td>
-                <FileUpload ref="fileupload" name="files[]" url="/api/files/upload" :auto="true" :multiple="true" :customUpload="true" @upload="onFormSubmit" v-model="files"/>
-                  <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
-                    <Listbox v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</Listbox>
-                  </div>
-              </td>
-            </tr>
-            <Card no-body class="mb-3 p-1 p-md-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
-              <tr>
-                <td>
-                  <Message :show="newOrgSuccess"
-                          dismissible
-                          variant="success"
-                          severity="success"
-                          @dismissed="newOrgSuccess=false"
-                          class="mb-3">
-                    Company added.
-                  </Message>
-                </td>
-                <td class="text-right">
-                  <Button
-                    type="button"
-                    v-b-modal.orgModal
-                    variant="primary"
-                    size="sm"
-                    class="py-0">
-                    <i class="fa fa-plus-square-o"></i>
-                    Add a company
-                  </Button>
-                </td>
-              </tr>
-              <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-              <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
-                <tr>
-                  <td>
-                    <h5>Well Driller Registration</h5>
-                  </td>
-                </tr>
-                <tr class="mb-3">
-                  <td>
-                    <label for="companyInput">Well drilling company:</label>
-                    <Select
-                      v-model="drillerForm.organizations.drill"
-                      :options="companies"
-                      placeholder="Begin typing a company name"
-                      label="org_verbose_name">
-                    </Select>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h6 class="font-weight-normal">Well Driller Classifications</h6>
-                    <application-add
-                      class="mb-3"
-                      v-for="item in drillApplications"
-                      v-bind:item="item"
-                      v-bind:key="item.id"
-                      v-on:close="closeApplication (drillApplications, item.id)"
-                      v-model="item.data"
-                      activity="DRILL"
-                      mode="add"/>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <Button
-                    type="button"
-                    variant="primary"
-                    size="sm"
-                    v-on:click="addApplication (drillApplications)"
-                    class="mb-3">
-                    <i class="fa fa-plus-square-o"></i>
-                    Add new well driller classification
-                  </Button>
-                  </td>
-                </tr>
               </div>
-              <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
-                <tr>
-                  <td>
-                    <h5>Well Pump Installer Registration</h5>
-                  </td>
-                </tr>
-                <tr class="mb-3">
-                  <td>
-                    <label
-                      id="companyInputGroup"
-                      label="Well pump installation company:"
-                      label-for="companyInput">
-                      <v-select
-                        v-model="drillerForm.organizations.pump"
-                        :options="companies"
-                        placeholder="Begin typing a company name"
-                        label="org_verbose_name">
-                      </v-select>
-                    </label>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <h6 class="font-weight-normal">Well Pump Installer Classifications</h6>
-                    <application-add
-                      class="mb-3"
-                      v-for="item in pumpApplications"
-                      v-bind:item="item"
-                      v-bind:key="item.id"
-                      v-on:close="closeApplication (pumpApplications, item.id)"
-                      v-model="item.data"
-                      activity="PUMP"
-                      mode="add"/>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <Button
-                    type="button"
-                    variant="primary"
-                    size="sm"
-                    v-on:click="addApplication(pumpApplications)"
-                    class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
-                  </td>
-                </tr>
+            </div>
+          </div>
+          <div class="mt-3">
+            <h6 class="font-weight-bold">ORCS File Number</h6>
+          </div>
+          <div class="mt-3">
+            <div>
+              <div class="field">
+                <label for="drillerORCSInput" aria-describedby="drillerORCSExample">Well Driller ORCS Number:</label>
+                <InputText
+                  id="drillerORCSInput"
+                  type="text"
+                  v-model="drillerForm.person.well_driller_orcs_no"/>
+                <small id="drillerORCSExample">
+                  ORCS format: 38000-25/DRI XXXX X
+                </small>
               </div>
-            </Card>
-            <tr class="mt-3">
-              <td>
-                <Button type="submit" class="mr-2" variant="primary">Save</Button>
-                <Button type="reset" variant="light">Reset</Button>
-              </td>
-            </tr>
-            <tr class="mt-3">
-              <td>
-                <Message :show="submitSuccess"
-                        dismissible
-                        variant="success"
-                        severity="success"
-                        @dismissed="submitSuccess=false">
-                  Successfully created a new person!
-                </Message>
-                <Message :show="!!submitError"
-                        dismissible
-                        variant="warning"
-                        severity="warn"
-                        @dismissed="submitError=false">
-                  Error creating a new person.
-                  <div v-for="(value, key, index) in submitError.data" :key="`submit error ${index}`">
-                    <span class="text-capitalize">{{ key }}</span>:
-                    <span
-                      v-for="(msg, msgIndex) in value"
-                      :key="`submit error msg ${index} ${msgIndex}`">{{ msg }} </span>
-                  </div>
-                </Message>
-              </td>
-            </tr>
-          </Form>
+              <div class="field">
+                <label for="pumpORCSInput" aria-describedby="pumpORCSExample">Pump Installer ORCS Number:</label>
+                <InputText
+                  id="pumpORCSInput"
+                  type="text"
+                  v-model="drillerForm.person.pump_installer_orcs_no"/>
+                <small id="pumpORCSExample">
+                  ORCS format: 38000-25/PUMP XXXX X
+                </small>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3">
+            <label for="registrationTypeInput">Register as: </label>
+            <CheckboxGroup id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType">
+              <Checkbox inputId="registrationTypeInputDrill"
+                  value="DRILL"
+                  v-model="drillerForm.regType"/>
+                <label for="registrationTypeInputDrill">Well Driller</label>
+                <Checkbox inputId="registrationTypeInputPump"
+                  value="PUMP"
+                  v-model="drillerForm.regType"/>
+                <label for="registrationTypeInputPump">Well Pump Installer</label>
+              </CheckboxGroup>
+          </div>
+          <div class="mt-3">
+            <h6 class="font-weight-bold">Attachments</h6>
+          </div>
+          <div class="mt-3">
+            <FileUpload ref="fileupload" name="files[]" url="/api/files/upload" :auto="true" :multiple="true" :customUpload="true" @upload="onFormSubmit" v-model="files"/>
+            <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
+              <Listbox v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</Listbox>
+            </div>
+          </div>
+          <Card no-body class="mb-3 p-1 p-md-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+            <div>
+              <Message :show="newOrgSuccess"
+                      dismissible
+                      variant="success"
+                      severity="success"
+                      @dismissed="newOrgSuccess=false"
+                      class="mb-3">
+                Company added.
+              </Message>
+              <div class="text-right">
+                <Button
+                  type="button"
+                  v-b-modal.orgModal
+                  variant="primary"
+                  size="sm"
+                  class="py-0">
+                  <i class="fa fa-plus-square-o"></i>
+                  Add a company
+                </Button>
+              </div>
+            </div>
+            <organization-add @newOrgAdded="newOrgHandler"></organization-add>
+            <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
+              <h5>Well Driller Registration</h5>
+              <div class="mb-3">
+                <label for="companyInput">Well drilling company:</label>
+                <Select
+                  v-model="drillerForm.organizations.drill"
+                  :options="companies"
+                  placeholder="Begin typing a company name"
+                  label="org_verbose_name">
+                </Select>
+              </div>
+              <div class="mb-3">
+                <h6 class="font-weight-normal">Well Driller Classifications</h6>
+                <application-add
+                  class="mb-3"
+                  v-for="item in drillApplications"
+                  v-bind:item="item"
+                  v-bind:key="item.id"
+                  v-on:close="closeApplication (drillApplications, item.id)"
+                  v-model="item.data"
+                  activity="DRILL"
+                  mode="add"/>
+              </div>
+              <div>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  v-on:click="addApplication (drillApplications)"
+                  class="mb-3">
+                  <i class="fa fa-plus-square-o"></i>
+                  Add new well driller classification
+                </Button>
+              </div>
+            </div>
+            <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
+              <h5>Well Pump Installer Registration</h5>
+              <div class="mb-3">
+                <label
+                  id="companyInputGroup"
+                  label="Well pump installation company:"
+                  label-for="companyInput">
+                  <v-select
+                    v-model="drillerForm.organizations.pump"
+                    :options="companies"
+                    placeholder="Begin typing a company name"
+                    label="org_verbose_name">
+                  </v-select>
+                </label>
+              </div>
+              <div class="mb-3">
+                <h6 class="font-weight-normal">Well Pump Installer Classifications</h6>
+                <application-add
+                  class="mb-3"
+                  v-for="item in pumpApplications"
+                  v-bind:item="item"
+                  v-bind:key="item.id"
+                  v-on:close="closeApplication (pumpApplications, item.id)"
+                  v-model="item.data"
+                  activity="PUMP"
+                  mode="add"/>
+              </div>
+              <div class="mb-3">
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  v-on:click="addApplication(pumpApplications)"
+                  class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
+              </div>
+            </div>
+          </Card>
+          <div class="mt-3">
+            <Button type="submit" class="mr-2" variant="primary">Save</Button>
+            <Button type="reset" variant="light">Reset</Button>
+          </div>
+          <div class="mt-3">
+            <Message :show="submitSuccess"
+                    dismissible
+                    variant="success"
+                    severity="success"
+                    @dismissed="submitSuccess=false">
+              Successfully created a new person!
+            </Message>
+            <Message :show="!!submitError"
+                    dismissible
+                    variant="warning"
+                    severity="warn"
+                    @dismissed="submitError=false">
+              Error creating a new person.
+              <div v-for="(value, key, index) in submitError.data" :key="`submit error ${index}`">
+                <span class="text-capitalize">{{ key }}</span>:
+                <span
+                  v-for="(msg, msgIndex) in value"
+                :key="`submit error msg ${index} ${msgIndex}`">{{ msg }}
+                </span>
+              </div>
+            </Message>
+          </div>
+        </Form>
       </div>
     </div>
   </div>
