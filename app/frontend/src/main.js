@@ -32,8 +32,6 @@ import * as filters from "./common/filters";
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
 import { createPinia } from "pinia";
-import PrimeVue from 'primevue/config';
-import Aura from '@primeuix/themes/aura';
 
 const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
 const STAGING_GWELLS_URLS = [
@@ -148,9 +146,12 @@ app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
 app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
 
 app.use(PrimeVue, {
-    theme: {
-        preset: Aura
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: false,
     }
+  }
 });
 // Mount app
 app.mount("#app");

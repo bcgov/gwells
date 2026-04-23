@@ -17,7 +17,7 @@
     </Message>
 
     <!-- Main Registries content -->
-    <Card class="rounded-lg p-1 ml-50 mr-50">
+    <Card class="rounded-lg p-1 ml-50 mr-50 bg-white">
       <template #title>Search for a Well Driller or Well Pump Installer</template>
       <template #content>
         <div class="grid grid-cols-2 mb-5 gap-4">
@@ -68,7 +68,6 @@
                 Some well drillers and well pump installers may operate in multiple areas throughout B.C.
                 For a complete list refer to the results table below.
               </div>
-              <!-- <Form @submit="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm"> -->
               <Form @submit="drillerSearch" @reset="resetSearch" id="drillerSearchForm">
                 <div class="grid grid-cols-4 mb-4 gap-4">
                   <label class="col-span-3">Choose professional type:
@@ -149,18 +148,10 @@
                   <label for="regTypeInput">
                     Individual, company, or registration number:
                   </label>
-                  <!-- Search params dont seem to be updating at all -->
                   <InputText
                     id="regTypeInput"
                     type="text"
                     class="ml-2"
-                    placeholder="Search"
-                    v-model="searchParams.search"
-                  />
-                  <input
-                    id="regTypeInput"
-                    type="text"
-                    class="ml-2 outline outline-offset-2"
                     placeholder="Search"
                     v-model="searchParams.search"
                   />
@@ -372,7 +363,6 @@ export default {
   },
   watch: {
     'searchParams.activity': function () {
-      debugger
       this.registryStore.setSearchParams(Object.assign({}, this.searchParams, { city: [''] }))
       this.resetSelectedSubactivities(this.subactivities)
       this.registryStore.fetchCityList(this.formatActivityForCityList)
