@@ -19,7 +19,8 @@
           <h3>{{ section.header }}</h3>
         </b-col>
       </b-row>
-      <search-filter
+      <!--TBD issue with component null values in child component -->
+      <!-- <search-filter
         v-for="field in getFilterFields(section.fields)"
         :key="field.id"
         :type="field.type"
@@ -31,7 +32,7 @@
         :value-field="field.valueField"
         :text-field="field.textField"
         :any-value-checkbox="field.anyValueBoolean"
-        v-model="filterParams[field.id]" />
+        v-model="filterParams[field.id]" /> -->
     </div>
     <b-row>
       <b-col class="my-3">
@@ -44,7 +45,8 @@
         <h3>Additional Fields</h3>
       </b-col>
     </b-row>
-    <search-filter
+    <!--TBD issue with component null values in child component-->
+    <!-- <search-filter
       v-for="field in selectedAdditionalFilters"
       :key="field.id"
       :type="field.type"
@@ -58,7 +60,7 @@
       :any-value-checkbox="field.anyValueBoolean"
       v-model="filterParams[field.id]"
       @remove="removeSelectedFilter(field.id)"
-      removable />
+      removable /> -->
     <b-row>
       <b-col sm="9" class="mb-1">
         <b-form-select id="additionalFilterInput" v-model="selectedFilterId">

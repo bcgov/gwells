@@ -172,7 +172,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import Vue from 'vue'
 import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 

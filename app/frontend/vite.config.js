@@ -76,7 +76,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
-      "vue": "@vue/compat",
+      // Left in case need to install vue/compat again
+      // "vue": "@vue/compat",
       util: "rollup-plugin-node-polyfills/polyfills/util",
       buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
       events: "rollup-plugin-node-polyfills/polyfills/events",

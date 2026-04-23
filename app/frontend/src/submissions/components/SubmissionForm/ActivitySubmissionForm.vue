@@ -545,7 +545,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import Vue from 'vue'
 import smoothScroll from 'smoothscroll'
 
 import ActivityType from './ActivityType.vue'
@@ -593,9 +592,9 @@ export default {
       type: Object,
       isInput: false
     },
-    events: {
-      type: Vue
-    },
+    // events: {
+    //   type: Vue
+    // },
     sections: {
       type: Object,
       isInput: false

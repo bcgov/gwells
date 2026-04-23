@@ -50,7 +50,7 @@
 
       <p>Pursuant to Part 2, Section 7 of the Groundwater Protection Regulation (GWPR), the Comptroller must establish and maintain a register of well pump installers who are authorized to operated in (B.C.). The list of well pump installers whose names are in the Register, must be made available to the public during normal business hours, or be posted on a publicly available website. A person wishing to be recognized as a well pump installer in B.C. and wanting to be listed in the Register may apply to the Comptroller pursuant to Section 8 of the GWPR.</p>
 
-      <p>Pursuant to Section 14 of the GWPR, a registered well pump installer is qualified in respect of:
+      <div>>Pursuant to Section 14 of the GWPR, a registered well pump installer is qualified in respect of:
         <ul>
           <li>decommissioning or deactivating any class of well,</li>
           <li>installing, maintaining, repairing, removing or testing a well pump or well head,</li>
@@ -58,28 +58,28 @@
           <li>disinfecting a well pump</li>
           <li>disinfecting a well.</li>
         </ul>
-      </p>
+      </div>
 
-      <p>The Comptroller must remove from the Register of well pump installers any person who:
+      <div>The Comptroller must remove from the Register of well pump installers any person who:
         <ul>
           <li>fails to meet a requirement for registration,</li>
           <li>fails to maintain a requirement for registration, including any requirement for maintaining a certificate issued by another province or territory of Canada,</li>
           <li>is no longer actively working in Canada as a well pump installer.</li>
         </ul>
-      </p>
+      </div>
 
       <p>A person listed as a well pump installer in this Register must advise the Comptroller in writing within 60 days of any changes to the information included in the Register or if they are no longer actively working in Canada as a well pump installer.</p>
 
       <p>The person whose name appears in this Register should, in the course of their duties as a well pump installer in B.C., carry with them the well pump installer identification card issued to them by the Comptroller and must present it upon request to the Comptroller, the Regional Water Manager, an Engineer or an Officer under the <i>Water Sustainability Act</i> (WSA), or a Drinking Water Officer under the <i>Drinking Water Protection Act</i>, as proof of qualifications as a well pump installer pursuant to Section 51 of the WSA.</p>
 
-      <p>
+      <div>
         *‘Certificate issued by’: Explanation of abbreviations
         <ul>
           <li>Province of BC: Certificate issued by the Industry Training Authority or the Advanced Education Ministry of the Province of B.C.</li>
           <li>CGWA : Certificate issued by the Canadian Ground Water Association</li>
           <li>N/A – grand-fathered: Not applicable. Well pump installers with this designation were registered under the grand-parenting provision of the former Ground Water Protection Regulation (2004). That provision allowed well pump installers to be registered at the discretion of the Deputy Comptroller of Water Rights, based on proof of experience.</li>
         </ul>
-      </p>
+      </div>
     </div>
   </div>
 </template>
