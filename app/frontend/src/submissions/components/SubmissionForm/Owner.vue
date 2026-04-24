@@ -93,16 +93,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <form-input id="ownerEmail" label="Email Address" v-model="ownerEmailInput" :errors="errors['owner_email']" :loaded="fieldsLoaded['owner_email']"></form-input>
       </b-col>
       <b-col cols="12" md="6" lg="4" xl="3">
-        <form-input
+        <InputMask
             id="ownerTel"
             label="Telephone"
             v-model="ownerTelInput"
             :errors="errors['owner_tel']"
             :loaded="fieldsLoaded['owner_tel']"
-            :formatter="formatTel"
-            lazy-formatter
+            mask="(999) 999-9999"
             >
-        </form-input>
+        </InputMask>
       </b-col>
     </b-row>
   </fieldset>
@@ -111,12 +110,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import inputFormatMixin from '@/common/inputFormatMixin.js'
 import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import ApiService from '../../../common/services/ApiService'
 
 export default {
-  mixins: [inputBindingsMixin, inputFormatMixin],
+  mixins: [inputBindingsMixin],
   components: {
     BackToTopLink
   },

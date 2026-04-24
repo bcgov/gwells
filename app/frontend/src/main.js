@@ -19,10 +19,14 @@ import * as Integrations from "@sentry/integrations";
 import { createPinia } from "pinia";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
-import { 
-  Button, InputText, Card, Select, RadioButton, RadioButtonGroup,
-  Checkbox, CheckboxGroup, Menubar
+import {
+  Button, InputText, InputMask, Card, Message,Panel,
+  Select, MultiSelect, RadioButton, RadioButtonGroup,
+  Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
+  Breadcrumb, Dialog, DataTable, Column, FileUpload,
+  Textarea, Menubar
 } from 'primevue';
+import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -77,14 +81,6 @@ if (isProduction()) {
 }
 
 app.use(router);
-app.use(PrimeVue, {
-  theme: {
-    preset: Aura,
-    options: {
-      darkModeSelector: false,
-    }
-  }
-});
 // TBD replace VueNoty with a more modern notification library
 // app.use(VueNoty, {
 //   layout: "topRight",
@@ -102,12 +98,25 @@ app.component("form-input", FormInput);
 // PrimeVue components
 app.component("Button", Button);
 app.component("InputText", InputText);
+app.component("InputMask", InputMask)
 app.component("Card", Card);
+app.component("Message", Message);
+app.component("Panel", Panel);
 app.component("Select", Select);
+app.component("MultiSelect", MultiSelect)
 app.component("RadioButton", RadioButton);
 app.component("RadioButtonGroup", RadioButtonGroup);
 app.component("Checkbox", Checkbox);
 app.component("CheckboxGroup", CheckboxGroup);
+app.component("Form", Form);
+app.component("Listbox", Listbox);
+app.component("ProgressSpinner", ProgressSpinner)
+app.component("Breadcrumb", Breadcrumb)
+app.component("Dialog", Dialog)
+app.component("DataTable", DataTable)
+app.component("Column", Column)
+app.component("FileUpload", FileUpload)
+app.component("Textarea", Textarea)
 app.component("Menubar", Menubar);
 
 const pinia = createPinia();
@@ -145,9 +154,12 @@ app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
 app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
 
 app.use(PrimeVue, {
-    theme: {
-        preset: Aura
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: false,
     }
+  }
 });
 // Mount app
 app.mount("#app");

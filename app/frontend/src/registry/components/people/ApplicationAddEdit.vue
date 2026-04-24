@@ -20,106 +20,101 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </h5>
-        <p v-if="loading" class="card-text">
-          <b-row>
-            <b-col md="12">
+        <p v-if="loading">
+          <div class="grid">
+            <div class="row-span-full">
               <div class="fa-2x text-center">
                 <i class="fa fa-circle-o-notch fa-spin"></i>
               </div>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
         </p>
-        <p v-else class="card-text">
-          <b-row>
-            <b-col class="font-weight-bold">Certification</b-col>
-          </b-row>
-          <b-row>
-            <b-col md="6">
-              <b-form-group label="Issued by" :label-cols="3">
-                <b-form-select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></b-form-select>
-              </b-form-group>
-            </b-col>
-            <b-col md="6">
-              <b-form-group label="Certificate number" :label-cols="3">
-                <b-form-input type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></b-form-input>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="12">
-              <b-form-group label="Select classification" :label-cols="2" class="font-weight-bold">
-                <b-form-radio-group class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></b-form-radio-group>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="8">
-              <b-form-group :label="`Qualified${activity === 'DRILL' ? ' to drill' : '' }`" class="font-weight-bold">
-                <b-form-checkbox-group class="fixed-width font-weight-normal" :options="formOptions.qualifications" v-model="qualificationForm.qualifications" disabled>
-                </b-form-checkbox-group>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="8">
+        <p v-else>
+          <div class="grid">
+            <div class="row-span-full">
+              <div style="font-weight: bold;">Certification</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-1">
+              <label :label-cols="3">Issued by</label>
+                <Select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></Select>
+            </div>
+            <div class="col-span-1">
+              <label :label-cols="3">Certificate number</label>
+                <InputText type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></InputText>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-4">
+            <label class="col-span-1">Select classification</label>
+              <RadioButtonGroup class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></RadioButtonGroup>
+          </div>
+          <div class="grid grid-cols-4 gap-4">
+            <label class="col-span-1">Qualified{{activity === 'DRILL' ? ' to drill' : '' }}</label>
+            <CheckboxGroup class="col-span-2":options="formOptions.qualifications" v-model="qualificationForm.qualifications">
+              <div v-for="item of qualifications" :key="item.value">
+                <Checkbox
+                  inputId="classificationSelector"
+                  name="classificationSelector"
+                  :value="item.value"
+                  class="col-span-1"
+                />
+                <label :for="item.value">{{ item.text }}</label>
+              </div>
+            </CheckboxGroup>
+          </div>
+          <div class="grid">
+            <div class="row-span-full">
               <h5>Adjudication</h5>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-form-group :label-cols="5" label="Confirmed applicant is 19 years of age or older by reviewing" class="font-weight-bold">
-                <b-form-select :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age.code" required></b-form-select>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col md="4">
-              <b-form-group :label-cols="4" description="format: yyy-mm-dd" label="Date application received" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row v-if="isEditMode">
-            <b-col md="4" v-if="qualificationForm.application_recieved_date">
-              <b-form-group :label-cols="4" description="format: yyyy-mm-dd" label="Approval date outcome" class="font-weight-bold" invalid-feedback="Invalid date format">
-                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
-              </b-form-group>
-            </b-col>
-            <b-col md="4" v-if="showApprovalOutcome">
-              <b-form-group :label-cols="4" label="Approval outcome" class="font-weight-bold">
-                <b-form-select :options="formOptions.approvalOutcome" v-model="qualificationForm.current_status.code"/>
-              </b-form-group>
-            </b-col>
-            <b-col md="4" v-if="showReasonDenied">
-              <b-form-group :label-cols="4" label="Reason denied" class="font-weight-bold">
-                <b-form-input type="text" v-model="qualificationForm.reason_denied"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row v-if="isEditMode">
-            <b-col md="4" v-if="showNotificationDate">
-              <b-form-group :label-cols="4" description="format: yyyy-mm-dd" label="Notification date" class="font-weight-bold">
-                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row v-if="showRemoval && isEditMode">
-            <b-col>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="grid grid-cols-2 gap-4">
+              <label class="col-span-1">Confirmed applicant is 19 years of age or older by reviewing</label>
+              <Select class="col-span-1" :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age.code" required></Select>
+            </div>
+          </div>
+          <div class="grid">
+            <div class="grid grid-cols-6 gap-4">
+              <label class="col-span-1" description="format: yyy-mm-dd" label="" invalid-feedback="Invalid date format">Date application received</label>
+              <InputText type="date" class="col-span-1" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
+            </div>
+          </div>
+          <div class="grid" v-if="isEditMode">
+            <div class="grid grid-cols-2 gap-4" v-if="qualificationForm.application_recieved_date">
+              <label class="col-span-1" description="format: yyyy-mm-dd" invalid-feedback="Invalid date format">Approval date outcome</label>
+                <InputText class="col-span-1" type="date" v-model="qualificationForm.application_outcome_date" :state="approvalDateState"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4" v-if="showApprovalOutcome">
+              <label class="col-span-1">Approval outcome</label>
+                <Select :options="formOptions.approvalOutcome" v-model="qualificationForm.current_status.code"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4" v-if="showReasonDenied">
+              <label class="col-span-1">Reason denied</label>
+                <InputText class="col-span-1" type="text" v-model="qualificationForm.reason_denied"/>
+            </div>
+          </div>
+          <div class="grid" v-if="isEditMode">
+            <div class="grid grid-cols-2 gap-4" v-if="showNotificationDate">
+              <label class="col-span-1" description="format: yyyy-mm-dd">Notification date</label>
+                <InputText type="date" class="col-span-1" v-model="qualificationForm.application_outcome_notification_date" :state="notificationDateState"/>
+            </div>
+          </div>
+          <div class="grid" v-if="showRemoval && isEditMode">
+            <div class="grid grid-cols-2 gap-4">
               <h5>Removal of classification from Register</h5>
-            </b-col>
-          </b-row>
-          <b-row v-if="showRemoval && isEditMode">
-            <b-col md="4">
-              <b-form-group :label-cols="4" label="Removal date" class="font-weight-bold">
-                <b-form-input type="date" class="fixed-width-date-input" v-model="qualificationForm.removal_date" :state="removalDateState"/>
-              </b-form-group>
-            </b-col>
-            <b-col md="4" v-if="showRemovalReason">
-              <b-form-group :label-cols="4" label="Removal reason" class="font-weight-bold">
-                <b-form-select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
-              </b-form-group>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
+          <div class="grid" v-if="showRemoval && isEditMode">
+            <div class="grid grid-cols-2 gap-4">
+              <label class="col-span-1">Removal date</label>
+                <InputText type="date" class="col-span-1" v-model="qualificationForm.removal_date" :state="removalDateState"/>
+            </div>
+            <div class="grid grid-cols-2 gap-4" v-if="showRemovalReason">
+              <label class="col-span-1">Removal reason</label>
+                <Select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
+            </div>
+          </div>
           <!-- slot for child elements to be added by parent component -->
           <slot></slot>
         </p>

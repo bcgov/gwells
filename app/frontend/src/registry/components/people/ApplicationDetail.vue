@@ -13,172 +13,172 @@
 */
 <template>
   <div class="container">
-    <b-card no-body class="mb-3">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
+    <Card no-body class="mb-3">
+      <Breadcrumb :model="breadcrumbs" class="py-0 my-2"></Breadcrumb>
+    </Card>
     <div class="card">
       <div class="card-body">
         <!-- Display loading spinner if application is null -->
         <div v-if="applicationLoading">
-          <b-row>
-            <b-col md="12">
-              <div class="fa-2x text-center">
-                <i class="fa fa-circle-o-notch fa-spin"></i>
-              </div>
-            </b-col>
-          </b-row>
+          <div class="fa-2x text-center">
+            <i class="fa fa-circle-o-notch fa-spin"></i>
+          </div>
         </div>
         <!-- Display application detail once loaded -->
         <div v-else>
           <div v-if="currentDriller != {} && registration != null">
             <h5 class="card-title" id="titlePersonName">{{ titlePersonName }}</h5>
-            <b-col md="12" class="pl-0" v-if="classification">
+            <div class="pl-0" v-if="classification">
               <h5>Certification - {{ classification }}</h5>
-            </b-col>
+            </div>
           </div>
           <div v-if="editClassification">
-            <b-form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
-              <b-modal
+            <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+              <Dialog
                   v-model="confirmCancelModal"
+                  v-model:visible="visible"
                   centered
-                  title="Confirm cancel"
+                  modal
+                  header="Confirm cancel"
                   @shown="focusCancelModal"
                   :return-focus="$refs.cancelClassification">
                 Your changes are not saved. Are you sure you want to discard your changes?
-                <div slot="modal-footer">
-                  <b-btn variant="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+                <template #footer>
+                  <Button severity="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
                     Cancel
-                  </b-btn>
-                  <b-btn variant="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
+                  </Button>
+                  <Button severity="danger" id="discardChanges" @click="confirmCancelModal=false;editClassification=false;applicationReset();">
                     Discard
-                  </b-btn>
-                </div>
-              </b-modal>
-              <b-row>
-                <b-col>
-                  <application-edit
-                    :activity="activity"
-                    :value="applicationFormValue"
-                    mode="edit"
-                    v-on:isValid="onApplicationIsValid"
-                    v-on:close="confirmCancelModal=true"/>
-                </b-col>
-              </b-row>
-              <b-row class="mt-3">
-                <b-col>
+                  </Button>
+                </template>
+              </Dialog>
+              <div>
+                <application-edit
+                  :activity="activity"
+                  v-model="applicationFormValue"
+                  mode="edit"
+                  v-on:isValid="onApplicationIsValid"
+                  v-on:close="confirmCancelModal=true"/>
+              </div>
+              <div class="mt-3">
                   <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
                   <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
-                </b-col>
-              </b-row>
-            </b-form>
+              </div>
+            </Form>
           </div>
           <div v-else>
             <div class="card mb-3">
               <div class="card-body">
-                <b-row>
-                  <b-col md="9">
-                    <h5>Classification &amp; Qualifications</h5>
-                  </b-col>
-                  <b-col md="3" class="text-right">
+                <div>
+                  <h5>Classification &amp; Qualifications</h5>
+                  <div class="text-right">
                     <button
                       class="btn btn-light btn-sm registries-edit-btn"
                       type="button"
                       @click="editClassification = !editClassification"
                       id="editClassification"
                       v-if="commonStore.userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
-                  </b-col>
-                </b-row>
-                <b-row class="row" v-if="classification && classification.registries_subactivity">
-                  <b-col md="12" class="registry-item">
+                  </div>
+                </div>
+                <div class="row" v-if="classification && classification.registries_subactivity">
+                  <div class="registry-item">
                     <h4>Qualification: {{ classification.registries_subactivity.description }}&nbsp;
                     <span class="registry-subtle">
                       (<router-link :to="{ name: 'PersonDetail', params: { person_guid: currentDriller.person_guid }}">change</router-link>)
                     </span>
                     </h4>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="1"><span class="registry-label">Issued by:</span></b-col>
-                  <b-col md="4">{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</b-col>
-                  <b-col md="2"><span class="registry-label">Certificate number:</span></b-col>
-                  <b-col md="3">{{ application.primary_certificate_no }}</b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="8" class="pl-3 pt-3">
-                      <b-form-group
-                          :label="`Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification`"
-                          label-for="qualifications"
-                          class="font-weight-bold">
-                      <b-form-checkbox-group id="qualifications" class="fixed-width font-weight-normal" :options="qualificationOptions" v-model="qualifications" disabled>
-                      </b-form-checkbox-group>
-                    </b-form-group>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
-                    <h5>Adjudication</h5>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col>
+                  </div>
+                </div>
+                <div>
+                  <div><span class="registry-label">Issued by:</span></div>
+                  <div>{{ primaryCertificateName }} ({{ primaryCertificateAuth }})</div>
+                  <div><span class="registry-label">Certificate number:</span></div>
+                  <div>{{ application.primary_certificate_no }}</div>
+                </div>
+                <div>
+                  <div class="pl-3 pt-3">
+                      <label for="qualifications" class="font-weight-bold">
+                        {{ `Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification` }}
+                          <div class="col-12">
+                            <CheckboxGroup v-model="qualifications">
+                              <div v-for="q in qualificationOptions" :key="q.value">
+                                <Checkbox
+                                  inputId="qualifications"
+                                  name="qualifications"
+                                  value="q.value"
+                                  class="fixed-width font-weight-normal"
+                                  disabled
+                                  />
+                                <label :for="q.value">{{ q.text }}</label>
+                              </div>
+                            </CheckboxGroup>
+                          </div>
+                    </label>
+                  </div>
+                </div>
+                <div>
+                  <h5>Adjudication</h5>
+                </div>
+                <div>
+                  <div>
                     Confirmed applicant is 19 years of age or older by reviewing: {{ proofOfAge }}
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item pr-0">
+                  </div>
+                </div>
+                <div>
+                  <div class="registry-item pr-0">
                     <span class="registry-label">Date application received:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_recieved_date" md="2">
+                  </div>
+                  <div v-if="application && application.application_recieved_date">
                       {{ application.application_recieved_date }}
-                  </b-col>
-                  <b-col v-else>Unknown</b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item">
+                  </div>
+                  <div v-else>Unknown</div>
+                </div>
+                <div>
+                  <div class="registry-item">
                     <span class="registry-label">Approval outcome date:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_outcome_date" md="2">
+                  </div>
+                  <div v-if="application && application.application_outcome_date">
                     {{ application.application_outcome_date }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                  <b-col md="2" class="registry-item">
+                  </div>
+                  <div v-else>Unknown</div>
+                  <div class="registry-item">
                     <span class="registry-label">Approval outcome:</span>
-                  </b-col>
-                  <b-col v-if="application && application.current_status" md="2">
+                  </div>
+                  <div v-if="application && application.current_status">
                     {{ application.current_status.description }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2" class="registry-item">
+                  </div>
+                  <div v-else>Unknown</div>
+                  <div v-if="application && application.current_status && application.current_status.code === 'NA'" class="registry-item">
                     <span class="registry-label">Reason denied:</span>
-                  </b-col>
-                  <b-col v-if="application && application.current_status && application.current_status.code === 'NA'" md="2">
+                  </div>
+                  <div v-if="application && application.current_status && application.current_status.code === 'NA'">
                     <span v-if="application.reason_denied">
                       {{ application.reason_denied }}
                     </span>
                     <span v-else>
                       Unknown
                     </span>
-                  </b-col>
-                </b-row>
-                <b-row>
-                  <b-col md="2" class="registry-item">
+                  </div>
+                </div>
+                <div>
+                  <div class="registry-item">
                     <span class="registry-label">Notification date:</span>
-                  </b-col>
-                  <b-col v-if="application && application.application_outcome_notification_date" md="2">
+                  </div>
+                  <div v-if="application && application.application_outcome_notification_date">
                     {{ application.application_outcome_notification_date }}
-                  </b-col>
-                  <b-col v-else md="2">Unknown</b-col>
-                </b-row>
-                <b-row v-if="removalDate || removalReason">
-                  <b-col class="pt-3"><h6>Removal of classification from register</h6></b-col>
-                </b-row>
-                <b-row v-if="removalDate || removalReason">
-                  <b-col md="2"><span class="registry-label">Removal date:</span></b-col>
-                  <b-col md="2">{{removalDate}}</b-col>
-                  <b-col md="2"><span class="registry-label">Removal reason:</span></b-col>
-                  <b-col v-if="removalReason">{{removalReason.description}}</b-col>
-                  <b-col v-else>Unknown</b-col>
-                </b-row>
+                  </div>
+                  <div v-else>Unknown</div>
+                </div>
+                <div v-if="removalDate || removalReason">
+                  <div class="pt-3"><h6>Removal of classification from register</h6></div>
+                </div>
+                <div v-if="removalDate || removalReason">
+                  <div><span class="registry-label">Removal date:</span></div>
+                  <div>{{removalDate}}</div>
+                  <div><span class="registry-label">Removal reason:</span></div>
+                  <div v-if="removalReason">{{removalReason.description}}</div>
+                  <div v-else>Unknown</div>
+                </div>
                 <!-- <div class="row">
                   <div class="col-12 registry-item">
                     <div class="checkbox form-inline">
@@ -311,6 +311,7 @@ export default {
       return []
     },
     qualifications () {
+      console.log(this.application.qualifications)
       if (this.application) {
         return this.application.qualifications
       }

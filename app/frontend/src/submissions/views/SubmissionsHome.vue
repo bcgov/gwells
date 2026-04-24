@@ -135,7 +135,6 @@ import { camelCase } from "lodash";
 import smoothScroll from "smoothscroll";
 
 import ApiService from "@/common/services/ApiService.js";
-import inputFormatMixin from "@/common/inputFormatMixin.js";
 import SubmissionPreview from "@/submissions/components/SubmissionPreview/SubmissionPreview.vue";
 import filterBlankRows from "@/common/filterBlankRows.js";
 import ActivitySubmissionForm from "@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue";
@@ -149,7 +148,7 @@ import { isValidPostalCodeOrZipCode } from "@/common/helpers/isValidPostalCodeOr
 
 export default {
   name: "SubmissionsHome",
-  mixins: [inputFormatMixin, filterBlankRows],
+  mixins: [filterBlankRows],
   components: {
     ActivitySubmissionForm,
     SubmissionPreview,

@@ -31,14 +31,16 @@
         </div>
       </div>
     </div>
-    <b-modal
+    <Dialog
+      v-model:visible="visible"
+      modal
       ok-variant="primary"
       cancel-variant="default"
       v-on:ok="deleteFile"
       ref="deleteModal" >
       <p>Are you sure you would like to delete this file?</p>
       <p>{{file}}</p>
-    </b-modal>
+    </Dialog>
   </div>
 </template>
 

@@ -3,138 +3,114 @@
 
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
-      <b-form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
-        <b-row>
-          <b-col cols="12" md="5">
-            <b-form-group
-              id="surnameInputGroup"
-              label="Surname:"
-              label-for="surnameInput">
-              <b-form-input
-                id="surnameInput"
-                type="text"
-                v-model="personalInfoForm.surname"
-                required/>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="5" offset-md="1">
-            <b-form-group
-              id="firstnameInputGroup"
-              label="First name:"
-              label-for="firstnameInput">
-              <b-form-input
-                id="firstnameInput"
-                type="text"
-                v-model="personalInfoForm.first_name"
-                required/>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col cols="12" md="5">
-            <b-form-group
-              id="drillOrcsInputGroup"
-              label="Well Driller ORCS:"
-              label-for="drillORCSInput">
-              <b-form-input
-                id="drillORCSInput"
-                type="text"
-                v-model="personalInfoForm.well_driller_orcs_no"/>
-              <b-form-text id="drillerORCSExample">
-                ORCS format: 38000-25/DRI XXXX X
-              </b-form-text>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="5" offset-md="1">
-            <b-form-group
-              id="pumpORCSInputGroup"
-              label="Pump installer ORCS:"
-              label-for="pumpORCSInput">
-              <b-form-input
-                id="pumpORCSInput"
-                type="text"
-                v-model="personalInfoForm.pump_installer_orcs_no"/>
-              <b-form-text id="pumpORCSExample">
-                ORCS format: 38000-25/PUMP XXXX X
-              </b-form-text>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-          </b-col>
-        </b-row>
-      </b-form>
+      <Form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
+        <div class="grid grid-cols-12 md-5 gap-4">
+          <label
+            id="surnameInputGroup"
+            for="surnameInput">Surname:
+            <InputText
+              id="surnameInput"
+              v-model="personalInfoForm.surname"
+              required/>
+          </label>
+        </div>
+        <div class="grid grid-cols-12 md-5 gap-4" offset-md="1">
+          <label
+            id="firstnameInputGroup"
+            for="firstnameInput">First name:
+            <InputText
+              id="firstnameInput"
+              v-model="personalInfoForm.first_name"
+              required/>
+          </label>
+        </div>
+        <div class="grid grid-cols-12 md-5 gap-4">
+          <label
+            id="drillOrcsInputGroup"
+            for="drillORCSInput">Well Driller ORCS:
+            <InputText
+              id="drillORCSInput"
+              v-model="personalInfoForm.well_driller_orcs_no"/>
+            <div id="drillerORCSExample">
+              ORCS format: 38000-25/DRI XXXX X
+            </div>
+          </label>
+        </div>
+        <div class="grid grid-cols-12 md-5 gap-4" offset-md="1">
+          <label
+            id="pumpORCSInputGroup"
+            for="pumpORCSInput">Pump installer ORCS:
+            <InputText
+              id="pumpORCSInput"
+              v-model="personalInfoForm.pump_installer_orcs_no"/>
+            <div id="pumpORCSExample">
+              ORCS format: 38000-25/PUMP XXXX X
+            </div>
+          </label>
+        </div>
+        <div>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        </div>
+      </Form>
     </div>
 
     <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
-      <b-form @submit.prevent="submitContactForm">
-        <b-row>
-          <b-col cols="12" md="4">
-            <b-form-group
+      <Form @submit.prevent="submitContactForm">
+        <div>
+          <div class="grid grid-cols-12 md-4 gap-4">
+            <label
               id="emailInputGroup"
-              label="Email Address:"
-              label-for="emailInput">
-              <b-form-input
+              for="emailInput">Email Address:
+              <InputText
                 id="emailInput"
                 type="email"
                 :state="validation.contact_email"
                 aria-describedby="emailInputFeedback"
                 v-model="contactInfoForm.contact_email"/>
-              <b-form-invalid-feedback id="emailInputFeedback">
-                <div v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
-                  {{ error }}
-                </div>
-              </b-form-invalid-feedback>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="4">
-            <b-form-group
+              <Message severity="error" id="emailInputFeedback" v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
+                {{ error }}
+              </Message>
+            </label>
+          </div>
+          <div class="grid grid-cols-12 md-4 gap-4">
+            <label
               id="telInputGroup"
-              label="Telephone:"
-              label-for="telInput">
-              <b-form-input
+              for="telInput">Telephone:
+              <InputMask
                 id="telInput"
                 type="tel"
-                :formatter="formatTel"
-                lazy-formatter
+                mask="(999) 999-9999"
                 v-model="contactInfoForm.contact_tel"/>
-            </b-form-group>
-          </b-col>
-          <b-col cols="12" md="4">
-            <b-form-group
+            </label>
+          </div>
+          <div class="grid grid-cols-12 md-4 gap-4">
+            <label
               id="cellInputGroup"
-              label="Cell:"
-              label-for="cellInput">
-              <b-form-input
+              for="cellInput">Cell:
+              <InputMask
                 id="cellInput"
                 type="tel"
-                :formatter="formatTel"
-                lazy-formatter
+                mask="(999) 999-9999"
                 v-model="contactInfoForm.contact_cell"/>
-            </b-form-group>
-          </b-col>
-        </b-row>
-        <b-row>
-          <b-col>
-            <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-          </b-col>
-        </b-row>
-      </b-form>
+            </label>
+          </div>
+        </div>
+        <div class="grid grid-cols-12 md-4 gap-4">
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        </div>
+      </Form>
     </div>
 
     <!-- Company -->
     <div v-if="(section === 'company' || section === 'all') && !!record">
-      <b-form @submit.prevent="submitCompanyForm">
-        <b-form-group
+      <Form @submit.prevent="submitCompanyForm">
+        <label
           id="companyInputGroup"
-          :label="`${record.activity_description} company:`"
-          label-for="companyInput"
-          >
+          for="companyInput"
+          >${record.activity_description} company:
           <v-select
             id="companyInput"
             v-model="registrationCompanyForm.organization"
@@ -142,28 +118,27 @@
             placeholder="Begin typing a company name"
             label="org_verbose_name">
           </v-select>
-        </b-form-group>
+        </label>
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-      </b-form>
+      </Form>
     </div>
 
     <!-- Registration -->
     <div v-if="(section === 'registration' || section === 'all') && !!record">
-      <b-form @submit.prevent="submitRegistrationForm">
-        <b-form-group
+      <Form @submit.prevent="submitRegistrationForm">
+        <label
           id="registrationInputGroup"
-          label="Registration number:"
-          label-for="registrationInput"
-          >
-          <b-form-input
+          for="registrationInput"
+          >Registration number:
+          <InputText
             v-model="registrationForm.registration_no"
             id="registrationInput"
-          ></b-form-input>
-        </b-form-group>
+          />
+        </label>
         <button type="submit" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
-      </b-form>
+      </Form>
     </div>
 
   </div>
@@ -173,14 +148,12 @@
 import { useRegistryStore } from '@/stores/registry.js'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
-import inputFormatMixin from '@/common/inputFormatMixin.js'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
     'api-error': APIErrorMessage
   },
-  mixins: [inputFormatMixin],
 
   /**
    * This component accepts two props: section and record.
