@@ -20,11 +20,9 @@ import { createPinia } from "pinia";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import { 
-  Button, InputText, Card, Message, Panel, Select, RadioButton,
-  RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, Paginator,
-  Tabs, TabList, Tab, Badge, Popover, Menubar
+  Button, InputText, Card, Select, RadioButton, RadioButtonGroup,
+  Checkbox, CheckboxGroup, Menubar
 } from 'primevue';
-import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -105,20 +103,11 @@ app.component("form-input", FormInput);
 app.component("Button", Button);
 app.component("InputText", InputText);
 app.component("Card", Card);
-app.component("Message", Message);
-app.component("Panel", Panel);
 app.component("Select", Select);
 app.component("RadioButton", RadioButton);
 app.component("RadioButtonGroup", RadioButtonGroup);
 app.component("Checkbox", Checkbox);
 app.component("CheckboxGroup", CheckboxGroup);
-app.component("Form", Form);
-app.component("Listbox", Listbox);
-app.component("Tabs", Tabs);
-app.component("TabList", TabList);
-app.component("Tab", Tab);
-app.component("Badge", Badge);
-app.component("Popover", Popover);
 app.component("Menubar", Menubar);
 
 const pinia = createPinia();
