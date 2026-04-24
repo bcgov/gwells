@@ -1,40 +1,44 @@
 <template>
   <header id="header">
-    <b-navbar type="dark" class="navbar-expand-lg d-print-block" bg-variant="primary" toggleable="md">
-      <!-- Navbar content -->
-      <b-container>
-        <a class="navbar-brand" href="https://www2.gov.bc.ca">
-          <img
-              class="nav-logo img-fluid d-none d-sm-block"
-              src="@/common/assets/images/17_gov3_bc_logo.svg"
-              width="152" height="55"
-              alt="B.C. Government Logo">
-          <img
-              class="img-fluid d-none d-sm-block nav-logo-print"
-              src="@/common/assets/images/17_gov3_bc_logo_transparent.svg"
-              width="152" height="55"
-              alt="B.C. Government Logo">
-          <img
-              class="nav-logo img-fluid d-sm-none"
-              src="@/common/assets/images/01_gov3_bc_symbol.svg"
-              width="61"
-              height="43"
-              alt="B.C. Government Logo">
-        </a>
-        <b-navbar-nav>
-          <li class="bc-nav-title d-none d-md-block">Groundwater Wells and Aquifers{{getEnvironmentMessage}}</li>
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto">
-          <li>
-            <keycloak-auth class="d-none d-sm-block d-print-none" v-if="auth !== 'hide'" id="keycloak-auth"/>
-          </li>
-        </b-navbar-nav>
-        <b-navbar-nav class="ml-auto d-sm-none">
-          <b-navbar-toggle class="d-sm-none" target="nav_collapse"/>
-        </b-navbar-nav>
-      </b-container>
-    </b-navbar>
-    <b-navbar class="bc-nav-links py-0" toggleable="sm" type="dark">
+    <Menubar :model="windowWidth <= 640 ? navItems : []" class="flex items-center print:block be-blue">
+      <template #start>
+        <div class="flex items-center justify-between px-4 py-2 mx-auto">
+          <a class="inline-block py-1.5 mr-4 text-xl whitespace-nowrap" href="https://www2.gov.bc.ca">
+            <img
+                class="flex max-w-full h-auto hidden sm:block"
+                src="@/common/assets/images/17_gov3_bc_logo.svg"
+                width="152" height="55"
+                alt="B.C. Government Logo">
+            <img
+                class="flex max-w-full h-auto hidden sm:block nav-logo-print"
+                src="@/common/assets/images/17_gov3_bc_logo_transparent.svg"
+                width="152" height="55"
+                alt="B.C. Government Logo">
+            <img
+                class="flex max-w-full h-auto sm:hidden"
+                src="@/common/assets/images/01_gov3_bc_symbol.svg"
+                width="61"
+                height="43"
+                alt="B.C. Government Logo">
+          </a>
+          <div class="flex bc-nav-title hidden md:block">Groundwater Wells and Aquifers{{getEnvironmentMessage}}</div>
+          <keycloak-auth class="flex hidden sm:block print:hidden" v-if="auth !== 'hide'" id="keycloak-auth"/>
+        </div>
+      </template>
+      <template #item="{ item, label }">
+          <router-link v-if="item" :to="item.route">
+            {{ label }}
+          </router-link>
+      </template>
+    </Menubar>
+    <Menubar v-if="windowWidth > 640" class="bc-nav-links py-0" :model="navItems">
+      <template #item="{ item, label }">
+          <router-link v-if="item" :to="item.route">
+            {{ label }}
+          </router-link>
+      </template>
+      <!--
+      <template>
       <b-container>
         <b-collapse class="py-2" is-nav id="nav_collapse">
           <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
@@ -47,11 +51,13 @@
             <b-nav-item id="ribbon-qaqc" class="navbar-link lvl2-link" v-if="show.qaqc" :to="{ name: 'qaqc' }">QA/QC Dashboard</b-nav-item>
             <b-nav-item id="ribbon-surveys" class="navbar-link lvl2-link" v-if="show.surveys" :to="{ name: 'Surveys' }">Admin</b-nav-item>
             <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
-            <b-nav-item class="d-sm-none"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
+            <b-nav-item class="sm:hidden"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
           </b-navbar-nav>
         </b-collapse>
       </b-container>
-    </b-navbar>
+      </template>
+      -->
+    </Menubar>
   </header>
 </template>
 
@@ -64,7 +70,9 @@ export default {
   },
   props: ['auth'],
   data () {
-    return {}
+    return {
+      windowWidth: window.innerWidth
+    }
   },
   computed: {
     commonStore () { return useCommonStore() },
@@ -93,7 +101,24 @@ export default {
         qaqc: this.hasConfig && this.commonStore.userRoles.submissions.edit === true,
         bulk
       }
+    }, 
+    navItems () {
+      return [
+        { label: 'Well Search', route: { name: 'wells-home' }, visible: true },
+        { label: 'Aquifer Search', route: { name: 'aquifers-home' }, visible: this.show.aquifers },
+        { label: 'Registry Search', route: { name: 'SearchHome'}, visible: true },
+        { label: 'Submit Report', route: { name: 'SubmissionsHome' }, visible: this.show.dataEntry },
+        { label: 'Bulk Upload', route: { name: 'bulk-home' }, visible: this.show.bulk },
+        { label: 'QA/QC Dashboard', route: { name: 'qaqc' }, visible: this.show.qaqc },
+        { label: 'Admin', route: { name: 'Surveys' }, visible: this.show.surveys },
+        { label: 'Groundwater Information', route: { name: 'groundwater-information' }, visible: true },
+      ]
     }
+  },
+  mounted() {
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth
+    })
   }
 }
 </script>
@@ -147,5 +172,10 @@ export default {
   .nav-logo {
     height: 0px !important;
   }
+}
+.be-blue {
+  background: #003366 !important;
+  border: none !important;
+  border-radius: 0px !important;
 }
 </style>

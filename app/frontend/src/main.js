@@ -16,9 +16,16 @@ import { createApp } from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
 // import VueNoty from "vuejs-noty";
+import { createPinia } from "pinia";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
-import { Button, InputText, InputMask, Card, Message, Panel, Select, MultiSelect, RadioButton, RadioButtonGroup, Checkbox, CheckboxGroup, Listbox, ProgressSpinner, Breadcrumb, Dialog, DataTable, Column, FileUpload, Textarea } from 'primevue';
+import {
+  Button, InputText, InputMask, Card, Message,Panel,
+  Select, MultiSelect, RadioButton, RadioButtonGroup,
+  Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
+  Breadcrumb, Dialog, DataTable, Column, FileUpload,
+  Textarea, Menubar
+} from 'primevue';
 import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
@@ -31,7 +38,6 @@ import * as filters from "./common/filters";
 // GWELLS js API library (helper methods for working with API)
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
-import { createPinia } from "pinia";
 
 const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
 const STAGING_GWELLS_URLS = [
@@ -111,6 +117,8 @@ app.component("DataTable", DataTable)
 app.component("Column", Column)
 app.component("FileUpload", FileUpload)
 app.component("Textarea", Textarea)
+app.component("Menubar", Menubar);
+
 const pinia = createPinia();
 app.use(pinia);
 
