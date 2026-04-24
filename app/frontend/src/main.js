@@ -15,10 +15,8 @@ import "@/common/helpers/browserUpdate.js";
 import { createApp } from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
-<<<<<<< HEAD
 // import VueNoty from "vuejs-noty";
-=======
-import VueNoty from "vuejs-noty";
+import { createPinia } from "pinia";
 import PrimeVue from 'primevue/config';
 import Aura from '@primeuix/themes/aura';
 import { 
@@ -27,7 +25,6 @@ import {
   Tabs, TabList, Tab, Badge, Popover, Menubar
 } from 'primevue';
 import { Form } from '@primevue/forms';
->>>>>>> 5db0fd0ea (Header mostly implemented)
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -39,9 +36,6 @@ import * as filters from "./common/filters";
 // GWELLS js API library (helper methods for working with API)
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
-import { createPinia } from "pinia";
-import PrimeVue from 'primevue/config';
-import Aura from '@primeuix/themes/aura';
 
 const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
 const STAGING_GWELLS_URLS = [
