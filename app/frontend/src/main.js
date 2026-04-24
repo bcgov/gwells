@@ -16,6 +16,13 @@ import { createApp } from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
 // import VueNoty from "vuejs-noty";
+import { createPinia } from "pinia";
+import PrimeVue from 'primevue/config';
+import Aura from '@primeuix/themes/aura';
+import { 
+  Button, InputText, Card, Select, RadioButton, RadioButtonGroup,
+  Checkbox, CheckboxGroup, Menubar
+} from 'primevue';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -27,9 +34,6 @@ import * as filters from "./common/filters";
 // GWELLS js API library (helper methods for working with API)
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
-import { createPinia } from "pinia";
-import PrimeVue from 'primevue/config';
-import Aura from '@primeuix/themes/aura';
 
 const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
 const STAGING_GWELLS_URLS = [
@@ -73,6 +77,14 @@ if (isProduction()) {
 }
 
 app.use(router);
+app.use(PrimeVue, {
+  theme: {
+    preset: Aura,
+    options: {
+      darkModeSelector: false,
+    }
+  }
+});
 // TBD replace VueNoty with a more modern notification library
 // app.use(VueNoty, {
 //   layout: "topRight",
@@ -87,6 +99,16 @@ app.use(router);
 // Register global components
 app.component("v-select", vSelect);
 app.component("form-input", FormInput);
+// PrimeVue components
+app.component("Button", Button);
+app.component("InputText", InputText);
+app.component("Card", Card);
+app.component("Select", Select);
+app.component("RadioButton", RadioButton);
+app.component("RadioButtonGroup", RadioButtonGroup);
+app.component("Checkbox", Checkbox);
+app.component("CheckboxGroup", CheckboxGroup);
+app.component("Menubar", Menubar);
 
 const pinia = createPinia();
 app.use(pinia);
