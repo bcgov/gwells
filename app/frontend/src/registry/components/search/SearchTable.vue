@@ -3,65 +3,58 @@
     <div class="registry-search-table-loading" v-if="loading || isSearchInProgress">
       <ProgressSpinner/>
     </div>
-    <table class="table grid grid-cols-12 w-full mb-4 text-sm text-left text-gray-500" id="registry-table">
-      <thead class="border-b border-gray-200">
-        <tr>
-          <template v-for="field in fields" :key="field.name">
-            <th :class="{[field.class]: true, sortable: fieldSortable(field)}"
-                v-if="(field.visible === 'public' || commonStore?.userRoles?.registry?.view) && (field.activity === activity || field.activity == 'all')"
-                @click="sortBy(field)">
-              {{field.name}}
-              <i class="fa fa-sort" v-if="field.sortable && field.sortCode"/>
-            </th>
+
+    <DataTable id="registry-table" showGridlines stripedRows :value="searchResponse.results || []" tableStyle="min-width: 50rem">
+      <!-- reusable columns -->
+      <Column v-for="field in visibleFields" :header="field.name" :key="field.name"">
+        <template #body="{ data, index }">
+          <template v-if="field.name === 'Name'">
+            <router-link
+              v-if="commonStore.userRoles?.registry?.view"
+              :to="{ name: 'PersonDetail', params: { person_guid: data.person_guid } }">
+                {{ data.surname }}, {{ data.first_name }}
+            </router-link>
+            <div v-else class="font-weight-bold">
+              {{ data.surname }}, {{ data.first_name }}
+            </div>
+            <div v-if="data.registrations && data.registrations.length">
+              <div
+                  v-for="(reg, regIndex) in data.registrations"
+                  v-if="reg?.activity === activity"
+                  :key="`reg no ${data.person_guid} ${regIndex}`">
+                {{ reg.registration_no }}</div>
+            </div>
           </template>
-        </tr>
-      </thead>
-      <tbody>
-        <template v-if="searchResponse.results && searchResponse.results.length" :id="`registry-table-row-${index}`">
-          <tr v-for="(driller, index) in searchResponse.results" :key="`tr ${driller.person_guid} ${index}`" class="bg-white border-b border-gray-200 even:bg-gray-100">
-            <td :id="`drillerName${index}`">
-              <router-link
-                v-if="commonStore.userRoles?.registry?.view"
-                :to="{ name: 'PersonDetail', params: { person_guid: driller.person_guid } }">
-                  {{ driller.surname }}, {{ driller.first_name }}
-              </router-link>
-              <div v-else class="font-weight-bold">
-                {{ driller.surname }}, {{ driller.first_name }}
-              </div>
-              <div v-if="driller.registrations && driller.registrations.length">
-                <div
-                    v-for="(reg, regIndex) in driller.registrations"
-                    v-if="reg?.activity === activity"
-                    :key="`reg no ${driller.person_guid} ${regIndex}`">
-                  {{ reg.registration_no }}</div>
-              </div>
-            </td>
-            <td :id="`personOrg${index}`">
-              <driller-org-name :driller="driller" :activity="activity"></driller-org-name>
-            </td>
-            <td :id="`personAddress${index}`">
-              <driller-org-address :driller="driller" :activity="activity"></driller-org-address>
-            </td>
-            <td :id="`personContact${index}`">
-              <div>
-                <driller-contact-info :driller="driller" :activity="activity"/>
-              </div>
-            </td>
-            <td v-if="activity === 'DRILL'" :id="`personSubActivity${index}`">
-              <driller-subactivity :driller="driller"/>
-            </td>
-            <td :id="`certAuth${index}`">
-              <driller-certificate-authority :driller="driller" :activity="activity"/>
-            </td>
-            <td v-if="commonStore.userRoles?.registry?.view && activity === 'DRILL'" :id="`personRegStatus${index}`">
-              <driller-registration-status :driller="driller" :activity="activity"/>
-            </td>
-          </tr>
+
+          <template v-else-if="field.name === 'Company Name'">
+            <driller-org-name :driller="data" :activity="activity"></driller-org-name>
+          </template>
+
+          <template v-else-if="field.name === 'Company Address'">
+            <driller-org-address :driller="data" :activity="activity"></driller-org-address>
+          </template>
+
+          <template v-else-if="field.name === 'Contact Information'">
+            <driller-contact-info :driller="data" :activity="activity"/>
+          </template>
+
+          <template v-else-if="field.name === 'Class of Driller'">
+            <driller-subactivity :driller="data"/>
+          </template>
+
+          <template v-else-if="field.name === 'Certificate Issued By'">
+            <driller-certificate-authority :driller="data" :activity="activity"/>
+          </template>
+
+          <!-- Checks permissions in visibleFields computed property -->
+          <template v-else-if="field.name === 'Registration Status'">
+            <driller-registration-status :driller="data" :activity="activity"/>
+          </template>
+
         </template>
-        <tr v-else>
-        </tr>
-      </tbody>
-    </table>
+      </Column>
+    </DataTable>
+
   </div>
   <div class="grid grid-cols-4 gap-4">
     <div class="col-start-1">
@@ -162,6 +155,9 @@ export default {
     searchResponse () { return this.registryStore.searchResponse },
     activity () { return this.registryStore.activity },
     commonStore () { return useCommonStore() },
+    visibleFields () {
+      return this.fields.filter(field => (field.visible === 'public' || this.commonStore?.userRoles?.registry?.view) && (field.activity === this.activity || field.activity == 'all'))
+    }
   },
   watch: {
   },
