@@ -1,11 +1,11 @@
 <template>
   <div>
-    <span v-if="commonStore.authenticated" class="userLoggedInText text-light">
+    <span v-if="commonStore.authenticated" class="userLoggedInText text-gray-100">
       {{ commonStore.keycloak.tokenParsed.name }}
     </span>
-    <b-btn  variant="light" size="sm" :id="`${id}-logout-button`" :disabled="!ready" @click="buttonClicked()">
+    <Button severity="secondary" size="small" :id="`${id}-logout-button`" :disabled="!ready" @click="buttonClicked">
       {{commonStore.authenticated ? 'Log out' : 'Log in'}}
-    </b-btn>
+    </Button>
   </div>
 </template>
 
