@@ -232,13 +232,8 @@ import { useCommonStore } from '@/stores/common'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     wellActivityType: String,
     units: String,

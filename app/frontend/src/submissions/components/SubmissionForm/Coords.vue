@@ -240,13 +240,11 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import { fetchInsideBCCheck } from '../../../common/mapbox/geometry'
 
 export default {
   components: {
-    'coords-map': CoordsMap,
-    BackToTopLink
+    'coords-map': CoordsMap
   },
   name: 'Coords',
   mixins: [inputBindingsMixin, convertCoordinatesMixin],

@@ -123,18 +123,18 @@
                       Caution: Your are filtering the search by community ({{registryStore.searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure these two selections are consistent, or you won't get any search results.
                     </Message>
                   </div>
-                  <div v-if="userRoles.registry.view" class="md-5">
-                    <label for="registrationStatusSelect">Registration status:
-                      <Select
-                      :options="regStatusOptions"
-                      v-model="searchParams.status"
-                      id="registrationStatusSelect"
-                      name="registryStatuses"/>
-                    </label>
-                  </div>
+                </div>
+                <div v-if="userRoles.registry.view" class="flex flex-col gap-2 mb-4">
+                  <label for="registrationStatusSelect">Registration status:</label>
+                  <Select
+                  :options="regStatusOptions"
+                  v-model="searchParams.status"
+                  id="registrationStatusSelect"
+                  name="registryStatuses"
+                  class="w-full md:w-80"/>
                 </div>
                 <div class="flex flex-col gap-2 mb-4">
-                  <span>Region:</span>
+                  <label>Region:</label>
                   <Listbox
                     id="regionOptions"
                     v-model="searchParams.region"
@@ -151,7 +151,7 @@
                   <InputText
                     id="regTypeInput"
                     type="text"
-                    class="ml-2"
+                    class="w-full md:w-80"
                     placeholder="Search"
                     v-model="searchParams.search"
                   />
