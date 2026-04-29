@@ -1,46 +1,45 @@
 <template>
   <div class="card" ref="noteSection">
-    <div class="card-body p-2 p-md-3">
-      <h6 class="card-title" id="notesSectionTitle">Notes</h6>
+    <div class="card-body">
+      <h6 class="text-xl font-bold mb-4" id="notesSectionTitle">Notes</h6>
+
+      <!-- Add Note Form -->
       <div class="mt-3" v-if="commonStore.userRoles.registry.edit">
         <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
-          <div
-            id="noteInputGroup"
-            label="Add a note:"
-            label-for="noteInput">
-            <InputText id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></InputText>
+          <div class="flex flex-col gap-2 mb-3">
+            <label for="noteInput">Add a note:</label>
+            <Textarea
+              id="noteInput"
+              v-model="noteInput"
+              :disabled="submitLoading"
+              :rows="3"
+              :max-rows="6"
+              class="w-full"
+            />
+            <div class="flex justify-between items-center mt-1">
+              <div class="flex gap-2">
+              <Button
+                type="submit"
+                label="Save"
+                :disabled="!noteInput || submitLoading || invalidNewNoteLength"
+                ref="noteInputSaveBtn"
+              />
+                <Button
+                  type="reset"
+                  label="Cancel"
+                  severity="secondary"
+                  size="small"
+                  outlined
+                  :disabled="!noteInput"
+                />
+              </div>
+              <p class="text-sm font-bold" :class="[invalidNewNoteLength ? 'error': '']">
+                {{ noteInput.length }}/{{ maxNoteLength }}
+              </p>
+            </div>
           </div>
-          <div class="submit-row">
-            <Button
-              type="submit"
-              label="Primary"
-              :disabled="!noteInput || submitLoading || invalidNewNoteLength"
-              ref="noteInputSaveBtn"
-            >
-              Save
-            </Button>
-            <Button
-              type="reset"
-              variant="light"
-              :disabled="!noteInput"
-              ref="noteInputCancelBtn"
-            >
-              Cancel
-            </Button>
-            <p
-              class="font-weight-bold text-count"
-              :class="[invalidNewNoteLength ? 'error': '']"
-            >
-              {{ noteInput.length }}/{{ maxNoteLength }}
-            </p>
-          </div>
-          <Message
-            class="mt-3"
-            severity="success"
-            dismissible
-            :show="submitSuccess"
-            @dismissed="submitSuccess=false"
-          >
+
+          <Message v-if="submitSuccess" severity="success" class="mt-3" :closable="true" @close="submitSuccess = false">
             {{ alertText }}
           </Message>
           <!-- Submit Modal -->
@@ -149,33 +148,44 @@
           </Dialog>
         </Form>
       </div>
-      <div id="notesList" ref="notes">
-        <div class="mt-5" v-if="!notes || !notes.length">
-          <p>No notes for this record.</p>
+
+      <!-- Notes List -->
+      <div id="notesList" class="mt-6 border-t border-surface-200 pt-4">
+        <div v-if="!notes || !notes.length" class="text-surface-500">
+          No notes for this record.
         </div>
-        <div class="mt-5 note-container" v-if="notes && notes.length">
-          <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">
-            <p>
-              <span class="font-weight-bold">{{ note.author }}</span> ({{ moment(note.date, "MMMM Do YYYY [at] LT") }}):
-              {{ note.note }}
-            </p>
-            <div class="crud-options">
+        <div v-else class="flex flex-col gap-4">
+          <div
+            v-for="(note, index) in notes"
+            :key="index"
+            class="p-4 bg-surface-50 rounded-md border border-surface-100 flex flex-col sm:flex-row justify-between gap-4"
+          >
+            <div class="break-words max-w-full">
+              <p class="mb-1">
+                <span class="font-bold text-primary">{{ note.author }}</span>
+                <span class="text-surface-500 text-sm ml-1">({{ note.date }})</span>:
+              </p>
+              <p>{{ note.note }}</p>
+            </div>
+
+            <div class="flex items-start gap-2 shrink-0">
+              <!-- Kept FontAwesome icons inside PrimeVue buttons -->
               <Button
-                :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteEditHandler(note)"
-                size="sm"
-                variant="primary"
+                size="small"
+                outlined
+                :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
               >
-                <i class="fa fa-edit"></i>
-                Edit
+                <i class="fa fa-edit mr-2"></i> Edit
               </Button>
               <Button
-                :disabled="!commonStore.userRoles.registry.admin && commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteDeleteHandler(note)"
-                size="sm"
+                size="small"
                 severity="danger"
+                outlined
+                :disabled="!commonStore.userRoles.registry.admin && commonStore.keycloak.idTokenParsed.display_name !== note.author"
               >
-                &#x2715;
+                <i class="fa fa-times"></i>
               </Button>
             </div>
           </div>
@@ -187,7 +197,7 @@
 
 <script>
 import smoothScroll from 'smoothscroll'
-
+import { useCommonStore } from '@/stores/common.js'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
