@@ -62,14 +62,14 @@
               ></form-input>
             </b-col>
           </b-row>
-          <b-row class="mt-3">
+          <b-row class="mt-4">
             <b-col cols="12" sm="6">
               <b-form-checkbox v-model="form.survey_enabled" name="check-button">
                 Enable survey immediately
               </b-form-checkbox>
             </b-col>
           </b-row>
-          <b-row class="mt-4">
+          <b-row class="mt-6">
             <b-col>
               <b-btn type="submit" variant="primary">Save</b-btn>
             </b-col>

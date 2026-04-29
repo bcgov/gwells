@@ -14,7 +14,7 @@
 
 <template>
   <div id="aquifer-detail">
-    <b-card no-body class="mb-3 container d-print-none">
+    <b-card no-body class="mb-4 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
     </b-card>
     <div v-if="loadingAquifer">
@@ -27,7 +27,7 @@
       <p>The page you are looking for was not found.</p>
     </b-card>
     <div v-else>
-      <b-card class="container container-wide card-container p-0 pb-5 main-card" :class="{ 'p-4': editMode }">
+      <b-card class="container container-wide card-container p-0 pb-12 main-card" :class="{ 'p-6': editMode }">
         <api-error v-if="error" :error="error"/>
         <b-alert show v-if="viewMode && isRetired && !isUnpublished" variant="warning">
           This aquifer is retired and stored for record keeping purposes. It will be hidden from
@@ -60,7 +60,7 @@
               <i class="fa fa-circle-o-notch fa-spin"></i>
             </div>
           </div>
-          <b-row class="border-bottom mb-3 pb-2">
+          <b-row class="border-bottom mb-4 pb-2">
             <b-col><h4>Aquifer {{id}} Summary - Edit</h4></b-col>
           </b-row>
           <aquifer-form
@@ -74,16 +74,16 @@
             v-on:cancel="navigateToView"
             v-on:fetchFiles="fetchFiles"
             />
-          <change-history class="mt-5" :id="id" resource="aquifers" ref="aquiferHistory"/>
+          <change-history class="mt-12" :id="id" resource="aquifers" ref="aquiferHistory"/>
         </div>
 
         <b-container fluid v-if="viewMode">
           <b-row>
             <b-col class="aquifer-detail" cols="12" md="12" lg="5">
               <b-row>
-                <b-col class="pt-0 pl-4 pb-4 pr-4">
+                <b-col class="pt-0 pl-6 pb-6 pr-6">
                   <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="color-grey main-title mt-4">Aquifer {{ id }} Summary</h4>
+                    <h4 class="color-grey main-title mt-6">Aquifer {{ id }} Summary</h4>
                     <div>
                       <b-button
                         variant="default"
@@ -102,7 +102,7 @@
                 </b-col>
               </b-row>
               <b-row>
-                <b-col cols="12" sm="12" class="pl-4 pr-4 aquifer-main-information-list">
+                <b-col cols="12" sm="12" class="pl-6 pr-6 aquifer-main-information-list">
                   <b-row>
                     <b-col cols="6" md="3" lg="6">Aquifer number</b-col>
                     <b-col cols="6" md="3" lg="6" id="aquifer-view-number">{{id}}</b-col>
@@ -196,10 +196,10 @@
             </b-col>
           </b-row>
 
-          <b-row v-if="!isRetired" class="mt-5 aquifer-details">
+          <b-row v-if="!isRetired" class="mt-12 aquifer-details">
             <b-col cols="12" xl="4" lg="6">
-              <h5 class="mt-3 border-bottom pb-4 main-title">Well Information</h5>
-              <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
+              <h5 class="mt-4 border-bottom pb-6 main-title">Well Information</h5>
+              <ul class="ml-0 mr-0 mt-6 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
                   <dl>
@@ -252,7 +252,7 @@
               <p>
                 <i v-if="licenceDetails.wells_updated">Well info last updated {{ formatDate(licenceDetails.wells_updated.update_date__max) }}</i>
               </p>
-              <h5 class="mt-5 border-bottom pb-4 main-title">Documentation</h5>
+              <h5 class="mt-12 border-bottom pb-6 main-title">Documentation</h5>
               <aquifer-documents :files="aquiferFiles"
                 highlightTitle="Factsheets"
                 :highlightRegexp="factsheetRe"
@@ -264,7 +264,7 @@
               </aquifer-documents>
             </b-col>
             <b-col cols="12" xl="4" lg="6">
-              <h5 class="mt-3 border-bottom pb-4 main-title">Licensing Information</h5>
+              <h5 class="mt-4 border-bottom pb-6 main-title">Licensing Information</h5>
               <div>
                 <p>
                   The licensing summaries should be considered estimates. Total volume is likely more than what is indicated in charts due to
@@ -274,7 +274,7 @@
                     e&#8209;licensing portal</a>.
                 </p>
               </div>
-              <ul class="ml-0 mr-0 mt-4 mb-0 p-0 aquifer-information-list">
+              <ul class="ml-0 mr-0 mt-6 mb-0 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li>
                   <dl>
@@ -291,22 +291,22 @@
                 </li>
               </ul>
               <div v-if="licenceDetails.lic_qty.length > 0">
-                <b-row class="pt-5">
-                  <b-col cols="12" md="6" lg="12" class="pb-5">
+                <b-row class="pt-12">
+                  <b-col cols="12" md="6" lg="12" class="pb-12">
                     <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)</h5>
                     <pie-chart
                       :data="licenceUsageChartData"
                       :labels="licenceUsageChartLabels"
                       :chart-options="licenceUsageChartOptions"
-                      class="mt-3"/>
+                      class="mt-4"/>
                   </b-col>
-                  <b-col cols="12" md="6" lg="12" class="pb-5">
+                  <b-col cols="12" md="6" lg="12" class="pb-12">
                     <h5 class="pie-chart-title">Number of licences by purpose</h5>
                     <pie-chart
                       :data="licenceQuantityChartData"
                       :labels="licenceQuantityChartLabels"
                       :chart-options="licenceQuantityChartOptions"
-                      class="mt-3"/>
+                      class="mt-4"/>
                   </b-col>
                 </b-row>
               </div>
@@ -341,8 +341,8 @@
               </p>
             </b-col>
             <b-col cols="12" xl="4" lg="6" class="knowledge-indicators">
-              <h5 class="mt-3 border-bottom pb-4 main-title">Knowledge Indicators</h5>
-              <ul class="ml-0 mr-0 mb-0 mt-4 p-0 aquifer-information-list">
+              <h5 class="mt-4 border-bottom pb-6 main-title">Knowledge Indicators</h5>
+              <ul class="ml-0 mr-0 mb-0 mt-6 p-0 aquifer-information-list">
                 <div class="aquifer-information-list-divider"></div>
                 <li :key="section.id" v-for="section in aquifer_resource_sections">
                   <div class="advanced-mapping" v-if="section.code === 'M'">

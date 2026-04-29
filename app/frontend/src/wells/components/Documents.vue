@@ -20,7 +20,7 @@
         <i class="fa fa-circle-o-notch fa-spin"/>
       </div>
     </div>
-    <div v-else class="mt-3">
+    <div v-else class="mt-4">
       <!-- public documents -->
       <div v-if="error">
         {{error}}

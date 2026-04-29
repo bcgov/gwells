@@ -243,7 +243,7 @@
             v-model="uploadFiles"
             multiple
             plain/>
-          <div class="mt-3">
+          <div class="mt-4">
             <b-form-checkbox
              id="isPrivateCheckbox"
             :disabled="fieldDisabled"
@@ -260,7 +260,7 @@
       </b-col>
     </b-row>
 
-    <h4 class="mt-4">Resource Links</h4>
+    <h4 class="mt-6">Resource Links</h4>
     <b-row
       v-for="(resource, index) in record.resources" :key="index">
       <b-col cols="auto">
@@ -317,7 +317,7 @@
       </b-col>
     </b-row>
 
-    <div class="mt-4">
+    <div class="mt-6">
       <b-button
         variant="primary"
         :disabled="loadingData"

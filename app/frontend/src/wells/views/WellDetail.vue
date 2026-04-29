@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <div v-else>
-      <b-card no-body class="mb-3 container d-print-none">
+      <b-card no-body class="mb-4 container d-print-none">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
       </b-card>
       <b-card v-if="errorNotFound" class="container p-1">
@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-alert
             show
             variant="info"
-            class="mb-3"
+            class="mb-4"
             v-for="(survey, index) in surveys"
             :key="`survey ${index}`">
           <p class="m-0">
@@ -43,11 +43,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export.
         </b-alert>
         <!-- SUMMARY -->
-        <fieldset id="summary_fieldset" class="detail-section mb-3">
+        <fieldset id="summary_fieldset" class="detail-section mb-4">
           <legend>
             <span class="h2">Well Summary</span>
             <div class="float-right d-print-none">
-              <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id } }" class="mr-3">
+              <router-link v-if="show.edit" :to="{ name: 'SubmissionsEdit', params: { id } }" class="mr-4">
                 <button class="btn btn-primary mb-1">Edit</button>
               </router-link>
               <span class="print-notice">For best print results, use the Chrome browser</span>
@@ -102,7 +102,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </fieldset>
 
         <!-- LINKS -->
-        <fieldset id="jump_links_fieldset" class="d-print-none detail-section my-3">
+        <fieldset id="jump_links_fieldset" class="d-print-none detail-section my-4">
             <legend>Sections</legend>
             <b-row>
               <b-col cols="12" md="4">
@@ -131,7 +131,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </fieldset>
 
         <!-- LICENSING -->
-        <fieldset id="well_licensing_fieldset" class="my-3 detail-section">
+        <fieldset id="well_licensing_fieldset" class="my-4 detail-section">
           <legend>Licensing Information</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Licensed Status:</span> {{ recordLicence?.status }}</b-col>
@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </fieldset>
 
         <!-- LOCATION -->
-        <fieldset id="location_information_fieldset" class="my-3 detail-section">
+        <fieldset id="location_information_fieldset" class="my-4 detail-section">
           <legend>Location Information</legend>
           <b-row>
             <b-col cols="12" md="6" xl="5">
@@ -157,7 +157,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-row>
               <b-row>
                 <b-col>
-                  <div class="my-3"><span class="font-weight-bold">Legal Description:</span></div>
+                  <div class="my-4"><span class="font-weight-bold">Legal Description:</span></div>
                   <div class="table-responsive">
                     <table class="table table-sm table-striped table-bordered">
                       <tbody>
@@ -208,7 +208,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-col>
             <b-col cols="12" md="6" xl="6" offset-xl="1">
               <single-well-map :latitude="latitude" :longitude="longitude"/>
-              <div class="font-weight-bold mt-5">
+              <div class="font-weight-bold mt-12">
                 Geographic Coordinates - North American Datum of 1983 (NAD 83)
               </div>
               <b-row>
@@ -227,7 +227,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="well_activity_fieldset" class="my-3 detail-section">
+        <fieldset id="well_activity_fieldset" class="my-4 detail-section">
           <legend>Well Activity</legend>
           <b-table
             id="submissionActivityTable"
@@ -252,7 +252,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <b-pagination v-if="!!submission_work_dates && submission_work_dates.length > submissionsPerPage" size="md" :total-rows="submission_work_dates.length" v-model="submissionsPage" :per-page="submissionsPerPage" />
         </fieldset>
 
-        <fieldset id="well_work_dates_fieldset" class="my-3 detail-section">
+        <fieldset id="well_work_dates_fieldset" class="my-4 detail-section">
           <legend>Well Work Dates</legend>
           <b-table
             id="wellWorkDatesTable"
@@ -265,7 +265,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-table>
         </fieldset>
 
-        <fieldset id="well_completion_data_fieldset" class="my-3 detail-section">
+        <fieldset id="well_completion_data_fieldset" class="my-4 detail-section">
           <legend>Well Completion Data</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ excludeZeroDecimals(total_depth_drilled) }} {{ total_depth_drilled ? 'ft bgl':''}}</b-col>
@@ -297,7 +297,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="lithology_fieldset" class="my-3 detail-section">
+        <fieldset id="lithology_fieldset" class="my-4 detail-section">
           <legend>Lithology</legend>
           <b-table
             striped
@@ -312,7 +312,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-table>
         </fieldset>
 
-        <fieldset id="casing_fieldset" class="my-3 detail-section">
+        <fieldset id="casing_fieldset" class="my-4 detail-section">
           <legend>Casing Details</legend>
           <div class="table-responsive">
             <b-table
@@ -338,7 +338,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </fieldset>
 
-        <fieldset id="surface_seal_fieldset" class="my-3 detail-section">
+        <fieldset id="surface_seal_fieldset" class="my-4 detail-section">
           <legend>Surface Seal and Backfill Details</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', surface_seal_material) }}</b-col>
@@ -356,7 +356,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="liner_details_fieldset" class="my-3 detail-section">
+        <fieldset id="liner_details_fieldset" class="my-4 detail-section">
           <legend>Liner Details</legend>
           <b-row>
             <b-col cols="12" md="6">
@@ -391,7 +391,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="screen_details_fieldset" class="my-3 detail-section">
+        <fieldset id="screen_details_fieldset" class="my-4 detail-section">
           <legend>Screen Details</legend>
           <b-row>
             <b-col cols="12" md="4">
@@ -433,7 +433,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="well_development_fieldset" class="my-3 detail-section">
+        <fieldset id="well_development_fieldset" class="my-4 detail-section">
           <legend>Well Development</legend>
           <b-row>
             <b-col cols="12" md="4">
@@ -444,7 +444,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="well_yield_fieldset" class="my-3 detail-section">
+        <fieldset id="well_yield_fieldset" class="my-4 detail-section">
           <legend>Well Yield</legend>
 
           <b-row>
@@ -462,7 +462,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="well_decommissioning_fieldset" class="my-3 detail-section">
+        <fieldset id="well_decommissioning_fieldset" class="my-4 detail-section">
           <legend>Well Decommission Information</legend>
           <b-row>
             <b-col cols="12" md="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ decommission_reason }}</b-col>
@@ -477,7 +477,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
         </fieldset>
 
-        <fieldset id="aquifer_parameters_fieldset" class="my-3 detail-section">
+        <fieldset id="aquifer_parameters_fieldset" class="my-4 detail-section">
           <legend>Pumping Test Information and Aquifer Parameters</legend>
           <div class="table-responsive">
             <b-table
@@ -549,19 +549,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </fieldset>
 
-        <fieldset id="well_comments_fieldset" class="my-3 detail-section">
+        <fieldset id="well_comments_fieldset" class="my-4 detail-section">
           <legend>Comments</legend>
           <p>
             {{ comments ? comments : 'No comments submitted' }}
           </p>
         </fieldset>
 
-        <fieldset id="documents_fieldset" class="detail-section my-3">
+        <fieldset id="documents_fieldset" class="detail-section my-4">
           <legend>Documents</legend>
           <documents :well="id"/>
         </fieldset>
 
-        <fieldset id="disclaimer_fieldset" class="detail-section my-3">
+        <fieldset id="disclaimer_fieldset" class="detail-section my-4">
           <legend>Disclaimer</legend>
           <p>
             The information provided should not be used as a basis for making financial or any other commitments. The Government of British Columbia accepts no liability for the accuracy, availability, suitability, reliability, usability, completeness or timeliness of the data or graphical depictions rendered from the data.

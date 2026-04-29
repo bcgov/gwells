@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <div v-else>
-      <b-card no-body class="mb-3 container d-print-none">
+      <b-card no-body class="mb-4 container d-print-none">
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
       </b-card>
       <b-card v-if="errorNotFound" class="container p-1">
@@ -58,7 +58,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <tbody>
                   <template v-for="(row, index) in tableData" :key="`row-${index}`">
                     <tr v-if="row.isNonAquifer" class="non-aquifer">
-                      <td colspan="5" class="py-3">
+                      <td colspan="5" class="py-4">
                         Non Aquifer {{ row.nonAquiferStart.toFixed(2) }}m to
                         {{ row.nonAquiferEnd.toFixed(2) }}m
                         ({{ (row.nonAquiferSize).toFixed(2) }}m)
@@ -133,7 +133,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </div>
             <b-btn class="mt-2" size="sm" variant="primary" @click="addAquiferRow" id="addAquiferRowButton" :disabled="isSaving"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
           </div>
-          <b-row class="mt-3">
+          <b-row class="mt-4">
             <b-col>
               <b-btn type="submit" variant="primary" class="mr-2" :disabled="isSaving">
                 <i v-if="isSaving" class="fa fa-circle-o-notch fa-spin ml-1"/>

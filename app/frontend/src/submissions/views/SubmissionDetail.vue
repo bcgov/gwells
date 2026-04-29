@@ -1,6 +1,6 @@
 <template>
 <div>
-  <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 container d-print-none">
+  <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-4 container d-print-none">
     <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
   </b-card>
   <b-card v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit" class="container p-1">
@@ -14,7 +14,7 @@
       <div v-else>
         <div v-if="submission.create_date">Filed: {{ moment(submission.create_date, "MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
-        <dl class="mt-5">
+        <dl class="mt-12">
           <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
             <div
               class="row record"

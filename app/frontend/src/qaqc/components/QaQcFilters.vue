@@ -47,7 +47,7 @@
         @keyup.enter="applyFilter()" />
       <div v-else-if="type === 'nullcheck'">
         <Button
-          class="py-2 px-3"
+          class="py-2 px-4"
           :class="{'active-filter-border': isActive, 'active-filter': isActive}"
           @click="toggleNullFilter">
           Null Fields

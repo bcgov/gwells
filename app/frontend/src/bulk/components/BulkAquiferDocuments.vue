@@ -14,14 +14,14 @@
 
 <template>
   <div id="bulk-aquifer-documents-upload-screen">
-    <b-card no-body class="mb-3 container d-print-none">
+    <b-card no-body class="mb-4 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
     </b-card>
     <b-card class="container p-1" v-if="perms.aquiferDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
-        <b-row class="border-bottom mb-3 pb-2 pt-2">
+        <b-row class="border-bottom mb-4 pb-2 pt-2">
           <b-col><h4>Aquifer Documents Bulk Upload</h4></b-col>
         </b-row>
 
@@ -37,7 +37,7 @@
           </b-button>
         </div>
         <div v-else>
-          <b-card-group id="upload-behaviour" class="mb-3">
+          <b-card-group id="upload-behaviour" class="mb-4">
             <b-card title="Multiple documents for multiple aquifers" :class="{ chosen: behaviourPicked, active: multiBehaviourPicked}">
               <b-card-text>
                 If you have one or more documents that you want to upload for one or more aquifers.
@@ -61,7 +61,7 @@
           </b-card-group>
 
           <div v-if="behaviourPicked">
-            <b-card id="instructions" class="mb-3" title="Instructions">
+            <b-card id="instructions" class="mb-4" title="Instructions">
               <b-row>
                 <b-col md="4">
                   <ol>
@@ -140,7 +140,7 @@
               <b-row>
                 <b-col md="4" id="documents">
                   <h5>Documents</h5>
-                  <b-row class="align-items-center mb-3">
+                  <b-row class="align-items-center mb-4">
                     <b-col md="3">
                       <b-form-file
                         multiple
@@ -222,7 +222,7 @@
                 </b-col>
               </b-row>
 
-              <b-button-group class="mt-3">
+              <b-button-group class="mt-4">
                 <b-button
                   v-if="showSubmitButton"
                   :disabled="submitButtonIsDisabled"

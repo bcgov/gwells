@@ -101,7 +101,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :loaded="fieldsLoaded['screen_information']"></form-input>
       </b-col>
     </b-row>
-    <p class="mt-3 mb-2">Screen Details</p>
+    <p class="mt-4 mb-2">Screen Details</p>
     <div class="table-responsive">
       <table class="table table-sm" aria-describedby="screenDetails">
         <thead>

@@ -22,7 +22,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
       </b-row>
     </h1>
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Type of Work and Well Class</legend>
       <b-row>
         <b-col>
@@ -51,7 +51,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Person Responsible for Work</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.person_responsible ? form.person_responsible['name'] : '' }}</b-col>
@@ -64,7 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Well Owner</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Name:</span> {{ form.owner_full_name }}</b-col>
@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Location Information</legend>
       <b-row>
         <b-col cols="12" lg="6" xl="4">
@@ -90,7 +90,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-row>
           <b-row>
             <b-col>
-              <div class="my-3"><span class="font-weight-bold">Legal Description:</span></div>
+              <div class="my-4"><span class="font-weight-bold">Legal Description:</span></div>
               <div class="table-responsive">
                 <table class="table table-sm table-striped table-bordered">
                   <tbody>
@@ -143,7 +143,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div>
             <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false" :drinking_water="form.drinking_water_protection_area_ind"/>
           </div>
-          <div class="my-3">&nbsp;</div>
+          <div class="my-4">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
           <b-row>
             <b-col cols="12" lg="4"><span class="font-weight-bold">Latitude:</span> {{form.latitude}}</b-col>
@@ -161,7 +161,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Method of Drilling</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Ground elevation:</span> {{ form.ground_elevation }}</b-col>
@@ -173,7 +173,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.lithology">
+    <fieldset class="my-4 detail-section" v-if="sections.lithology">
       <legend>Lithology</legend>
       <div class="table-responsive">
         <b-table
@@ -205,7 +205,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.closureDescription">
+    <fieldset class="my-4 detail-section" v-if="sections.closureDescription">
       <legend>Decommission Description</legend>
       <div class="table-responsive">
         <b-table
@@ -224,7 +224,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Casing Details</legend>
       <div class="table-responsive">
         <b-table
@@ -245,7 +245,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.backfill">
+    <fieldset class="my-4 detail-section" v-if="sections.backfill">
       <legend>Surface Seal and Backfill Details</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', form.surface_seal_material) }}</b-col>
@@ -263,7 +263,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.liner">
+    <fieldset class="my-4 detail-section" v-if="sections.liner">
       <legend>Liner Details</legend>
       <b-row>
         <b-col cols="12" lg="6">
@@ -296,7 +296,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.screens">
+    <fieldset class="my-4 detail-section" v-if="sections.screens">
       <legend>Screen Details</legend>
       <b-row>
         <b-col cols="12" lg="4">
@@ -340,7 +340,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.filterPack">
+    <fieldset class="my-4 detail-section" v-if="sections.filterPack">
       <legend>Filter Pack</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Filter pack from:</span> {{ form.filter_pack_from }}</b-col>
@@ -353,7 +353,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.wellDevelopment">
+    <fieldset class="my-4 detail-section" v-if="sections.wellDevelopment">
       <legend>Well Development</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Developed by:</span> <div v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</div></b-col>
@@ -362,7 +362,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.wellYield">
+    <fieldset class="my-4 detail-section" v-if="sections.wellYield">
       <legend>Well Yield</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', form.yield_estimation_method)}} </b-col>
@@ -379,7 +379,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.waterQuality">
+    <fieldset class="my-4 detail-section" v-if="sections.waterQuality">
       <legend>Water Quality</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Characteristics:</span>
@@ -397,7 +397,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-col cols="12" lg="6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems }}</b-col>
       </b-row>
     </fieldset>
-    <fieldset class="my-3 detail-section" v-if="sections.wellCompletion">
+    <fieldset class="my-4 detail-section" v-if="sections.wellCompletion">
       <legend>Well Completion Data</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ form.total_depth_drilled }} {{ form.total_depth_drilled ? 'ft bgl':''}}</b-col>
@@ -421,7 +421,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section" v-if="sections.decommissionInformation">
+    <fieldset class="my-4 detail-section" v-if="sections.decommissionInformation">
       <legend>Well Decommission Information</legend>
       <b-row>
         <b-col cols="12" lg="4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</b-col>
@@ -436,7 +436,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Pumping Test Information and Aquifer Parameters</legend>
       <div class="table-responsive">
         <b-table
@@ -465,7 +465,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>Comments</legend>
       <p>
         {{ form.comments ? form.comments : 'No comments submitted' }}
@@ -523,7 +523,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
     </fieldset>
 
-    <fieldset class="my-3 detail-section">
+    <fieldset class="my-4 detail-section">
       <legend>General Disclaimer</legend>
       <b-row>
         <b-col cols="12" lg="9">
@@ -554,11 +554,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </fieldset>
 
     <!-- Back / Next / Submit controls -->
-    <b-row v-if="!reportSubmitted" class="mt-5">
+    <b-row v-if="!reportSubmitted" class="mt-12">
       <b-col>
         <b-btn @click="$emit('back')" variant="primary">Back to Edit</b-btn>
       </b-col>
-      <b-col class="pr-4 text-right">
+      <b-col class="pr-6 text-right">
         <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
       </b-col>
     </b-row>

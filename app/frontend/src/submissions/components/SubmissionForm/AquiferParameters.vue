@@ -171,7 +171,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 </td>
               </tr>
               <tr>
-                <td class="pt-2 pb-3">
+                <td class="pt-2 pb-4">
                   <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
                 </td>
               </tr>

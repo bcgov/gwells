@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="bg-warning p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
         <b-col sm="12" md="6">
-          <b-card no-body class="p-3 m-1 m-md-1">
+          <b-card no-body class="p-4 m-1 m-md-1">
             <b-row>
               <b-col cols="12" sm="6" lg="3">
                 <form-input
@@ -57,8 +57,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
             </b-row>
           </b-card>
-          <b-row><b-col><p class="p-3 m-0">OR</p></b-col></b-row>
-          <b-card no-body class="p-3 mx-1 mx-md-1">
+          <b-row><b-col><p class="p-4 m-0">OR</p></b-col></b-row>
+          <b-card no-body class="p-4 mx-1 mx-md-1">
             <b-row>
               <b-col cols="12" md="6" lg="6">
                 <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
@@ -138,8 +138,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </b-col>
             </b-row>
           </b-card>
-          <b-row><b-col><p class="p-3 m-0">OR</p></b-col></b-row>
-          <b-card no-body class="p-3 mx-1 mx-md-1">
+          <b-row><b-col><p class="p-4 m-0">OR</p></b-col></b-row>
+          <b-card no-body class="p-4 mx-1 mx-md-1">
             <b-row>
               <b-col cols="12" sm="4" lg="4">
                 <form-input
@@ -195,7 +195,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-row>
           </b-card>
           <b-row>
-            <b-col class="mt-3">
+            <b-col class="mt-4">
               <div v-if="validCoordinate === false">
                 <div class="alert alert-danger" role="alert">You have entered an invalid coordinate</div>
               </div>
@@ -227,7 +227,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-modal>
     </b-card>
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
-      <b-alert class="mt-3" variant="danger" :show="errorCoordsNotProvided">
+      <b-alert class="mt-4" variant="danger" :show="errorCoordsNotProvided">
         Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.
       </b-alert>
     </fieldset>

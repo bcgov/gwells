@@ -7,7 +7,7 @@ KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License. */
 <template>
   <div class="container p-1">
-    <div v-if="loading" class="mt-3">
+    <div v-if="loading" class="mt-4">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
       </div>
@@ -16,7 +16,7 @@ governing permissions and limitations under the License. */
       <b-card
         v-if="breadcrumbs && breadcrumbs.length"
         no-body
-        class="mb-3 d-print-none"
+        class="mb-4 d-print-none"
       >
         <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
       </b-card>
@@ -28,7 +28,7 @@ governing permissions and limitations under the License. */
           <b-alert
             show
             variant="info"
-            class="mb-3"
+            class="mb-4"
             v-for="(survey, index) in surveys[
               isStaffEdit ? 'edit' : 'submissions'
             ]"

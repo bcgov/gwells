@@ -14,14 +14,14 @@
 
 <template>
   <div id="bulk-vertical-aquifer-extents-screen">
-    <b-card no-body class="mb-3 container d-print-none">
+    <b-card no-body class="mb-4 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
     </b-card>
     <b-card class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
-        <b-row class="border-bottom mb-3 pb-2 pt-2">
+        <b-row class="border-bottom mb-4 pb-2 pt-2">
           <b-col><h4>Vertical Aquifer Extents Bulk Upload</h4></b-col>
         </b-row>
 
@@ -168,7 +168,7 @@
           </div>
         </b-card>
 
-        <b-button-group class="mt-3">
+        <b-button-group class="mt-4">
           <b-button
             v-if="showSubmitButton"
             :disabled="isSaveButtonDisabled"
@@ -235,7 +235,7 @@ const BASE_TABLE_FIELDS = [
   {
     key: 'toDepth',
     label: 'To Depth',
-    class: 'to-depth text-right pr-4'
+    class: 'to-depth text-right pr-6'
   }
 ]
 

@@ -14,14 +14,14 @@
 
 <template>
   <div id="bulk-well-documents-upload-screen">
-    <b-card no-body class="mb-3 container d-print-none">
+    <b-card no-body class="mb-4 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
     </b-card>
     <b-card class="container p-1" v-if="perms.wellDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
-        <b-row class="border-bottom mb-3 pb-2 pt-2">
+        <b-row class="border-bottom mb-4 pb-2 pt-2">
           <b-col><h4>Well Documents Bulk Upload</h4></b-col>
         </b-row>
 
@@ -37,7 +37,7 @@
           </b-button>
         </div>
         <div v-else>
-          <div id="instructions" class="mb-3" title="Instructions">
+          <div id="instructions" class="mb-4" title="Instructions">
             <ol>
               <li :class="{active: keyedActiveStep === 'one'}">
                 Use the file picker below to choose one or more documents keyed by well tag number
@@ -76,7 +76,7 @@
             <b-row>
               <b-col md="6" id="documents">
                 <h5>Documents</h5>
-                <b-row class="align-items-center mb-3">
+                <b-row class="align-items-center mb-4">
                   <b-col md="3">
                     <b-form-file
                       multiple
@@ -137,7 +137,7 @@
               </b-col>
             </b-row>
 
-            <b-button-group class="mt-3">
+            <b-button-group class="mt-4">
               <b-button
                 v-if="showSubmitButton"
                 :disabled="submitButtonIsDisabled"

@@ -26,7 +26,7 @@
         </b-form-group>
       </b-col>
     </b-row>
-    <b-row class="my-3">
+    <b-row class="my-4">
       <b-col>
         <b-btn variant="primary" type="submit" :disabled="searchInProgress">Search</b-btn>
         <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>

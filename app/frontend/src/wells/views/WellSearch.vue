@@ -16,7 +16,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-alert
         show
         variant="info"
-        class="mb-3"
+        class="mb-4"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
         <p class="m-0">
@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </p>
         </div>
       </div>
-      <b-row class="mt-4">
+      <b-row class="mt-6">
         <b-col cols="12" lg="6" xl="5">
           <b-card no-body border-variant="dark" class="mb-1">
             <b-tabs card v-model="tabIndex">
@@ -108,10 +108,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-alert>
         </b-col>
       </b-row>
-      <div class="my-5" v-show="wellsStore.hasSearched || hasResultErrors">
+      <div class="my-12" v-show="wellsStore.hasSearched || hasResultErrors">
         <search-results/>
       </div>
-      <div v-if="!wellsStore.hasSearched" class="mt-5">
+      <div v-if="!wellsStore.hasSearched" class="mt-12">
         <p>
           Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
         </p>
