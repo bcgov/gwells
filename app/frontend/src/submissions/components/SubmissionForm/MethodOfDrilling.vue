@@ -62,7 +62,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
               text-field="description"
               hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
               v-model="drillingMethodInput"
-              :multiple="true"
               :errors="errors['drilling_methods']"
               :loaded="fieldsLoaded['drilling_methods']"
           ></form-input>

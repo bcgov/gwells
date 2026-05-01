@@ -105,7 +105,7 @@
         </div>
         <div class="mt-3">
           <h6 class="font-weight-bold mb-2">Attachments</h6>
-          <FileUpload ref="fileupload" name="files[]" url="/api/files/upload" :auto="true" :multiple="true" :customUpload="true" @upload="onFormSubmit" v-model="files"/>
+          <FileUpload ref="fileupload" name="files[]" url="/api/files/upload" :auto="true" :customUpload="true" @upload="onFormSubmit" v-model="files"/>
           <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
             <Listbox v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</Listbox>
           </div>
