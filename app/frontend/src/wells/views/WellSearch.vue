@@ -56,7 +56,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
         <b-col>
           <div>
-            <map-loading-spinner :loading="loadingMap"/>
+            <ProgressSpinner v-if="loadingMap"/>
 
             <search-map
               :initialCentre="wellsStore.searchMapCentre"
@@ -136,7 +136,6 @@ import { QUERY_TRIGGER, MAP_TRIGGER } from '@/wells/triggers.types.js'
 import { useWellsStore } from '@/stores/wells.js'
 import { useQAQCStore } from '@/stores/qaqc'
 
-import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import AdvancedSearchForm from '@/wells/components/AdvancedSearchForm.vue'
 import BasicSearchForm from '@/wells/components/BasicSearchForm.vue'
 import SearchMap from '@/wells/components/SearchMap.vue'
@@ -150,7 +149,6 @@ export default {
     'basic-search-form': BasicSearchForm,
     'search-map': SearchMap,
     'search-results': SearchResults,
-    'map-loading-spinner': MapLoadingSpinner
   },
   data () {
     return {

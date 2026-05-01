@@ -40,9 +40,6 @@ export default {
   border-right: 0px !important;
   border-bottom: 0px !important;
   border-radius: 0px !important;
-  -webkit-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-  -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
-  box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
 }
 .footer .nav-item {
   font-size: 13px;
