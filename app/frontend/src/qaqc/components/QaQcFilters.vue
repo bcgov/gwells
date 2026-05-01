@@ -12,40 +12,49 @@
     limitations under the License.
 */
 <template>
-  <div class="grid grid-cols-2 gap-2 search-result-filter" :class="`search-result-filter-${type}`">
-    <div class="col-span-2" v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio' || type === 'nullcheck'">
+  <div class="grid grid-cols-12 gap-2 search-result-filter" :class="`search-result-filter-${type}`">
+    <div :class="`col-span-${type === 'text' ? 9 : 10}`" v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio' || type === 'nullcheck'">
       <InputText
         v-if="type === 'text'"
         type="text"
         :id="`${id}Input`"
-        :state="validation"
+        :invalid="validation"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="placeholder || 'Filter...'"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter="applyFilter()" />
+        @keyup.enter="applyFilter" />
       <InputText
         v-else-if="type === 'number'"
         type="text"
         :id="`${id}Input`"
-        :state="validation"
+        :invalid="validation"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="placeholder || 'Filter...'"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter="applyFilter()" />
+        @keyup.enter="applyFilter" />
       <Select
         v-else-if="type === 'select' || type === 'radio'"
         :id="`${id}Input`"
-        :state="validation"
+        :invalid="validation"
         :aria-describedby="`${id}InvalidFeedback`"
         :disabled="isActive"
         :options="selectOptions"
         :value-field="valueField"
         :text-field="textField"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter="applyFilter()" />
-      <div v-else-if="type === 'nullcheck'">
+        @keyup.enter="applyFilter" />
+      <!-- There isn't a replacement. Will need to redo error logic later.
+      <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
+        <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
+          {{ error }}
+        </div>
+      </b-form-invalid-feedback>
+      -->
+    </div>
+    <div class="col-span-12" v-if="type === 'nullcheck'">
+      <div>
         <Button
           class="py-2 px-4"
           :class="{'active-filter-border': isActive, 'active-filter': isActive}"
@@ -62,29 +71,29 @@
       </b-form-invalid-feedback>
       -->
     </div>
-    <div v-if="type === 'range' || type === 'dateRange'">
+    <div class="col-span-5" v-if="type === 'range' || type === 'dateRange'">
       <InputText
         :type="`${ type === 'range' ? 'number' : 'date'}`"
         :id="`${id}StartInput`"
-        :state="validation"
+        :invalid="validation"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="`${ type === 'range' ? 'From' : 'YYYY/MM/DD'}`"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
     </div>
-    <div v-if="type === 'range' || type === 'dateRange'">
+    <div class="col-span-5" v-if="type === 'range' || type === 'dateRange'">
       <InputText
         :type="`${ type === 'range' ? 'number' : 'date'}`"
         :id="`${id}EndInput`"
-        :state="validation"
+        :invalid="validation"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="`${ type === 'range' ? 'To' : 'YYYY/MM/DD'}`"
         :disabled="isActive"
         v-model="localValue[paramNames[1]]"
-        @keyup.enter="applyFilter()" />
+        @keyup.enter="applyFilter" />
     </div>
-    <div class="col-span-2" v-if="type !== 'nullcheck'" :class="`col-span-${type === 'text' ? 3 : 2}`">
+    <div :class="`col-span-${type === 'text' ? 3 : 2}`" v-if="type !== 'nullcheck'">
       <Button
         variant="text"
         class="py-2 px-0"
@@ -246,5 +255,13 @@ export default {
 
 .search-result-filter.search-result-filter-dateRange {
   min-width: 20rem;
+}
+
+.p-inputtext {
+  display: block;
+  width: 100%;
+  padding: .375rem .75rem;
+  line-height: 1.5;
+  background-clip: padding-box;
 }
 </style>

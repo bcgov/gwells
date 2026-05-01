@@ -30,7 +30,7 @@
       </div>
     </div>
     <div class="col-start-3 form-inline">
-      Show <Select class="mx-1" :value="qaqcStore.limit" @input="setLimit($event)" :options="limitOptions" /> results
+      Show <Select class="mx-1" v-model="qaqcStore.limit" @input="setLimit($event)" :options="limitOptions" optionLabel="text" optionValue="value" /> results
     </div>
     <div class="col-span-3 table-responsive">
       <table id="qaqcTable" class="table table-striped" aria-describedby="qaqcTableDesc">
