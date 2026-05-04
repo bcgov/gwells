@@ -33,24 +33,24 @@
         <div v-if="userRoles.registry.edit" class="p-1 mb-3">
           <div>
             <Panel :toggleable="true" :collapsed="true" header="Administrator options">
-              <div class="pb-1">
+              <div class="pb-1 gap-2 flex flex-row">
                 <Button
-                  class="mb-2 mr-1"
                   type="button"
                   severity="primary"
                   id="addNewEntryButton"
-                  :to="{ name: 'PersonAdd' }"
-                >
-                  Add new entry
+                  >
+                  <router-link :to="{ name: 'PersonAdd' }">
+                    Add new entry
+                  </router-link>
                 </Button>
                 <Button
-                  class="mb-2"
                   type="button"
                   severity="primary"
                   id="manageCompaniesButton"
-                  :to="{ name: 'OrganizationEdit' }"
-                >
-                  Manage companies
+                  >
+                  <router-link :to="{ name: 'OrganizationEdit' }">
+                    Manage companies
+                  </router-link>
                 </Button>
               </div>
             </Panel>
@@ -123,18 +123,18 @@
                       Caution: Your are filtering the search by community ({{registryStore.searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure these two selections are consistent, or you won't get any search results.
                     </Message>
                   </div>
-                  <div v-if="userRoles.registry.view" class="md-5">
-                    <label for="registrationStatusSelect">Registration status:
-                      <Select
-                      :options="regStatusOptions"
-                      v-model="searchParams.status"
-                      id="registrationStatusSelect"
-                      name="registryStatuses"/>
-                    </label>
-                  </div>
+                </div>
+                <div v-if="userRoles.registry.view" class="flex flex-col gap-2 mb-4">
+                  <label for="registrationStatusSelect">Registration status:</label>
+                  <Select
+                  :options="regStatusOptions"
+                  v-model="searchParams.status"
+                  id="registrationStatusSelect"
+                  name="registryStatuses"
+                  class="w-full md:w-80"/>
                 </div>
                 <div class="flex flex-col gap-2 mb-4">
-                  <span>Region:</span>
+                  <label>Region:</label>
                   <Listbox
                     id="regionOptions"
                     v-model="searchParams.region"
@@ -151,7 +151,7 @@
                   <InputText
                     id="regTypeInput"
                     type="text"
-                    class="ml-2"
+                    class="w-full md:w-80"
                     placeholder="Search"
                     v-model="searchParams.search"
                   />
@@ -211,8 +211,8 @@
           <div id="registry-download" v-if="userRoles.registry.view">
             <h6 class="mt-3">Download everyone in registry</h6>
             <ul class="ml-3">
-              <li><a href="drillers/xlsx" @click.prevent="downloadFile">Registries extract (XLSX)</a></li>
-              <li><a href="drillers/csv" @click.prevent="downloadFile">Registries extract (CSV)</a></li>
+              <li><a href="drillers/xlsx" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (XLSX)</a></li>
+              <li><a href="drillers/csv" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (CSV)</a></li>
             </ul>
           </div>
         </div>
@@ -242,8 +242,8 @@
           </div>
           <div id="searched-registry-download" v-if="hasResults && userRoles.registry.view">
             Download searched well driller or well pump installer:
-            <a :href="`drillers/xlsx?${downloadLinkQS}`" @click.prevent="downloadFile">XLSX</a> |
-            <a :href="`drillers/csv?${downloadLinkQS}`" @click.prevent="downloadFile">CSV</a>
+            <a :href="`drillers/xlsx?${downloadLinkQS}`" @click.prevent="downloadFile" class="text-blue-500 hover:underline">XLSX</a> |
+            <a :href="`drillers/csv?${downloadLinkQS}`" @click.prevent="downloadFile" class="text-blue-500 hover:underline">CSV</a>
           </div>
           <div v-if="hasResults" class="mt-5">
             <register-legal-text class="register-legal" :activity="activity"/>

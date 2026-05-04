@@ -103,13 +103,9 @@ limitations under the License.
 
 <script>
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
 export default {
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     constructionStartDate: String,
     constructionEndDate: String,

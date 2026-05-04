@@ -35,7 +35,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           text-field="description"
           hint="Select one or more characteristics. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
           v-model="waterQualityCharacteristicsInput"
-          :multiple="true"
           :errors="errors['water_quality_characteristics']"
           :loaded="fieldsLoaded['water_quality_characteristics']"/>
       </b-col>
@@ -83,13 +82,8 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     waterQualityCharacteristics: {
       type: Array,

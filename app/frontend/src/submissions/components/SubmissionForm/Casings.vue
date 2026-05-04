@@ -177,14 +177,9 @@ import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   name: 'Casings',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     casings: Array,
     errors: {

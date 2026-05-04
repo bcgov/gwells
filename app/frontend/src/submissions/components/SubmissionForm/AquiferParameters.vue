@@ -204,14 +204,9 @@ import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   name: 'AquiferParameters',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     aquiferParameters: Array,
     errors: {

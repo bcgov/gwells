@@ -88,7 +88,7 @@
           </b-col>
 
           <b-col cols="12" md="12" lg="12" xl="8" class="map-column">
-            <map-loading-spinner :loading="loadingMap"/>
+            <ProgressSpinner v-if="loadingMap"/>
 
             <aquifer-map
               ref="aquiferMap"
@@ -183,7 +183,6 @@ import { useAquiferStore } from '@/stores/aquifers.js'
 import ApiService from '@/common/services/ApiService.js'
 
 import AquiferMap from './AquiferMap.vue'
-import MapLoadingSpinner from '../../common/components/MapLoadingSpinner.vue'
 import features from '../../common/features.js'
 import { BC_LAT_LNG_BOUNDS, containsBounds } from '../../common/mapbox/geometry.js'
 
@@ -209,7 +208,6 @@ const RESULTS_TABLE_FIELDS = [
 export default {
   components: {
     'aquifer-map': AquiferMap,
-    'map-loading-spinner': MapLoadingSpinner
   },
   data () {
     let query = this.$route.query

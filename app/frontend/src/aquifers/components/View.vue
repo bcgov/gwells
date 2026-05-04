@@ -184,7 +184,7 @@
               </b-row>
             </b-col>
             <b-col id="map-container" cols="12" md="12" lg="7" class="p-0">
-              <map-loading-spinner :loading="loadingMap"/>
+              <ProgressSpinner v-if="loadingMap"/>
 
               <single-aquifer-map
                 :aquifer-id="id"
@@ -549,7 +549,6 @@ import ApiService from '@/common/services/ApiService.js'
 
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import MapLoadingSpinner from '@/common/components/MapLoadingSpinner.vue'
 import AquiferForm from './Form.vue'
 import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
@@ -566,7 +565,6 @@ export default {
     'aquifer-form': AquiferForm,
     'aquifer-documents': Documents,
     'single-aquifer-map': SingleAquiferMap,
-    'map-loading-spinner': MapLoadingSpinner,
     'change-history': ChangeHistory,
     'pie-chart': PieChart,
     'observation-well': ObservationWell

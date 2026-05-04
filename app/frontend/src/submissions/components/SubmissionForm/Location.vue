@@ -224,16 +224,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import ApiService from '../../../common/services/ApiService'
 import { TOOLTIP_TEXT } from '@/common/constants'
 
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     id: {
       type: String,

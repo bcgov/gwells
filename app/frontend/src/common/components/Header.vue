@@ -22,8 +22,11 @@
                 alt="B.C. Government Logo">
           </a>
           <div class="flex bc-nav-title hidden md:block">Groundwater Wells and Aquifers{{getEnvironmentMessage}}</div>
-          <keycloak-auth class="flex hidden sm:block print:hidden" v-if="auth !== 'hide'" id="keycloak-auth"/>
         </div>
+      </template>
+      <!-- Log in details and button -->
+      <template #end>
+        <keycloak-auth class="flex hidden sm:block print:hidden" v-if="auth !== 'hide'" id="keycloak-auth"/>
       </template>
       <template #item="{ item, label }">
           <router-link v-if="item" :to="item.route">
@@ -31,32 +34,12 @@
           </router-link>
       </template>
     </Menubar>
-    <Menubar v-if="windowWidth > 640" class="bc-nav-links py-0" :model="navItems">
+    <Menubar v-if="windowWidth > 640" class="bc-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white" :model="navItems">
       <template #item="{ item, label }">
-          <router-link v-if="item" :to="item.route">
-            {{ label }}
-          </router-link>
+        <router-link v-if="item" :to="item.route" class="text-white px-3 hover:underline decoration-white">
+          {{ label }}
+        </router-link>
       </template>
-      <!--
-      <template>
-      <b-container>
-        <b-collapse class="py-2" is-nav id="nav_collapse">
-          <b-nav-text class="d-sm-none text-light">Groundwater Wells and Aquifers</b-nav-text>
-          <b-navbar-nav class="gwells-nav">
-            <b-nav-item id="ribbon-search" class="navbar-link lvl2-link" :to="{ name: 'wells-home'}">Well Search</b-nav-item>
-            <b-nav-item id="ribbon-aquifers" v-if="show.aquifers" class="navbar-link lvl2-link" :to="{ name: 'aquifers-home' }">Aquifer Search</b-nav-item>
-            <b-nav-item id="ribbon-registry" class="navbar-link lvl2-link" :to="{ name: 'SearchHome'}">Registry Search</b-nav-item>
-            <b-nav-item class="navbar-link lvl2-link" v-if="show.dataEntry" :to="{ name: 'SubmissionsHome'}">Submit Report</b-nav-item>
-            <b-nav-item id="ribbon-bulk" class="navbar-link lvl2-link" v-if="show.bulk" :to="{ name: 'bulk-home' }">Bulk Upload</b-nav-item>
-            <b-nav-item id="ribbon-qaqc" class="navbar-link lvl2-link" v-if="show.qaqc" :to="{ name: 'qaqc' }">QA/QC Dashboard</b-nav-item>
-            <b-nav-item id="ribbon-surveys" class="navbar-link lvl2-link" v-if="show.surveys" :to="{ name: 'Surveys' }">Admin</b-nav-item>
-            <b-nav-item id="ribbon-groundwaterinfo" class="navbar-link lvl2-link" :to="{ name: 'groundwater-information' }">Groundwater Information</b-nav-item>
-            <b-nav-item class="sm:hidden"><keycloak-auth v-if="auth !== 'hide'" id="keycloak-auth-xs"/></b-nav-item>
-          </b-navbar-nav>
-        </b-collapse>
-      </b-container>
-      </template>
-      -->
     </Menubar>
   </header>
 </template>
@@ -101,7 +84,7 @@ export default {
         qaqc: this.hasConfig && this.commonStore.userRoles.submissions.edit === true,
         bulk
       }
-    }, 
+    },
     navItems () {
       return [
         { label: 'Well Search', route: { name: 'wells-home' }, visible: true },
@@ -137,20 +120,22 @@ export default {
   margin-bottom: -10px;
 }
 .bc-nav-links {
-  background-color: #38598a;
-  border-bottom: 0px;
+  background: #39598A !important;
+  border-top: #F9B81B solid 3px !important;
+  border-left: 0px !important;
+  border-right: 0px !important;
+  border-bottom: 0px !important;
+  border-radius: 0px !important;
   padding-top: 0px;
   padding-bottom: 0px;
   -webkit-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
   -moz-box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
   box-shadow: 0px 3px 3px 1px rgba(51, 51, 51, 0.5);
 }
-// replace with primevue
-// header li + li {
-//   @include media-breakpoint-up(sm) {
-//     border-left: 1px solid #607D8B;
-//   }
-// }
+// override primevue highlight on hover
+.bc-nav-links * {
+  background-color: transparent !important;
+}
 .lvl2-link a {
   padding-top:0;
   padding-bottom:0;
