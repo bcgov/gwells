@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between mb-2">
+  <div class="flex items-center gap-2 mb-2">
     <h6 class="text-sm font-semibold" id="changeHistoryTitle">Change History</h6>
     <Button size="small" variant="outlined" :label="showHistory ? 'Hide' : 'Show'" @click="toggleHistory"/>
   </div>
@@ -14,12 +14,11 @@
       </div>
       <div class="mt-2" v-if="history && history.length && showHistory">
         <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
-
           <div class="text-sm">
             <span class="font-semibold">{{ version.user }}</span>
                   {{ version.created ? "created" : "edited" }}
                   {{ version.name ? version.name : 'record' }}
-                  ({{ moment(version.date, "MMMM Do YYYY [at] LT") }}){{ version.created ? "." : ":" }}
+                  {{ moment(version.date).format("MMMM Do YYYY [at] LT") }}{{ version.created ? "." : ":" }}
           </div>
           <div class="ml-4">
                   <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
