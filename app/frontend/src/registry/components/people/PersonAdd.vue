@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-3 px-5">
+  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <Breadcrumb :model="breadcrumbs"></Breadcrumb>
   </div>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-3 px-5" v-if="error">
+  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12" v-if="error">
     <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
   </div>
   <Card class="rounded-lg ml-20 mr-20 bg-white">
@@ -10,7 +10,7 @@
     <template #content>
       <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
         <h6 class="font-weight-bold mb-2">Personal Information</h6>
-        <div class="mb-3 grid md:grid-cols-2 gap-3">
+        <div class="mb-4 grid md:grid-cols-2 gap-4">
           <div class="grid grid-flow-col grid-rows-3">
             <label for="surnameInput">Surname:</label>
             <InputText
@@ -30,9 +30,9 @@
               required/>
           </div>
         </div>
-        <div class="mt-3">
+        <div class="mt-4">
           <h6 class="font-weight-bold mb-2">Contact Information at Company</h6>
-          <div class="mb-3 grid md:grid-cols-2 gap-3">
+          <div class="mb-4 grid md:grid-cols-2 gap-4">
             <div class="grid grid-flow-col grid-rows-3">
               <label for="contactTelInput" aria-describedby="drillerTelExample">Telephone number:</label>
               <InputMask
@@ -63,9 +63,9 @@
           </div>
 
         </div>
-        <div class="mt-3">
+        <div class="mt-4">
           <h6 class="font-weight-bold mb-2">ORCS File Number</h6>
-          <div class="mb-3 grid md:grid-cols-2 gap-3">
+          <div class="mb-4 grid md:grid-cols-2 gap-4">
             <div class="grid grid-flow-col grid-rows-3">
               <label for="drillerORCSInput" aria-describedby="drillerORCSExample">Well Driller ORCS Number:</label>
               <InputText
@@ -92,7 +92,7 @@
         </div>
         <div class="grid grid-flow-col grid-rows-3">
           <label for="registrationTypeInput">Register as: </label>
-          <CheckboxGroup id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType" class="flex flex-row gap-3">
+          <CheckboxGroup id="registrationTypeInput" name="registrationType" v-model="drillerForm.regType" class="flex flex-row gap-4">
             <Checkbox inputId="registrationTypeInputDrill"
                 value="DRILL"
                 v-model="drillerForm.regType"/>
@@ -103,21 +103,21 @@
               <label for="registrationTypeInputPump">Well Pump Installer</label>
             </CheckboxGroup>
         </div>
-        <div class="mt-3">
+        <div class="mt-4">
           <h6 class="font-weight-bold mb-2">Attachments</h6>
           <FileUpload ref="fileupload" name="files[]" url="/api/files/upload" :auto="true" :customUpload="true" @upload="onFormSubmit" v-model="files"/>
-          <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
+          <div class="mt-4" v-if="commonStore.uploadFiles.length > 0">
             <Listbox v-for="(f, index) in commonStore.uploadFiles" :key="index">{{f.name}}</Listbox>
           </div>
         </div>
-        <Card no-body class="mb-3 p-1 p-md-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
+        <Card no-body class="mb-4 p-1 p-md-3" v-if="drillerForm.regType.some(x => x === 'DRILL' || x === 'PUMP')">
           <div>
             <Message :show="newOrgSuccess"
                     dismissible
                     variant="success"
                     severity="success"
                     @dismissed="newOrgSuccess=false"
-                    class="mb-3">
+                    class="mb-4">
               Company added.
             </Message>
             <div class="text-right">
@@ -133,9 +133,9 @@
             </div>
           </div>
           <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-          <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-5' : 'mb-1' ">
+          <div v-if="drillerForm.regType.some(x => x === 'DRILL')" :class="drillerForm.regType.some(x => x === 'PUMP') ? 'mb-12' : 'mb-1' ">
             <h5>Well Driller Registration</h5>
-            <div class="mb-3">
+            <div class="mb-4">
               <label for="companyInput">Well drilling company:</label>
               <Select
                 v-model="drillerForm.organizations.drill"
@@ -144,10 +144,10 @@
                 label="org_verbose_name">
               </Select>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <h6 class="font-weight-normal">Well Driller Classifications</h6>
               <application-add
-                class="mb-3"
+                class="mb-4"
                 v-for="item in drillApplications"
                 v-bind:item="item"
                 v-bind:key="item.id"
@@ -162,7 +162,7 @@
                 variant="primary"
                 size="sm"
                 v-on:click="addApplication (drillApplications)"
-                class="mb-3">
+                class="mb-4">
                 <i class="fa fa-plus-square-o"></i>
                 Add new well driller classification
               </Button>
@@ -170,7 +170,7 @@
           </div>
           <div v-if="drillerForm.regType.some(x => x === 'PUMP')" class="my-2">
             <h5>Well Pump Installer Registration</h5>
-            <div class="mb-3">
+            <div class="mb-4">
               <label
                 id="companyInputGroup"
                 label="Well pump installation company:"
@@ -183,10 +183,10 @@
                 </v-select>
               </label>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <h6 class="font-weight-normal">Well Pump Installer Classifications</h6>
               <application-add
-                class="mb-3"
+                class="mb-4"
                 v-for="item in pumpApplications"
                 v-bind:item="item"
                 v-bind:key="item.id"
@@ -195,21 +195,21 @@
                 activity="PUMP"
                 mode="add"/>
             </div>
-            <div class="mb-3">
+            <div class="mb-4">
               <Button
                 type="button"
                 variant="primary"
                 size="sm"
                 v-on:click="addApplication(pumpApplications)"
-                class="mb-3"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
+                class="mb-4"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
             </div>
           </div>
         </Card>
-        <div class="mt-3">
+        <div class="mt-4">
           <Button type="submit" class="mr-2">Save</Button>
           <Button type="reset" severity="secondary">Reset</Button>
         </div>
-        <div class="mt-3">
+        <div class="mt-4">
           <Message
             v-if="submitSuccess"
             :closable="true"

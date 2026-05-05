@@ -56,7 +56,7 @@
     </DataTable>
 
   </div>
-  <div class="grid grid-cols-4 gap-4">
+  <div class="grid grid-cols-4 gap-6">
     <div class="col-start-1">
       <span v-if="searchResponse.results && searchResponse.results.length">Showing <span id="drillersCurrentOffset">{{ searchResponse.offset + 1 }}</span> to <span id="drillersCurrentOffsetLimit">{{ searchResponse.offset + searchResponse.results.length }}</span> of <span id="drillersTotalResults">{{ searchResponse.count }}</span></span>
     </div>

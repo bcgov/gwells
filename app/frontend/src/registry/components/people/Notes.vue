@@ -1,12 +1,12 @@
 <template>
   <div class="card" ref="noteSection">
     <div class="card-body">
-      <h6 class="text-xl font-bold mb-4" id="notesSectionTitle">Notes</h6>
+      <h6 class="text-xl font-bold mb-6" id="notesSectionTitle">Notes</h6>
 
       <!-- Add Note Form -->
-      <div class="mt-3" v-if="commonStore.userRoles.registry.edit">
+      <div class="mt-4" v-if="commonStore.userRoles.registry.edit">
         <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
-          <div class="flex flex-col gap-2 mb-3">
+          <div class="flex flex-col gap-2 mb-4">
             <label for="noteInput">Add a note:</label>
             <Textarea
               id="noteInput"
@@ -39,7 +39,7 @@
             </div>
           </div>
 
-          <Message v-if="submitSuccess" severity="success" class="mt-3" :closable="true" @close="submitSuccess = false">
+          <Message v-if="submitSuccess" severity="success" class="mt-4" :closable="true" @close="submitSuccess = false">
             {{ alertText }}
           </Message>
           <!-- Submit Modal -->
@@ -150,15 +150,15 @@
       </div>
 
       <!-- Notes List -->
-      <div id="notesList" class="mt-6 border-t border-surface-200 pt-4">
+      <div id="notesList" class="mt-6 border-t border-surface-200 pt-6">
         <div v-if="!notes || !notes.length" class="text-surface-500">
           No notes for this record.
         </div>
-        <div v-else class="flex flex-col gap-4">
+        <div v-else class="flex flex-col gap-6">
           <div
             v-for="(note, index) in notes"
             :key="index"
-            class="p-4 bg-surface-50 rounded-md border border-surface-100 flex flex-col sm:flex-row justify-between gap-4"
+            class="p-6 bg-surface-50 rounded-md border border-surface-100 flex flex-col sm:flex-row justify-between gap-6"
           >
             <div class="break-words max-w-full">
               <p class="mb-1">

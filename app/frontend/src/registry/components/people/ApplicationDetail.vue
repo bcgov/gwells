@@ -13,7 +13,7 @@
 */
 <template>
   <div class="container">
-    <Card no-body class="mb-3">
+    <Card no-body class="mb-4">
       <Breadcrumb :model="breadcrumbs" class="py-0 my-2"></Breadcrumb>
     </Card>
     <div class="card">
@@ -60,14 +60,14 @@
                   v-on:isValid="onApplicationIsValid"
                   v-on:close="confirmCancelModal=true"/>
               </div>
-              <div class="mt-3">
+              <div class="mt-4">
                   <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
                   <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
               </div>
             </Form>
           </div>
           <div v-else>
-            <div class="card mb-3">
+            <div class="card mb-4">
               <div class="card-body">
                 <div>
                   <h5>Classification &amp; Qualifications</h5>
@@ -96,7 +96,7 @@
                   <div>{{ application.primary_certificate_no }}</div>
                 </div>
                 <div>
-                  <div class="pl-3 pt-3">
+                  <div class="pl-4 pt-4">
                       <label for="qualifications" class="font-weight-bold">
                         {{ `Qualified ${activity === 'DRILL' ? 'to drill ' : ''}under this classification` }}
                           <div class="col-12">
@@ -170,7 +170,7 @@
                   <div v-else>Unknown</div>
                 </div>
                 <div v-if="removalDate || removalReason">
-                  <div class="pt-3"><h6>Removal of classification from register</h6></div>
+                  <div class="pt-4"><h6>Removal of classification from register</h6></div>
                 </div>
                 <div v-if="removalDate || removalReason">
                   <div><span class="registry-label">Removal date:</span></div>

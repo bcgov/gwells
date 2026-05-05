@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-3 px-5">
+  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <Breadcrumb :model="breadcrumbs"/>
   </div>
   <Card class="rounded-lg ml-20 mr-20 bg-white">
@@ -7,7 +7,7 @@
     <template #content>
 
       <!-- Company selector (used to select company to edit) -->
-      <div class="grid grid-cols-3 gap-4 mb-4">
+      <div class="grid grid-cols-3 gap-6 mb-6">
           <label for="orgEditSelectDropdown">Select a company:
             <v-select
                 id="orgEditSelectDropdown"
@@ -27,14 +27,14 @@
       </div>
 
       <!-- Add company button (opens 'add company' modal) and success feedback -->
-      <div class="flex flex-col mb-5">
+      <div class="flex flex-col mb-12">
         <div>
           <Button
             id="orgAddNewButton"
             @click="showAddModal = true"
             type="button"
             size="small"
-            class="mb-5">
+            class="mb-12">
           <i class="fa fa-plus-square-o"></i> Add new company</Button>
         <organization-add v-model:visible="showAddModal"  @newOrgAdded="newOrgHandler"></organization-add>
         </div>
@@ -53,12 +53,12 @@
       </div>
 
       <!-- Selected company details and edit form fields -->
-      <div class="grid grid-cols-1 gap-4 mb-4">
+      <div class="grid grid-cols-1 gap-6 mb-6">
         <Card class="rounded-lg" v-if="!!selectedCompany">
           <template #content>
             <Form @submit="submitConfirm" @reset="cancelConfirm">
-              <h6 class="text-xl font-bold mb-4">Company Information</h6>
-              <div class="grid grid-cols-2 gap-4 mb-4">
+              <h6 class="text-xl font-bold mb-6">Company Information</h6>
+              <div class="grid grid-cols-2 gap-6 mb-6">
                 <div class="flex flex-col gap-2">
                   <label for="orgEditNameInput">Company name:</label>
                   <InputText
@@ -78,7 +78,7 @@
                     v-model="companyForm.street_address"/>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="grid grid-cols-2 gap-6 mb-6">
                 <div class="flex flex-col gap-2">
                   <label for="orgEditCityInput">City:</label>
                   <InputText
@@ -104,7 +104,7 @@
                   </Message>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="grid grid-cols-2 gap-6 mb-6">
                 <div class="flex flex-col gap-2">
                   <label for="orgEditPostalInput">Postal code:</label>
                   <InputText
@@ -114,7 +114,7 @@
                     v-model="companyForm.postal_code"/>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="grid grid-cols-2 gap-6 mb-6">
                 <div class="flex flex-col gap-2">
                   <label for="orgEditPhoneInput">Office telephone number:</label>
                   <InputMask
@@ -135,7 +135,7 @@
                     v-model="companyForm.fax_tel"/>
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
+              <div class="grid grid-cols-2 gap-6 mb-6">
                 <div class="flex flex-col gap-2">
                   <label for="orgEditEmailInput">Email:</label>
                   <InputText
@@ -182,14 +182,14 @@
                     class="w-full md:w-80" />
                 </div>
               </div>
-              <div class="grid gap-4 grid-cols-2 mb-4">
+              <div class="grid gap-6 grid-cols-2 mb-6">
                 <div class="col-span-1">
                   <Button label="Update" type="submit" class="btn btn-primary mr-2" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged" />
                   <Button label="Cancel" type="reset" class="btn btn-light" severity="danger" ref="orgUpdateCancelBtn" :disabled="!selectedCompany || !formChanged" />
                 </div>
               </div>
-              <div class="grid grid-cols-2 gap-4 mb-4">
-                <Message class="mt-3" severity="success" id="orgUpdateSuccessAlert" v-if="companyUpdateSuccess" :closable="true" @close="companyUpdateSuccess=false">
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <Message class="mt-4" severity="success" id="orgUpdateSuccessAlert" v-if="companyUpdateSuccess" :closable="true" @close="companyUpdateSuccess=false">
                   Successfully updated company information.
                 </Message>
               </div>
@@ -227,7 +227,7 @@
           <template #content>
             <notes
               ref="notes"
-              class="my-3"
+              class="my-4"
               v-if="!!companyDetails"
               type="organization"
               @updated="loadCompanyDetails()"
@@ -241,7 +241,7 @@
           <template #content>
             <change-history
               ref="changeHistory"
-              class="my-3"
+              class="my-4"
               v-if="!!selectedCompany"
               resource="organization"
               :id="selectedCompany.org_guid"></change-history>
@@ -251,7 +251,7 @@
 
       <!-- Delete company button and confirmation modals -->
       <div v-if="!!companyDetails">
-        <p class="mt-3">
+        <p class="mt-4">
           There {{ companyDetails.registrations_count === 1 ? 'is': 'are' }}
           <span class="font-bold">{{ companyDetails.registrations_count }}</span>
           {{ companyDetails.registrations_count === 1 ? 'registrant': 'registrants' }}
@@ -282,7 +282,7 @@
           label="Delete this company"
           variant="danger"
           severity="danger"
-          class="mt-4 mb-4"
+          class="mt-6 mb-6"
           :disabled="companyDetails.registrations_count > 0"
           @click="companyDeleteConfirm()"
         />
@@ -302,7 +302,7 @@
       </Dialog>
       <Message
         severity="success"
-        class="mt-3"
+        class="mt-4"
         id="orgDeleteSuccessAlert"
         v-if="!!companyDeleted"
         :closable="true"

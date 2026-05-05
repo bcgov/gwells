@@ -6,7 +6,7 @@
 
     <!-- form body and inputs -->
     <Form @submit="onFormSubmit()" @reset="onFormReset()">
-      <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-2 gap-6 mb-6">
         <div>
           <label for="orgAddNameInput">Company name:</label>
           <InputText
@@ -27,7 +27,7 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-2 gap-6 mb-6">
         <div class="flex flex-col">
           <label for="orgAddCityInput">City:</label>
           <InputText
@@ -64,7 +64,7 @@
             v-model="orgForm.postal_code"/>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-2 gap-6 mb-6">
         <div>
           <label for="orgAddPhoneInput">Office telephone number:</label>
           <InputMask
@@ -84,7 +84,7 @@
             v-model="orgForm.fax_tel"/>
         </div>
       </div>
-      <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="grid grid-cols-2 gap-6 mb-6">
         <div class="flex flex-col">
           <label for="orgAddEmailInput">Email:</label>
           <InputText
@@ -98,7 +98,7 @@
               {{ error }}
             </Message>
         </div>
-        <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="grid grid-cols-2 gap-6 mb-6">
           <div>
             <label for="orgAddWebsiteInput">Website:</label>
             <InputText
@@ -118,7 +118,7 @@
           </div>
         </div>
       </div>
-      <div class="mt-3 grid grid-cols-12 gap-4">
+      <div class="mt-4 grid grid-cols-12 gap-6">
         <div class="col-span-12">
           <Button label="save" type="submit" class="mr-2" :disabled="orgSubmitLoading" />
           <Button label="cancel" type="button" severity="secondary" id="orgAddFormResetButton" @click="cancelConfirm"/>
