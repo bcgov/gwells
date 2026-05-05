@@ -1,18 +1,16 @@
 <template>
   <div>
-    <b-card v-if="commonStore.userRoles && commonStore.userRoles.surveys.edit" class="container">
+    <Card v-if="commonStore.userRoles && commonStore.userRoles.surveys.edit" class="container">
       <fieldset>
         <legend id="surveyList">Current Surveys</legend>
-        <b-table
+        <DataTable
           id="survey-table"
-          responsive
-          :fields="fields"
-          show-empty
-          empty-text="There are no surveys available."
-          :items="currentSurveys"
-          :per-page="perPage"
-          :current-page="currentPage"
+          :value="currentSurveys"
+          paginator
+          :totalRecords="totalSurveys"
+          :rows="perPage"
         >
+          <template #empty>There are no surveys available.</template>
           <template v-slot:cell(survey_page)="row">
             {{formatPageName(row.item.survey_page)}}
           </template>
@@ -20,22 +18,16 @@
             <a :href="row.item.survey_link" target="_blank">{{row.item.survey_link}}</a>
           </template>
           <template v-slot:cell(survey_enabled)="data">
-            <b-form-checkbox v-model="row.item.survey_enabled" name="check-button" @input="toggleSurveyEnabled(row.item.survey_guid, row.item.survey_enabled)"/>
+            <Checkbox v-model="row.item.survey_enabled" name="check-button" @input="toggleSurveyEnabled(row.item.survey_guid, row.item.survey_enabled)"/>
           </template>
           <template v-slot:cell(remove)="data">
-            <b-btn type="button" variant="outline-danger" size="sm" @click="handleRemoveSurvey(row.item.survey_guid)"><i class="fa fa-trash"></i></b-btn>
+            <Button type="button" severity="danger" outlined size="small" @click="handleRemoveSurvey(row.item.survey_guid)"><i class="fa fa-trash"></i></Button>
           </template>
-        </b-table>
-        <b-pagination v-if="totalSurveys > perPage"
-          v-model="currentPage"
-          :total-rows="totalSurveys"
-          :per-page="perPage"
-          aria-controls="survey-table"
-        ></b-pagination>
+        </DataTable>
       </fieldset>
       <fieldset>
         <legend>Add a Survey</legend>
-        <b-form @submit.prevent="submitForm" @reset.prevent="resetForm">
+        <Form @submit="submitForm" @reset="resetForm">
           <form-input
             id="surveyTextInput"
             label="Survey text"
@@ -49,8 +41,8 @@
             :errors="errors['survey_link']"
           ></form-input>
 
-          <b-row>
-            <b-col cols="12" sm="6">
+          <tr>
+            <td cols="12" sm="6">
               <form-input
                 id="surveyPageSelect"
                 label="Survey page"
@@ -60,43 +52,43 @@
                 :errors="errors['survey_page']"
                 v-model="form.survey_page"
               ></form-input>
-            </b-col>
-          </b-row>
-          <b-row class="mt-4">
-            <b-col cols="12" sm="6">
-              <b-form-checkbox v-model="form.survey_enabled" name="check-button">
+            </td>
+          </tr>
+          <tr class="mt-4">
+            <td cols="12" sm="6">
+              <Checkbox v-model="form.survey_enabled" name="check-button">
                 Enable survey immediately
-              </b-form-checkbox>
-            </b-col>
-          </b-row>
-          <b-row class="mt-6">
-            <b-col>
-              <b-btn type="submit" variant="primary">Save</b-btn>
-            </b-col>
-          </b-row>
-        </b-form>
+              </Checkbox>
+            </td>
+          </tr>
+          <tr class="mt-6">
+            <td>
+              <Button type="submit">Save</Button>
+            </td>
+          </tr>
+        </Form>
       </fieldset>
-      <b-modal
+      <Dialog
           v-model="removeSurveyModal"
           centered
           title="Confirm remove"
           @shown="focusRemoveModal">
         Are you sure you want to remove this survey?
         <div slot="modal-footer">
-          <b-btn variant="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn">
+          <Button severity="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn">
             Cancel
-          </b-btn>
-          <b-btn variant="danger" @click="removeSurveyModal=false;removeSurvey(surveyToRemove)">
+          </Button>
+          <Button severity="danger" @click="removeSurveyModal=false;removeSurvey(surveyToRemove)">
             Remove
-          </b-btn>
+          </Button>
         </div>
-      </b-modal>
-    </b-card>
-    <b-card v-else class="container">
+      </Dialog>
+    </Card>
+    <Card v-else class="container">
       <b-card-body>
         <div id="loginMsg">Please log in to continue.</div>
       </b-card-body>
-    </b-card>
+    </Card>
   </div>
 
 </template>
