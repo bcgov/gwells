@@ -1,8 +1,8 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-3 px-5">
+  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <Breadcrumb :model="breadcrumbs"></Breadcrumb>
   </div>
-  <div v-if="showSpinner" class="rounded-lg ml-20 mr-20 bg-white mb-3 px-5">
+  <div v-if="showSpinner" class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <div class="fa-2x text-center">
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
@@ -34,11 +34,11 @@
       </div>
 
       <!-- Personal information -->
-      <div class="mb-3">
+      <div class="mb-4">
         <div class="p-2 p-md-3">
           <div class="grid grid-cols-12">
             <div class="col-9">
-              <h5 class="card-title mb-3">Personal Information</h5>
+              <h5 class="card-title mb-4">Personal Information</h5>
             </div>
             <div class="col-3 text-right">
               <button
@@ -88,7 +88,7 @@
       </div>
 
       <!-- Registrations -->
-      <div class="card mb-3"
+      <div class="card mb-4"
           v-for="(registration, index) in currentDriller.registrations"
           :key="`registration ${index}`">
         <div class="card-body p-2 p-md-3">
@@ -96,7 +96,7 @@
 
           <!-- Classifications -->
           <h6>Classifications</h6>
-          <div class="mb-3">
+          <div class="mb-4">
             <div class="table-responsive">
               <table id="classification-table" class="table">
                 <thead>
@@ -124,7 +124,7 @@
             <div v-if="show(registration.registries_activity)">
               <Form @submit.prevent="saveApplication(registration.registries_activity)">
                 <application-add
-                    class="mb-3"
+                    class="mb-4"
                     v-on:close="closeApplication(registration.registries_activity)"
                     :modelValue="getApplication(registration.registries_activity)"
                     :activity="registration.registries_activity"
@@ -140,14 +140,14 @@
                 label="Add classification"
                 size="small"
                 v-on:click="addApplication(registration)"
-                class="mb-3 registries-action-button" />
+                class="mb-4 registries-action-button" />
             </div>
           </div>
 
           <!-- Registration information -->
           <div class="row">
             <div class="col">
-              <h6 class="card-title mb-3">{{ registration.activity_description }} Registration Details</h6>
+              <h6 class="card-title mb-4">{{ registration.activity_description }} Registration Details</h6>
             </div>
             <div class="col text-right">
               <button
@@ -160,14 +160,14 @@
             </div>
           </div>
           <person-edit
-            class="mb-4"
+            class="mb-6"
             section="registration"
             :record="registration"
             v-if="editRegistration === (index + 1) && commonStore.userRoles.registry.edit"
             @updated="editRegistration = 0; updateRecord()"
             @canceled="editRegistration = 0"></person-edit>
           <div v-if="editRegistration !== (index + 1)">
-            <div class="row mb-4">
+            <div class="row mb-6">
               <div class="col-5 col-md-2">
                 Registration number:
               </div>
@@ -180,7 +180,7 @@
           <!-- Company information -->
           <div class="row">
             <div class="col">
-              <h6 class="card-title mb-3">{{ registration.activity_description }} Company Information</h6>
+              <h6 class="card-title mb-4">{{ registration.activity_description }} Company Information</h6>
             </div>
             <div class="col text-right">
               <button
@@ -272,7 +272,7 @@
       </div>
 
       <!-- new registrations -->
-      <div class="card mb-3" v-if="commonStore.userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
+      <div class="card mb-4" v-if="commonStore.userRoles.registry.edit && (!currentDriller.registrations || currentDriller.registrations.length !== 2)">
         <div class="card-body p-2 p-md-3">
           <div
             v-for="(item, index) in registrationOptions.filter((item) => {
@@ -310,11 +310,11 @@
       </div>
 
       <!-- Contact Information -->
-      <div class="card mb-3">
+      <div class="card mb-4">
         <div class="card-body p-2 p-md-3">
           <div class="row">
             <div class="col-9">
-              <h6 class="card-title mb-3">Contact Information at Company</h6>
+              <h6 class="card-title mb-4">Contact Information at Company</h6>
             </div>
             <div class="col-3 text-right">
               <button
@@ -349,27 +349,27 @@
       <!-- Notes -->
       <person-notes @updated="updateRecord"></person-notes>
 
-      <div class="card mb-3">
+      <div class="card mb-4">
         <div class="card-body p-2 p-md-3">
           <div class="row">
             <div class="col-9">
-              <h5 class="card-title mb-3">Attachments</h5>
+              <h5 class="card-title mb-4">Attachments</h5>
             </div>
           </div>
-          <div class="mt-3">
+          <div class="mt-4">
             <label>Upload Documents
               <FileUpload
                 v-model="files"
                 multiple
                 plain/>
-              <div class="mt-3" v-if="commonStore.uploadFiles.length > 0">
+              <div class="mt-4" v-if="commonStore.uploadFiles.length > 0">
                 <ul>
                   <li v-for="(f, index) in uploadFiles" :key="index">{{f.name}}</li>
                 </ul>
               </div>
             </label>
           </div>
-          <div class="mt-3">
+          <div class="mt-4">
             <person-documents :files="person_files"
               v-on:fetchFiles="fetchFiles"
               :guid="currentDriller.person_guid"></person-documents>
@@ -384,7 +384,7 @@
       <!-- Change history for this record -->
       <change-history
         ref="changeHistory"
-        class="my-3"
+        class="my-4"
         v-if="!!currentDriller"
         resource="person"
         :id="currentDriller.person_guid"></change-history>

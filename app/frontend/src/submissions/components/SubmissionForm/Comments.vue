@@ -36,7 +36,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-col>
     </b-row>
 
-    <b-row class="mt-3">
+    <b-row class="mt-4">
       <b-col cols="12" md="8">
         <b-form-group label="Internal Office Comments" id="commentsGroup">
           <b-form-textarea
@@ -47,7 +47,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-form-group>
       </b-col>
     </b-row>
-    <b-row class="mt-3">
+    <b-row class="mt-4">
       <b-col cols="12" sm="6">
         <b-form-group label="Alternative Specs Submitted">
         <b-form-radio-group
@@ -61,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-form-group>
     </b-col>
     </b-row>
-    <b-row class="mt-3">
+    <b-row class="mt-4">
       <b-col cols="12" sm="6">
         <b-form-group label="Technical Report">
         <b-form-radio-group
@@ -75,7 +75,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-form-group>
     </b-col>
     </b-row>
-    <b-row class="mt-3">
+    <b-row class="mt-4">
       <b-col cols="12" sm="6">
         <b-form-group label="Drinking Water Area Indicator">
         <b-form-radio-group

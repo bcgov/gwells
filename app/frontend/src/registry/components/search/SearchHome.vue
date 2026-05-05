@@ -5,7 +5,7 @@
     <Message
         show
         variant="info"
-        class="container mb-3"
+        class="container mb-4"
         severity="info"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
@@ -20,7 +20,7 @@
     <Card class="rounded-lg p-1 ml-50 mr-50 bg-white">
       <template #title>Search for a Well Driller or Well Pump Installer</template>
       <template #content>
-        <div class="grid grid-cols-2 mb-5 gap-4">
+        <div class="grid grid-cols-2 mb-12 gap-6">
           <p class="col-start-1">To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca</a>.</p>
           <p class="col-start-1">
             <a href="https://www2.gov.bc.ca/gov/content?id=63B6DFF0024949B6867C459C19C23F88" target="_blank">
@@ -30,7 +30,7 @@
         </div>
 
         <!-- Admin options -->
-        <div v-if="userRoles.registry.edit" class="p-1 mb-3">
+        <div v-if="userRoles.registry.edit" class="p-1 mb-4">
           <div>
             <Panel :toggleable="true" :collapsed="true" header="Administrator options">
               <div class="pb-1 gap-2 flex flex-row">
@@ -58,18 +58,18 @@
         </div>
 
         <!-- Search options -->
-        <div class="pr-3">
-          <div class="grid grid-cols-2 gap-4">
+        <div class="pr-4">
+          <div class="grid grid-cols-2 gap-6">
             <!-- Search form -->
             <div class="col-span-1 mb-2">
-              <div class="mb-4">
+              <div class="mb-6">
                 Use the search function below to define your search criteria.
                 Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C.
                 Some well drillers and well pump installers may operate in multiple areas throughout B.C.
                 For a complete list refer to the results table below.
               </div>
               <Form @submit="drillerSearch" @reset="resetSearch" id="drillerSearchForm">
-                <div class="grid grid-cols-4 mb-4 gap-4">
+                <div class="grid grid-cols-4 mb-6 gap-6">
                   <label class="col-span-3">Choose professional type:
                     <RadioButtonGroup v-model="searchParams.activity" name="activitySelector" class="mt-2">
                       <RadioButton inputId="activityDriller" value="DRILL"/>
@@ -93,7 +93,7 @@
                     </CheckboxGroup>
                   </label>
                 </div>
-                <div class="grid grid-flow-col gap-4 mb-4">
+                <div class="grid grid-flow-col gap-6 mb-6">
                   <div class="mt-2">
                     <span>Community:</span>
                     <!-- should update based on drill or pump subactivity selection -->
@@ -117,14 +117,14 @@
                     <Message
                       show
                       variant="warning"
-                      class="mb-3"
+                      class="mb-4"
                       severity="warn"
                       v-if="limitSearchToCurrentMapBounds && isCommunitySelected">
                       Caution: Your are filtering the search by community ({{registryStore.searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure these two selections are consistent, or you won't get any search results.
                     </Message>
                   </div>
                 </div>
-                <div v-if="userRoles.registry.view" class="flex flex-col gap-2 mb-4">
+                <div v-if="userRoles.registry.view" class="flex flex-col gap-2 mb-6">
                   <label for="registrationStatusSelect">Registration status:</label>
                   <Select
                   :options="regStatusOptions"
@@ -133,7 +133,7 @@
                   name="registryStatuses"
                   class="w-full md:w-80"/>
                 </div>
-                <div class="flex flex-col gap-2 mb-4">
+                <div class="flex flex-col gap-2 mb-6">
                   <label>Region:</label>
                   <Listbox
                     id="regionOptions"
@@ -144,7 +144,7 @@
                     listStyle="max-height:200px;"
                   />
                 </div>
-                <div class="flex flex-col gap-2 mb-4">
+                <div class="flex flex-col gap-2 mb-6">
                   <label for="regTypeInput">
                     Individual, company, or registration number:
                   </label>
@@ -156,7 +156,7 @@
                     v-model="searchParams.search"
                   />
                 </div>
-                <div class="mb-4">
+                <div class="mb-6">
                   <span>Entries:</span>
                   <Select
                     v-model="searchParams.limit"
@@ -165,7 +165,7 @@
                     class="ml-2 w-24"
                   />
                 </div>
-                <div class="flex flex-col gap-2 mb-4">
+                <div class="flex flex-col gap-2 mb-6">
                   <legend for="mapOptionsRadioGroup" class="flex flex-col gap-2">Map options:</legend>
                   <RadioButtonGroup v-model="limitSearchToCurrentMapBounds" name="limitSearchToCurrentMapBounds" class="flex flex-col gap-2">
                     <div>
@@ -177,9 +177,9 @@
                       <label for="limitSearchToMap" style="margin-right: 10px; margin-left: 5px;">Limit search to map area</label>
                     </div>
                   </RadioButtonGroup>
-                  <label class="ml-4">
+                  <label class="ml-6">
                     <Checkbox
-                      class="ml-4"
+                      class="ml-6"
                       v-model="refreshOnMapChange"
                       id="refreshOnMapChange"
                       :disabled="!limitSearchToCurrentMapBounds"
@@ -188,7 +188,7 @@
                     Refresh search results when map area changes
                   </label>
                 </div>
-                <div class="flex flex-row gap-2 mb-4">
+                <div class="flex flex-row gap-2 mb-6">
                   <Button
                     label="Submit"
                     type="submit"
@@ -209,8 +209,8 @@
           </div>
 
           <div id="registry-download" v-if="userRoles.registry.view">
-            <h6 class="mt-3">Download everyone in registry</h6>
-            <ul class="ml-3">
+            <h6 class="mt-4">Download everyone in registry</h6>
+            <ul class="ml-4">
               <li><a href="drillers/xlsx" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (XLSX)</a></li>
               <li><a href="drillers/csv" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (CSV)</a></li>
             </ul>
@@ -245,7 +245,7 @@
             <a :href="`drillers/xlsx?${downloadLinkQS}`" @click.prevent="downloadFile" class="text-blue-500 hover:underline">XLSX</a> |
             <a :href="`drillers/csv?${downloadLinkQS}`" @click.prevent="downloadFile" class="text-blue-500 hover:underline">CSV</a>
           </div>
-          <div v-if="hasResults" class="mt-5">
+          <div v-if="hasResults" class="mt-12">
             <register-legal-text class="register-legal" :activity="activity"/>
           </div>
         </div>

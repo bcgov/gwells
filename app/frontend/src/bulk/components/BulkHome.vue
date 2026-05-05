@@ -21,7 +21,7 @@
       Return <router-link to="/">home</router-link>
     </div>
     <div v-else>
-      <h2 class="border-bottom pb-1 mb-3">Bulk Operations</h2>
+      <h2 class="border-bottom pb-1 mb-4">Bulk Operations</h2>
       <p>
         Update multiple wells or aquifers at the same time with the following bulk operation utilities.
       </p>

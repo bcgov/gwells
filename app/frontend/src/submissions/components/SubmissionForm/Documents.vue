@@ -73,7 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </thead>
         <tbody>
           <tr v-for="(attachment, index) in attachmentsData" :key="index">
-            <td class="p-3">
+            <td class="p-4">
                 {{ attachment.well_tag_number = wellTagNumber }}
             </td>
             <td>
@@ -111,7 +111,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
            <!-- Privacy Flag  -->
            <td>
               <b-form-checkbox
-                class="mt-2 ml-3"
+                class="mt-2 ml-4"
                 v-model="attachment.private"
                 :loaded="getFieldsLoaded(index).private"
               />

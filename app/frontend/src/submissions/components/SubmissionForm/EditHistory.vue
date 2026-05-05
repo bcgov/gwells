@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset :id="id" class="mt-5">
+  <fieldset :id="id" class="mt-12">
     <b-row>
       <b-col cols="12" lg="6">
         <legend>Change History</legend>

@@ -71,7 +71,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
 
       <!-- Type of work performed -->
-      <activity-type class="my-5"
+      <activity-type class="my-12"
         v-if="showSection('activityType')"
         id="activityType"
         v-model:wellActivityType="activityTypeInput"
@@ -85,7 +85,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     ></submission-history>
 
     <!-- Publication Status of well -->
-    <publication-status class="my-5"
+    <publication-status class="my-12"
       v-if="showSection('wellPublicationStatus')"
       id="wellPublicationStatus"
       v-model:wellPublicationStatusCode="form.well_publication_status"
@@ -97,7 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     />
 
     <!-- Type of well -->
-    <well-type class="my-5"
+    <well-type class="my-12"
       v-if="showSection('wellType')"
       id="wellType"
       v-model:startDateOfWorkLabel="this.startDateOfWorkLabel"
@@ -128,7 +128,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     />
 
       <!-- Type of well -->
-      <work-dates class="my-5"
+      <work-dates class="my-12"
        v-if="showSection('workDates')"
        id="workDates"
        v-model:constructionStartDate="form.construction_start_date"
@@ -147,7 +147,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Person responsible for work -->
-      <person-responsible class="my-5"
+      <person-responsible class="my-12"
         v-if="showSection('personResponsible')"
         id="personResponsible"
         v-model:drillerName="form.driller_name"
@@ -164,7 +164,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Owner information -->
-      <owner class="my-5"
+      <owner class="my-12"
         v-if="showSection('wellOwner')"
         id="wellOwner"
         v-model:ownerFullName="form.owner_full_name"
@@ -182,7 +182,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Well location -->
-      <location class="my-5"
+      <location class="my-12"
         v-if="showSection('wellLocation')"
         id="wellLocation"
         v-model:ownerMailingAddress="form.owner_mailing_address"
@@ -208,7 +208,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Coords -->
-      <coords class="my-5"
+      <coords class="my-12"
         v-if="showSection('wellCoords')"
         id="wellCoords"
         ref="wellCoords"
@@ -224,7 +224,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Method of Drilling -->
-      <method-of-drilling class="my-5"
+      <method-of-drilling class="my-12"
         v-if="showSection('method')"
         id="method"
         v-model:drillingMethodsLabel="this.drillingMethodsLabel"
@@ -239,7 +239,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Lithology -->
-      <lithology class="my-5"
+      <lithology class="my-12"
         v-if="showSection('lithology')"
         id="lithology"
         :errors="errors"
@@ -250,7 +250,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Casings -->
-      <casings class="my-5"
+      <casings class="my-12"
         :key="`casingsComponent${componentUpdateTrigger}`"
         v-if="showSection('casings')"
         id="casings"
@@ -263,7 +263,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Surface Seal / Backfill Material -->
-      <backfill class="my-5"
+      <backfill class="my-12"
         v-if="showSection('backfill')"
         id="backfill"
         :errors="errors"
@@ -279,7 +279,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Liner Information -->
-      <liner class="my-5"
+      <liner class="my-12"
         :key="`linerComponent${componentUpdateTrigger}`"
         v-if="showSection('liner')"
         id="liner"
@@ -297,7 +297,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Screens -->
-      <screens class="my-5"
+      <screens class="my-12"
         :key="`screensComponent${componentUpdateTrigger}`"
         v-if="showSection('screens')"
         id="screens"
@@ -317,7 +317,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Filter Pack -->
-      <filterPack class="my-5"
+      <filterPack class="my-12"
         v-if="showSection('filterPack')"
         id="filterPack"
         :errors="errors"
@@ -332,7 +332,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Well Development -->
-      <development class="my-5"
+      <development class="my-12"
         v-if="showSection('wellDevelopment')"
         id="wellDevelopment"
         :errors="errors"
@@ -345,7 +345,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Yield (Production Data) -->
-      <yield class="my-5"
+      <yield class="my-12"
         v-if="showSection('wellYield')"
         id="wellYield"
         :errors="errors"
@@ -364,7 +364,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Water Quality -->
-      <water-quality class="my-5"
+      <water-quality class="my-12"
         v-if="showSection('waterQuality')"
         id="waterQuality"
         v-model:waterQualityCharacteristics="form.water_quality_characteristics"
@@ -378,7 +378,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
         <!-- Well Completion Data -->
-      <completion class="my-5"
+      <completion class="my-12"
         v-if="showSection('wellCompletion')"
         id="wellCompletion"
         v-model:totalDepthDrilledLabel="this.totalDepthDrilledLabel"
@@ -402,7 +402,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Aquifer Data -->
-      <aquifer-data class="my-5"
+      <aquifer-data class="my-12"
         v-if="showSection('aquiferData')"
         id="aquiferData"
         v-model:aquifer="form.aquifer"
@@ -414,7 +414,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Observation well info -->
-      <observation-well-info class="my-5"
+      <observation-well-info class="my-12"
         v-if="showSection('observationWellInfo')"
         id='observationWellInfo'
         v-model:obsWellNumber="form.observation_well_number"
@@ -427,7 +427,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Decommission Information -->
-      <decommission-information class="my-5"
+      <decommission-information class="my-12"
         v-if="showSection('decommissionInformation')"
         id="decommissionInformation"
         v-model:finishedWellDepth="form.finished_well_depth"
@@ -443,7 +443,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Closure/Decommission Description -->
-      <closure-description class="my-5"
+      <closure-description class="my-12"
          v-if="showSection('closureDescription')"
          id="closureDescription"
          :errors="errors"
@@ -454,7 +454,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </closure-description>
 
       <!-- Comments -->
-      <comments class="my-5"
+      <comments class="my-12"
         v-if="showSection('comments')"
         id="comments"
         v-model:comments="form.comments"
@@ -470,7 +470,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Documents -->
-      <documents class="my-5"
+      <documents class="my-12"
         v-if="showSection('documents')"
         id="documents"
         :wellTagNumber="wellTagNumber"
@@ -485,7 +485,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       />
 
       <!-- Aquifer Parameters -->
-      <aquifer-parameters class="my-5"
+      <aquifer-parameters class="my-12"
         :key="`aquiferParametersComponent${componentUpdateTrigger}`"
         v-if="showSection('aquiferParameters')"
         id="aquiferParameters"
@@ -497,13 +497,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
-      <vertical-aquifer-extents class="my-5"
+      <vertical-aquifer-extents class="my-12"
         v-if="showSection('aquiferParameters')"
         id="vertical-aquifer-extents"
         :wellTagNumber="wellTagNumber"
       />
 
-      <edit-history class="my-5"
+      <edit-history class="my-12"
         v-if="showSection('editHistory')"
         id="editHistory"
         :well-tag-number="wellTagNumber"
@@ -511,11 +511,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       ></edit-history>
 
       <!-- Back / Next / Submit controls -->
-      <b-row v-else class="mt-5">
+      <b-row v-else class="mt-12">
         <b-col v-if="!formIsFlat">
           <b-btn v-if="step > 1 && !formIsFlat" @click="gotoPrevStep" variant="primary">Back</b-btn>
         </b-col>
-        <b-col class="pr-4 text-right">
+        <b-col class="pr-6 text-right">
           <b-btn v-if="step < maxSteps && !formIsFlat" @click="gotoNextStep" variant="primary" id="nextSubmissionStep">Next</b-btn>
           <span v-else>
             <b-btn variant="primary" @click="$emit('preview')" id="formPreviewButton">Preview &amp; Submit</b-btn>

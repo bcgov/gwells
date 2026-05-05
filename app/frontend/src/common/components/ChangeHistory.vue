@@ -13,14 +13,14 @@
         No history for this record.
       </div>
       <div class="mt-2" v-if="history && history.length && showHistory">
-        <div class="mt-3" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
+        <div class="mt-4" v-for="(version, index) in history" :key="`history-version ${index}`" :id="`history-version-${index}`">
           <div class="text-sm">
             <span class="font-semibold">{{ version.user }}</span>
                   {{ version.created ? "created" : "edited" }}
                   {{ version.name ? version.name : 'record' }}
                   {{ moment(version.date).format("MMMM Do YYYY [at] LT") }}{{ version.created ? "." : ":" }}
           </div>
-          <div class="ml-4">
+          <div class="ml-6">
                   <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
                   <div
                       v-for="(value, key) in version.diff"

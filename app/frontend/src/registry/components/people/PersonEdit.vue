@@ -4,7 +4,7 @@
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
       <Form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
-        <div class="grid grid-cols-12 md-5 gap-4">
+        <div class="grid grid-cols-12 md-12 gap-6">
           <label
             id="surnameInputGroup"
             for="surnameInput">Surname:
@@ -14,7 +14,7 @@
               required/>
           </label>
         </div>
-        <div class="grid grid-cols-12 md-5 gap-4" offset-md="1">
+        <div class="grid grid-cols-12 md-12 gap-6" offset-md="1">
           <label
             id="firstnameInputGroup"
             for="firstnameInput">First name:
@@ -24,7 +24,7 @@
               required/>
           </label>
         </div>
-        <div class="grid grid-cols-12 md-5 gap-4">
+        <div class="grid grid-cols-12 md-12 gap-6">
           <label
             id="drillOrcsInputGroup"
             for="drillORCSInput">Well Driller ORCS:
@@ -36,7 +36,7 @@
             </div>
           </label>
         </div>
-        <div class="grid grid-cols-12 md-5 gap-4" offset-md="1">
+        <div class="grid grid-cols-12 md-12 gap-6" offset-md="1">
           <label
             id="pumpORCSInputGroup"
             for="pumpORCSInput">Pump installer ORCS:
@@ -59,7 +59,7 @@
     <div v-if="(section === 'contact' || section === 'all')">
       <Form @submit.prevent="submitContactForm">
         <div>
-          <div class="grid grid-cols-12 md-4 gap-4">
+          <div class="grid grid-cols-12 md-6 gap-6">
             <label
               id="emailInputGroup"
               for="emailInput">Email Address:
@@ -74,7 +74,7 @@
               </Message>
             </label>
           </div>
-          <div class="grid grid-cols-12 md-4 gap-4">
+          <div class="grid grid-cols-12 md-6 gap-6">
             <label
               id="telInputGroup"
               for="telInput">Telephone:
@@ -85,7 +85,7 @@
                 v-model="contactInfoForm.contact_tel"/>
             </label>
           </div>
-          <div class="grid grid-cols-12 md-4 gap-4">
+          <div class="grid grid-cols-12 md-6 gap-6">
             <label
               id="cellInputGroup"
               for="cellInput">Cell:
@@ -97,7 +97,7 @@
             </label>
           </div>
         </div>
-        <div class="grid grid-cols-12 md-4 gap-4">
+        <div class="grid grid-cols-12 md-6 gap-6">
           <button type="submit" class="btn btn-primary">Save</button>
           <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
         </div>

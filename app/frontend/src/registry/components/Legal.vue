@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="activity === 'DRILL'" class="flex flex-col gap-4">
+    <div v-if="activity === 'DRILL'" class="flex flex-col gap-6">
       <h5>LEGAL DISCLAIMER FOR WELL DRILLER:</h5>
 
       <p>By listing persons as well drillers in this Register, the Province of British Columbia (B.C.) in no way guarantees, or may be held liable, for any work performed by the person.</p>

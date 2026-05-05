@@ -2,8 +2,8 @@
   <header id="header">
     <Menubar :model="windowWidth <= 640 ? navItems : []" class="flex items-center print:block be-blue">
       <template #start>
-        <div class="flex items-center justify-between px-4 py-2 mx-auto">
-          <a class="inline-block py-1.5 mr-4 text-xl whitespace-nowrap" href="https://www2.gov.bc.ca">
+        <div class="flex items-center justify-between px-6 py-2 mx-auto">
+          <a class="inline-block py-1.5 mr-6 text-xl whitespace-nowrap" href="https://www2.gov.bc.ca">
             <img
                 class="flex max-w-full h-auto hidden sm:block"
                 src="@/common/assets/images/17_gov3_bc_logo.svg"

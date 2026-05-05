@@ -35,7 +35,7 @@
         v-model="filterParams[field.id]" /> -->
     </div>
     <b-row>
-      <b-col class="my-3">
+      <b-col class="my-4">
         <b-btn variant="primary" type="submit" :disabled="wellsStore.searchInProgress">Search</b-btn>
         <b-btn variant="dark" type="reset" :disabled="wellsStore.searchInProgress" class="mx-2">Reset</b-btn>
       </b-col>

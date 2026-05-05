@@ -18,7 +18,7 @@
     <b-alert
         show
         variant="info"
-        class="mb-3"
+        class="mb-4"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
       <p class="m-0">
@@ -28,7 +28,7 @@
       </p>
     </b-alert>
 
-    <b-card no-body class="main-search-card mb-4">
+    <b-card no-body class="main-search-card mb-6">
       <b-alert
         :show="noSearchCriteriaError"
         variant="danger">
@@ -38,7 +38,7 @@
         v-on:submit.prevent="triggerSearch()"
         v-on:reset="triggerReset">
         <b-form-row>
-          <b-col cols="12" md="12" lg="12" xl="4" class="p-4">
+          <b-col cols="12" md="12" lg="12" xl="4" class="p-6">
             <b-button
               id="aquifers-add"
               class="pull-right"
@@ -49,17 +49,17 @@
             </b-button>
             <h1 class="main-title ml-2 mt-2">Aquifer Search</h1>
 
-            <div class="pl-2 pr-2 aquifer-search-column mt-3">
+            <div class="pl-2 pr-2 aquifer-search-column mt-4">
               <h4>Basic Search</h4>
               <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
-              <b-form-group class="search-title mt-3 mb-3">
+              <b-form-group class="search-title mt-4 mb-4">
                 <b-form-input
                   type="text"
                   id="aquifers-search-field"
                   v-model="search"
                   class="w-75"/>
               </b-form-group>
-              <h4 class="pt-4">Advanced Search</h4>
+              <h4 class="pt-6">Advanced Search</h4>
               <b-form-group>
                 <b-form-radio inline v-model="matchAny" name="match-any" value="true">Any field match</b-form-radio>
                 <b-form-radio inline v-model="matchAny" name="match-any" value="false">All field match</b-form-radio>
@@ -79,7 +79,7 @@
                   <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
                 </b-button-group>
               </b-form-row>
-              <h6 class="mt-3">Download all aquifers</h6>
+              <h6 class="mt-4">Download all aquifers</h6>
               <ul class="aquifer-download-list">
                 <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
                 <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
@@ -109,9 +109,9 @@
       </b-form>
 
       <b-row>
-        <b-col cols="12" class="p-5">
+        <b-col cols="12" class="p-12">
           <b-container fluid v-if="searchPerformed && !searchInProgress" class="p-0">
-            <b-row class="mb-3">
+            <b-row class="mb-4">
               <b-col md="6">
                 <div v-if="!emptyResults">
                   Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
@@ -164,7 +164,7 @@
             v-model="currentPage"/>
         </b-col>
       </b-row>
-      <h6 class="pl-5 pb-5 mt-3" v-if="searchResultCount > 0">Download searched aquifers :
+      <h6 class="pl-12 pb-12 mt-4" v-if="searchResultCount > 0">Download searched aquifers :
         <a href="#" @click.prevent="downloadXLSX(true)">XLSX</a> |
         <a href="#" @click.prevent="downloadCSV(true)">CSV</a>
       </h6>

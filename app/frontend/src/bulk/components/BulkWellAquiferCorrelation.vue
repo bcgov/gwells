@@ -14,14 +14,14 @@
 
 <template>
   <div id="bulk-well-aquifer-correlation-screen">
-    <b-card no-body class="mb-3 container d-print-none">
+    <b-card no-body class="mb-4 container d-print-none">
       <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
     </b-card>
     <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
       <api-error v-if="apiError" :error="apiError"/>
 
       <b-container>
-        <b-row class="border-bottom mb-3 pb-2 pt-2">
+        <b-row class="border-bottom mb-4 pb-2 pt-2">
           <b-col><h4>Well Aquifer Correlation Bulk Upload</h4></b-col>
         </b-row>
 
@@ -149,7 +149,7 @@
           </div>
         </b-card>
 
-        <b-button-group class="mt-3">
+        <b-button-group class="mt-4">
           <b-button
             v-if="showSubmitButton"
             :disabled="isSaving || !Boolean(file)"
@@ -210,14 +210,14 @@ const OLD_AQUIFER_FIELD = {
   key: 'oldAquiferId',
   label: 'Old Aquifer ID',
   sortable: true,
-  class: 'old-aquifer-id text-right pr-4'
+  class: 'old-aquifer-id text-right pr-6'
 }
 
 const WARNINGS_FIELD = {
   key: 'warnings',
   label: 'Warnings',
   sortable: true,
-  class: 'warnings pr-4'
+  class: 'warnings pr-6'
 }
 
 export default {
@@ -259,7 +259,7 @@ export default {
         {
           key: 'aquiferId',
           label: 'Aquifer ID',
-          class: 'aquifer-id text-right pr-4',
+          class: 'aquifer-id text-right pr-6',
           sortable: false
         }
       ],
