@@ -46,7 +46,7 @@
     "vue-chartjs": "^4.1.0",
     "vue-matomo": "^4.0.1",
     "vue-moment": "^4.1.0",
-    "vue-router": "^4.6.4",
+    "vue-router": "^5.0.6",
     "vue-select": "^4.0.0-beta.6",
     "vuejs-noty": "^0.1.4"
   },
