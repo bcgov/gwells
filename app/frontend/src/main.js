@@ -18,6 +18,7 @@ import * as Integrations from "@sentry/integrations";
 // import VueNoty from "vuejs-noty";
 import { createPinia } from "pinia";
 import PrimeVue from 'primevue/config';
+import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import {
   Button, InputText, InputMask, Card, Message,Panel,
@@ -154,9 +155,38 @@ app.config.globalProperties.excludeZeroDecimals = filters.excludeZeroDecimals;
 app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
 app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
 
+const MyPreset = definePreset(Aura, {
+  semantic: {
+    colorScheme: {
+      light: {
+        primary: {
+          color: "#003366",
+          hoverColor: "#002040",
+        }
+      }
+    }
+  },
+  components: {
+    card: {
+      root: {
+        borderRadius: 0,
+      }
+    },
+    fieldset: {
+      root: {
+        padding: 0,
+      },
+      legend: {
+        padding: 0,
+        fontWeight: "inherit",
+      }
+    }
+  }
+})
+
 app.use(PrimeVue, {
   theme: {
-    preset: Aura,
+    preset: MyPreset,
     options: {
       darkModeSelector: false,
     }

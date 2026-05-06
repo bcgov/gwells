@@ -36,7 +36,7 @@
     </Menubar>
     <Menubar v-if="windowWidth > 640" class="bc-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white" :model="navItems">
       <template #item="{ item, label }">
-        <router-link v-if="item" :to="item.route" class="text-white px-3 hover:underline decoration-white">
+        <router-link v-if="item" :to="item.route" class="px-3 hover:underline">
           {{ label }}
         </router-link>
       </template>
@@ -108,6 +108,9 @@ export default {
 
 <style lang="scss">
 
+#header a {
+  color: #ffffff !important;
+}
 .navbar {
   margin-bottom: 0px;
 }

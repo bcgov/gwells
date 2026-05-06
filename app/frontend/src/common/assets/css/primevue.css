@@ -1,0 +1,22 @@
+.p-card {
+    position: relative;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    min-width: 0;
+    word-wrap: break-word;
+}
+
+.p-fieldset {
+    border: none !important;
+    min-width: none;
+}
+
+.p-fieldset-legend {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: .5rem;
+    font-size: 1.5rem;
+    line-height: inherit;
+    white-space: normal;
+}

@@ -6,7 +6,7 @@
           :href="item.route"
           target="_blank"
           rel="noopener"
-          class="text-white px-3 hover:underline decoration-white">
+          class="px-3 hover:underline">
           {{ item.label }}
         </a>
       </template>
@@ -41,17 +41,17 @@ export default {
   border-bottom: 0px !important;
   border-radius: 0px !important;
 }
-.footer .nav-item {
+#footer .nav-item {
   font-size: 13px;
 }
-.footer .nav-link {
+#footer .nav-link {
   padding: .1rem .5rem;
 }
-.footer nav {
+#footer nav {
   min-height: 45px;
 }
-.footer a {
-  color: #fff!important;
+#footer a {
+  color: #ffffff !important;
 }
 
 </style>
