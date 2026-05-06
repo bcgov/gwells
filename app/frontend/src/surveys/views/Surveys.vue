@@ -1,104 +1,109 @@
 <template>
   <div>
     <Card v-if="commonStore.userRoles && commonStore.userRoles.surveys.edit" class="container">
-      <fieldset>
-        <legend id="surveyList">Current Surveys</legend>
-        <DataTable
-          id="survey-table"
-          :value="currentSurveys"
-          paginator
-          :totalRecords="totalSurveys"
-          :rows="perPage"
-        >
-          <template #empty>There are no surveys available.</template>
-          <template v-slot:cell(survey_page)="row">
-            {{formatPageName(row.item.survey_page)}}
-          </template>
-          <template v-slot:cell(survey_link)="row">
-            <a :href="row.item.survey_link" target="_blank">{{row.item.survey_link}}</a>
-          </template>
-          <template v-slot:cell(survey_enabled)="data">
-            <Checkbox v-model="row.item.survey_enabled" name="check-button" @input="toggleSurveyEnabled(row.item.survey_guid, row.item.survey_enabled)"/>
-          </template>
-          <template v-slot:cell(remove)="data">
-            <Button type="button" severity="danger" outlined size="small" @click="handleRemoveSurvey(row.item.survey_guid)"><i class="fa fa-trash"></i></Button>
-          </template>
-        </DataTable>
-      </fieldset>
-      <fieldset>
-        <legend>Add a Survey</legend>
-        <Form @submit="submitForm" @reset="resetForm">
-          <form-input
-            id="surveyTextInput"
-            label="Survey text"
-            :errors="errors['survey_introduction_text']"
-            v-model="form.survey_introduction_text"
-          ></form-input>
-          <form-input
-            id="surveyLinkInput"
-            label="Survey link"
-            v-model="form.survey_link"
-            :errors="errors['survey_link']"
-          ></form-input>
+      <template #content>
+        <Fieldset legend="Current Surveys" id="surveyList">
+          <DataTable
+            id="survey-table"
+            :value="currentSurveys"
+            paginator
+            :totalRecords="totalSurveys"
+            :rows="perPage"
+          >
+            <template #empty>There are no surveys available.</template>
+            <template v-slot:cell(survey_page)="row">
+              {{formatPageName(row.item.survey_page)}}
+            </template>
+            <template v-slot:cell(survey_link)="row">
+              <a :href="row.item.survey_link" target="_blank">{{row.item.survey_link}}</a>
+            </template>
+            <template v-slot:cell(survey_enabled)="data">
+              <Checkbox v-model="row.item.survey_enabled" name="check-button" @input="toggleSurveyEnabled(row.item.survey_guid, row.item.survey_enabled)" binary/>
+            </template>
+            <template v-slot:cell(remove)="data">
+              <Button type="button" severity="danger" outlined size="small" @click="handleRemoveSurvey(row.item.survey_guid)"><i class="fa fa-trash"></i></Button>
+            </template>
+          </DataTable>
+        </Fieldset>
+        <Fieldset legend="Add a Survey">
+          <Form @submit="submitForm" @reset="resetForm">
+            <form-input
+              id="surveyTextInput"
+              label="Survey text"
+              :errors="errors['survey_introduction_text']"
+              v-model="form.survey_introduction_text"
+            ></form-input>
+            <form-input
+              id="surveyLinkInput"
+              label="Survey link"
+              v-model="form.survey_link"
+              :errors="errors['survey_link']"
+            ></form-input>
 
-          <tr>
-            <td cols="12" sm="6">
-              <form-input
-                id="surveyPageSelect"
-                label="Survey page"
-                select
-                :options="pageOptions"
-                placeholder="Select page"
-                :errors="errors['survey_page']"
-                v-model="form.survey_page"
-              ></form-input>
-            </td>
-          </tr>
-          <tr class="mt-4">
-            <td cols="12" sm="6">
-              <Checkbox v-model="form.survey_enabled" name="check-button">
-                Enable survey immediately
-              </Checkbox>
-            </td>
-          </tr>
-          <tr class="mt-6">
-            <td>
-              <Button type="submit">Save</Button>
-            </td>
-          </tr>
-        </Form>
-      </fieldset>
-      <Dialog
-          v-model="removeSurveyModal"
-          centered
-          title="Confirm remove"
-          @shown="focusRemoveModal">
-        Are you sure you want to remove this survey?
-        <div slot="modal-footer">
-          <Button severity="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn">
-            Cancel
-          </Button>
-          <Button severity="danger" @click="removeSurveyModal=false;removeSurvey(surveyToRemove)">
-            Remove
-          </Button>
-        </div>
-      </Dialog>
+            <div class="grid grid-cols-12 gap-4">
+              <div class="col-span-12 sm:col-span-6">
+                <form-input
+                  id="surveyPageSelect"
+                  label="Survey page"
+                  select
+                  :options="pageOptions"
+                  placeholder="Select page"
+                  :errors="errors['survey_page']"
+                  v-model="form.survey_page"
+                ></form-input>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 mt-4">
+              <div class="col-span-12 sm:col-span-6">
+                <div class="flex items-center gap-2">
+                  <Checkbox v-model="form" inputId="survey_enabled" name="check-button" binary />
+                  <label for="survey_enabled">Enable survey immediately</label>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-12 gap-4 mt-6">
+              <div>
+                <Button type="submit">Save</Button>
+              </div>
+            </div>
+          </Form>
+        </Fieldset>
+        <Dialog
+            v-model="removeSurveyModal"
+            centered
+            title="Confirm remove"
+            @shown="focusRemoveModal">
+          Are you sure you want to remove this survey?
+          <div slot="modal-footer">
+            <Button severity="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn">
+              Cancel
+            </Button>
+            <Button severity="danger" @click="removeSurveyModal=false;removeSurvey(surveyToRemove)">
+              Remove
+            </Button>
+          </div>
+        </Dialog>
+      </template>
     </Card>
     <Card v-else class="container">
-      <b-card-body>
-        <div id="loginMsg">Please log in to continue.</div>
-      </b-card-body>
+      <template #content>
+        <div id="loginMsg" class="p-6">Please log in to continue.</div>
+      </template>
     </Card>
   </div>
 
 </template>
 
 <script>
+import { Fieldset } from 'primevue';
 import ApiService from '@/common/services/ApiService.js'
 import { useCommonStore } from '@/stores/common.js'
 
 export default {
   name: 'Surveys',
+  components: {
+    Fieldset
+  },
   data () {
     return {
       currentSurveys: [],
