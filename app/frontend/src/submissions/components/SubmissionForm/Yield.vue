@@ -13,19 +13,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset :id="id">
-    <b-row>
-      <b-col cols="12" lg="6">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 lg:col-span-6">
         <legend :id="id">Yield</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
+      </div>
+      <div class="col-span-12 lg:col-span-6">
         <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
           <back-to-top-link v-if="isStaffEdit"/>
         </div>
-      </b-col>
-    </b-row>
-    <b-row class="mt-4">
-      <b-col cols="12" md="4" lg="3">
+      </div>
+    </div>
+    <div class="grid grid-cols-12 mt-4">
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
             id="yieldEstimationMethod"
             label="Yield Estimation Method"
@@ -35,34 +35,34 @@ Licensed under the Apache License, Version 2.0 (the "License");
             value-field="yield_estimation_method_code"
             v-model="yieldEstimationMethodInput"
             placeholder="Select method"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
+      </div>
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
             id="yieldEstimationRate"
             label="Yield Estimation Rate"
             type="number"
             hint="USgpm"
             v-model="yieldEstimationRateInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
+      </div>
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
             id="yieldEstimationDuration"
             label="Yield Estimation Duration"
             type="number"
             hint="Hours"
             v-model="yieldEstimationDurationInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
             id="staticWaterLevelTest"
             label="SWL Before Test"
             type="number"
             v-model="staticLevelInput"
             hint="ft (btoc)"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
+      </div>
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <b-form-group label="Hydro-fracturing Performed">
           <b-form-radio-group v-model="hydroFracturingPerformedInput"
             id="hydroFracPerformedOptions"
@@ -72,8 +72,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-form-radio :value="true">Yes</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
-      </b-col>
-      <b-col cols="12" md="4" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-4 lg:col-span-4">
         <form-input
           id="hydroFracturingYieldIncrease"
           label="Increase in Well Yield Due to Hydro-fracturing"
@@ -81,10 +81,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="hydroFracturingYieldIncreaseInput"
           hint="USgpm"
         ></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
             id="drawdown"
             label="Drawdown"
@@ -92,8 +92,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             v-model="drawdownInput"
             hint="ft (btoc)"
             ></form-input>
-      </b-col>
-      <b-col v-if="isStaffEdit" cols="12" md="4" lg="3">
+      </div>
+      <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
           id="recommendedPumpDepth"
           label="Recommended Pump Depth"
@@ -101,8 +101,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="recommendedPumpDepthInput"
           hint="ft (btoc)"
         />
-      </b-col>
-      <b-col v-if="isStaffEdit" cols="12" md="4" lg="3">
+      </div>
+      <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
           id="recommendedPumpRate"
           label="Recommended Pump Rate"
@@ -110,8 +110,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="recommendedPumpRateInput"
           hint="USgpm"
         />
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </fieldset>
 </template>
 

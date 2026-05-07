@@ -14,49 +14,51 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12 lg:col-span-6">
           <legend :id="id">Geographic Coordinates</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
+        </div>
+        <div class="col-span-12 lg:col-span-6">
           <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <Button label="Save" v-if="isStaffEdit" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
             <back-to-top-link v-if="isStaffEdit"/>
           </div>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
-      <p class="bg-warning p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
+      <p class="bg-yellow-400 p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
         <b-col sm="12" md="6">
-          <b-card no-body class="p-4 m-1 m-md-1">
-            <b-row>
-              <b-col cols="12" sm="6" lg="3">
-                <form-input
-                  id="latitude"
-                  type="text"
-                  label="Latitude"
-                  hint="Decimal degrees"
-                  @input="handleDegreesChange"
-                  v-model.number="degrees.latitude"
-                  :errors="errors['latitude']"
-                  :loaded="fieldsLoaded['latitude']"
-                ></form-input>
-              </b-col>
-              <b-col cols="12" sm="6" lg="3" offset-lg="2">
-                <form-input
-                  id="longitude"
-                  type="text"
-                  @input="handleDegreesChange"
-                  label="Longitude"
-                  hint="Decimal degrees"
-                  v-model.number="degrees.longitude"
-                  :errors="errors['longitude']"
-                  :loaded="fieldsLoaded['longitude']"
-                ></form-input>
-              </b-col>
-            </b-row>
-          </b-card>
+          <Card class="p-4 m-1 md:m-1">
+            <template #default>
+              <div class="grid grid-cols-12">
+                <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                  <form-input
+                    id="latitude"
+                    type="text"
+                    label="Latitude"
+                    hint="Decimal degrees"
+                    @input="handleDegreesChange"
+                    v-model.number="degrees.latitude"
+                    :errors="errors['latitude']"
+                    :loaded="fieldsLoaded['latitude']"
+                  ></form-input>
+                </div>
+                <div class="col-span-12 sm:col-span-6 lg:col-span-3 lg:col-start-3">
+                  <form-input
+                    id="longitude"
+                    type="text"
+                    @input="handleDegreesChange"
+                    label="Longitude"
+                    hint="Decimal degrees"
+                    v-model.number="degrees.longitude"
+                    :errors="errors['longitude']"
+                    :loaded="fieldsLoaded['longitude']"
+                  ></form-input>
+                </div>
+              </div>
+            </template>
+          </Card>
           <b-row><b-col><p class="p-4 m-0">OR</p></b-col></b-row>
           <b-card no-body class="p-4 mx-1 mx-md-1">
             <b-row>

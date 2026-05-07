@@ -13,21 +13,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 lg:col-span-6">
         <legend :id="id">Aquifer Information</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
+      </div>
+      <div class="col-span-12 lg:col-span-6">
         <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
           <back-to-top-link v-if="isStaffEdit"/>
         </div>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
 
-    <b-row>
-      <b-col cols="12" md="6" xl="3">
-        <b-form-group label="Associated Aquifer">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 xl:col-span-3">
+        <div class="flex flex-col gap-2">
+          <label for="aquiferSelect">Associated Aquifer</label>
           <v-select
             v-model="aquiferInput"
             id="aquiferSelect"
@@ -51,9 +52,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </template>
           </v-select>
-        </b-form-group>
-      </b-col>
-      <b-col cols="12" md="4">
+        </div>
+      </div>
+      <div class="col-span-12 md:col-span-4">
         <b-form-group
           id="aquiferLithology"
           label="Aquifer Material">
@@ -69,8 +70,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </template>
           </b-form-select>
         </b-form-group>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </fieldset>
 </template>
 

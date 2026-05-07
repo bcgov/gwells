@@ -14,8 +14,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <h1 class="card-title">
-      <b-row>
-        <b-col cols="12">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12">
           <div v-if="isStaffEdit" id="top">Update Well Information</div>
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
@@ -24,21 +24,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-form-radio v-bind:value="false" id="multiSubmissionPage">Multi page</b-form-radio>
             </b-form-radio-group>
           </b-form-group>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
     </h1>
 
     <div v-if="loading">
-      <b-row>
-        <b-col cols="12">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12">
           <div class="fa-2x text-center">
             Loading...
           </div>
           <div class="fa-2x text-center">
             <i class="fa fa-circle-o-notch fa-spin"></i>
           </div>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
     </div>
     <div v-else>
       <b-alert show v-if="isStaffEdit && isUnpublished" variant="info">
@@ -50,11 +50,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-col>
         </b-row>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
-      <p class="bg-warning p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
+      <p class="bg-yellow-400 p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
 
       <!-- Form load/save -->
-      <b-row v-if="!isStaffEdit">
-        <b-col class="text-right">
+      <div v-if="!isStaffEdit">
+        <div class="text-right">
           <b-btn size="sm" variant="outline-primary" class="mr-2" @click="saveForm">
             Save report progress
             <transition name="bounce" mode="out-in">
@@ -67,8 +67,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
             </transition>
           </b-btn>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
 
       <!-- Type of work performed -->
       <activity-type class="my-12"
@@ -511,17 +511,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
       ></edit-history>
 
       <!-- Back / Next / Submit controls -->
-      <b-row v-else class="mt-12">
-        <b-col v-if="!formIsFlat">
-          <b-btn v-if="step > 1 && !formIsFlat" @click="gotoPrevStep" variant="primary">Back</b-btn>
-        </b-col>
-        <b-col class="pr-6 text-right">
-          <b-btn v-if="step < maxSteps && !formIsFlat" @click="gotoNextStep" variant="primary" id="nextSubmissionStep">Next</b-btn>
+      <div v-else class="flex mt-12">
+        <div v-if="!formIsFlat">
+          <Button v-if="step > 1 && !formIsFlat" label="Back" @click="gotoPrevStep"/>
+        </div>
+        <div class="pr-6 text-right">
+          <Button v-if="step < maxSteps && !formIsFlat" label="Next" @click="gotoNextStep" id="nextSubmissionStep"/>
           <span v-else>
-            <b-btn variant="primary" @click="$emit('preview')" id="formPreviewButton">Preview &amp; Submit</b-btn>
+            <Button label="Preview &amp; Submit" @click="$emit('preview')" id="formPreviewButton"/>
           </span>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
 
       <!-- Form reload (load from save) confirmation -->
       <b-modal
@@ -532,9 +532,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :return-focus="$refs.loadFormBtn">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
         <div slot="modal-footer">
-          <b-btn variant="primary" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn">
-            Load
-          </b-btn>
+          <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>
           <b-btn variant="light" @click="confirmLoadModal=false">
             Cancel
           </b-btn>

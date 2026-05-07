@@ -26,7 +26,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
       <b-row>
         <b-col>
-          <p>Please provide as much information as possible.</p> <p class="bg-warning p-2">A minimum of one type of well location information is required below:</p>
+          <p>Please provide as much information as possible.</p> <p class="bg-yellow-400 p-2">A minimum of one type of well location information is required below:</p>
           <p class="d-inline font-weight-bold">1) Well Location Address</p>
           <div class="d-inline pl-2"><b-form-checkbox v-model="sameAsOwnerAddress">Same as owner address</b-form-checkbox></div>
         </b-col>

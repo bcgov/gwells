@@ -14,8 +14,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <fieldset>
     <legend :id="id">Type of Work</legend>
-    <b-row>
-      <b-col cols="12" md="6">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
         <b-form-group label="Type of Work *">
           <b-form-radio-group v-model="wellActivityTypeInput"
                               stacked
@@ -26,8 +26,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <b-form-radio value="DEC" v-if="show.edit">Decommission</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </fieldset>
 </template>
 

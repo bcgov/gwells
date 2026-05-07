@@ -13,17 +13,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 lg:col-span-6">
         <legend :id="id">Pumping Test Information and Aquifer Parameters</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
+      </div>
+      <div class="col-span-12 lg:col-span-6">
         <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
           <back-to-top-link v-if="isStaffEdit"/>
         </div>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <div class="table-responsive" id="aquiferParametersTable">
       <table class="table" aria-describedby="aquiferParameters">
         <thead>
@@ -187,12 +187,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         @shown="focusRemoveModal">
       Are you sure you want to remove this row?
       <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
+        <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+        <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
       </div>
     </b-modal>
   </fieldset>
