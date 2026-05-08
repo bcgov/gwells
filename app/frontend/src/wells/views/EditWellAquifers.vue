@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <div v-else>
-      <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-2">
+      <div class="container mb-4 !px-0">
         <Breadcrumb :model="breadcrumbs"/>
       </div>
       <Card v-if="errorNotFound" class="container p-1">

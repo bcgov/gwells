@@ -13,7 +13,7 @@
 */
 <template>
   <div class="container">
-    <div class="ml-20 mr-20 bg-white mb-4">
+    <div class="container mb-4 !px-0">
       <Breadcrumb :model="breadcrumbs"/>
     </div>
     <div class="card">

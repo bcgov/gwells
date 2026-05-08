@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <div class="ml-20 mr-20 bg-white mb-4">
+  <div class="container mb-4 !px-0">
     <Breadcrumb :model="breadcrumbs"/>
   </div>
   <div v-if="loading" class="ml-20 mr-20 bg-white">
@@ -20,7 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
   </div>
-  <Card v-else class="rounded-lg ml-20 mr-20 bg-white">
+  <Card v-else class="container">
     <template #content>
       <div v-if="errorNotFound" class="m-3">
         <h1>Not Found</h1>

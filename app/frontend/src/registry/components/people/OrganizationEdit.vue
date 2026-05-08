@@ -1,8 +1,8 @@
 <template>
-  <div class="ml-20 mr-20 bg-white mb-4">
+  <div class="container mb-4 !px-0">
     <Breadcrumb :model="breadcrumbs"/>
   </div>
-  <Card class="rounded-lg ml-20 mr-20 bg-white">
+  <Card class="container">
     <template #title>Manage Companies</template>
     <template #content>
 

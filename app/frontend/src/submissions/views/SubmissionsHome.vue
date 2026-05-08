@@ -13,13 +13,9 @@ governing permissions and limitations under the License. */
       </div>
     </div>
     <div v-else>
-      <Card
-        v-if="breadcrumbs && breadcrumbs.length"
-        no-body
-        class="mb-4 d-print-none"
-      >
-        <Breadcrumb :items="breadcrumbs" class="py-0 my-2"></Breadcrumb>
-      </Card>
+      <div class="container mb-4 !px-0" v-if="breadcrumbs && breadcrumbs.length">
+        <Breadcrumb :model="breadcrumbs"/>
+      </div>
       <div
         class="card"
         v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit"

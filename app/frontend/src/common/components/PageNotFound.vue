@@ -1,5 +1,5 @@
 <template>
-  <Card class="rounded-lg ml-30 mr-30 bg-white">
+  <Card class="container">
     <template #content>
       <div class="m-30 mb-130">
         <h1 class="text-4xl">We're sorry, the page you're looking for doesn't exist.</h1>
