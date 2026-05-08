@@ -26,36 +26,38 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </Message>
 
     <Card class="container">
-      <template id="wellSearchTitle" #title>Well Search</template>
+      <template id="wellSearchTitle" #title><h1>Well Search</h1></template>
       <template #content>
         <div>
-          <div>
-            <p>
-              Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-            </p>
-            <p>
-              Search by one of the fields below, or zoom to a location on the map.
-            </p>
-          </div>
+          <p class="mb-4">
+            Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+          </p>
+          <p class="mb-4">
+            Search by one of the fields below, or zoom to a location on the map.
+          </p>
         </div>
-        <b-row class="mt-6">
-          <b-col cols="12" lg="6" xl="5">
-            <b-card no-body border-variant="dark" class="mb-1">
-              <b-tabs card v-model="tabIndex">
-                <b-tab title="Basic Search">
-                  <div class="card-text">
-                    <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
-                  </div>
-                </b-tab>
-                <b-tab title="Advanced Search">
-                  <div class="card-text">
-                    <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
-                  </div>
-                </b-tab>
-              </b-tabs>
-            </b-card>
-          </b-col>
-          <b-col>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <Card class="border border-gray-700">
+              <template #content>
+                <Tabs v-model:value="tabIndex">
+                  <TabList>
+                      <Tab :value="0">Basic Search</Tab>
+                      <Tab :value="1">Advanced Search</Tab>
+                  </TabList>
+                  <TabPanels>
+                    <TabPanel :value="0">
+                        <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+                    </TabPanel>
+                    <TabPanel :value="1">
+                        <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+                    </TabPanel>
+                  </TabPanels>
+                </Tabs>
+              </template>
+            </Card>
+          </div>
+          <div>
             <div>
               <ProgressSpinner v-if="loadingMap"/>
 
@@ -72,7 +74,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 @mapLoaded="handleMapReady"/>
             </div>
 
-            <b-alert variant="danger" class="mt-2" :show="mapServerErrorMessage || noWellsInView">
+            <Message severity="error" class="mt-2" v-if="mapServerErrorMessage || noWellsInView" :closable="false">
               <div v-if="mapServerErrorMessage">
                 {{mapServerErrorMessage}}
               </div>
@@ -106,14 +108,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   </span>
                 </div>
               </div>
-            </b-alert>
-          </b-col>
-        </b-row>
+            </Message>
+          </div>
+        </div>
         <div class="my-12" v-show="wellsStore.hasSearched || hasResultErrors">
           <search-results/>
         </div>
         <div v-if="!wellsStore.hasSearched" class="mt-12">
-          <p>
+          <p class="mb-2">
             Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
           </p>
           <p>

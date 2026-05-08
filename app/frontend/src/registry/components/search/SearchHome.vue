@@ -15,12 +15,12 @@
     </Message>
 
     <!-- Main Registries content -->
-    <Card class="rounded-lg p-1 ml-50 mr-50 bg-white">
-      <template #title>Search for a Well Driller or Well Pump Installer</template>
+    <Card class="container">
+      <template #title><h1>Search for a Well Driller or Well Pump Installer</h1></template>
       <template #content>
-        <div class="grid grid-cols-2 mb-12 gap-6">
-          <p class="col-start-1">To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca</a>.</p>
-          <p class="col-start-1">
+        <div>
+          <p class="mb-2">To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca</a>.</p>
+          <p class="mb-2">
             <a href="https://www2.gov.bc.ca/gov/content?id=63B6DFF0024949B6867C459C19C23F88" target="_blank">
               Learn more about registering as a well driller or well pump installer in B.C.
             </a>
