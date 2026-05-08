@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset :id="id">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 lg:col-span-6">
-        <legend :id="id">Yield</legend>
-      </div>
-      <div class="col-span-12 lg:col-span-6">
-        <div class="float-right">
-          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </div>
-    </div>
+  <form-subsection title="Yield" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="grid grid-cols-12 mt-4">
       <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
@@ -112,13 +101,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         />
       </div>
     </div>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -152,6 +142,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   computed: {
     codes () {

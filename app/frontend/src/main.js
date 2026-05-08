@@ -179,6 +179,9 @@ const MyPreset = definePreset(Aura, {
     card: {
       root: {
         borderRadius: 0,
+      },
+      title: {
+        fontSize: "2.5rem",
       }
     },
     fieldset: {
@@ -188,6 +191,14 @@ const MyPreset = definePreset(Aura, {
       legend: {
         padding: 0,
         fontWeight: "inherit",
+      }
+    },
+    checkbox: {
+      root: {
+        background: "var(--p-gray-200)",
+        checkedBackground: "#017bff",
+        checkedBorderColor: "#017bff",
+        checkedHoverBackground: "#00f",
       }
     }
   }

@@ -12,21 +12,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Well Owner</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-
-    <b-row>
-      <b-col cols="12" md="6">
+  <form-subsection title="Well Owner" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
         <form-input
           id="ownerFullName"
           label="Well Owner Name *"
@@ -34,8 +22,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['owner_full_name']"
           :loaded="fieldsLoaded['owner_full_name']"
         ></form-input>
-      </b-col>
-      <b-col cols="12" md="6">
+      </div>
+      <div class="col-span-12 md:col-span-6">
         <form-input
           id="ownerMailingAddress"
           label="Owner Mailing Address *"
@@ -56,8 +44,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div v-if="isLoadingSuggestions" class="loading-indicator">
           Loading...
         </div>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-row>
       <b-col cols="12" md="4">
         <form-input id="ownerCity" label="City *" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']" required></form-input>
@@ -104,13 +92,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </InputMask>
       </b-col>
     </b-row>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '../../../common/services/ApiService'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -142,6 +131,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   fields: {
     ownerFullNameInput: 'ownerFullName',

@@ -181,7 +181,7 @@
                     :disabled="loading || isSearchInProgress">
                     <i v-if="isSearchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
                   </Button>
-                  <Button label="Reset" type="button" severity="warn" @click="resetSearch"/>
+                  <Button label="Reset" type="button" severity="secondary" @click="resetSearch"/>
                 </div>
               </Form>
             </div>

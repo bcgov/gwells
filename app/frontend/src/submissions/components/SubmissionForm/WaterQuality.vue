@@ -12,20 +12,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Water Quality</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6">
+  <form-subsection title="Water Quality" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
         <form-input
           id="waterCharacteristicsInput"
           label="Characteristics"
@@ -37,8 +26,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="waterQualityCharacteristicsInput"
           :errors="errors['water_quality_characteristics']"
           :loaded="fieldsLoaded['water_quality_characteristics']"/>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-row>
       <b-col cols="12" md="5" lg="4">
         <form-input
@@ -74,13 +63,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :loaded="fieldsLoaded['ems']"></form-input>
       </b-col>
     </b-row>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -112,6 +102,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   fields: {
     waterQualityColourInput: 'waterQualityColour',

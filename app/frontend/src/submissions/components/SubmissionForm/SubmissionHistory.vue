@@ -12,14 +12,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-12">
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Activity Reports</legend>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12">
+  <form-subsection class="mt-12" title="Activity Reports" :id="id" :hideSave="true">
+    <div class="flex">
+      <div>
         <p>
           There {{ filteredSubmissions.length !== 1 ? 'are' : 'is' }} {{ filteredSubmissions.length }} activity {{ filteredSubmissions.length !== 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
@@ -52,13 +47,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
         </b-table>
         <b-pagination v-if="!!filteredSubmissions.length && filteredSubmissions.length > submissionsPerPage" size="md" :total-rows="filteredSubmissions.length" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
-      </b-col>
-    </b-row>
-  </fieldset>
+      </div>
+    </div>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   props: {
@@ -78,6 +74,9 @@ export default {
       type: Array,
       default: () => ([])
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

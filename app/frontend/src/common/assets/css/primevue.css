@@ -6,6 +6,10 @@
     word-wrap: break-word;
 }
 
+.p-card-title {
+    margin-bottom: 0.75rem;
+}
+
 .p-fieldset {
     border: none !important;
     min-width: none;

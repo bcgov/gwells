@@ -13,132 +13,121 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div>
-    <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Attachments</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <div v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.public" class="table-responsive">
-      <b-table
-          hover
-          :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document', 'delete']"
-          striped
-          :items="[...uploadedFiles.public, ...uploadedFiles.private]"
-        >
-          <template v-slot:cell(document_type)="data">
-            {{ callLongFormLabel(data.item.document_type) }}
-          </template>
-          <template v-slot:cell(date_of_upload)="data">
-            {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
-          </template>
-          <template v-slot:cell(uploaded_document)="data">
-            <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
-          </template>
-          <template v-slot:cell(document_status)="data">
-            <p v-if="data.item.document_status">Private Document</p>
-            <p v-else>Public Document</p>
-          </template>
-          <template v-slot:cell(delete)="data">
-            <a
-              class="fa fa-trash fa-lg"
-              variant="primary"
-              style="margin-left: .5em"
-              href="#"
-              @click="handleFileDelete(data.item.name, data.item.document_status, $event)"></a>
-          </template>
-      </b-table>
-    </div>
-    <div v-else>
-      No documents available
-    </div>
-    <div class="table-responsive" id="attachmentsTable" v-if="attachmentsData">
-      <table class="table table-sm" aria-describedby="attachmentsDetails">
-        <thead>
-          <tr>
-            <th class="font-weight-normal">Well Number</th>
-            <th class="font-weight-normal">Document Type</th>
-            <th class="font-weight-normal">File</th>
-            <th class="font-weight-normal">Private Document?</th>
-            <th class="font-weight-normal">New File Name</th>
-            <th class="font-weight-normal">Date of Upload</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(attachment, index) in attachmentsData" :key="index">
-            <td class="p-4">
-                {{ attachment.well_tag_number = wellTagNumber }}
-            </td>
+    <form-subsection title="Attachments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+      <div v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.public" class="table-responsive">
+        <b-table
+            hover
+            :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document', 'delete']"
+            striped
+            :items="[...uploadedFiles.public, ...uploadedFiles.private]"
+          >
+            <template v-slot:cell(document_type)="data">
+              {{ callLongFormLabel(data.item.document_type) }}
+            </template>
+            <template v-slot:cell(date_of_upload)="data">
+              {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
+            </template>
+            <template v-slot:cell(uploaded_document)="data">
+              <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
+            </template>
+            <template v-slot:cell(document_status)="data">
+              <p v-if="data.item.document_status">Private Document</p>
+              <p v-else>Public Document</p>
+            </template>
+            <template v-slot:cell(delete)="data">
+              <a
+                class="fa fa-trash fa-lg"
+                variant="primary"
+                style="margin-left: .5em"
+                href="#"
+                @click="handleFileDelete(data.item.name, data.item.document_status, $event)"></a>
+            </template>
+        </b-table>
+      </div>
+      <div v-else>
+        No documents available
+      </div>
+      <div class="table-responsive" id="attachmentsTable" v-if="attachmentsData">
+        <table class="table table-sm" aria-describedby="attachmentsDetails">
+          <thead>
+            <tr>
+              <th class="font-weight-normal">Well Number</th>
+              <th class="font-weight-normal">Document Type</th>
+              <th class="font-weight-normal">File</th>
+              <th class="font-weight-normal">Private Document?</th>
+              <th class="font-weight-normal">New File Name</th>
+              <th class="font-weight-normal">Date of Upload</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(attachment, index) in attachmentsData" :key="index">
+              <td class="p-4">
+                  {{ attachment.well_tag_number = wellTagNumber }}
+              </td>
+              <td>
+                <!-- Document Selector -->
+                <b-form-group
+                  :id="'attachmentLabel_' + index"
+                  class="mt-1 mb-0"
+                  :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
+                  <b-form-select
+                      @change="setFileName(index)"
+                      v-model="attachment.document_code"
+                      :options="WELL_TAGS"
+                      :state="getAttachmentError(index).document_code ? false : null"
+                      size="med"
+                  >
+                  </b-form-select>
+                  <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
+                    <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
+                      {{ error }}
+                    </div>
+                  </b-form-invalid-feedback>
+                </b-form-group>
+              </td>
+              <td>
+                <!-- File Upload -->
+                <b-form-file
+                  @input="setFileName(index)"
+                  accept=".jpg, .png, .jpeg, .pdf, .docx, .csv"
+                  class="mt-1 mb-0"
+                  v-model="attachment.file"
+                  :errors="getAttachmentError(index).file"
+                  :loaded="getFieldsLoaded(index).file"
+                />
+              </td>
+            <!-- Privacy Flag  -->
             <td>
-              <!-- Document Selector -->
-              <b-form-group
-                :id="'attachmentLabel_' + index"
-                class="mt-1 mb-0"
-                :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
-                <b-form-select
-                    @change="setFileName(index)"
-                    v-model="attachment.document_code"
-                    :options="WELL_TAGS"
-                    :state="getAttachmentError(index).document_code ? false : null"
-                    size="med"
-                >
-                </b-form-select>
-                <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
-                  <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
-                    {{ error }}
-                  </div>
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </td>
-            <td>
-              <!-- File Upload -->
-              <b-form-file
-                @input="setFileName(index)"
-                accept=".jpg, .png, .jpeg, .pdf, .docx, .csv"
-                class="mt-1 mb-0"
-                v-model="attachment.file"
-                :errors="getAttachmentError(index).file"
-                :loaded="getFieldsLoaded(index).file"
-              />
-            </td>
-           <!-- Privacy Flag  -->
-           <td>
-              <b-form-checkbox
-                class="mt-2 ml-4"
-                v-model="attachment.private"
-                :loaded="getFieldsLoaded(index).private"
-              />
-            </td>
-            <td>
-              <!-- File Name -->
-              <b-form-input
-                class="mt-1 mb-0"
-                v-model="attachment.file_name"
-                placeholder="File_Name"
-                :errors="getAttachmentError(index).file_name"
-                :loaded="getFieldsLoaded(index).file_name"
-                disabled
-              />
-            </td>
-            <!-- Date -->
-            <td class="p-2">
-              {{ new Date().toLocaleDateString() }}
-            </td>
-            <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i>&nbsp;Remove</b-btn>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i>&nbsp;Add file</b-btn>
+                <b-form-checkbox
+                  class="mt-2 ml-4"
+                  v-model="attachment.private"
+                  :loaded="getFieldsLoaded(index).private"
+                />
+              </td>
+              <td>
+                <!-- File Name -->
+                <b-form-input
+                  class="mt-1 mb-0"
+                  v-model="attachment.file_name"
+                  placeholder="File_Name"
+                  :errors="getAttachmentError(index).file_name"
+                  :loaded="getFieldsLoaded(index).file_name"
+                  disabled
+                />
+              </td>
+              <!-- Date -->
+              <td class="p-2">
+                {{ new Date().toLocaleDateString() }}
+              </td>
+              <td class="pt-1 py-0">
+                <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i>&nbsp;Remove</b-btn>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i>&nbsp;Add file</b-btn>
       <b-modal
           v-model="confirmRemoveModal"
           centered
@@ -154,7 +143,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-btn>
         </div>
       </b-modal>
-    </fieldset>
+    </form-subsection>
   </div>
 </template>
 
@@ -167,6 +156,7 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import { WELL_TAGS } from '@/common/constants.js'
 import getLongFormLabel from '@/common/helpers/getLongFormLabel.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -205,6 +195,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

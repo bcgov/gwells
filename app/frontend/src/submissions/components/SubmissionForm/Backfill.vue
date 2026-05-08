@@ -13,18 +13,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div>
-    <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Surface Seal and Backfill Information</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </b-col>
-      </b-row>
+    <form-subsection title="Surface Seal and Backfill Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <b-row>
         <b-col cols="12" sm="4" md="3">
           <form-input
@@ -73,7 +62,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :loaded="fieldsLoaded['surface_seal_method']"></form-input>
         </b-col>
       </b-row>
-    </fieldset>
+    </form-subsection>
     <fieldset>
       <legend>Backfill Information</legend>
       <b-row>
@@ -103,6 +92,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -133,6 +123,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   fields: {
     surfaceSealMaterialInput: 'surfaceSealMaterial',

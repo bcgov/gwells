@@ -13,11 +13,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <fieldset :id="id" class="mt-12">
-    <b-row>
-      <b-col cols="12" lg="6">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 lg:col-span-6">
         <legend>Change History</legend>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-row>
       <b-col cols="12">
         <well-history :well-tag-number="wellTagNumber" resource="wells" :events="events" ref="wellHistory"/>

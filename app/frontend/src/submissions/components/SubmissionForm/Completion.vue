@@ -12,20 +12,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Well Completion Data</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+  <form-subsection title="Well Completion Data" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="totalDepthDrilled"
             :label="totalDepthDrilledLabel"
@@ -35,8 +24,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['total_depth_drilled']"
             :loaded="fieldsLoaded['total_depth_drilled']">
         </form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="finishedWellDepth"
             :label="finishedWellDepthLabel"
@@ -46,10 +35,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['finished_well_depth']"
             :loaded="fieldsLoaded['finished_well_depth']">
         </form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="finalCasingStickUp"
             label="Final Casing Stick Up"
@@ -59,8 +48,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['final_casing_stick_up']"
             :loaded="fieldsLoaded['final_casing_stick_up']">
         </form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="bedrockDepth"
             label="Depth to Bedrock"
@@ -70,10 +59,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['depth_to_bedrock']"
             :loaded="fieldsLoaded['depth_to_bedrock']">
         </form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="staticWaterLevel"
             label="Static Water Level"
@@ -83,8 +72,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['static_water_level']"
             :loaded="fieldsLoaded['static_water_level']">
         </form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="wellYield"
             label="Estimated Well Yield"
@@ -94,10 +83,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['well_yield']"
             :loaded="fieldsLoaded['well_yield']">
         </form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <b-form-group label="Artesian Well">
           <b-form-radio-group
             id="artesianConditionsRadio"
@@ -107,8 +96,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-form-radio :value="true">Yes</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
           id="artesianFlow"
           label="Artesian Flow"
@@ -118,10 +107,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['artesian_flow']"
           :loaded="fieldsLoaded['artesian_flow']">
         </form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
           id="artesianPressureHead"
           label="Artesian Pressure (head)"
@@ -132,8 +121,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['artesian_pressure_head']"
           :loaded="fieldsLoaded['artesian_pressure_head']">
         </form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
           id="artesianPressurePSI"
           label="Artesian Pressure (PSI)"
@@ -144,10 +133,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['artesian_pressure']"
           :loaded="fieldsLoaded['artesian_pressure']">
         </form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="wellCapType"
             label="Well Cap Type"
@@ -155,8 +144,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['well_cap_type']"
             :loaded="fieldsLoaded['well_cap_type']">
         </form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <b-form-group label="Well Disinfected Status" id="wellDisinfectedStatusInput">
           <b-form-select
             v-model="wellDisinfectedInput"
@@ -167,15 +156,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :loaded="fieldsLoaded['well_disinfected_status']">
           </b-form-select>
         </b-form-group>
-      </b-col>
-    </b-row>
-  </fieldset>
+      </div>
+    </div>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -214,6 +204,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   fields: {
     totalDepthDrilledInput: 'totalDepthDrilled',

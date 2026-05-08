@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-    <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Well Class</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </b-col>
-      </b-row>
+    <form-subsection title="Well Class" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <b-row v-if="isStaffEdit">
         <b-col cols="12" md="3" xl="2">
           <form-input
@@ -195,8 +184,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           ></form-input>
         </b-col>
       </b-row>
-      <b-row v-if="!isStaffEdit">
-        <b-col cols="12" md="6">
+      <div v-if="!isStaffEdit" class="grid grid-cols-12">
+        <div class="col-span-12 md:col-span-6">
           <form-input
               id="workStartDateInput"
               type="date"
@@ -208,8 +197,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               @input="handleDateInput($event, 'workStartDate')"
               >
           </form-input>
-        </b-col>
-        <b-col cols="12" md="6">
+        </div>
+        <div class="col-span-12 md:col-span-6">
           <form-input
               id="workEndDateInput"
               type="date"
@@ -221,9 +210,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               @input="handleDateInput($event, 'workEndDate')"
               >
           </form-input>
-        </b-col>
-      </b-row>
-    </fieldset>
+        </div>
+      </div>
+    </form-subsection>
 </template>
 
 <script>
@@ -231,6 +220,7 @@ import { useSubmissionStore } from '@/stores/submission'
 import { useCommonStore } from '@/stores/common'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -277,6 +267,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

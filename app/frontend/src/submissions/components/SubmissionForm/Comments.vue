@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Comments</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
+  <form-subsection title="Comments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <b-row>
       <b-col cols="12" md="8">
         <b-form-group label="Comments" id="commentsGroup">
@@ -50,52 +39,53 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <b-row class="mt-4">
       <b-col cols="12" sm="6">
         <b-form-group label="Alternative Specs Submitted">
-        <b-form-radio-group
-          id="alternativeSpecsCheckbox"
-          class="mt-1"
-          v-model="alternativeSpecsSubmittedInput"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
-      </b-form-group>
-    </b-col>
+          <b-form-radio-group
+            id="alternativeSpecsCheckbox"
+            class="mt-1"
+            v-model="alternativeSpecsSubmittedInput"
+          >
+            <b-form-radio :value="false">No</b-form-radio>
+            <b-form-radio :value="true">Yes</b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </b-col>
     </b-row>
     <b-row class="mt-4">
       <b-col cols="12" sm="6">
         <b-form-group label="Technical Report">
-        <b-form-radio-group
-          id="technicalReportCheckbox"
-          class="mt-1"
-          v-model="technicalReportInput"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
-      </b-form-group>
-    </b-col>
+          <b-form-radio-group
+            id="technicalReportCheckbox"
+            class="mt-1"
+            v-model="technicalReportInput"
+          >
+            <b-form-radio :value="false">No</b-form-radio>
+            <b-form-radio :value="true">Yes</b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </b-col>
     </b-row>
     <b-row class="mt-4">
       <b-col cols="12" sm="6">
         <b-form-group label="Drinking Water Area Indicator">
-        <b-form-radio-group
-          id="drinkingWaterProtectionAreaCheckbox"
-          class="mt-1"
-          v-model="drinkingWaterProtectionAreaInput"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
-      </b-form-group>
-    </b-col>
+          <b-form-radio-group
+            id="drinkingWaterProtectionAreaCheckbox"
+            class="mt-1"
+            v-model="drinkingWaterProtectionAreaInput"
+          >
+            <b-form-radio :value="false">No</b-form-radio>
+            <b-form-radio :value="true">Yes</b-form-radio>
+          </b-form-radio-group>
+        </b-form-group>
+      </b-col>
     </b-row>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -125,6 +115,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   fields: {
     commentsInput: 'comments',

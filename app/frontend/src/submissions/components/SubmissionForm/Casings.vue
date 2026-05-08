@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 lg:col-span-6">
-        <legend :id="id">Casing Details</legend>
-      </div>
-      <div class="col-span-12 lg:col-span-6">
-        <div class="float-right">
-          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </div>
-    </div>
+  <form-subsection title="Casing Details" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="table-responsive" id="casingTable">
       <table class="table table-sm" aria-describedby="casingsDetails">
         <thead>
@@ -164,7 +153,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
       </div>
     </b-modal>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
@@ -172,6 +161,7 @@ import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'Casings',
@@ -198,6 +188,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

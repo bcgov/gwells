@@ -13,18 +13,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div>
-    <fieldset>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-6">
-          <legend :id="id">Geographic Coordinates</legend>
-        </div>
-        <div class="col-span-12 lg:col-span-6">
-          <div class="float-right">
-            <Button label="Save" v-if="isStaffEdit" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </div>
-      </div>
+    <form-subsection title="Geographic Coordinates" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <p class="bg-yellow-400 p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
       <b-row>
@@ -209,30 +198,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
       </b-row>
       <b-card>
-      <b-modal
-        v-model="confirmRemoveModalInput"
-        no-close-on-esc
-        no-close-on-backdrop
-        hide-header-close
-        centered
-        title="Confirm Coordinates Change"
-        @shown="focusRemoveModal">
-        WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.
-        <div slot="modal-footer">
-          <b-btn variant="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn">
-            No, Cancel
-          </b-btn>
-          <b-btn variant="danger" @click="confirmRemoveModalInput=false;confirmCoords()">
-            Yes, Update
-          </b-btn>
-        </div>
-      </b-modal>
-    </b-card>
+        <b-modal
+          v-model="confirmRemoveModalInput"
+          no-close-on-esc
+          no-close-on-backdrop
+          hide-header-close
+          centered
+          title="Confirm Coordinates Change"
+          @shown="focusRemoveModal">
+          WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.
+          <div slot="modal-footer">
+            <b-btn variant="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn">
+              No, Cancel
+            </b-btn>
+            <b-btn variant="danger" @click="confirmRemoveModalInput=false;confirmCoords()">
+              Yes, Update
+            </b-btn>
+          </div>
+        </b-modal>
+      </b-card>
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
       <b-alert class="mt-4" variant="danger" :show="errorCoordsNotProvided">
         Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.
       </b-alert>
-    </fieldset>
+    </form-subsection>
   </div>
 </template>
 <script>
@@ -243,6 +232,7 @@ import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import { fetchInsideBCCheck } from '../../../common/mapbox/geometry'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   components: {
@@ -279,6 +269,9 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

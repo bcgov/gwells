@@ -12,145 +12,135 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
+  <form-subsection title="Liner Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
+        <form-input
+          id="linerMaterial"
+          label="Liner Material"
+          select
+          :options="codes?.liner_material_codes"
+          v-model="linerMaterialInput"
+          text-field="description"
+          value-field="code"
+          placeholder="Select material"
+          :errors="errors['liner_material']"
+          :loaded="fieldsLoaded['liner_material']"/>
+      </div>
+    </div>
     <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Liner Information</legend>
+      <b-col cols="6" md="6">
+        <form-input
+          id="linerDiameter"
+          label="Liner Diameter"
+          hint="inches"
+          type="number"
+          v-model.number="linerDiameterInput"
+          :errors="errors['liner_diameter']"
+          :loaded="fieldsLoaded['liner_diameter']"
+          />
       </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
+      <b-col cols="6" md="6">
+        <form-input
+          id="linerThickness"
+          label="Liner Thickness"
+          hint="inches"
+          type="number"
+          v-model.number="linerThicknessInput"
+          :errors="errors['liner_thickness']"
+          :loaded="fieldsLoaded['liner_thickness']"
+          />
       </b-col>
     </b-row>
     <b-row>
-        <b-col cols="12" md="6">
-          <form-input
-            id="linerMaterial"
-            label="Liner Material"
-            select
-            :options="codes?.liner_material_codes"
-            v-model="linerMaterialInput"
-            text-field="description"
-            value-field="code"
-            placeholder="Select material"
-            :errors="errors['liner_material']"
-            :loaded="fieldsLoaded['liner_material']"/>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="6" md="6">
-          <form-input
-            id="linerDiameter"
-            label="Liner Diameter"
-            hint="inches"
-            type="number"
-            v-model.number="linerDiameterInput"
-            :errors="errors['liner_diameter']"
-            :loaded="fieldsLoaded['liner_diameter']"
-            />
-        </b-col>
-        <b-col cols="6" md="6">
-          <form-input
-            id="linerThickness"
-            label="Liner Thickness"
-            hint="inches"
-            type="number"
-            v-model.number="linerThicknessInput"
-            :errors="errors['liner_thickness']"
-            :loaded="fieldsLoaded['liner_thickness']"
-            />
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="6" md="6">
-          <form-input
-            id="linerFrom"
-            label="Liner From"
-            hint="ft (bgl)"
-            type="number"
-            v-model.number="linerFromInput"
-            :errors="errors['liner_from']"
-            :loaded="fieldsLoaded['liner_from']"
-            />
-        </b-col>
-        <b-col cols="6" md="6">
-          <form-input
-            id="linerTo"
-            label="Liner To"
-            hint="ft (bgl)"
-            type="number"
-            v-model.number="linerToInput"
-            :errors="errors['liner_to']"
-            :loaded="fieldsLoaded['liner_to']"
-            />
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>Liner Perforations</b-col>
-      </b-row>
-      <b-row>
-        <b-col md="6">
-          <table class="table table-sm no-border">
-            <thead>
-              <tr>
-                <th class="font-weight-normal no-border">Perforated From ft (bgl)</th>
-                <th class="font-weight-normal">Perforated To ft (bgl)</th>
-                <th></th>
-              </tr>
-              <tr v-for="(liner, index) in linerPerforationsData" :key="index">
-                <td class="pb-0 pt-1">
-                  <form-input
-                    :id="`liner_perforated_from_${index}`"
-                    type="number"
-                    class="mb-0"
-                    v-model="liner.start"
-                    :errors="getLinerPerforationError(index).start"
-                    :loaded="getFieldsLoaded(index).start"/>
-                </td>
-                <td class="pb-0 pt-1">
-                  <form-input
-                    :id="`liner_perforated_to_${index}`"
-                    type="number"
-                    class="mb-0"
-                    v-model="liner.end"
-                    :errors="getLinerPerforationError(index).end"
-                    :loaded="getFieldsLoaded(index).end"/>
-                </td>
-                <td class="py-0">
-                  <b-btn size="sm" :id="`removeLinerPerfRowBtn${index}`" variant="primary" @click="removeRowIfOk(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
-                </td>
-              </tr>
-            </thead>
-            <tbody>
-            </tbody>
-          </table>
-          <b-btn size="sm" variant="primary" id="addlinerPerforationRowBtn" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-          <b-modal
-            v-model="confirmRemoveModal"
-            centered
-            title="Confirm remove"
-            @shown="focusRemoveModal">
-            Are you sure you want to remove this row?
-            <div slot="modal-footer">
-              <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-                Cancel
-              </b-btn>
-              <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-                Remove
-              </b-btn>
-            </div>
-          </b-modal>
-        </b-col>
-      </b-row>
-  </fieldset>
+      <b-col cols="6" md="6">
+        <form-input
+          id="linerFrom"
+          label="Liner From"
+          hint="ft (bgl)"
+          type="number"
+          v-model.number="linerFromInput"
+          :errors="errors['liner_from']"
+          :loaded="fieldsLoaded['liner_from']"
+          />
+      </b-col>
+      <b-col cols="6" md="6">
+        <form-input
+          id="linerTo"
+          label="Liner To"
+          hint="ft (bgl)"
+          type="number"
+          v-model.number="linerToInput"
+          :errors="errors['liner_to']"
+          :loaded="fieldsLoaded['liner_to']"
+          />
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>Liner Perforations</b-col>
+    </b-row>
+    <b-row>
+      <b-col md="6">
+        <table class="table table-sm no-border">
+          <thead>
+            <tr>
+              <th class="font-weight-normal no-border">Perforated From ft (bgl)</th>
+              <th class="font-weight-normal">Perforated To ft (bgl)</th>
+              <th></th>
+            </tr>
+            <tr v-for="(liner, index) in linerPerforationsData" :key="index">
+              <td class="pb-0 pt-1">
+                <form-input
+                  :id="`liner_perforated_from_${index}`"
+                  type="number"
+                  class="mb-0"
+                  v-model="liner.start"
+                  :errors="getLinerPerforationError(index).start"
+                  :loaded="getFieldsLoaded(index).start"/>
+              </td>
+              <td class="pb-0 pt-1">
+                <form-input
+                  :id="`liner_perforated_to_${index}`"
+                  type="number"
+                  class="mb-0"
+                  v-model="liner.end"
+                  :errors="getLinerPerforationError(index).end"
+                  :loaded="getFieldsLoaded(index).end"/>
+              </td>
+              <td class="py-0">
+                <b-btn size="sm" :id="`removeLinerPerfRowBtn${index}`" variant="primary" @click="removeRowIfOk(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              </td>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <b-btn size="sm" variant="primary" id="addlinerPerforationRowBtn" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+        <b-modal
+          v-model="confirmRemoveModal"
+          centered
+          title="Confirm remove"
+          @shown="focusRemoveModal">
+          Are you sure you want to remove this row?
+          <div slot="modal-footer">
+            <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
+              Cancel
+            </b-btn>
+            <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
+              Remove
+            </b-btn>
+          </div>
+        </b-modal>
+      </b-col>
+    </b-row>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'LinerInformation',
@@ -184,6 +174,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

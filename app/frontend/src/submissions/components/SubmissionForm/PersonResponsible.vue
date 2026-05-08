@@ -21,7 +21,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-col>
         <b-col xs="12">
           <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
+            <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
             <back-to-top-link v-if="isStaffEdit"/>
           </div>
         </b-col>
@@ -117,8 +117,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </b-form-group>
         </b-col>
       </b-row>
-      <b-row>
-        <b-col cols="12" md="6">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12 md:col-span-6">
           <form-input
               id="consultantName"
               label="Consultant Name"
@@ -127,8 +127,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :errors="errors['consultant_name']"
               :loaded="fieldsLoaded['consultant_name']"
           ></form-input>
-        </b-col>
-        <b-col cols="12" md="6">
+        </div>
+        <div class="col-span-12 md:col-span-6">
           <form-input
               id="consultantCompany"
               label="Consultant Company"
@@ -137,8 +137,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :errors="errors['consultant_company']"
               :loaded="fieldsLoaded['consultant_company']"
           ></form-input>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
     </fieldset>
 </template>
 

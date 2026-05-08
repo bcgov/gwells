@@ -12,19 +12,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Well Decommission Information</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
+  <form-subsection title="Well Decommission Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
       <b-col cols="12" md="3" lg="2">
         <form-input
             id="finishedWellDepth"
@@ -35,17 +24,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['finished_well_depth']"
             :loaded="fieldsLoaded['finished_well_depth']"></form-input>
       </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="decommissionReason"
             label="Reason for Well Decommission"
             v-model="decommissionReasonInput"
             :errors="errors['decommission_reason']"
             :loaded="fieldsLoaded['decommission_reason']"></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <b-form-group label="Decommission Method">
           <b-form-radio-group id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
             <b-form-radio
@@ -54,43 +43,44 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :value="method.decommission_method_code">{{method.description}}</b-form-radio>
           </b-form-radio-group>
         </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="sealantMaterial"
             label="Sealant Material"
             v-model="sealantMaterialInput"
             :errors="errors['decommission_sealant_material']"
             :loaded="fieldsLoaded['decommission_sealant_material']"></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
+      </div>
+      <div class="col-span-12 md:col-span-6 lg:col-span-4">
         <form-input
             id="backfillMaterial"
             label="Backfill Material"
             v-model="backfillMaterialInput"
             :errors="errors['decommission_backfill_material']"
             :loaded="fieldsLoaded['decommission_backfill_material']"></form-input>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-row>
       <b-col cols="12" lg="8">
         <form-input
-            id="decommissionDetails"
-            label="Decommission Details"
-            v-model="decommissionDetailsInput"
-            :errors="errors['decommission_details']"
-            :loaded="fieldsLoaded['decommission_details']"></form-input>
+          id="decommissionDetails"
+          label="Decommission Details"
+          v-model="decommissionDetailsInput"
+          :errors="errors['decommission_details']"
+          :loaded="fieldsLoaded['decommission_details']"></form-input>
       </b-col>
     </b-row>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -121,6 +111,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

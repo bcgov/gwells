@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 lg:col-span-6">
-        <legend :id="id">Pumping Test Information and Aquifer Parameters</legend>
-      </div>
-      <div class="col-span-12 lg:col-span-6">
-        <div class="float-right">
-          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </div>
-    </div>
+  <form-subsection title="Pumping Test Information and Aquifer Parameters" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="table-responsive" id="aquiferParametersTable">
       <table class="table" aria-describedby="aquiferParameters">
         <thead>
@@ -191,7 +180,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
       </div>
     </b-modal>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
@@ -199,6 +188,7 @@ import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'AquiferParameters',
@@ -225,6 +215,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

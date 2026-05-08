@@ -12,19 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 lg:col-span-6">
-        <legend :id="id">Aquifer Information</legend>
-      </div>
-      <div class="col-span-12 lg:col-span-6">
-        <div class="float-right">
-          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </div>
-    </div>
-
+  <form-subsection title="Aquifer Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6 xl:col-span-3">
         <div class="flex flex-col gap-2">
@@ -72,7 +60,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-form-group>
       </div>
     </div>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
@@ -81,6 +69,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import ApiService from '@/common/services/ApiService.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -117,6 +106,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   fields: {
     aquiferInput: 'aquifer',

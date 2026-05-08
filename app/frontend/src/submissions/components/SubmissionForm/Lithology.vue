@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Lithology</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
+  <form-subsection title="Lithology" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="table-responsive">
       <table class="table table-sm" aria-describedby="lithologyDetails">
         <thead>
@@ -185,13 +174,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-btn>
       </div>
     </b-modal>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 import Lithology from '@/submissions/components/lithology.js'
 
@@ -223,6 +213,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

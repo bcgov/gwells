@@ -12,21 +12,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Decommission Description</legend>
-        <p>Enter depth intervals from the top of the hole to the bottom.</p>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12">
+  <form-subsection
+    title="Decommission Description"
+    subtitle="Enter depth intervals from the top of the hole to the bottom."
+    :id="id" :isStaffEdit="isStaffEdit"
+    :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12">
         <div class="table-responsive">
           <table class="table table-sm" aria-describedby="decommissionDescriptions">
             <thead>
@@ -95,8 +87,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </table>
         </div>
         <b-btn size="sm" variant="primary" @click="addClosureRow" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-modal
         v-model="confirmRemoveModal"
         centered
@@ -112,13 +104,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </b-btn>
       </div>
     </b-modal>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -144,6 +137,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

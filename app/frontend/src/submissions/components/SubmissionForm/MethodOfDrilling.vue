@@ -12,83 +12,73 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-    <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Method of Drilling</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="6">
+  <form-subsection title="Method of Drilling" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
+        <form-input
+          id="groundElevation"
+          label="Ground Elevation"
+          hint="ft (asl)"
+          v-model.number="groundElevationInput"
+          type="number"
+          :errors="errors['ground_elevation']"
+          :loaded="fieldsLoaded['ground_elevation']"></form-input>
+      </div>
+      <div class="col-span-12 md:col-span-6">
+        <b-form-group label="Method for Determining Ground Elevation">
           <form-input
-            id="groundElevation"
-            label="Ground Elevation"
-            hint="ft (asl)"
-            v-model.number="groundElevationInput"
-            type="number"
-            :errors="errors['ground_elevation']"
-            :loaded="fieldsLoaded['ground_elevation']"></form-input>
-        </b-col>
-        <b-col cols="12" md="6">
-          <b-form-group label="Method for Determining Ground Elevation">
-            <form-input
-              select
-              id="groundElevationMethod"
-              v-model="groundElevationMethodInput"
-              value-field="ground_elevation_method_code"
-              text-field="description"
-              placeholder="Select Method"
-              :options="method_codes()"
-              :errors="errors['ground_elevation_method']"
-              :loaded="fieldsLoaded['ground_elevation_method']">
-            </form-input>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="6">
+            select
+            id="groundElevationMethod"
+            v-model="groundElevationMethodInput"
+            value-field="ground_elevation_method_code"
+            text-field="description"
+            placeholder="Select Method"
+            :options="method_codes()"
+            :errors="errors['ground_elevation_method']"
+            :loaded="fieldsLoaded['ground_elevation_method']">
+          </form-input>
+        </b-form-group>
+      </div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
+        <form-input
+            id="drillingMethod"
+            :label="drillingMethodsLabel"
+            select
+            :options="codes?.drilling_methods"
+            value-field="drilling_method_code"
+            text-field="description"
+            hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+            v-model="drillingMethodInput"
+            :errors="errors['drilling_methods']"
+            :loaded="fieldsLoaded['drilling_methods']"
+        ></form-input>
+      </div>
+      <div>
+        <b-form-group label="Orientation of Well">
           <form-input
-              id="drillingMethod"
-              :label="drillingMethodsLabel"
-              select
-              :options="codes?.drilling_methods"
-              value-field="drilling_method_code"
-              text-field="description"
-              hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
-              v-model="drillingMethodInput"
-              :errors="errors['drilling_methods']"
-              :loaded="fieldsLoaded['drilling_methods']"
-          ></form-input>
-        </b-col>
-        <b-col>
-          <b-form-group label="Orientation of Well">
-            <form-input
-              select
-              id="wellOrientationStatus"
-              v-model="wellOrientationStatusInput"
-              value-field="well_orientation_code"
-              text-field="description"
-              placeholder="Select Orientation"
-              :options="codes?.well_orientation_codes"
-              :errors="errors['well_orientation_status']"
-              :loaded="fieldsLoaded['well_orientation_status']">
-            </form-input>
-          </b-form-group>
-        </b-col>
-      </b-row>
-    </fieldset>
+            select
+            id="wellOrientationStatus"
+            v-model="wellOrientationStatusInput"
+            value-field="well_orientation_code"
+            text-field="description"
+            placeholder="Select Orientation"
+            :options="codes?.well_orientation_codes"
+            :errors="errors['well_orientation_status']"
+            :loaded="fieldsLoaded['well_orientation_status']">
+          </form-input>
+        </b-form-group>
+      </div>
+    </div>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'MethodOfDrilling',
@@ -120,6 +110,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {
