@@ -20,30 +20,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <div v-else>
-      <b-card no-body class="mb-4 container d-print-none">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-      </b-card>
-      <b-card v-if="errorNotFound" class="container p-1">
+      <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-2">
+        <Breadcrumb :model="breadcrumbs"/>
+      </div>
+      <Card v-if="errorNotFound" class="container p-1">
         <h1>Not Found</h1>
         <p>The page you are looking for was not found.</p>
-      </b-card>
-      <b-card v-else class="container">
+      </Card>
+      <Card v-else class="container">
         <api-error v-if="error" :error="error"/>
 
-        <b-alert variant="success" show v-if="showSavedMessage" id="aquifer-success-alert">
+        <Message severity="success" v-if="showSavedMessage" id="aquifer-success-alert">
           Well {{wellTagNumber}} has had it's vertical aquifer extents updated
-        </b-alert>
+        </Message>
 
         <h2 id="page-title">Well {{wellTagNumber}} Vertical Aquifer Extents</h2>
 
-        <b-alert v-if="warnings.length > 0" variant="warning" show id="warnings">
+        <Message v-if="warnings.length > 0" severity="warn" id="warnings">
           Possible invalid data. Double check the warnings listed below before you save.
           <ul>
             <li v-for="(warning, index) in warnings" :key="index">{{warning}}</li>
           </ul>
-        </b-alert>
+        </Message>
 
-        <b-form @submit.prevent="save" @reset.prevent="resetForm" :disabled="isSaving">
+        <Form @submit="save" @reset="resetForm" :disabled="isSaving">
           <div>
             <div id="vertical-aquifer-extents-table">
               <table class="table table-sm mb-0">
@@ -88,7 +88,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                           />
                       </td>
                       <td class="input-width-small py-0 pr-0">
-                        <b-form-group
+                        <InputGroupAddon
                           class="aquifer-search-dropdown"
                           :class="{'has-error': getRowError(index).aquifer_id}">
                           <v-select
@@ -121,7 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                               {{ error }}
                             </div>
                           </b-form-invalid-feedback>
-                        </b-form-group>
+                        </InputGroupAddon>
                       </td>
                       <td class="py-0 text-right">
                         <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeAquiferRowButton${index}`" class="mt-2" :disabled="isSaving"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -142,7 +142,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <b-btn type="reset" variant="default" :disabled="isSaving">Reset</b-btn>
             </b-col>
           </b-row>
-        </b-form>
+        </Form>
         <b-modal
           v-model="confirmRemoveModal"
           centered
@@ -158,7 +158,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </b-btn>
           </div>
         </b-modal>
-      </b-card>
+      </Card>
     </div>
   </div>
 </template>

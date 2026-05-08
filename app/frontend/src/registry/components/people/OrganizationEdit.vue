@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
+  <div class="ml-20 mr-20 bg-white mb-4">
     <Breadcrumb :model="breadcrumbs"/>
   </div>
   <Card class="rounded-lg ml-20 mr-20 bg-white">

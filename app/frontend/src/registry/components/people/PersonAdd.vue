@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
-    <Breadcrumb :model="breadcrumbs"></Breadcrumb>
+  <div class="ml-20 mr-20 bg-white mb-4">
+    <Breadcrumb :model="breadcrumbs"/>
   </div>
   <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12" v-if="error">
     <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>

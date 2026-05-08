@@ -13,9 +13,9 @@
 */
 <template>
   <div class="container">
-    <Card no-body class="mb-4">
-      <Breadcrumb :model="breadcrumbs" class="py-0 my-2"></Breadcrumb>
-    </Card>
+    <div class="ml-20 mr-20 bg-white mb-4">
+      <Breadcrumb :model="breadcrumbs"/>
+    </div>
     <div class="card">
       <div class="card-body">
         <!-- Display loading spinner if application is null -->

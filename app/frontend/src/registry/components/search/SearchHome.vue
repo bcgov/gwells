@@ -3,8 +3,6 @@
 
     <!-- Active surveys -->
     <Message
-        show
-        variant="info"
         class="container mb-4"
         severity="info"
         v-for="(survey, index) in surveys"
@@ -34,23 +32,11 @@
           <div>
             <Panel :toggleable="true" :collapsed="true" header="Administrator options">
               <div class="pb-1 gap-2 flex flex-row">
-                <Button
-                  type="button"
-                  severity="primary"
-                  id="addNewEntryButton"
-                  >
-                  <router-link :to="{ name: 'PersonAdd' }">
-                    Add new entry
-                  </router-link>
+                <Button id="addNewEntryButton" asChild v-slot="slotProps">
+                  <RouterLink :to="{ name: 'PersonAdd' }" :class="slotProps.class">Add new entry</RouterLink>
                 </Button>
-                <Button
-                  type="button"
-                  severity="primary"
-                  id="manageCompaniesButton"
-                  >
-                  <router-link :to="{ name: 'OrganizationEdit' }">
-                    Manage companies
-                  </router-link>
+                <Button id="manageCompaniesButton" asChild v-slot="slotProps">
+                  <RouterLink :to="{ name: 'OrganizationEdit' }" :class="slotProps.class">Manage companies</RouterLink>
                 </Button>
               </div>
             </Panel>

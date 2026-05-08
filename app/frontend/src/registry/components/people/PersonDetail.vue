@@ -1,6 +1,6 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
-    <Breadcrumb :model="breadcrumbs"></Breadcrumb>
+  <div class="ml-20 mr-20 bg-white mb-4">
+    <Breadcrumb :model="breadcrumbs"/>
   </div>
   <div v-if="showSpinner" class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <div class="fa-2x text-center">

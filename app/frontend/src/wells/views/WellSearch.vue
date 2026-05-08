@@ -12,10 +12,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <b-card class="container p-1">
-      <b-alert
-        show
-        variant="info"
+  <div>
+      <Message
+        severity="info"
         class="mb-4"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
@@ -24,104 +23,108 @@ Licensed under the Apache License, Version 2.0 (the "License");
             {{ survey.survey_introduction_text }}
           </a>
         </p>
-      </b-alert>
+      </Message>
 
-      <h1 class="card-title" id="wellSearchTitle">Well Search</h1>
-      <div>
-        <div>
-          <p>
-            Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
-          </p>
-          <p>
-            Search by one of the fields below, or zoom to a location on the map.
-          </p>
-        </div>
-      </div>
-      <b-row class="mt-6">
-        <b-col cols="12" lg="6" xl="5">
-          <b-card no-body border-variant="dark" class="mb-1">
-            <b-tabs card v-model="tabIndex">
-              <b-tab title="Basic Search">
-                <div class="card-text">
-                  <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
-                </div>
-              </b-tab>
-              <b-tab title="Advanced Search">
-                <div class="card-text">
-                  <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
-                </div>
-              </b-tab>
-            </b-tabs>
-          </b-card>
-        </b-col>
-        <b-col>
+      <Card class="rounded-lg p-1 ml-50 mr-50 bg-white">
+        <template id="wellSearchTitle" #title>Well Search</template>
+        <template #content>
           <div>
-            <ProgressSpinner v-if="loadingMap"/>
-
-            <search-map
-              :initialCentre="wellsStore.searchMapCentre"
-              :initialZoom="wellsStore.searchMapZoom"
-              :focusedWells="focusedWells"
-              @boundsChanged="handleMapBoundsChange"
-              @search="handleMapSearch"
-              @clearSearch="handleMapClearSearch"
-              @wellsLoading="mapServerErrorMessage = null; noWellsInView = null"
-              @wellsLoaded="handleWellsLoaded"
-              @error="handleMapError"
-              @mapLoaded="handleMapReady"/>
+            <div>
+              <p>
+                Not all groundwater wells are registered with the province, as registration was voluntary until February 29, 2016. Data quality issues may impact search results.
+              </p>
+              <p>
+                Search by one of the fields below, or zoom to a location on the map.
+              </p>
+            </div>
           </div>
+          <b-row class="mt-6">
+            <b-col cols="12" lg="6" xl="5">
+              <b-card no-body border-variant="dark" class="mb-1">
+                <b-tabs card v-model="tabIndex">
+                  <b-tab title="Basic Search">
+                    <div class="card-text">
+                      <basic-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+                    </div>
+                  </b-tab>
+                  <b-tab title="Advanced Search">
+                    <div class="card-text">
+                      <advanced-search-form @search="handleSearchSubmit()" @reset="handleReset()" />
+                    </div>
+                  </b-tab>
+                </b-tabs>
+              </b-card>
+            </b-col>
+            <b-col>
+              <div>
+                <ProgressSpinner v-if="loadingMap"/>
 
-          <b-alert variant="danger" class="mt-2" :show="mapServerErrorMessage || noWellsInView">
-            <div v-if="mapServerErrorMessage">
-              {{mapServerErrorMessage}}
-            </div>
-            <!--  handle 0 search results in BC with "No matching wells found in BC" -->
-            <div v-else-if="noWellsInView">
-              <div v-if="searchBCInProgress">
-                <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
-                Searching all of BC for any matching wells ...
+                <search-map
+                  :initialCentre="wellsStore.searchMapCentre"
+                  :initialZoom="wellsStore.searchMapZoom"
+                  :focusedWells="focusedWells"
+                  @boundsChanged="handleMapBoundsChange"
+                  @search="handleMapSearch"
+                  @clearSearch="handleMapClearSearch"
+                  @wellsLoading="mapServerErrorMessage = null; noWellsInView = null"
+                  @wellsLoaded="handleWellsLoaded"
+                  @error="handleMapError"
+                  @mapLoaded="handleMapReady"/>
               </div>
-              <div v-if="totalSearchResultsInBC === 0">
-                No matching wells found
-              </div>
-              <div v-else>
-                No matching wells found in map view.
-                <span v-if="totalSearchResultsInBC <= 10">
-                  <span v-if="totalSearchResultsInBC == 1">
-                    <!-- Singular -->
-                    Go to the
-                    <a href="#" @click.prevent="focusOnWells(bcSearchResults)">one well</a>
-                    that matches your search criteria
-                  </span>
-                  <span v-else>
-                    <!-- plural -->
-                    Go to the
-                    <a href="#" @click.prevent="focusOnWells(bcSearchResults)">{{ englishNumber(bcSearchResults.length) }} wells</a>
-                    that match your search criteria
-                  </span>
-                </span>
-                <span v-else>
-                  Please zoom out to view the {{totalSearchResultsInBC}} matching wells across BC or change your search criteria
-                </span>
-              </div>
-            </div>
-          </b-alert>
-        </b-col>
-      </b-row>
-      <div class="my-12" v-show="wellsStore.hasSearched || hasResultErrors">
-        <search-results/>
-      </div>
-      <div v-if="!wellsStore.hasSearched" class="mt-12">
-        <p>
-          Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
-        </p>
-        <p>
-          <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" target="_blank">
-            Learn about and submit water license applications
-          </a> with FrontCounterBC.
-        </p>
-      </div>
-    </b-card>
+
+              <b-alert variant="danger" class="mt-2" :show="mapServerErrorMessage || noWellsInView">
+                <div v-if="mapServerErrorMessage">
+                  {{mapServerErrorMessage}}
+                </div>
+                <!--  handle 0 search results in BC with "No matching wells found in BC" -->
+                <div v-else-if="noWellsInView">
+                  <div v-if="searchBCInProgress">
+                    <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
+                    Searching all of BC for any matching wells ...
+                  </div>
+                  <div v-if="totalSearchResultsInBC === 0">
+                    No matching wells found
+                  </div>
+                  <div v-else>
+                    No matching wells found in map view.
+                    <span v-if="totalSearchResultsInBC <= 10">
+                      <span v-if="totalSearchResultsInBC == 1">
+                        <!-- Singular -->
+                        Go to the
+                        <a href="#" @click.prevent="focusOnWells(bcSearchResults)">one well</a>
+                        that matches your search criteria
+                      </span>
+                      <span v-else>
+                        <!-- plural -->
+                        Go to the
+                        <a href="#" @click.prevent="focusOnWells(bcSearchResults)">{{ englishNumber(bcSearchResults.length) }} wells</a>
+                        that match your search criteria
+                      </span>
+                    </span>
+                    <span v-else>
+                      Please zoom out to view the {{totalSearchResultsInBC}} matching wells across BC or change your search criteria
+                    </span>
+                  </div>
+                </div>
+              </b-alert>
+            </b-col>
+          </b-row>
+          <div class="my-12" v-show="wellsStore.hasSearched || hasResultErrors">
+            <search-results/>
+          </div>
+          <div v-if="!wellsStore.hasSearched" class="mt-12">
+            <p>
+              Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
+            </p>
+            <p>
+              <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" target="_blank">
+                Learn about and submit water license applications
+              </a> with FrontCounterBC.
+            </p>
+          </div>
+        </template>
+      </Card>
+    </div>
 </template>
 
 <script>

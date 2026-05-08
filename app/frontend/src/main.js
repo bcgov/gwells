@@ -25,7 +25,7 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop
+  Textarea, Menubar, ScrollTop, InputGroupAddon
 } from 'primevue';
 import { Form } from '@primevue/forms';
 import VueMatomo from "vue-matomo";
@@ -120,6 +120,7 @@ app.component("FileUpload", FileUpload)
 app.component("Textarea", Textarea)
 app.component("Menubar", Menubar);
 app.component("ScrollTop", ScrollTop);
+app.component("InputGroupAddon", InputGroupAddon);
 
 const pinia = createPinia();
 app.use(pinia);
