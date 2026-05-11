@@ -290,6 +290,14 @@ export default {
           header: 'Confirm remove',
           message: 'Are you sure you want to remove this row?',
           acceptClass: 'p-button-danger',
+          rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary'
+          },
+          acceptProps: {
+              label: 'Remove',
+              severity: 'danger'
+          },
           accept: () => {
             this.removeRowByIndex(rowNumber);
           },
