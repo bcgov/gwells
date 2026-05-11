@@ -14,159 +14,167 @@
 
 <template>
   <div id="bulk-well-aquifer-correlation-screen">
-    <b-card no-body class="mb-4 container d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-    </b-card>
-    <b-card class="container p-1" v-if="perms.wellAquiferCorrelation">
-      <api-error v-if="apiError" :error="apiError"/>
+    <Card no-body class="mx-8 mb-4">
+      <Breadcrumb :home="{ label: 'Home', to: '/' }" :model="{ label: 'Home', to: '/' }" class="py-0 my-2"></Breadcrumb>
+    </Card>
+    <Card class="mx-8" v-if="perms.wellAquiferCorrelation">
+      <template #content>
+        <api-error v-if="apiError" :error="apiError"/>
 
-      <b-container>
-        <b-row class="border-bottom mb-4 pb-2 pt-2">
-          <b-col><h4>Well Aquifer Correlation Bulk Upload</h4></b-col>
-        </b-row>
+        <div>
+          <h4>Well Aquifer Correlation Bulk Upload</h4>
 
-        <b-alert show v-if="showSaveSuccess" variant="success" >
-          All wells updated with aquifer correlation
-        </b-alert>
+          <Message
+            show
+            variant="info"
+            class="my-3"
+            severity="info"
+            v-if="showSaveSuccess"
+            :key="`survey ${index}`">
+            <p class="m-0">
+              All wells updated with aquifer correlation
+            </p>
+          </Message>
 
-        <b-card v-if="!file" title="Instructions">
+          <div v-if="!file" title="Instructions">
 
-          <b-card-text>
-            <p>Choose a CSV file below that is the following <strong>exact</strong> format:</p>
-            <ol>
-              <li>Only two columns</li>
-              <li>The first column “A” must be only numeric well tag numbers</li>
-              <li>The second column “B” must be only numeric aquifer ids</li>
-              <li>The first row must contain “well_tag_number” in column “A”</li>
-              <li>The first row must contain “aquifer_id” in column “B”</li>
-            </ol>
-          </b-card-text>
-
-          <b-form-file
-            v-model="file"
-            :disabled="isSaving"
-            accept="text/csv"
-            placeholder="Choose a file or drop it here…"
-            drop-placeholder="Drop file here…"/>
-        </b-card>
-
-        <b-alert show v-if="tooManyCSVRows" variant="danger" >
-          The CSV file has too many records ({{numberOfCSVRows}}).
-          Performance will be an issue and your bulk upload may not work
-          for more than {{maxNumberOfRows}}.
-          Please break up the CSV file into smaller files.
-        </b-alert>
-
-        <b-card v-if="hasCSVErrors">
-          <b-alert show variant="danger" >
-            There were problems parsing the CSV file. Below are the list of errors encountered.
-          </b-alert>
-
-          <b-table
-            v-if="hasCSVErrors"
-            class="csv-errors"
-            striped
-            hover
-            :items="csvErrorsTableData"
-            :fields="csvErrorTableFields">
-          </b-table>
-        </b-card>
-
-        <b-card v-if="!hasCSVErrors && hasDataToProcess" title="Data to process">
-          <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform && !hasAPIValidationWarnings" variant="success">
-            All {{numWells}} wells and aquifers are valid. Review the changes below and then click “Submit” to perform update.
-          </b-alert>
-          <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform && hasAPIValidationWarnings" variant="warning">
-            All {{numWells}} wells and aquifers are valid, but warnings exist. Review changes below and verify warnings. Click “Ignore warnings and submit” to perform update.
-          </b-alert>
-          <b-alert show v-if="hasBeenValidated && noUpdatesToPerform" variant="warning">
-            There are no updates to perform. Verify your CSV and try again.
-          </b-alert>
-          <div v-if="hasAPIValidationErrors" id="api-errors">
-            <b-alert show variant="danger">
-              The wells and aquifers listed below can not be found in the GWELLS database.
-            </b-alert>
-
-            <b-table
-              class="errors"
-              :tbody-tr-class="rowClass"
-              striped
-              hover
-              :items="errorsTableData"
-              :fields="errorTableFields">
-              <template v-slot:cell(aquiferId)="row">
-                <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
-                  {{row.item.aquiferId}}
-                </span>
-              </template>
-              <template v-slot:cell(wellTagNumber)="row">
-                <span :class="{ error: isUnknownWell(row.item.wellTagNumber) }">
-                  {{row.item.wellTagNumber}}
-                </span>
-              </template>
-            </b-table>
-          </div>
-
-          <div v-else>
-            <div v-if="hasBeenValidated && !noUpdatesToPerform">
-              <strong>Note:</strong>
-              <ol>
-                <li><span class="change-color">orange</span> wells are being updated from a previous aquifer id (in <span class="remove-color">red</span>)</li>
-                <li><span class="new-color">green</span> wells are new correlations</li>
-                <li><span class="no-change-color">un-coloured</span> wells have no changes to their aquifer correlations</li>
-              </ol>
-            </div>
-
-            <div id="summary">
-              <strong>Summary:</strong>
-              <ul>
-                <li v-if="numWellsToUpdate > 0">{{numWellsToUpdate}} to be changed</li>
-                <li v-if="numWellsToAdd > 0">{{numWellsToAdd}} to add</li>
-                <li v-if="numWellsUnchanged > 0">{{numWellsUnchanged}} unchanged</li>
+            <div>
+              <p>Choose a CSV file below that is the following <strong>exact</strong> format:</p>
+              <ul class="list-disc my-4 ml-8">
+                <li>Only two columns</li>
+                <li>The first column “A” must be only numeric well tag numbers</li>
+                <li>The second column “B” must be only numeric aquifer ids</li>
+                <li>The first row must contain “well_tag_number” in column “A”</li>
+                <li>The first row must contain “aquifer_id” in column “B”</li>
               </ul>
             </div>
 
+            <b-form-file
+              v-model="file"
+              :disabled="isSaving"
+              accept="text/csv"
+              placeholder="Choose a file or drop it here…"
+              drop-placeholder="Drop file here…"/>
+          </div>
+
+          <b-alert show v-if="tooManyCSVRows" variant="danger" >
+            The CSV file has too many records ({{numberOfCSVRows}}).
+            Performance will be an issue and your bulk upload may not work
+            for more than {{maxNumberOfRows}}.
+            Please break up the CSV file into smaller files.
+          </b-alert>
+
+          <b-card v-if="hasCSVErrors">
+            <b-alert show variant="danger" >
+              There were problems parsing the CSV file. Below are the list of errors encountered.
+            </b-alert>
+
             <b-table
-              class="correlations"
-              :tbody-tr-class="rowClass"
+              v-if="hasCSVErrors"
+              class="csv-errors"
               striped
               hover
-              :items="tableData"
-              :fields="tableFields">
-              <template v-slot:cell(oldAquiferId)="row">
-                <span>
-                  {{formatOldAquifer(row)}}
-                </span>
-              </template>
-              <template v-slot:cell(warnings)="row">
-                <ul v-if="row.item.warnings.length > 0">
-                  <li v-for="(warning, index) in row.item.warnings" :key="index">
-                    {{ warning }}
-                  </li>
-                </ul>
-              </template>
+              :items="csvErrorsTableData"
+              :fields="csvErrorTableFields">
             </b-table>
-          </div>
-        </b-card>
+          </b-card>
 
-        <b-button-group class="mt-4">
-          <b-button
-            v-if="showSubmitButton"
-            :disabled="isSaving || !Boolean(file)"
-            variant="primary"
-            @click="save">
-            <b-spinner v-if="isSaving" small label="Loading…"/>
-            {{saveButtonLabel}}
-          </b-button>
-          <b-button
-            v-if="showResetButton"
-            variant="default"
-            @click="restart">
-            {{showSaveSuccess ? 'Upload another CSV' : 'Reset'}}
-          </b-button>
-        </b-button-group>
-      </b-container>
-    </b-card>
+          <b-card v-if="!hasCSVErrors && hasDataToProcess" title="Data to process">
+            <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform && !hasAPIValidationWarnings" variant="success">
+              All {{numWells}} wells and aquifers are valid. Review the changes below and then click “Submit” to perform update.
+            </b-alert>
+            <b-alert show v-if="hasBeenValidated && !noUpdatesToPerform && hasAPIValidationWarnings" variant="warning">
+              All {{numWells}} wells and aquifers are valid, but warnings exist. Review changes below and verify warnings. Click “Ignore warnings and submit” to perform update.
+            </b-alert>
+            <b-alert show v-if="hasBeenValidated && noUpdatesToPerform" variant="warning">
+              There are no updates to perform. Verify your CSV and try again.
+            </b-alert>
+            <div v-if="hasAPIValidationErrors" id="api-errors">
+              <b-alert show variant="danger">
+                The wells and aquifers listed below can not be found in the GWELLS database.
+              </b-alert>
+
+              <b-table
+                class="errors"
+                :tbody-tr-class="rowClass"
+                striped
+                hover
+                :items="errorsTableData"
+                :fields="errorTableFields">
+                <template v-slot:cell(aquiferId)="row">
+                  <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
+                    {{row.item.aquiferId}}
+                  </span>
+                </template>
+                <template v-slot:cell(wellTagNumber)="row">
+                  <span :class="{ error: isUnknownWell(row.item.wellTagNumber) }">
+                    {{row.item.wellTagNumber}}
+                  </span>
+                </template>
+              </b-table>
+            </div>
+
+            <div v-else>
+              <div v-if="hasBeenValidated && !noUpdatesToPerform">
+                <strong>Note:</strong>
+                <ol>
+                  <li><span class="change-color">orange</span> wells are being updated from a previous aquifer id (in <span class="remove-color">red</span>)</li>
+                  <li><span class="new-color">green</span> wells are new correlations</li>
+                  <li><span class="no-change-color">un-coloured</span> wells have no changes to their aquifer correlations</li>
+                </ol>
+              </div>
+
+              <div id="summary">
+                <strong>Summary:</strong>
+                <ul>
+                  <li v-if="numWellsToUpdate > 0">{{numWellsToUpdate}} to be changed</li>
+                  <li v-if="numWellsToAdd > 0">{{numWellsToAdd}} to add</li>
+                  <li v-if="numWellsUnchanged > 0">{{numWellsUnchanged}} unchanged</li>
+                </ul>
+              </div>
+
+              <b-table
+                class="correlations"
+                :tbody-tr-class="rowClass"
+                striped
+                hover
+                :items="tableData"
+                :fields="tableFields">
+                <template v-slot:cell(oldAquiferId)="row">
+                  <span>
+                    {{formatOldAquifer(row)}}
+                  </span>
+                </template>
+                <template v-slot:cell(warnings)="row">
+                  <ul v-if="row.item.warnings.length > 0">
+                    <li v-for="(warning, index) in row.item.warnings" :key="index">
+                      {{ warning }}
+                    </li>
+                  </ul>
+                </template>
+              </b-table>
+            </div>
+          </b-card>
+
+          <b-button-group class="mt-4">
+            <b-button
+              v-if="showSubmitButton"
+              :disabled="isSaving || !Boolean(file)"
+              variant="primary"
+              @click="save">
+              <b-spinner v-if="isSaving" small label="Loading…"/>
+              {{saveButtonLabel}}
+            </b-button>
+            <b-button
+              v-if="showResetButton"
+              variant="default"
+              @click="restart">
+              {{showSaveSuccess ? 'Upload another CSV' : 'Reset'}}
+            </b-button>
+          </b-button-group>
+        </div>
+      </template>
+    </Card>
     <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
@@ -183,6 +191,7 @@
 <script>
 import { useCommonStore } from '@/stores/common.js'
 import Papa from 'papaparse'
+import Card from 'primevue/card';
 
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
@@ -265,11 +274,11 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: 'Bulk Upload',
+          label: 'Bulk Upload',
           to: { name: 'bulk-home' }
         },
         {
-          text: 'Well Aquifer Correlation Bulk Upload',
+          label: 'Well Aquifer Correlation Bulk Upload',
           active: true
         }
       ]
