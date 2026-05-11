@@ -196,7 +196,7 @@
 
           <div id="registry-download" v-if="userRoles.registry.view">
             <h6 class="mt-4">Download everyone in registry</h6>
-            <ul class="ml-4">
+            <ul class="list-disc pl-10 mb-4 ml-4">
               <li><a href="drillers/xlsx" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (XLSX)</a></li>
               <li><a href="drillers/csv" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (CSV)</a></li>
             </ul>

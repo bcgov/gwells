@@ -363,7 +363,7 @@
                 multiple
                 plain/>
               <div class="mt-4" v-if="commonStore.uploadFiles.length > 0">
-                <ul>
+                <ul class="list-disc pl-10 mb-4">
                   <li v-for="(f, index) in uploadFiles" :key="index">{{f.name}}</li>
                 </ul>
               </div>

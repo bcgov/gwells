@@ -51,7 +51,7 @@
       <p>Pursuant to Part 2, Section 7 of the Groundwater Protection Regulation (GWPR), the Comptroller must establish and maintain a register of well pump installers who are authorized to operated in (B.C.). The list of well pump installers whose names are in the Register, must be made available to the public during normal business hours, or be posted on a publicly available website. A person wishing to be recognized as a well pump installer in B.C. and wanting to be listed in the Register may apply to the Comptroller pursuant to Section 8 of the GWPR.</p>
 
       <div>>Pursuant to Section 14 of the GWPR, a registered well pump installer is qualified in respect of:
-        <ul>
+        <ul class="list-disc pl-10 mb-4">
           <li>decommissioning or deactivating any class of well,</li>
           <li>installing, maintaining, repairing, removing or testing a well pump or well head,</li>
           <li>conducting a flow test of a well,</li>
@@ -61,7 +61,7 @@
       </div>
 
       <div>The Comptroller must remove from the Register of well pump installers any person who:
-        <ul>
+        <ul class="list-disc pl-10 mb-4">
           <li>fails to meet a requirement for registration,</li>
           <li>fails to maintain a requirement for registration, including any requirement for maintaining a certificate issued by another province or territory of Canada,</li>
           <li>is no longer actively working in Canada as a well pump installer.</li>
@@ -74,7 +74,7 @@
 
       <div>
         *‘Certificate issued by’: Explanation of abbreviations
-        <ul>
+        <ul class="list-disc pl-10 mb-4">
           <li>Province of BC: Certificate issued by the Industry Training Authority or the Advanced Education Ministry of the Province of B.C.</li>
           <li>CGWA : Certificate issued by the Canadian Ground Water Association</li>
           <li>N/A – grand-fathered: Not applicable. Well pump installers with this designation were registered under the grand-parenting provision of the former Ground Water Protection Regulation (2004). That provision allowed well pump installers to be registered at the discretion of the Deputy Comptroller of Water Rights, based on proof of experience.</li>

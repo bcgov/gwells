@@ -25,9 +25,10 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs, TabList, Tab, TabPanels, TabPanel
+  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs, TabList, Tab, TabPanels, TabPanel, ConfirmDialog
 } from 'primevue';
 import { Form } from '@primevue/forms';
+import ConfirmationService from 'primevue/confirmationservice';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
@@ -82,6 +83,7 @@ if (isProduction()) {
 }
 
 app.use(router);
+app.use(ConfirmationService);
 // TBD replace VueNoty with a more modern notification library
 // app.use(VueNoty, {
 //   layout: "topRight",
@@ -126,6 +128,7 @@ app.component("Tabs", Tabs);
 app.component("TabList", TabList);
 app.component("TabPanel", TabPanel);
 app.component("TabPanels", TabPanels);
+app.component("ConfirmDialog", ConfirmDialog);
 
 const pinia = createPinia();
 app.use(pinia);
