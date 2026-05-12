@@ -15,7 +15,7 @@
           <div v-if="error">
             {{error}}
           </div>
-          <ul class="list-disc pl-10 mb-4" v-else-if="files && files.private && files.private.length">
+          <ul v-else-if="files && files.private && files.private.length">
             <li v-for="(file, index) in files.private" :key="index">
               <a :href="file.url" :download="file.name" target="_blank">{{file.name}}</a>
               <a class="fa fa-trash fa-lg"

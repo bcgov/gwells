@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
         <Message v-if="warnings.length > 0" severity="warn" id="warnings">
           Possible invalid data. Double check the warnings listed below before you save.
-          <ul class="list-disc pl-10 mb-4">
+          <ul>
             <li v-for="(warning, index) in warnings" :key="index">{{warning}}</li>
           </ul>
         </Message>
@@ -115,11 +115,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
                               </div>
                             </template>
                           </v-select>
-                          <div :id="`aquifer${index}InvalidFeedback`">
+                          <!-- There isn't a replacement. Will need to redo error logic later.
+                            <b-form-invalid-feedback :id="`aquifer${index}InvalidFeedback`">
                             <div v-for="(error, errIndex) in getRowError(index).aquifer_id" :key="`aquifer${index}Input error ${errIndex}`">
                               {{ error }}
                             </div>
-                          </div>
+                          </b-form-invalid-feedback> -->
                         </InputGroupAddon>
                       </td>
                       <td class="py-0 text-right">
@@ -130,7 +131,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                           label="Remove"
                           class="mt-2"
                           :loading="isSaving"
-                          severity="danger"
                           icon="fa fa-minus-square-o"
                         />
                       </td>

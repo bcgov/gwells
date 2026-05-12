@@ -6,7 +6,7 @@
         Learn more about <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers">groundwater wells in B.C.</a>:
       </p>
         <div>
-          <ul class="list-disc pl-10 mb-4">
+          <ul>
             <li>Groundwater protection regulation</li>
             <li>Information for property owners</li>
             <li>Information for well drillers and pump installers</li>
@@ -22,7 +22,7 @@
       Tools include:
       </div>
       <div>
-        <ul class="list-disc pl-10 mb-4">
+        <ul>
           <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" target="_blank">B.C. Water Resource Atlas</a></li>
           <li><a href="https://maps.gov.bc.ca/ess/hm/imap4m/" target="_blank">iMapBC</a></li>
           <li><a href="https://catalogue.data.gov.bc.ca/dataset?q=groundwater&sort=score+desc%2C+record_publish_date+desc" target="_blank">DataBC datasets</a></li>

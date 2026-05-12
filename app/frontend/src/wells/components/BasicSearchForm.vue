@@ -40,7 +40,7 @@
     <b-row>
       <b-col>
         <p>For additional search options, try:</p>
-        <ul class="list-disc pl-10 mb-4">
+        <ul>
           <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas" target="_blank">B.C. Water Resource Atlas</a></li>
           <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC" target="_blank">iMapBC</a></li>
         </ul>
