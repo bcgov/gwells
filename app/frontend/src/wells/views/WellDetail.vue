@@ -55,23 +55,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <Button severity="secondary" aria-label="Print" @click="handlePrint"><i class="fa fa-lg fa-print"></i></Button>
             </div>
           </legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Tag Number:</span> {{ well_tag_number }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Status:</span> {{ well_status }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Observation Well Number: </span>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Well Tag Number:</b> {{ well_tag_number }}</span>
+            <span><b>Well Status:</b> {{ well_status }}</span>
+            <span>
+              <b>Observation Well Number: </b>
               <a
                 v-if="observation_well_number"
                 id="obs_well_number"
                 :href="`https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${observation_well_number}`"
                 target="_blank"
               >{{ observation_well_number }}</a>
-            </div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Identification Plate Number:</span> {{ identification_plate_number }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Class:</span> {{ well_class }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Observation Well Status:</span> {{ observation_well_status }}</div>
-          </div>
+            </span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Well Identification Plate Number:</b> {{ identification_plate_number }}</span>
+            <span><b>Well Class:</b> {{ well_class }}</span>
+            <span><b>Observation Well Status:</b> {{ observation_well_status }}</span>
+          </responsive-grid>
           <div class="grid grid-cols-12 gap-4">
             <div class="col-span-12 md:col-span-4"><span class="font-bold">Owner Name:</span> {{ owner_full_name }}</div>
             <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Subclass:</span> {{ well_subclass }}</div>
@@ -594,6 +595,7 @@ import moment from 'moment'
 import SingleWellMap from '@/wells/components/SingleWellMap.vue'
 import Documents from '@/wells/components/Documents.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue';
 import ApiService from '@/common/services/ApiService.js'
 import codeToDescription from '@/common/codeToDescription.js'
 import { TOOLTIP_TEXT } from '@/common/constants.js'
@@ -604,7 +606,8 @@ export default {
   name: 'WellDetail',
   components: {
     SingleWellMap,
-    Documents
+    Documents,
+    ResponsiveGrid
   },
   mixins: [
     convertCoordinatesMixin, codeToDescription
