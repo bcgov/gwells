@@ -39,32 +39,21 @@
               v-model="form.survey_link"
               :errors="errors['survey_link']"
             ></form-input>
-
-            <div class="grid grid-cols-12 gap-4">
-              <div class="col-span-12 sm:col-span-6">
-                <form-input
-                  id="surveyPageSelect"
-                  label="Survey page"
-                  select
-                  :options="pageOptions"
-                  placeholder="Select page"
-                  :errors="errors['survey_page']"
-                  v-model="form.survey_page"
-                ></form-input>
-              </div>
+            <form-input
+              id="surveyPageSelect"
+              label="Survey page"
+              select
+              :options="pageOptions"
+              placeholder="Select page"
+              :errors="errors['survey_page']"
+              v-model="form.survey_page"
+            ></form-input>
+            <div class="flex items-center gap-2 mt-4">
+              <Checkbox v-model="form" inputId="survey_enabled" name="check-button" binary />
+              <label for="survey_enabled">Enable survey immediately</label>
             </div>
-            <div class="grid grid-cols-12 gap-4 mt-4">
-              <div class="col-span-12 sm:col-span-6">
-                <div class="flex items-center gap-2">
-                  <Checkbox v-model="form" inputId="survey_enabled" name="check-button" binary />
-                  <label for="survey_enabled">Enable survey immediately</label>
-                </div>
-              </div>
-            </div>
-            <div class="grid grid-cols-12 gap-4 mt-6">
-              <div>
-                <Button type="submit">Save</Button>
-              </div>
+            <div class="mt-6">
+              <Button type="submit">Save</Button>
             </div>
           </Form>
         </Fieldset>
