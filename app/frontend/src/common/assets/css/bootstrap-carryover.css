@@ -30,6 +30,20 @@ h6 {
     font-size: 1rem
 }
 
+ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    padding-inline-start: 40px;
+    unicode-bidi: isolate;
+}
+
+li {
+    display: list-item;
+    unicode-bidi: isolate;
+}
+
 a {
     color: #1a5a96;
     text-decoration: none;

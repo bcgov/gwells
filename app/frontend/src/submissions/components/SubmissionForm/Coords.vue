@@ -329,9 +329,6 @@ export default {
     codes () {
       return this.submissionStore.codes
     },
-    codes () {
-      return this.submissionStore.codes
-    },
     // BC is covered by UTM zones 7 through 11
     utmZones () {
       const zones = [{

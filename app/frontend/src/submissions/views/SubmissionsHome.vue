@@ -13,20 +13,15 @@ governing permissions and limitations under the License. */
       </div>
     </div>
     <div v-else>
-      <b-card
-        v-if="breadcrumbs && breadcrumbs.length"
-        no-body
-        class="mb-4 d-print-none"
-      >
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-      </b-card>
+      <div class="container mb-4 !px-0" v-if="breadcrumbs && breadcrumbs.length">
+        <Breadcrumb :model="breadcrumbs"/>
+      </div>
       <div
         class="card"
         v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit"
       >
         <div class="card-body">
-          <b-alert
-            show
+          <Message
             variant="info"
             class="mb-4"
             v-for="(survey, index) in surveys[
@@ -39,7 +34,7 @@ governing permissions and limitations under the License. */
                 {{ survey.survey_introduction_text }}
               </a>
             </p>
-          </b-alert>
+          </Message>
 
           <b-form @submit.prevent="confirmSubmit">
             <!-- if preview === true : Preview -->
@@ -130,6 +125,7 @@ governing permissions and limitations under the License. */
 import { mapStores } from "pinia";
 import { useSubmissionStore } from "@/stores/submission.js";
 import { useWellsStore } from "@/stores/wells.js";
+import { useCommonStore } from "@/stores/common.js"
 import { diff } from "deep-diff";
 import { camelCase } from "lodash";
 import smoothScroll from "smoothscroll";
@@ -158,17 +154,17 @@ export default {
       compareForm: {},
       submissionStore: null,
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
-      events: new Vue({
-        el: "activity-submission-form",
-        data: {
-          isInput: false,
-        },
-      }),
+      // events: new Vue({
+      //   el: "activity-submission-form",
+      //   data: {
+      //     isInput: false,
+      //   },
+      // }),
       ...initialState(),
     };
   },
   computed: {
-    ...mapStores(useSubmissionStore, useWellsStore),
+    ...mapStores(useSubmissionStore, useWellsStore, useCommonStore),
     displayFormSection() {
       // returns an object describing which components should be displayed
       // when in "flat form" mode

@@ -6,7 +6,7 @@
 
     <DataTable id="registry-table" showGridlines stripedRows :value="searchResponse.results || []" tableStyle="min-width: 50rem">
       <!-- reusable columns -->
-      <Column v-for="field in visibleFields" :header="field.name" :key="field.name"">
+      <Column v-for="field in visibleFields" :header="field.name" :key="field.name">
         <template #body="{ data, index }">
           <template v-if="field.name === 'Name'">
             <router-link

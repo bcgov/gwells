@@ -1,11 +1,11 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
-    <Breadcrumb :model="breadcrumbs"></Breadcrumb>
+  <div class="container mb-4 !px-0">
+    <Breadcrumb :model="breadcrumbs"/>
   </div>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12" v-if="error">
+  <div class="container mb-4 !px-0" v-if="error">
     <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
   </div>
-  <Card class="rounded-lg ml-20 mr-20 bg-white">
+  <Card class="container">
     <template #title>Add new applicant</template>
     <template #content>
       <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">

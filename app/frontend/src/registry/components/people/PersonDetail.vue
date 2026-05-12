@@ -1,13 +1,13 @@
 <template>
-  <div class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
-    <Breadcrumb :model="breadcrumbs"></Breadcrumb>
+  <div class="container mb-4 !px-0">
+    <Breadcrumb :model="breadcrumbs"/>
   </div>
   <div v-if="showSpinner" class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <div class="fa-2x text-center">
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
   </div>
-  <Card v-else class="rounded-lg ml-20 mr-20 bg-white">
+  <Card v-else class="container">
     <template #header>
       <div class="col-12" v-if="commonStore.filesUploading">
         <Message severity="info" show>File Upload In Progress...</Message>
