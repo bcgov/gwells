@@ -14,9 +14,11 @@
 
 <template>
   <div id="bulk-well-aquifer-correlation-screen">
-    <Card no-body class="mx-8 mb-4">
-      <Breadcrumb :home="{ label: 'Home', to: '/' }" :model="{ label: 'Home', to: '/' }" class="py-0 my-2"></Breadcrumb>
-    </Card>
+    <div class="bg-white mx-8 mb-4">
+      <Breadcrumb
+        class="p-0"
+        :model="breadcrumbs" />
+    </div>
     <Card class="mx-8" v-if="perms.wellAquiferCorrelation">
       <template #content>
         <api-error v-if="apiError" :error="apiError"/>

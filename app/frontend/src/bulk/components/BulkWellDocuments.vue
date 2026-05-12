@@ -14,16 +14,18 @@
 
 <template>
   <div id="bulk-well-documents-upload-screen">
-    <b-card no-body class="mb-4 container d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-    </b-card>
-    <b-card class="container p-1" v-if="perms.wellDocuments">
+    <div class="bg-white mx-8 mb-4">
+      <Breadcrumb
+        class="p-0"
+        :model="breadcrumbs" />
+    </div>
+    <div class="bg-white mx-8 mb-4 p-6" v-if="perms.wellDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
-      <b-container>
-        <b-row class="border-bottom mb-4 pb-2 pt-2">
-          <b-col><h4>Well Documents Bulk Upload</h4></b-col>
-        </b-row>
+      <div>
+        <div class="border-bottom mb-4 pb-2 pt-2">
+          <h4>Well Documents Bulk Upload</h4>
+        </div>
 
         <div v-if="showSaveSuccess">
           <b-alert show variant="success" >
@@ -156,8 +158,8 @@
             </b-button-group>
           </b-form>
         </div>
-      </b-container>
-    </b-card>
+      </div>
+    </div>
     <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
@@ -174,6 +176,7 @@
 <script>
 import { useCommonStore } from '@/stores/common.js'
 import { difference } from 'lodash-es'
+import Card from 'primevue/card';
 
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
