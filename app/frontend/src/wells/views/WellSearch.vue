@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </p>
         </div>
         <div class="grid grid-cols-12 gap-4">
-          <div class="col-span-12 md:col-span-6">
+          <div class="col-span-12 lg:col-span-6">
             <Card class="border border-gray-700">
               <template #content>
                 <Tabs v-model:value="tabIndex">
@@ -57,7 +57,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </template>
             </Card>
           </div>
-          <div class="col-span-12 md:col-span-6">
+          <div class="col-span-12 lg:col-span-6">
             <div>
               <ProgressSpinner v-if="loadingMap"/>
 
