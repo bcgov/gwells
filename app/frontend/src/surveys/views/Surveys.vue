@@ -86,14 +86,12 @@
 <script>
 import { Fieldset } from 'primevue';
 import ApiService from '@/common/services/ApiService.js'
-import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue';
 import { useCommonStore } from '@/stores/common.js'
 
 export default {
   name: 'Surveys',
   components: {
-    Fieldset,
-    ResponsiveGrid
+    Fieldset
   },
   data () {
     return {
