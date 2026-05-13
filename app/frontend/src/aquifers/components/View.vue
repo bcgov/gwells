@@ -14,9 +14,14 @@
 
 <template>
   <div id="aquifer-detail">
-    <b-card no-body class="mb-4 container d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-    </b-card>
+    <div class="container mb-4 !px-0">
+      <Breadcrumb class="p-0" :model="breadcrumbs">
+        <template #item="{ item }">
+          <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+          <span v-else>{{ item.label }}</span>
+        </template>
+      </Breadcrumb>
+    </div>
     <div v-if="loadingAquifer">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -619,7 +624,28 @@ export default {
           }
         }
       },
-      licenceQuantityChartOptions: {}
+      licenceQuantityChartOptions: {},
+      breadcrumbs: [
+        {
+          label: 'Aquifer Search',
+          route: { name: 'aquifers-home' }
+        },
+        ...(this.editMode ? [
+          {
+            label: `Aquifer ${this.id} Summary`,
+            route: { name: 'aquifers-view', params: { id: this.id } }
+          },
+          {
+            label: 'Edit Aquifer',
+            active: true
+          }
+        ] : [
+          {
+            label: this.errorNotFound ? 'Not found' : 'Aquifer Summary',
+            active: true
+          }
+        ]),
+      ]
     }
   },
   computed: {
@@ -697,34 +723,6 @@ export default {
     },
     errorNotFound () {
       return this.error && this.error.status === 404
-    },
-    breadcrumbs () {
-      const breadcrumbs = [
-        {
-          text: 'Aquifer Search',
-          to: { name: 'aquifers-home' }
-        }
-      ]
-
-      if (this.editMode) {
-        breadcrumbs.push(...[
-          {
-            text: `Aquifer ${this.id} Summary`,
-            to: { name: 'aquifers-view', params: { id: this.id } }
-          },
-          {
-            text: 'Edit Aquifer',
-            active: true
-          }
-        ])
-      } else {
-        breadcrumbs.push({
-          text: this.errorNotFound ? 'Not found' : 'Aquifer Summary',
-          active: true
-        })
-      }
-
-      return breadcrumbs
     },
     isRetired () {
       const { retire_date: retireDate } = this.record

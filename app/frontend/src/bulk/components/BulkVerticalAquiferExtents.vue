@@ -14,9 +14,14 @@
 
 <template>
   <div id="bulk-vertical-aquifer-extents-screen">
-    <b-card no-body class="mb-4 container d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-    </b-card>
+    <div class="container mb-4 !px-0">
+      <Breadcrumb class="p-0" :model="breadcrumbs">
+        <template #item="{ item }">
+          <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+          <span v-else>{{ item.label }}</span>
+        </template>
+      </Breadcrumb>
+    </div>
     <b-card class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
@@ -284,11 +289,11 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: 'Bulk Upload',
-          to: { name: 'bulk-home' }
+          label: 'Bulk Upload',
+          route: { name: 'bulk-home' }
         },
         {
-          text: 'Vertical Aquifer Extents Bulk Upload',
+          label: 'Vertical Aquifer Extents Bulk Upload',
           active: true
         }
       ]

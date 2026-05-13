@@ -1,6 +1,11 @@
 <template>
   <div class="container mb-4 !px-0">
-    <Breadcrumb :model="breadcrumbs"/>
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
   </div>
   <Card class="container">
     <template #title>Manage Companies</template>
@@ -332,8 +337,8 @@ export default {
     return {
       registryStore: useRegistryStore(),
       breadcrumbs: [
-        { label: 'Registry', url: '/registries/' },
-        { label: 'Manage Companies' }
+        { label: 'Registry', route: { name: 'SearchHome' } },
+        { label: 'Manage Companies', active: true }
       ],
 
       // to show organizationAdd.vue on button click
