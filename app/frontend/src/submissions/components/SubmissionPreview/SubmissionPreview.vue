@@ -29,26 +29,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <span class="font-weight-bold">Report Type:</span> {{ codeToDescription('activity_types', activity) }}
         </div>
       </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Class of Well:</span> {{ codeToDescription('well_classes', form.well_class) }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Subclass:</span> {{ wellSubclass }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Intended Water Use:</span> {{ codeToDescription('intended_water_uses', form.intended_water_use) }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4" id="wellTagNumberDisplay">
-          <span class="font-weight-bold">Well Tag Number: </span>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Class of Well:</b> {{ codeToDescription('well_classes', form.well_class) }}</span>
+        <span><b>Subclass:</b> {{ wellSubclass }}</span>
+        <span><b>Intended Water Use:</b> {{ codeToDescription('intended_water_uses', form.intended_water_use) }}</span>
+        <span>
+          <b>Well Tag Number: </b>
           <router-link :to="{ name: 'SubmissionsEdit', params: { id: form.well }}" v-if="reportSubmitted && canEditWells">
             {{ form.well }}
           </router-link>
           <span v-else>{{ form.well }}</span>
-        </div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Well Identification Plate Number:</span> {{ form.identification_plate_number }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Where Plate Attached:</span> {{ form.well_identification_plate_attached }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Work Start Date:</span> {{ form.work_start_date }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Work End Date:</span> {{ form.work_end_date }}</div>
-      </div>
+        </span>
+        <span><b>Well Identification Plate Number:</b> {{ form.identification_plate_number }}</span>
+        <span><b>Where Plate Attached:</b> {{ form.well_identification_plate_attached }}</span>
+        <span><b>Work Start Date:</b> {{ form.work_start_date }}</span>
+        <span><b>Work End Date:</b> {{ form.work_end_date }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section">
@@ -423,6 +419,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <fieldset class="my-4 detail-section" v-if="sections.decommissionInformation">
       <legend>Well Decommission Information</legend>
+
       <div class="grid grid-cols-12">
         <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</div>
         <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</div>
@@ -571,11 +568,13 @@ import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'
 import codeToDescription from '@/common/codeToDescription.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   name: 'SubmissionPreview',
   components: {
-    CoordsMap
+    CoordsMap,
+    ResponsiveGrid
   },
   mixins: [filterBlankRows, codeToDescription, convertCoordinatesMixin],
   props: [

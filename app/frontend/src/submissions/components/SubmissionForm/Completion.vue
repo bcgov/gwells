@@ -13,151 +13,127 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Well Completion Data" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="totalDepthDrilled"
-            :label="totalDepthDrilledLabel"
-            v-model="totalDepthDrilledInput"
-            type="number"
-            hint="ft (bgl)"
-            :errors="errors['total_depth_drilled']"
-            :loaded="fieldsLoaded['total_depth_drilled']">
-        </form-input>
-      </div>
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="finishedWellDepth"
-            :label="finishedWellDepthLabel"
-            v-model="finishedWellDepthInput"
-            type="number"
-            hint="ft (bgl)"
-            :errors="errors['finished_well_depth']"
-            :loaded="fieldsLoaded['finished_well_depth']">
-        </form-input>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="finalCasingStickUp"
-            label="Final Casing Stick Up"
-            type="number"
-            v-model="finalCasingStickUpInput"
-            hint="in"
-            :errors="errors['final_casing_stick_up']"
-            :loaded="fieldsLoaded['final_casing_stick_up']">
-        </form-input>
-      </div>
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="bedrockDepth"
-            label="Depth to Bedrock"
-            type="number"
-            v-model="bedrockDepthInput"
-            hint="ft (bgl)"
-            :errors="errors['depth_to_bedrock']"
-            :loaded="fieldsLoaded['depth_to_bedrock']">
-        </form-input>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="staticWaterLevel"
-            label="Static Water Level"
-            v-model="staticWaterLevelInput"
-            type="number"
-            hint="ft (btoc)"
-            :errors="errors['static_water_level']"
-            :loaded="fieldsLoaded['static_water_level']">
-        </form-input>
-      </div>
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="wellYield"
-            label="Estimated Well Yield"
-            type="number"
-            v-model="wellYieldInput"
-            hint="USgpm"
-            :errors="errors['well_yield']"
-            :loaded="fieldsLoaded['well_yield']">
-        </form-input>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <b-form-group label="Artesian Well">
-          <b-form-radio-group
-            id="artesianConditionsRadio"
-            class="mt-1"
-            v-model="artesianConditionsInput">
-              <b-form-radio :value="false">No</b-form-radio>
-              <b-form-radio :value="true">Yes</b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-      </div>
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-          id="artesianFlow"
-          label="Artesian Flow"
-          v-model="artesianFlowInput"
-          hint="USgpm"
-          type="number"
-          :errors="errors['artesian_flow']"
-          :loaded="fieldsLoaded['artesian_flow']">
-        </form-input>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-          id="artesianPressureHead"
-          label="Artesian Pressure (head)"
-          @input="handleArtesianPressureHeadChange"
-          v-model="artesianPressure.head"
-          hint="ft (agl)"
-          type="number"
-          :errors="errors['artesian_pressure_head']"
-          :loaded="fieldsLoaded['artesian_pressure_head']">
-        </form-input>
-      </div>
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-          id="artesianPressurePSI"
-          label="Artesian Pressure (PSI)"
-          @input="handleArtesianPressurePSIChange"
-          v-model="artesianPressure.psi"
-          hint="PSI"
-          type="number"
-          :errors="errors['artesian_pressure']"
-          :loaded="fieldsLoaded['artesian_pressure']">
-        </form-input>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <form-input
-            id="wellCapType"
-            label="Well Cap Type"
-            v-model="wellCapTypeInput"
-            :errors="errors['well_cap_type']"
-            :loaded="fieldsLoaded['well_cap_type']">
-        </form-input>
-      </div>
-      <div class="col-span-12 md:col-span-6 lg:col-span-4">
-        <b-form-group label="Well Disinfected Status" id="wellDisinfectedStatusInput">
-          <b-form-select
-            v-model="wellDisinfectedInput"
-            value-field="well_disinfected_code"
-            text-field="well_disinfected_code"
-            :options="disinfected_codes()"
-            :errors="errors['well_disinfected_status']"
-            :loaded="fieldsLoaded['well_disinfected_status']">
-          </b-form-select>
-        </b-form-group>
-      </div>
-    </div>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="totalDepthDrilled"
+        :label="totalDepthDrilledLabel"
+        v-model="totalDepthDrilledInput"
+        type="number"
+        hint="ft (bgl)"
+        :errors="errors['total_depth_drilled']"
+        :loaded="fieldsLoaded['total_depth_drilled']">
+      </form-input>
+      <form-input
+        id="finishedWellDepth"
+        :label="finishedWellDepthLabel"
+        v-model="finishedWellDepthInput"
+        type="number"
+        hint="ft (bgl)"
+        :errors="errors['finished_well_depth']"
+        :loaded="fieldsLoaded['finished_well_depth']">
+      </form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="finalCasingStickUp"
+        label="Final Casing Stick Up"
+        type="number"
+        v-model="finalCasingStickUpInput"
+        hint="in"
+        :errors="errors['final_casing_stick_up']"
+        :loaded="fieldsLoaded['final_casing_stick_up']">
+      </form-input>
+      <form-input
+        id="bedrockDepth"
+        label="Depth to Bedrock"
+        type="number"
+        v-model="bedrockDepthInput"
+        hint="ft (bgl)"
+        :errors="errors['depth_to_bedrock']"
+        :loaded="fieldsLoaded['depth_to_bedrock']">
+      </form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="staticWaterLevel"
+        label="Static Water Level"
+        v-model="staticWaterLevelInput"
+        type="number"
+        hint="ft (btoc)"
+        :errors="errors['static_water_level']"
+        :loaded="fieldsLoaded['static_water_level']">
+      </form-input>
+      <form-input
+        id="wellYield"
+        label="Estimated Well Yield"
+        type="number"
+        v-model="wellYieldInput"
+        hint="USgpm"
+        :errors="errors['well_yield']"
+        :loaded="fieldsLoaded['well_yield']">
+      </form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <b-form-group label="Artesian Well">
+        <b-form-radio-group
+          id="artesianConditionsRadio"
+          class="mt-1"
+          v-model="artesianConditionsInput">
+            <b-form-radio :value="false">No</b-form-radio>
+            <b-form-radio :value="true">Yes</b-form-radio>
+        </b-form-radio-group>
+      </b-form-group>
+      <form-input
+        id="artesianFlow"
+        label="Artesian Flow"
+        v-model="artesianFlowInput"
+        hint="USgpm"
+        type="number"
+        :errors="errors['artesian_flow']"
+        :loaded="fieldsLoaded['artesian_flow']">
+      </form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="artesianPressureHead"
+        label="Artesian Pressure (head)"
+        @input="handleArtesianPressureHeadChange"
+        v-model="artesianPressure.head"
+        hint="ft (agl)"
+        type="number"
+        :errors="errors['artesian_pressure_head']"
+        :loaded="fieldsLoaded['artesian_pressure_head']">
+      </form-input>
+      <form-input
+        id="artesianPressurePSI"
+        label="Artesian Pressure (PSI)"
+        @input="handleArtesianPressurePSIChange"
+        v-model="artesianPressure.psi"
+        hint="PSI"
+        type="number"
+        :errors="errors['artesian_pressure']"
+        :loaded="fieldsLoaded['artesian_pressure']">
+      </form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="wellCapType"
+        label="Well Cap Type"
+        v-model="wellCapTypeInput"
+        :errors="errors['well_cap_type']"
+        :loaded="fieldsLoaded['well_cap_type']">
+      </form-input>
+      <b-form-group label="Well Disinfected Status" id="wellDisinfectedStatusInput">
+        <b-form-select
+          v-model="wellDisinfectedInput"
+          value-field="well_disinfected_code"
+          text-field="well_disinfected_code"
+          :options="disinfected_codes()"
+          :errors="errors['well_disinfected_status']"
+          :loaded="fieldsLoaded['well_disinfected_status']">
+        </b-form-select>
+      </b-form-group>
+    </responsive-grid>
   </form-subsection>
 </template>
 
@@ -166,6 +142,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -206,7 +183,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   fields: {
     totalDepthDrilledInput: 'totalDepthDrilled',

@@ -14,26 +14,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <fieldset>
     <legend :id="id">Type of Work</legend>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6">
-        <b-form-group label="Type of Work *">
-          <b-form-radio-group v-model="wellActivityTypeInput"
-                              stacked
-                              name="submissionTypeRadio"
-                              id="reportType">
-            <b-form-radio value="CON" v-if="show.edit">Construction</b-form-radio>
-            <b-form-radio value="ALT" v-if="show.edit">Alteration</b-form-radio>
-            <b-form-radio value="DEC" v-if="show.edit">Decommission</b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-      </div>
-    </div>
+    <responsive-grid :cols="12" :md="6">
+      <b-form-group label="Type of Work *">
+        <b-form-radio-group v-model="wellActivityTypeInput"
+          stacked
+          name="submissionTypeRadio"
+          id="reportType">
+          <b-form-radio value="CON" v-if="show.edit">Construction</b-form-radio>
+          <b-form-radio value="ALT" v-if="show.edit">Alteration</b-form-radio>
+          <b-form-radio value="DEC" v-if="show.edit">Decommission</b-form-radio>
+        </b-form-radio-group>
+      </b-form-group>
+    </responsive-grid>
   </fieldset>
 </template>
 
 <script>
 import { useCommonStore } from '@/stores/common.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+
 export default {
   mixins: [inputBindingsMixin],
   props: {
@@ -42,6 +42,9 @@ export default {
       type: String,
       isInput: false
     }
+  },
+  components: {
+    ResponsiveGrid
   },
   computed: {
     commonStore () { return useCommonStore() },

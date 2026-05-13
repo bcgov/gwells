@@ -13,42 +13,36 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
     <form-subsection title="Well Class" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-      <b-row v-if="isStaffEdit">
-        <b-col cols="12" md="3" xl="2">
-          <form-input
-              id="wellTagNumberStaff"
-              label="Well Tag Number"
-              type="text"
-              :value="$route.params.id"
-              disabled
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4">
-          <form-input
-            select
-            v-model="wellStatusCodeInput"
-            :options="codes?.well_status_codes"
-            value-field="well_status_code"
-            text-field="description"
-            label="Well Status"
-            placeholder="Select status"
-            :errors="errors['well_status']"
-            :loaded="fieldsLoaded['well_status']"
-            id="wellStatusCodeInput"></form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="4">
+      <responsive-grid v-if="isStaffEdit" :cols="12" :md="[3, 4]" :xl="[2, undefined]">
+        <form-input
+          id="wellTagNumberStaff"
+          label="Well Tag Number"
+          type="text"
+          :value="$route.params.id"
+          disabled></form-input>
+        <form-input
+          select
+          v-model="wellStatusCodeInput"
+          :options="codes?.well_status_codes"
+          value-field="well_status_code"
+          text-field="description"
+          label="Well Status"
+          placeholder="Select status"
+          :errors="errors['well_status']"
+          :loaded="fieldsLoaded['well_status']"
+          id="wellStatusCodeInput"></form-input>
+      </responsive-grid>
+      <responsive-grid :cols="12" :md="4">
           <b-form-group
-              id="wellClass"
-              label="Class of Well *"
-              aria-describedby="wellClassInvalidFeedback">
+            id="wellClass"
+            label="Class of Well *"
+            aria-describedby="wellClassInvalidFeedback">
             <b-form-select
-                v-model="wellClassInput"
-                :options="codes?.well_classes"
-                value-field="well_class_code"
-                text-field="description"
-                :state="errors['well_class'] ? false : null">
+              v-model="wellClassInput"
+              :options="codes?.well_classes"
+              value-field="well_class_code"
+              text-field="description"
+              :state="errors['well_class'] ? false : null">
               <template v-slot:first>
                 <option :value="null">Select class</option>
               </template>
@@ -59,19 +53,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </b-form-invalid-feedback>
           </b-form-group>
-        </b-col>
-        <b-col cols="12" md="4">
           <b-form-group
-              id="wellSubclass"
-              label="Well Subclass"
-              aria-describedby="wellSubclassInvalidFeedback">
+            id="wellSubclass"
+            label="Well Subclass"
+            aria-describedby="wellSubclassInvalidFeedback">
             <b-form-select
-                v-model="wellSubclassInput"
-                :options="subclasses"
-                value-field="well_subclass_guid"
-                text-field="description"
-                :disabled="wellSubclassDisabled"
-                :state="errors['well_subclass'] ? false : null">
+              v-model="wellSubclassInput"
+              :options="subclasses"
+              value-field="well_subclass_guid"
+              text-field="description"
+              :disabled="wellSubclassDisabled"
+              :state="errors['well_subclass'] ? false : null">
               <template v-slot:first>
                 <option :value="null">Select subclass</option>
               </template>
@@ -82,8 +74,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </b-form-invalid-feedback>
           </b-form-group>
-        </b-col>
-        <b-col cols="12" md="4">
           <form-input
             select
             v-model="intendedWaterUseInput"
@@ -96,8 +86,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :loaded="fieldsLoaded['intended_water_use']"
             :disabled="intendedWaterUseDisabled"
             id="intendedWaterUse"></form-input>
-        </b-col>
-      </b-row>
+      </responsive-grid>
       <b-row>
         <b-col cols="12" md="4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
           <b-form-group>
@@ -162,56 +151,45 @@ Licensed under the Apache License, Version 2.0 (the "License");
           ></form-input>
         </b-col>
       </b-row>
-      <b-row v-if="isStaffEdit">
-        <b-col cols="12" md="4">
-          <form-input
-              id="waterSupplySystem"
-              label="Water Supply System Name"
-              type="text"
-              v-model="waterSupplySystemInput"
-              :errors="errors['water_supply_system_name']"
-              :loaded="fieldsLoaded['water_supply_system_name']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4">
-          <form-input
-              id="waterSupplyWell"
-              label="Water Supply Well Name"
-              type="text"
-              v-model="waterSupplyWellInput"
-              :errors="errors['water_supply_system_well_name']"
-              :loaded="fieldsLoaded['water_supply_system_well_name']"
-          ></form-input>
-        </b-col>
-      </b-row>
-      <div v-if="!isStaffEdit" class="grid grid-cols-12">
-        <div class="col-span-12 md:col-span-6">
-          <form-input
-              id="workStartDateInput"
-              type="date"
-              :label="startDateOfWorkLabel"
-              placeholder="YYYY-MM-DD"
-              v-model="workStartDateInput"
-              :errors="errors.work_start_date"
-              :loaded="fieldsLoaded['work_start_date']"
-              @input="handleDateInput($event, 'workStartDate')"
-              >
-          </form-input>
-        </div>
-        <div class="col-span-12 md:col-span-6">
-          <form-input
-              id="workEndDateInput"
-              type="date"
-              :label="endDateOfWorkLabel"
-              placeholder="YYYY-MM-DD"
-              v-model="workEndDateInput"
-              :errors="errors.work_end_date"
-              :loaded="fieldsLoaded['work_end_date']"
-              @input="handleDateInput($event, 'workEndDate')"
-              >
-          </form-input>
-        </div>
-      </div>
+      <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
+        <form-input
+          id="waterSupplySystem"
+          label="Water Supply System Name"
+          type="text"
+          v-model="waterSupplySystemInput"
+          :errors="errors['water_supply_system_name']"
+          :loaded="fieldsLoaded['water_supply_system_name']"></form-input>
+        <form-input
+          id="waterSupplyWell"
+          label="Water Supply Well Name"
+          type="text"
+          v-model="waterSupplyWellInput"
+          :errors="errors['water_supply_system_well_name']"
+          :loaded="fieldsLoaded['water_supply_system_well_name']"></form-input>
+      </responsive-grid>
+      <responsive-grid v-if="!isStaffEdit" :cols="12" :md="6">
+        <form-input
+            id="workStartDateInput"
+            type="date"
+            :label="startDateOfWorkLabel"
+            placeholder="YYYY-MM-DD"
+            v-model="workStartDateInput"
+            :errors="errors.work_start_date"
+            :loaded="fieldsLoaded['work_start_date']"
+            @input="handleDateInput($event, 'workStartDate')">
+        </form-input>
+        <form-input
+            id="workEndDateInput"
+            type="date"
+            :label="endDateOfWorkLabel"
+            placeholder="YYYY-MM-DD"
+            v-model="workEndDateInput"
+            :errors="errors.work_end_date"
+            :loaded="fieldsLoaded['work_end_date']"
+            @input="handleDateInput($event, 'workEndDate')"
+            >
+        </form-input>
+      </responsive-grid>
     </form-subsection>
 </template>
 
@@ -220,6 +198,7 @@ import { useSubmissionStore } from '@/stores/submission'
 import { useCommonStore } from '@/stores/common'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
@@ -269,7 +248,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

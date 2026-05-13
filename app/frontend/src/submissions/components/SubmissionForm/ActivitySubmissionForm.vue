@@ -14,8 +14,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <h1 class="card-title">
-      <div class="grid grid-cols-12">
-        <div class="col-span-12">
+      <div class="flex">
+        <div>
           <div v-if="isStaffEdit" id="top">Update Well Information</div>
           <div v-else>Well Activity Submission</div>
           <b-form-group v-if="activityType !== 'STAFF_EDIT'">
@@ -29,8 +29,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </h1>
 
     <div v-if="loading">
-      <div class="grid grid-cols-12">
-        <div class="col-span-12">
+      <div class="flex">
+        <div>
           <div class="fa-2x text-center">
             Loading...
           </div>
