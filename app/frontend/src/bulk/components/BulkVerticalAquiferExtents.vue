@@ -284,11 +284,11 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: 'Bulk Upload',
-          to: { name: 'bulk-home' }
+          label: 'Bulk Upload',
+          route: { name: 'bulk-home' }
         },
         {
-          text: 'Vertical Aquifer Extents Bulk Upload',
+          label: 'Vertical Aquifer Extents Bulk Upload',
           active: true
         }
       ]

@@ -17,7 +17,12 @@
     <div class="bg-white mx-8 mb-4">
       <Breadcrumb
         class="p-0"
-        :model="breadcrumbs" />
+        :model="breadcrumbs">
+        <template #item="{ item }">
+          <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+          <span v-else>{{ item.label }}</span>
+        </template>
+      </Breadcrumb>
     </div>
     <Card class="mx-8" v-if="perms.wellAquiferCorrelation">
       <template #content>
@@ -324,7 +329,7 @@ export default {
       breadcrumbs: [
         {
           label: 'Bulk Upload',
-          to: { name: 'bulk-home' }
+          route: { name: 'bulk-home' }
         },
         {
           label: 'Well Aquifer Correlation Bulk Upload',
