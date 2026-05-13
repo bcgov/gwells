@@ -24,13 +24,12 @@
         </template>
       </Breadcrumb>
     </div>
-    <div class="bg-white mx-8 mb-4 p-6" v-if="true || perms.aquiferDocuments">
+    <div class="bg-white mx-8 mb-4 p-6" v-if="perms.aquiferDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
       <div>
         <div class="border-bottom mb-4 pb-2 pt-2">
           <h3>Aquifer Documents Bulk Upload</h3>
-
         </div>
         <div class="w-full border-gray-300 border-1 border-solid h-0 mb-5" >&nbsp;</div>
         <div v-if="showSaveSuccess">
@@ -42,10 +41,6 @@
               All documents uploaded for aquifers.
             </p>
           </Message>
-          <!-- <b-alert show variant="success" >
-            All documents uploaded for aquifers.
-          </b-alert> -->
-
           <Button
             @click="restart">
             Upload more documents
@@ -84,39 +79,6 @@
               </template>
             </Card>
           </div>
-          <!-- <div class="mb-4">
-            <div>
-              <h3>Multiple documents for multiple aquifers</h3>
-              <div>
-                If you have one or more documents that you want to upload for one or more aquifers.
-              </div>
-              <Button
-                @click="behaviour = 'multi'"
-                :disabled="behaviourPicked">
-                Upload more documents
-              </Button>
-              <template v-slot:footer>
-                <b-btn variant="primary" @click="behaviour = 'multi'" :disabled="behaviourPicked">
-                  Multiple Uploads
-                </b-btn>
-              </template>
-            </div>
-            <div title="Documents for specific aquifers" :class="{ chosen: behaviourPicked, active: behaviour === 'keyed'}">
-              <div>
-                If you have many documents that are each named for their respective aquifers (e.g. factsheet_0001.pdf and factsheet_0002.pdf)
-              </div>
-              <Button
-                @click="behaviour = 'keyed'"
-                :disabled="behaviourPicked">
-                Upload more documents
-              </Button>
-              <template v-slot:footer>
-                <b-btn variant="primary" @click="behaviour = 'keyed'" :disabled="behaviourPicked">
-                  Aquifer Keyed Files
-                </b-btn>
-              </template>
-            </div>
-          </div> -->
 
           <div v-if="behaviourPicked">
             <Card id="instructions" class="mb-4" title="Instructions">
@@ -198,13 +160,6 @@
             <div class="flex">
               <div class="w-1/2 p-2">
                 <h5>Documents</h5>
-                  <!-- <div md="3">
-                    <b-form-file
-                      multiple
-                      :key="`file-upload-${commonStore.uploadFiles.length}`"
-                      @input="filesPicked"/>
-                  </div> -->
-
                 <div class="mb-3 flex items-center">
                   <FileUpload
                     ref="fileUpload"
@@ -218,9 +173,6 @@
                     class="mr-4"
                   />
                   <Checkbox id="private-documents-checkbox" v-model="privateDocument" binary class="mr-3"/>Are these documents private?
-                  <!-- <b-form-checkbox
-                    id="private-documents-checkbox"
-                    v-model="privateDocument">Are these documents private?</b-form-checkbox> -->
                 </div>
                 <div>
                   <DataTable
@@ -369,7 +321,6 @@
                 </div>
               </div>
             </div>
-            <!-- </b-form> -->
           </div>
         </div>
       </div>
@@ -732,7 +683,7 @@ export default {
   }
 }
 </script>
-<style lang="scss">
+<style scoped lang="scss">
 .p-card.chosen {
   opacity: 0.2;
 }

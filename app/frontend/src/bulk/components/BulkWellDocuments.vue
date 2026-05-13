@@ -154,7 +154,6 @@
                     <span :class="{ unknown: checkWellIsUnknown(slotProps.data.wellTagNumber) }">
                       {{slotProps.data.wellTagNumber}}
                     </span>
-                    <ProgressSpinner v-if="fetchWellFilesInProgress[slotProps.data.wellTagNumber]" styleClass="ml-2" strokeWidth="4" />
                   </template>
                 </Column>
                 <Column field="documents" header="Documents">

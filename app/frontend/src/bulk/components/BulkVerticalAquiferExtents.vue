@@ -14,23 +14,37 @@
 
 <template>
   <div id="bulk-vertical-aquifer-extents-screen">
-    <b-card no-body class="mb-4 container d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-    </b-card>
-    <b-card class="container p-1" v-if="perms.verticalAquiferExtents">
+    <div class="bg-white mx-8 mb-4">
+      <Breadcrumb
+        class="p-0"
+        :model="breadcrumbs">
+        <template #item="{ item }">
+          <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+          <span v-else>{{ item.label }}</span>
+        </template>
+      </Breadcrumb>
+    </div>
+    <div class="bg-white mx-8 mb-4 p-6" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
-      <b-container>
-        <b-row class="border-bottom mb-4 pb-2 pt-2">
-          <b-col><h4>Vertical Aquifer Extents Bulk Upload</h4></b-col>
-        </b-row>
+      <div class="border-bottom mb-4 pb-2 pt-2">
+        <h3>Aquifer Documents Bulk Upload</h3>
+      </div>
+      <div class="w-full border-gray-300 border-1 border-solid h-0 mb-5" >&nbsp;</div>
+      <Message
+        v-if="showSaveSuccess"
+        class="my-3"
+        severity="success"
+      >
+        All documents uploaded for aquifers.
+      </Message>
 
-        <b-alert show v-if="showSaveSuccess" variant="success" >
-          All vertical aquifer extents successfully changed
-        </b-alert>
-
-        <b-card v-if="!file" title="Instructions" id="instructions">
-          <b-card-text>
+      <Card v-if="!file" id="instructions">
+        <template #header>
+          <h3 class="pt-4 px-4">Instructions</h3>
+        </template>
+        <template #content>
+          <div class="p-0 mb-4">
             <p>
               Please note that the data in the CSV must be for <strong>new</strong> vertical aquifer
               extents.
@@ -73,119 +87,225 @@
                 </ol>
               </li>
             </ol>
-          </b-card-text>
-
-          <b-form-file
+          </div>
+          <FileUpload
             v-model="file"
+            name="fileUpload"
+            mode="basic"
+            :showUploadButton="false"
+            :showCancelButton="false"
             :disabled="isSaving"
-            accept="text/csv"
-            placeholder="Choose a file or drop it here…"
-            drop-placeholder="Drop file here…"/>
-        </b-card>
+            @select="filePicked($event.files[0])"
+            class="items-center"
+          />
+        </template>
+      </Card>
 
-        <b-alert show v-if="showBuildingTable" variant="success" >
-          Building table ...
-        </b-alert>
+      <Message
+        v-if="showBuildingTable"
+        class="my-3"
+        severity="success"
+      >
+        Building table ...
+      </Message>
 
-        <b-alert show v-if="tooManyCSVRows" variant="danger" >
+      <Message
+        v-if="tooManyCSVRows"
+        class="my-3"
+        severity="error"
+      >
+        <p class="m-0">
           The CSV file has too many records ({{numberOfCSVRows}}).
           Performance will be an issue and your bulk upload may not work
           for more than {{maxNumberOfRows}}.
           Please break up the CSV file into smaller files.
-        </b-alert>
+        </p>
+      </Message>
 
-        <b-card v-if="hasCSVErrors">
-          <b-alert show variant="danger" >
+      <Card v-if="hasCSVErrors">
+        <template #content>
+          <Message
+            v-if="showBuildingTable"
+            class="my-3"
+            severity="error"
+          >
             There were problems parsing the CSV file. Below are the list of errors encountered.
-          </b-alert>
+          </Message>
 
-          <b-table
-            v-if="hasCSVErrors"
-            class="csv-errors"
-            striped
-            hover
-            :items="csvErrorsTableData"
-            :fields="csvErrorTableFields">
-          </b-table>
-        </b-card>
+          <DataTable
+            :value="csvErrorsTableData"
+            stripedRows
+            class="mb-4"
+          >
+            <Column field="rowNum" header="Row"></Column>
+            <Column field="errorMessage" header="Error"></Column>
+          </DataTable>
+        </template>
+      </Card>
 
-        <b-card v-if="!hasCSVErrors && hasDataToProcess" title="Data to process">
-          <b-alert show v-if="hasBeenValidated" variant="success">
-            All {{numVerticalAquiferExtents}} vertical aquifer extents are valid. Review the changes below and then click “Submit” to create {{numVerticalAquiferExtents}} records.
-          </b-alert>
-          <div v-if="hasUnknownWellsOrAquifers" id="unknown-wells-or-aquifers">
-            <b-alert show variant="danger">
-              The wells and aquifers listed below can not be found in the GWELLS database.
-            </b-alert>
+      <div v-if="!hasCSVErrors && hasDataToProcess">
+        <h4 class="mb-4">Data to process</h4>
+        <Message
+          class="my-3"
+          severity="success"
+        >
+          All {{numVerticalAquiferExtents}} vertical aquifer extents are valid. Review the changes below and then click “Submit” to create {{numVerticalAquiferExtents}} records.
+        </Message>
+        <div v-if="hasUnknownWellsOrAquifers" id="unknown-wells-or-aquifers">
+          <Message
+            class="my-3"
+            severity="error"
+          >
+            The wells and aquifers listed below can not be found in the GWELLS database.
+          </Message>
 
-            <b-table
-              class="errors"
-              striped
-              hover
-              :items="errorsTableData"
-              :fields="errorTableFields">
-              <template v-slot:cell(wellTagNumber)="row">
-                <span :class="{ error: isUnknownWell(row.item.wellTagNumber) }">
-                  {{row.item.wellTagNumber}}
+          <DataTable
+            class="errors"
+            :value="errorsTableData"
+            stripedRows
+          >
+            <Column field="aquiferId" header="Aquifer ID">
+              <template #body="slotProps">
+                <span :class="{ error: isUnknownAquifer(slotProps.data.aquiferId) }">
+                  {{slotProps.data.aquiferId}}
                 </span>
               </template>
-              <template v-slot:cell(aquiferId)="row">
-                <span :class="{ error: isUnknownAquifer(row.item.aquiferId) }">
-                  {{row.item.aquiferId}}
+            </Column>
+            <Column field="wellTagNumber" header="Well Tag Number">
+              <template #body="slotProps">
+                <span :class="{ error: isUnknownWell(slotProps.data.wellTagNumber) }">
+                  {{slotProps.data.wellTagNumber}}
                 </span>
               </template>
-            </b-table>
-          </div>
-          <div v-else>
-            <b-alert show v-if="hasConflicts" variant="danger">
-              <p>The CSV data conflits with existing vertical aquifer extents in the GWELLS database.</p>
-              <p>You can resolve the conflicts by either:</p>
-              <ol>
-                <li>Editing the CSV and re-uploading it</li>
-                <li>Click the well tag numbers below to edit the existing data</li>
-              </ol>
-            </b-alert>
+            </Column>
+          </DataTable>
+        </div>
+        <div v-else>
+          <Message
+            v-if="hasConflicts"
+            class="my-3"
+            severity="error"
+          >
+            <div>The CSV data conflits with existing vertical aquifer extents in the GWELLS database.</div>
+            <div>You can resolve the conflicts by either:</div>
+            <ol>
+              <li>Editing the CSV and re-uploading it</li>
+              <li>Click the well tag numbers below to edit the existing data</li>
+            </ol>
+          </Message>
 
-            <b-table
-              id="vertical-aquifer-extents"
-              :tbody-tr-class="rowClass"
-              striped
-              hover
-              :items="tableData"
-              :fields="tableFields">
-              <template v-slot:cell(wellTagNumber)="row">
-                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: row.item.wellTagNumber} }" target="_blank">
-                  {{row.item.wellTagNumber}}
+          <!-- // One table showing no conflicts -->
+          <!-- // Table below this one showing conflicts -->
+          <DataTable
+            v-if="!hasConflicts"
+            id="vertical-aquifer-extents"
+            :value="tableData"
+            stripedRows
+          >
+            <Column field="rowNum" header="Row Number">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.rowNum}}
+                </span>
+              </template>
+            </Column>
+            <Column field="wellTagNumber" header="Well Tag Number">
+              <template #body="slotProps">
+                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: slotProps.data.wellTagNumber} }" target="_blank">
+                  {{slotProps.data.wellTagNumber}}
                 </router-link>
               </template>
-              <template v-slot:cell(fromDepth)="row">
-                {{row.item.fromDepth.toFixed(2)}}
+            </Column>
+            <Column field="aquiferId" header="Aquifer ID">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.aquiferId}}
+                </span>
               </template>
-              <template v-slot:cell(toDepth)="row">
-                {{row.item.toDepth === null ? '\u2014' : row.item.toDepth.toFixed(2)}}
+            </Column>
+            <Column field="fromDepth" header="From Depth">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.fromDepth.toFixed(2)}}
+                </span>
               </template>
-            </b-table>
-          </div>
-        </b-card>
+            </Column>
+            <Column field="toDepth" header="To Depth">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.toDepth === null ? '\u2014' : slotProps.data.toDepth.toFixed(2)}}
+                </span>
+              </template>
+            </Column>
+          </DataTable>
+          <DataTable
+            v-if="hasConflicts"
+            id="vertical-aquifer-extents"
+            :value="tableData"
+            stripedRows
+          >
+            <Column field="rowNum" header="Row Number">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.rowNum}}
+                </span>
+              </template>
+            </Column>
+            <Column field="wellTagNumber" header="Well Tag Number">
+              <template #body="slotProps">
+                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: slotProps.data.wellTagNumber} }" target="_blank">
+                  {{slotProps.data.wellTagNumber}}
+                </router-link>
+              </template>
+            </Column>
+            <Column field="aquiferId" header="Aquifer ID">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.aquiferId}}
+                </span>
+              </template>
+            </Column>
+            <Column field="fromDepth" header="From Depth">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.fromDepth.toFixed(2)}}
+                </span>
+              </template>
+            </Column>
+            <Column field="toDepth" header="To Depth">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.toDepth === null ? '\u2014' : slotProps.data.toDepth.toFixed(2)}}
+                </span>
+              </template>
+            </Column>
+            <Column field="conflictMessage" header="Error">
+              <template #body="slotProps">
+                <span>
+                  {{slotProps.data.conflictMessage}}
+                </span>
+              </template>
+            </Column>
+          </DataTable>
+        </div>
+      </div>
 
-        <b-button-group class="mt-4">
-          <b-button
-            v-if="showSubmitButton"
-            :disabled="isSaveButtonDisabled"
-            variant="primary"
-            @click="save">
-            <b-spinner v-if="isSaving" small label="Loading…"/>
-            {{submitButtonLabel}}
-          </b-button>
-          <b-button
-            v-if="showResetButton"
-            variant="default"
-            @click="restart">
-            {{showSaveSuccess ? 'Upload another CSV' : 'Reset'}}
-          </b-button>
-        </b-button-group>
-      </b-container>
-    </b-card>
+      <div class="mt-4">
+        <Button
+          v-if="showSubmitButton"
+          class="mr-4"
+          :disabled="isSaveButtonDisabled"
+          @click="save">
+          {{submitButtonLabel}}
+        </Button>
+        <Button
+          v-if="showResetButton"
+          severity="secondary"
+          @click="restart">
+          {{showSaveSuccess ? 'Upload another CSV' : 'Reset'}}
+        </Button>
+      </div>
+    </div>
     <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
@@ -469,6 +589,9 @@ export default {
         header: true,
         complete: (results) => {
           const { error, data, meta } = results
+          console.log('error', error)
+          console.log('data', data)
+          console.log('meta', meta)
 
           if (error) {
             this.logCSVError(null, error.message)
@@ -645,6 +768,10 @@ export default {
 #bulk-vertical-aquifer-extents-screen {
   .conflict-color {
     color: #ec3838;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
   }
 
   #instructions {

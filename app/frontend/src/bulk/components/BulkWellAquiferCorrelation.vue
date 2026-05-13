@@ -76,7 +76,7 @@
             <Message
               class="my-3"
               severity="error"
-              v-if="true || tooManyCSVRows"
+              v-if="tooManyCSVRows"
               :key="`survey ${index}`">
               <p class="m-0">
                 There were problems parsing the CSV file. Below are the list of errors encountered.
@@ -136,7 +136,6 @@
               <DataTable
                 v-if="hasCSVErrors"
                 :value="errorsTableData"
-                tableStyle="min-width: 50rem"
                 stripedRows
               >
                 <Column field="aquiferId" header="Aquifer ID">
@@ -216,7 +215,7 @@
               {{saveButtonLabel}}
             </Button>
             <Button
-              v-if="true || showResetButton"
+              v-if="showResetButton"
               severity="secondary"
               @click="restart"
             >
