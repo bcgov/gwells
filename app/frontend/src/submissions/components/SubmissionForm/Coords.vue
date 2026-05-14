@@ -16,187 +16,151 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <form-subsection title="Geographic Coordinates" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
       <p class="bg-yellow-400 p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
-      <b-row>
-        <b-col sm="12" md="6">
+      <div class="grid grid-cols-12">
+        <div class="sm:col-span-12 md:col-span-6">
           <Card class="p-4 m-1 md:m-1">
             <template #default>
-              <div class="grid grid-cols-12">
-                <div class="col-span-12 sm:col-span-6 lg:col-span-3">
-                  <form-input
-                    id="latitude"
-                    type="text"
-                    label="Latitude"
-                    hint="Decimal degrees"
-                    @input="handleDegreesChange"
-                    v-model.number="degrees.latitude"
-                    :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"
-                  ></form-input>
-                </div>
-                <div class="col-span-12 sm:col-span-6 lg:col-span-3 lg:col-start-3">
-                  <form-input
-                    id="longitude"
-                    type="text"
-                    @input="handleDegreesChange"
-                    label="Longitude"
-                    hint="Decimal degrees"
-                    v-model.number="degrees.longitude"
-                    :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"
-                  ></form-input>
-                </div>
-              </div>
+              <responsive-grid :cols="12" :sm="6" :lg="3">
+                <form-input
+                  id="latitude"
+                  type="text"
+                  label="Latitude"
+                  hint="Decimal degrees"
+                  @input="handleDegreesChange"
+                  v-model.number="degrees.latitude"
+                  :errors="errors['latitude']"
+                  :loaded="fieldsLoaded['latitude']"></form-input>
+                <form-input
+                  id="longitude"
+                  type="text"
+                  @input="handleDegreesChange"
+                  label="Longitude"
+                  hint="Decimal degrees"
+                  v-model.number="degrees.longitude"
+                  :errors="errors['longitude']"
+                  :loaded="fieldsLoaded['longitude']"></form-input>
+              </responsive-grid>
             </template>
           </Card>
-          <b-row><b-col><p class="p-4 m-0">OR</p></b-col></b-row>
-          <b-card no-body class="p-4 mx-1 mx-md-1">
+          <div class="flex"><p class="p-4 m-0">OR</p></div>
+          <div class="container p-4 mx-1 mx-md-1">
             <b-row>
               <b-col cols="12" md="6" lg="6">
-                <b-row class="mb-2"><b-col>Latitude</b-col></b-row>
-                <b-row>
-                  <b-col cols="12" sm="4" class="px-2">
-                    <form-input
-                      id="latitudeDeg"
-                      @input="handleDMSChange"
-                      hint="Degrees"
-                      type="text"
-                      v-model.number="dms.lat.deg"
-                      :errors="errors['latitude']"
-                      :loaded="fieldsLoaded['latitude']"
-                    ></form-input>
-                  </b-col>
-                  <b-col cols="12" sm="4" class="px-2">
-                    <form-input
-                      id="latitudeMin"
-                      hint="Minutes"
-                      @input="handleDMSChange"
-                      type="text"
-                      v-model.number="dms.lat.min"
-                      :errors="errors['latitude']"
-                      :loaded="fieldsLoaded['latitude']"
-                    ></form-input>
-                  </b-col>
-                  <b-col cols="12" sm="4" class="px-1">
-                    <form-input
-                      id="latitudeSec"
-                      type="text"
-                      @input="handleDMSChange"
-                      hint="Seconds"
-                      v-model.number="dms.lat.sec"
-                      :errors="errors['latitude']"
-                      :loaded="fieldsLoaded['latitude']"
-                    ></form-input>
-                  </b-col>
-                </b-row>
+                <div class="mb-2">Latitude</div>
+                <responsive-grid :cols="12" :sm="4" :innerDivClass="['px-2', 'px-2', 'px-1']">
+                  <form-input
+                    id="latitudeDeg"
+                    @input="handleDMSChange"
+                    hint="Degrees"
+                    type="text"
+                    v-model.number="dms.lat.deg"
+                    :errors="errors['latitude']"
+                    :loaded="fieldsLoaded['latitude']"></form-input>
+                  <form-input
+                    id="latitudeMin"
+                    hint="Minutes"
+                    @input="handleDMSChange"
+                    type="text"
+                    v-model.number="dms.lat.min"
+                    :errors="errors['latitude']"
+                    :loaded="fieldsLoaded['latitude']"></form-input>
+                  <form-input
+                    id="latitudeSec"
+                    type="text"
+                    @input="handleDMSChange"
+                    hint="Seconds"
+                    v-model.number="dms.lat.sec"
+                    :errors="errors['latitude']"
+                    :loaded="fieldsLoaded['latitude']"></form-input>
+                </responsive-grid>
               </b-col>
               <b-col cols="12" md="6" lg="6" offset-lg="0">
-                <b-row class="mb-2"><b-col>Longitude</b-col></b-row>
-                <b-row>
-                  <b-col cols="12" sm="4" class="px-2">
-                    <form-input
-                      id="longitudeDeg"
-                      type="text"
-                      @input="handleDMSChange"
-                      hint="Degrees"
-                      v-model.number="dms.long.deg"
-                      :errors="errors['longitude']"
-                      :loaded="fieldsLoaded['longitude']"
-                    ></form-input>
-                  </b-col>
-                  <b-col cols="12" sm="4" class="px-2">
-                    <form-input
-                      id="longitudeMin"
-                      type="text"
-                      @input="handleDMSChange"
-                      hint="Minutes"
-                      v-model.number="dms.long.min"
-                      :errors="errors['longitude']"
-                      :loaded="fieldsLoaded['longitude']"
-                    ></form-input>
-                  </b-col>
-                  <b-col cols="12" sm="4" class="px-1">
-                    <form-input
-                      id="longitudeSec"
-                      type="text"
-                      @input="handleDMSChange"
-                      hint="Seconds"
-                      v-model.number="dms.long.sec"
-                      :errors="errors['longitude']"
-                      :loaded="fieldsLoaded['longitude']"
-                    ></form-input>
-                  </b-col>
-                </b-row>
+                <div class="flex mb-2">Longitude</div>
+                <responsive-grid :cols="12" :sm="4" :innerDivClass="['px-2', 'px-2', 'px-1']">
+                  <form-input
+                    id="longitudeDeg"
+                    type="text"
+                    @input="handleDMSChange"
+                    hint="Degrees"
+                    v-model.number="dms.long.deg"
+                    :errors="errors['longitude']"
+                    :loaded="fieldsLoaded['longitude']"></form-input>
+                  <form-input
+                    id="longitudeMin"
+                    type="text"
+                    @input="handleDMSChange"
+                    hint="Minutes"
+                    v-model.number="dms.long.min"
+                    :errors="errors['longitude']"
+                    :loaded="fieldsLoaded['longitude']"></form-input>
+                  <form-input
+                    id="longitudeSec"
+                    type="text"
+                    @input="handleDMSChange"
+                    hint="Seconds"
+                    v-model.number="dms.long.sec"
+                    :errors="errors['longitude']"
+                    :loaded="fieldsLoaded['longitude']"></form-input>
+                </responsive-grid>
               </b-col>
             </b-row>
-          </b-card>
-          <b-row><b-col><p class="p-4 m-0">OR</p></b-col></b-row>
-          <b-card no-body class="p-4 mx-1 mx-md-1">
-            <b-row>
-              <b-col cols="12" sm="4" lg="4">
-                <form-input
-                  id="utmZone"
-                  select
-                  :options="utmZones"
-                  label="Zone"
-                  @input="handleUTMChange"
-                  v-model="utm.zone"
-                  text-field="name"
-                  value-field="value"
-                  :loaded="fieldsLoaded['utmZone']"
-                ></form-input>
-              </b-col>
-              <b-col cols="12" sm="4" lg="4">
-                <!-- UTM Easting should only allow 6 digits to be entered. -->
-                <form-input
-                  id="utmEasting"
-                  type="text"
-                  label="UTM Easting"
-                  v-model.number="utm.easting"
-                  @input="handleUTMChange"
-                  :loaded="fieldsLoaded['utmEasting']"
-                  :max="999999"
-                ></form-input>
-              </b-col>
-              <b-col cols="12" sm="4" lg="4">
-                <!-- UTM Northing should only allow 7 digits to be entered. -->
-                <form-input
-                  id="utmNorthing"
-                  type="text"
-                  label="UTM Northing"
-                  @input="handleUTMChange"
-                  v-model.number="utm.northing"
-                  :max="9999999"
-                  :loaded="fieldsLoaded['utmNorthing']"
-                ></form-input>
-              </b-col>
-            </b-row>
-            <b-row v-if="isStaffEdit">
-              <b-col>
-                <form-input
-                  id="coordinateAcquisitionCode"
-                  select
-                  :options="codes?.coordinate_acquisition_codes"
-                  label="Coordinate Acquisition"
-                  v-model="coordinateAcquisitionCodeInput"
-                  text-field="description"
-                  value-field="code"
-                  :loaded="fieldsLoaded['coordinateAcquisitionCode']"
-                ></form-input>
-              </b-col>
-            </b-row>
-          </b-card>
-          <b-row>
-            <b-col class="mt-4">
+          </div>
+          <div class="flex"><p class="p-4 m-0">OR</p></div>
+          <div class="container p-4 mx-1 mx-md-1">
+            <responsive-grid :cols="12" :sm="4" :lg="4">
+              <form-input
+                id="utmZone"
+                select
+                :options="utmZones"
+                label="Zone"
+                @input="handleUTMChange"
+                v-model="utm.zone"
+                text-field="name"
+                value-field="value"
+                :loaded="fieldsLoaded['utmZone']"></form-input>
+              <!-- UTM Easting should only allow 6 digits to be entered. -->
+              <form-input
+                id="utmEasting"
+                type="text"
+                label="UTM Easting"
+                v-model.number="utm.easting"
+                @input="handleUTMChange"
+                :loaded="fieldsLoaded['utmEasting']"
+                :max="999999"></form-input>
+              <!-- UTM Northing should only allow 7 digits to be entered. -->
+              <form-input
+                id="utmNorthing"
+                type="text"
+                label="UTM Northing"
+                @input="handleUTMChange"
+                v-model.number="utm.northing"
+                :max="9999999"
+                :loaded="fieldsLoaded['utmNorthing']"></form-input>
+            </responsive-grid>
+            <div class="flex" v-if="isStaffEdit">
+              <form-input
+                id="coordinateAcquisitionCode"
+                select
+                :options="codes?.coordinate_acquisition_codes"
+                label="Coordinate Acquisition"
+                v-model="coordinateAcquisitionCodeInput"
+                text-field="description"
+                value-field="code"
+                :loaded="fieldsLoaded['coordinateAcquisitionCode']"></form-input>
+            </div>
+          </div>
+          <div class="flex">
+            <div class="mt-4">
               <div v-if="validCoordinate === false">
                 <div class="alert alert-danger" role="alert">You have entered an invalid coordinate</div>
               </div>
-            </b-col>
-          </b-row>
-        </b-col>
-        <b-col sm="12" md="6">
+            </div>
+          </div>
+        </div>
+        <div class="sm:col-span-12 md:col-span-6">
           <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water"/>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
       <b-card>
         <b-modal
           v-model="confirmRemoveModalInput"
@@ -208,12 +172,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           @shown="focusRemoveModal">
           WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.
           <div slot="modal-footer">
-            <b-btn variant="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn">
-              No, Cancel
-            </b-btn>
-            <b-btn variant="danger" @click="confirmRemoveModalInput=false;confirmCoords()">
-              Yes, Update
-            </b-btn>
+            <Button label="No, Cancel" severity="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn"/>
+            <Button label="Yes, Update" severity="danger" @click="confirmRemoveModalInput=false;confirmCoords()"/>
           </div>
         </b-modal>
       </b-card>
@@ -231,11 +191,13 @@ import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import { fetchInsideBCCheck } from '../../../common/mapbox/geometry'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   components: {
+    ResponsiveGrid,
     'coords-map': CoordsMap
   },
   name: 'Coords',

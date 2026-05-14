@@ -13,65 +13,52 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Yield" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="grid grid-cols-12 mt-4">
-      <div class="col-span-12 md:col-span-4 lg:col-span-3">
+    <responsive-grid class="mt-4" :cols="12" :md="4" :lg="3">
         <form-input
-            id="yieldEstimationMethod"
-            label="Yield Estimation Method"
-            select
-            :options="codes?.yield_estimation_methods"
-            text-field="description"
-            value-field="yield_estimation_method_code"
-            v-model="yieldEstimationMethodInput"
-            placeholder="Select method"></form-input>
-      </div>
-      <div class="col-span-12 md:col-span-4 lg:col-span-3">
+          id="yieldEstimationMethod"
+          label="Yield Estimation Method"
+          select
+          :options="codes?.yield_estimation_methods"
+          text-field="description"
+          value-field="yield_estimation_method_code"
+          v-model="yieldEstimationMethodInput"
+          placeholder="Select method"></form-input>
         <form-input
-            id="yieldEstimationRate"
-            label="Yield Estimation Rate"
-            type="number"
-            hint="USgpm"
-            v-model="yieldEstimationRateInput"></form-input>
-      </div>
-      <div class="col-span-12 md:col-span-4 lg:col-span-3">
-        <form-input
-            id="yieldEstimationDuration"
-            label="Yield Estimation Duration"
-            type="number"
-            hint="Hours"
-            v-model="yieldEstimationDurationInput"></form-input>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-4 lg:col-span-3">
-        <form-input
-            id="staticWaterLevelTest"
-            label="SWL Before Test"
-            type="number"
-            v-model="staticLevelInput"
-            hint="ft (btoc)"></form-input>
-      </div>
-      <div class="col-span-12 md:col-span-4 lg:col-span-3">
-        <b-form-group label="Hydro-fracturing Performed">
-          <b-form-radio-group v-model="hydroFracturingPerformedInput"
-            id="hydroFracPerformedOptions"
-            name="hydroFracturingPerformed"
-          >
-            <b-form-radio :value="false">No</b-form-radio>
-            <b-form-radio :value="true">Yes</b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-      </div>
-      <div class="col-span-12 md:col-span-4 lg:col-span-4">
-        <form-input
-          id="hydroFracturingYieldIncrease"
-          label="Increase in Well Yield Due to Hydro-fracturing"
+          id="yieldEstimationRate"
+          label="Yield Estimation Rate"
           type="number"
-          v-model="hydroFracturingYieldIncreaseInput"
           hint="USgpm"
-        ></form-input>
-      </div>
-    </div>
+          v-model="yieldEstimationRateInput"></form-input>
+        <form-input
+          id="yieldEstimationRate"
+          label="Yield Estimation Rate"
+          type="number"
+          hint="USgpm"
+          v-model="yieldEstimationRateInput"></form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="staticWaterLevelTest"
+        label="SWL Before Test"
+        type="number"
+        v-model="staticLevelInput"
+        hint="ft (btoc)"></form-input>
+      <b-form-group label="Hydro-fracturing Performed">
+        <b-form-radio-group v-model="hydroFracturingPerformedInput"
+          id="hydroFracPerformedOptions"
+          name="hydroFracturingPerformed"
+        >
+          <b-form-radio :value="false">No</b-form-radio>
+          <b-form-radio :value="true">Yes</b-form-radio>
+        </b-form-radio-group>
+      </b-form-group>
+      <form-input
+        id="hydroFracturingYieldIncrease"
+        label="Increase in Well Yield Due to Hydro-fracturing"
+        type="number"
+        v-model="hydroFracturingYieldIncreaseInput"
+        hint="USgpm"></form-input>
+    </responsive-grid>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
@@ -109,6 +96,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -144,7 +132,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   computed: {
     codes () {

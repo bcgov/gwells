@@ -13,23 +13,21 @@ limitations under the License.
 */
 <template>
   <form-subsection title="Well Publication Status" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div v-if="isStaffEdit" class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-4">
-        <b-form-group id="wellPublicationStatusCodeInput">
-          <b-form-select
-            v-model="wellPublicationStatusCodeInput"
-            :options="codes?.well_publication_status_codes"
-            value-field="well_publication_status_code"
-            text-field="well_publication_status_code"
-            :errors="errors['well_publication_status']"
-            :loaded="fieldsLoaded['well_publication_status']">
-            <template v-slot:first>
-              <option :value="null" disabled>Select Publication Status</option>
-            </template>
-          </b-form-select>
-        </b-form-group>
-      </div>
-    </div>
+    <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
+      <b-form-group id="wellPublicationStatusCodeInput">
+        <b-form-select
+          v-model="wellPublicationStatusCodeInput"
+          :options="codes?.well_publication_status_codes"
+          value-field="well_publication_status_code"
+          text-field="well_publication_status_code"
+          :errors="errors['well_publication_status']"
+          :loaded="fieldsLoaded['well_publication_status']">
+          <template v-slot:first>
+            <option :value="null" disabled>Select Publication Status</option>
+          </template>
+        </b-form-select>
+      </b-form-group>
+    </responsive-grid>
   </form-subsection>
 </template>
 
@@ -38,6 +36,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -65,7 +64,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

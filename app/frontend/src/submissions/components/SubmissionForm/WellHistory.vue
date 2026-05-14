@@ -69,7 +69,7 @@
           {{ moment(create_date, "MMMM Do YYYY [at] LT")}}
         </div>
         <div v-if="loading">
-          <b-row><b-col>Loading history...</b-col></b-row>
+          <div class="flex">Loading history...</div>
         </div>
       </div>
     </div>

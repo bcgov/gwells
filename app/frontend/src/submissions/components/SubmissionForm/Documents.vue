@@ -128,21 +128,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </table>
       </div>
       <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i>&nbsp;Add file</b-btn>
-      <b-modal
-          v-model="confirmRemoveModal"
-          centered
-          title="Confirm remove"
-          @shown="focusRemoveModal">
+      <Dialog
+        v-model:visible="confirmRemoveModal"
+        modal
+        header="Confirm remove"
+        @shown="focusRemoveModal">
         Are you sure you want to remove this row?
         <div slot="modal-footer">
-          <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-            Cancel
-          </b-btn>
-          <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-            Remove
-          </b-btn>
+          <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+          <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
         </div>
-      </b-modal>
+      </Dialog>
     </form-subsection>
   </div>
 </template>

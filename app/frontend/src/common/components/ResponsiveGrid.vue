@@ -24,6 +24,7 @@ export default {
     md: [Number, Array],
     lg: [Number, Array],
     xl: [Number, Array],
+    innerDivClass: [String, Array],
   },
   methods: {
     getClassNames (index) {
@@ -86,6 +87,16 @@ export default {
           }
         } else {
           classNames.push(`xl:col-span-${this.xl}`)
+        }
+      }
+      // Other styling classes
+      if (this.innerDivClass) {
+        if (Array.isArray(this.innerDivClass)) {
+          if (this.innerDivClass[index]) {
+            classNames.push(this.innerDivClass[index])
+          }
+        } else {
+          classNames.push(this.innerDivClass)
         }
       }
 

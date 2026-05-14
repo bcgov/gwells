@@ -13,56 +13,48 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Water Quality" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6">
-        <form-input
-          id="waterCharacteristicsInput"
-          label="Characteristics"
-          select
-          :options="codes?.water_quality_characteristics"
-          value-field="code"
-          text-field="description"
-          hint="Select one or more characteristics. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
-          v-model="waterQualityCharacteristicsInput"
-          :errors="errors['water_quality_characteristics']"
-          :loaded="fieldsLoaded['water_quality_characteristics']"/>
-      </div>
-    </div>
-    <b-row>
-      <b-col cols="12" md="5" lg="4">
-        <form-input
-            id="waterQualityColour"
-            label="Water Quality Colour"
-            select
-            :options="codes?.water_quality_colours"
-            text-field="description"
-            value-field="code"
-            placeholder="Select colour"
-            v-model="waterQualityColourInput"
-            :errors="errors['water_quality_colour']"
-            :loaded="fieldsLoaded['water_quality_colour']"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="5" lg="4">
-        <form-input
-            id="waterQualityOdour"
-            label="Water Quality Odour"
-            v-model="waterQualityOdourInput"
-            :errors="errors['water_quality_odour']"
-            :loaded="fieldsLoaded['water_quality_odour']"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="5" lg="4">
-        <form-input
-            id="emsID"
-            label="Environmental Monitoring System (EMS) ID"
-            v-model="emsIDInput"
-            :errors="errors['ems']"
-            :loaded="fieldsLoaded['ems']"></form-input>
-      </b-col>
-    </b-row>
+    <responsive-grid :cols="12" :md="6">
+      <form-input
+        id="waterCharacteristicsInput"
+        label="Characteristics"
+        select
+        :options="codes?.water_quality_characteristics"
+        value-field="code"
+        text-field="description"
+        hint="Select one or more characteristics. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+        v-model="waterQualityCharacteristicsInput"
+        :errors="errors['water_quality_characteristics']"
+        :loaded="fieldsLoaded['water_quality_characteristics']"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="5" :lg="4">
+      <form-input
+        id="waterQualityColour"
+        label="Water Quality Colour"
+        select
+        :options="codes?.water_quality_colours"
+        text-field="description"
+        value-field="code"
+        placeholder="Select colour"
+        v-model="waterQualityColourInput"
+        :errors="errors['water_quality_colour']"
+        :loaded="fieldsLoaded['water_quality_colour']"></form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="5" :lg="4">
+      <form-input
+        id="waterQualityOdour"
+        label="Water Quality Odour"
+        v-model="waterQualityOdourInput"
+        :errors="errors['water_quality_odour']"
+        :loaded="fieldsLoaded['water_quality_odour']"></form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="5" :lg="4">
+      <form-input
+        id="emsID"
+        label="Environmental Monitoring System (EMS) ID"
+        v-model="emsIDInput"
+        :errors="errors['ems']"
+        :loaded="fieldsLoaded['ems']"></form-input>
+    </responsive-grid>
   </form-subsection>
 </template>
 
@@ -71,6 +63,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -104,7 +97,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   fields: {
     waterQualityColourInput: 'waterQualityColour',

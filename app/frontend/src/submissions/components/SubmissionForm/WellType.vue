@@ -87,8 +87,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :disabled="intendedWaterUseDisabled"
             id="intendedWaterUse"></form-input>
       </responsive-grid>
-      <b-row>
-        <b-col cols="12" md="4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
+      <div class="grid grid-cols-12">
+        <div class="col-span-12 md:col-span-4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
           <b-form-group>
             <label>Well Tag Number (if known) <span class="font-weight-bold"></span></label>
             <v-select
@@ -119,38 +119,35 @@ Licensed under the Apache License, Version 2.0 (the "License");
               *displays a maximum of {{MAX_RESULTS}} results
             </small>
           </b-form-group>
-        </b-col>
-        <b-col cols="12" md="4">
+        </div>
+        <div class="col-span-12 md:col-span-4">
           <form-input
               id="idPlateNumber"
               :label="wellIdentificationPlateNumberLabel"
               type="number"
               v-model="idPlateNumberInput"
               :errors="errors['identification_plate_number']"
-              :loaded="fieldsLoaded['identification_plate_number']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4">
+              :loaded="fieldsLoaded['identification_plate_number']"></form-input>
+        </div>
+        <div class="col-span-12 md:col-span-4">
           <form-input
               id="wellPlateAttached"
               :label="wellIdentificationPlateAttachedLabel"
               type="text"
               v-model="wellPlateAttachedInput"
               :errors="errors['well_identification_plate_attached']"
-              :loaded="fieldsLoaded['well_identification_plate_attached']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4" v-if="isStaffEdit">
+              :loaded="fieldsLoaded['well_identification_plate_attached']"></form-input>
+        </div>
+        <div class="col-span-12 md:col-span-4" v-if="isStaffEdit">
           <form-input
               id="wellPlateAttachedBy"
               label="Identification Plate Attached By"
               type="text"
               v-model="idPlateAttachedByInput"
               :errors="errors['id_plate_attached_by']"
-              :loaded="fieldsLoaded['id_plate_attached_by']"
-          ></form-input>
-        </b-col>
-      </b-row>
+              :loaded="fieldsLoaded['id_plate_attached_by']"></form-input>
+        </div>
+      </div>
       <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
         <form-input
           id="waterSupplySystem"

@@ -13,51 +13,42 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Screen Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenIntake"
-          label="Intake"
-          select
-          :options="codes?.screen_intake_methods"
-          text-field="description"
-          value-field="screen_intake_code"
-          placeholder="Select intake"
-          v-model="screenIntakeMethodInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenType"
-          label="Screen Type"
-          select
-          :options="codes?.screen_types"
-          text-field="description"
-          value-field="screen_type_code"
-          placeholder="Select type"
-          v-model="screenTypeInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenMaterial"
-          label="Screen Material"
-          select
-          :options="codes?.screen_materials"
-          text-field="description"
-          value-field="screen_material_code"
-          placeholder="Select material"
-          v-model="screenMaterialInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="otherScreenMaterial"
-          label="Specify Other Screen Material"
-          v-model="otherScreenMaterialInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenIntake"
+        label="Intake"
+        select
+        :options="codes?.screen_intake_methods"
+        text-field="description"
+        value-field="screen_intake_code"
+        placeholder="Select intake"
+        v-model="screenIntakeMethodInput"></form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenType"
+        label="Screen Type"
+        select
+        :options="codes?.screen_types"
+        text-field="description"
+        value-field="screen_type_code"
+        placeholder="Select type"
+        v-model="screenTypeInput"></form-input>
+      <form-input
+        id="screenMaterial"
+        label="Screen Material"
+        select
+        :options="codes?.screen_materials"
+        text-field="description"
+        value-field="screen_material_code"
+        placeholder="Select material"
+        v-model="screenMaterialInput"></form-input>
+      <form-input
+        id="otherScreenMaterial"
+        label="Specify Other Screen Material"
+        v-model="otherScreenMaterialInput"></form-input>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
         <form-input
           id="screenOpening"
           label="Screen Opening"
@@ -67,8 +58,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           value-field="screen_opening_code"
           placeholder="Select opening"
           v-model="screenOpeningInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
         <form-input
           id="screenBottom"
           label="Screen Bottom"
@@ -78,18 +67,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
           value-field="screen_bottom_code"
           placeholder="Select bottom"
           v-model="screenBottomInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenInformation"
-          label="Screen Information"
-          v-model="screenInformationInput"
-          :errors="errors['screen_information']"
-          :loaded="fieldsLoaded['screen_information']"></form-input>
-      </b-col>
-    </b-row>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenInformation"
+        label="Screen Information"
+        v-model="screenInformationInput"
+        :errors="errors['screen_information']"
+        :loaded="fieldsLoaded['screen_information']"></form-input>
+    </responsive-grid>
     <p class="mt-4 mb-2">Screen Details</p>
     <div class="table-responsive">
       <table class="table table-sm" aria-describedby="screenDetails">
@@ -189,21 +175,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}.00</option>
     </datalist>
     <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <b-modal
-      v-model="confirmRemoveModal"
-      centered
-      title="Confirm remove"
+    <Dialog
+      v-model:visible="confirmRemoveModal"
+      modal
+      header="Confirm remove"
       @shown="focusRemoveModal">
       Are you sure you want to remove this row?
       <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
+        <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+        <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
       </div>
-    </b-modal>
+    </Dialog>
   </form-subsection>
 </template>
 
@@ -212,6 +194,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -249,7 +232,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

@@ -99,19 +99,8 @@ governing permissions and limitations under the License. */
             >
               Are you sure you want to submit this activity report?
               <div slot="modal-footer">
-                <b-btn
-                  variant="primary"
-                  @click="
-                    confirmSubmitModal = false;
-                    formSubmit();
-                  "
-                  ref="confirmSubmitConfirmBtn"
-                >
-                  Save
-                </b-btn>
-                <b-btn variant="light" @click="confirmSubmitModal = false">
-                  Cancel
-                </b-btn>
+                <Button label="Save" @click="confirmSubmitModal = false;formSubmit();" ref="confirmSubmitConfirmBtn"/>
+                <Button label="Cancel" severity="secondary" @click="confirmSubmitModal = false"/>
               </div>
             </b-modal>
           </b-form>
