@@ -205,10 +205,6 @@
 <script>
 import { useCommonStore } from '@/stores/common.js'
 import { difference } from 'lodash-es'
-import Card from 'primevue/card';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-
 
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
@@ -278,7 +274,6 @@ export default {
       const docs = {}
 
       this.commonStore.uploadFiles.forEach((file) => {
-        console.log('wellDocuments', file)
         const wellTagNumber = this.parseWellIdFromFileName(file.name)
         if (wellTagNumber) {
           docs[wellTagNumber] = docs[wellTagNumber] || []

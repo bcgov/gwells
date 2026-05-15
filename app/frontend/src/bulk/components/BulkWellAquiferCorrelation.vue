@@ -241,10 +241,6 @@
 <script>
 import { useCommonStore } from '@/stores/common.js'
 import Papa from 'papaparse'
-import Card from 'primevue/card';
-import FileUpload from 'primevue/fileupload';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
