@@ -25,50 +25,45 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :loaded="fieldsLoaded['ground_elevation']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6">
-        <b-form-group label="Method for Determining Ground Elevation">
-          <form-input
-            select
-            id="groundElevationMethod"
-            v-model="groundElevationMethodInput"
-            value-field="ground_elevation_method_code"
-            text-field="description"
-            placeholder="Select Method"
-            :options="method_codes()"
-            :errors="errors['ground_elevation_method']"
-            :loaded="fieldsLoaded['ground_elevation_method']">
-          </form-input>
-        </b-form-group>
+        <form-input
+          select
+          id="groundElevationMethod"
+          label="Method for Determining Ground Elevation"
+          v-model="groundElevationMethodInput"
+          value-field="ground_elevation_method_code"
+          text-field="description"
+          placeholder="Select Method"
+          :options="method_codes()"
+          :errors="errors['ground_elevation_method']"
+          :loaded="fieldsLoaded['ground_elevation_method']"></form-input>
       </div>
     </div>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6">
         <form-input
-            id="drillingMethod"
-            :label="drillingMethodsLabel"
-            select
-            :options="codes?.drilling_methods"
-            value-field="drilling_method_code"
-            text-field="description"
-            hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
-            v-model="drillingMethodInput"
-            :errors="errors['drilling_methods']"
-            :loaded="fieldsLoaded['drilling_methods']"
-        ></form-input>
+          id="drillingMethod"
+          :label="drillingMethodsLabel"
+          select
+          :options="codes?.drilling_methods"
+          value-field="drilling_method_code"
+          text-field="description"
+          hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+          v-model="drillingMethodInput"
+          :errors="errors['drilling_methods']"
+          :loaded="fieldsLoaded['drilling_methods']"></form-input>
       </div>
       <div>
-        <b-form-group label="Orientation of Well">
-          <form-input
-            select
-            id="wellOrientationStatus"
-            v-model="wellOrientationStatusInput"
-            value-field="well_orientation_code"
-            text-field="description"
-            placeholder="Select Orientation"
-            :options="codes?.well_orientation_codes"
-            :errors="errors['well_orientation_status']"
-            :loaded="fieldsLoaded['well_orientation_status']">
-          </form-input>
-        </b-form-group>
+        <form-input
+          select
+          id="wellOrientationStatus"
+          label="Orientation of Well"
+          v-model="wellOrientationStatusInput"
+          value-field="well_orientation_code"
+          text-field="description"
+          placeholder="Select Orientation"
+          :options="codes?.well_orientation_codes"
+          :errors="errors['well_orientation_status']"
+          :loaded="fieldsLoaded['well_orientation_status']"></form-input>
       </div>
     </div>
   </form-subsection>

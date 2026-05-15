@@ -15,52 +15,50 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <form-subsection title="Comments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid :cols="12" :md="8">
       <b-form-group label="Comments" id="commentsGroup">
-        <b-form-textarea
-          id="commentsEntry"
-          :rows="3"
-          :max-rows="12"
-          v-model="commentsInput"></b-form-textarea>
+        <Textarea id="commentsEntry" :rows="3" autoResize v-model="commentsInput"/>
       </b-form-group>
     </responsive-grid>
     <responsive-grid class="mt-4 mb-4" :cols="12" :md="8">
       <b-form-group label="Internal Office Comments" id="commentsGroup">
-        <b-form-textarea
-          id="internalCommentsEntry"
-          :rows="3"
-          :max-rows="12"
-          v-model="internalCommentsInput"></b-form-textarea>
+        <Textarea id="internalCommentsEntry" :rows="3" autoResize v-model="internalCommentsInput"/>
       </b-form-group>
     </responsive-grid>
     <responsive-grid :cols="12" :sm="6" :gap="4">
       <b-form-group label="Alternative Specs Submitted">
-        <b-form-radio-group
-          id="alternativeSpecsCheckbox"
-          class="mt-1"
-          v-model="alternativeSpecsSubmittedInput"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
+        <RadioButtonGroup class="mt-1" v-model="alternativeSpecsSubmittedInput">
+          <div>
+            <RadioButton inputId="alternativeSpecsSubmittedInput.false" :value="false"/>
+            <label for="alternativeSpecsSubmittedInput.false" class="ml-2">No</label>
+          </div>
+          <div>
+            <RadioButton inputId="alternativeSpecsSubmittedInput.true" :value="true"/>
+            <label for="alternativeSpecsSubmittedInput.true" class="ml-2">Yes</label>
+          </div>
+        </RadioButtonGroup>
       </b-form-group>
       <b-form-group label="Technical Report">
-        <b-form-radio-group
-          id="technicalReportCheckbox"
-          class="mt-1"
-          v-model="technicalReportInput"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
+        <RadioButtonGroup class="mt-1" v-model="technicalReportInput">
+          <div>
+            <RadioButton inputId="technicalReportInput.false" :value="false"/>
+            <label for="technicalReportInput.false" class="ml-2">No</label>
+          </div>
+          <div>
+            <RadioButton inputId="technicalReportInput.true" :value="true"/>
+            <label for="technicalReportInput.true" class="ml-2">Yes</label>
+          </div>
+        </RadioButtonGroup>
       </b-form-group>
       <b-form-group label="Drinking Water Area Indicator">
-        <b-form-radio-group
-          id="drinkingWaterProtectionAreaCheckbox"
-          class="mt-1"
-          v-model="drinkingWaterProtectionAreaInput"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
+        <RadioButtonGroup class="mt-1" v-model="drinkingWaterProtectionAreaInput">
+          <div>
+            <RadioButton inputId="drinkingWaterProtectionAreaInput.false" :value="false"/>
+            <label for="drinkingWaterProtectionAreaInput.false" class="ml-2">No</label>
+          </div>
+          <div>
+            <RadioButton inputId="drinkingWaterProtectionAreaInput.true" :value="true"/>
+            <label for="drinkingWaterProtectionAreaInput.true" class="ml-2">Yes</label>
+          </div>
+        </RadioButtonGroup>
       </b-form-group>
     </responsive-grid>
   </form-subsection>

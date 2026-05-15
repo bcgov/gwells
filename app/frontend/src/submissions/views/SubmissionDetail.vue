@@ -8,9 +8,9 @@
       </template>
     </Breadcrumb>
   </div>
-  <b-card v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit" class="container p-1">
-    <b-card-body>
-      <h1>Activity Report Summary</h1>
+  <Card v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit" class="container p-1">
+    <template #title>Activity Report Summary</template>
+    <template #content>
       <div v-if="loading">
         <div class="fa-2x text-center">
           <i class="fa fa-circle-o-notch fa-spin"></i>
@@ -30,8 +30,8 @@
           </template>
         </dl>
       </div>
-    </b-card-body>
-  </b-card>
+    </template>
+  </Card>
 </div>
 
 </template>

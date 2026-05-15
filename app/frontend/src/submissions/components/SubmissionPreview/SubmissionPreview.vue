@@ -482,8 +482,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>Documents to Upload</legend>
       <div class="grid grid-cols-12">
         <div class="col-span-12 lg:col-span-8">
-          <b-list-group>
-            <b-list-group-item v-for="(f, index) in commonStore.uploadFiles" :key="index">
+          <ul class="border border-gray-200 rounded-lg">
+            <li v-for="(f, index) in commonStore.uploadFiles" class="px-4 py-2" :key="index">
               {{f.file ? f.file.name.replace('null', '{ASSIGNED_WELL_ID}') : f.name}}
               <a
                 class="fa fa-trash fa-lg"
@@ -492,8 +492,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 href="#"
                 @click="handleDelete(index)"
               ></a>
-            </b-list-group-item>
-          </b-list-group>
+            </li>
+          </ul>
         </div>
       </div>
     </fieldset>
@@ -502,9 +502,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>Uploaded Documents</legend>
       <div class="grid grid-cols-12">
         <div class="col-span-12 lg:col-span-4">
-          <b-list-group>
-            <b-list-group-item v-for="(f, index) in uploadedFiles.public" :key="index">{{f.name}}</b-list-group-item>
-          </b-list-group>
+          <ul class="border border-gray-200 rounded-lg">
+            <li v-for="(f, index) in uploadedFiles.public" class="px-4 py-2" :key="index">{{f.name}}</li>
+          </ul>
         </div>
       </div>
     </fieldset>
@@ -513,9 +513,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <legend>Uploaded Internal Documentation</legend>
       <div class="grid grid-cols-12">
         <div class="col-span-12 lg:col-span-4">
-          <b-list-group>
-            <b-list-group-item v-for="(f, index) in uploadedFiles.private" :key="index">{{f.name}}</b-list-group-item>
-          </b-list-group>
+          <ul class="border border-gray-200 rounded-lg">
+            <li v-for="(f, index) in uploadedFiles.private" class="px-4 py-2" :key="index">{{f.name}}</li>
+          </ul>
         </div>
       </div>
     </fieldset>
@@ -556,7 +556,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <Button label="Back to Edit" @click="$emit('back')"/>
       </div>
       <div class="pr-6 text-right">
-        <b-btn id="formSubmitButton" type="submit" variant="primary" ref="activitySubmitBtn" :disabled="formSubmitLoading">Submit</b-btn>
+        <Button label="Submit" id="formSubmitButton" type="submit" ref="activitySubmitBtn" :disabled="formSubmitLoading"/>
       </div>
     </div>
   </div>

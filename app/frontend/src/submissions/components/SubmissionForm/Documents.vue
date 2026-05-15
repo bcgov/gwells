@@ -16,32 +16,31 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <form-subsection title="Attachments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <div v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.public" class="table-responsive">
         <b-table
-            hover
-            :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document', 'delete']"
-            striped
-            :items="[...uploadedFiles.public, ...uploadedFiles.private]"
-          >
-            <template v-slot:cell(document_type)="data">
-              {{ callLongFormLabel(data.item.document_type) }}
-            </template>
-            <template v-slot:cell(date_of_upload)="data">
-              {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
-            </template>
-            <template v-slot:cell(uploaded_document)="data">
-              <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
-            </template>
-            <template v-slot:cell(document_status)="data">
-              <p v-if="data.item.document_status">Private Document</p>
-              <p v-else>Public Document</p>
-            </template>
-            <template v-slot:cell(delete)="data">
-              <a
-                class="fa fa-trash fa-lg"
-                variant="primary"
-                style="margin-left: .5em"
-                href="#"
-                @click="handleFileDelete(data.item.name, data.item.document_status, $event)"></a>
-            </template>
+          hover
+          :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document', 'delete']"
+          striped
+          :items="[...uploadedFiles.public, ...uploadedFiles.private]">
+          <template v-slot:cell(document_type)="data">
+            {{ callLongFormLabel(data.item.document_type) }}
+          </template>
+          <template v-slot:cell(date_of_upload)="data">
+            {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
+          </template>
+          <template v-slot:cell(uploaded_document)="data">
+            <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
+          </template>
+          <template v-slot:cell(document_status)="data">
+            <p v-if="data.item.document_status">Private Document</p>
+            <p v-else>Public Document</p>
+          </template>
+          <template v-slot:cell(delete)="data">
+            <a
+              class="fa fa-trash fa-lg"
+              variant="primary"
+              style="margin-left: .5em"
+              href="#"
+              @click="handleFileDelete(data.item.name, data.item.document_status, $event)"></a>
+          </template>
         </b-table>
       </div>
       <div v-else>
@@ -72,11 +71,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   class="mt-1 mb-0"
                   :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
                   <b-form-select
-                      @change="setFileName(index)"
-                      v-model="attachment.document_code"
-                      :options="WELL_TAGS"
-                      :state="getAttachmentError(index).document_code ? false : null"
-                      size="med"
+                    @change="setFileName(index)"
+                    v-model="attachment.document_code"
+                    :options="WELL_TAGS"
+                    :state="getAttachmentError(index).document_code ? false : null"
+                    size="med"
                   >
                   </b-form-select>
                   <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
@@ -128,16 +127,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </table>
       </div>
       <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i>&nbsp;Add file</b-btn>
-      <Dialog
-        v-model:visible="confirmRemoveModal"
-        modal
-        header="Confirm remove"
-        @shown="focusRemoveModal">
+      <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
         Are you sure you want to remove this row?
-        <div slot="modal-footer">
+        <template #footer>
           <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
           <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-        </div>
+        </template>
       </Dialog>
     </form-subsection>
   </div>

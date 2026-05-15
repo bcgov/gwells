@@ -14,27 +14,27 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <form-subsection title="Yield" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid class="mt-4" :cols="12" :md="4" :lg="3">
-        <form-input
-          id="yieldEstimationMethod"
-          label="Yield Estimation Method"
-          select
-          :options="codes?.yield_estimation_methods"
-          text-field="description"
-          value-field="yield_estimation_method_code"
-          v-model="yieldEstimationMethodInput"
-          placeholder="Select method"></form-input>
-        <form-input
-          id="yieldEstimationRate"
-          label="Yield Estimation Rate"
-          type="number"
-          hint="USgpm"
-          v-model="yieldEstimationRateInput"></form-input>
-        <form-input
-          id="yieldEstimationRate"
-          label="Yield Estimation Rate"
-          type="number"
-          hint="USgpm"
-          v-model="yieldEstimationRateInput"></form-input>
+      <form-input
+        id="yieldEstimationMethod"
+        label="Yield Estimation Method"
+        select
+        :options="codes?.yield_estimation_methods"
+        text-field="description"
+        value-field="yield_estimation_method_code"
+        v-model="yieldEstimationMethodInput"
+        placeholder="Select method"></form-input>
+      <form-input
+        id="yieldEstimationRate"
+        label="Yield Estimation Rate"
+        type="number"
+        hint="USgpm"
+        v-model="yieldEstimationRateInput"></form-input>
+      <form-input
+        id="yieldEstimationRate"
+        label="Yield Estimation Rate"
+        type="number"
+        hint="USgpm"
+        v-model="yieldEstimationRateInput"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
@@ -44,13 +44,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="staticLevelInput"
         hint="ft (btoc)"></form-input>
       <b-form-group label="Hydro-fracturing Performed">
-        <b-form-radio-group v-model="hydroFracturingPerformedInput"
-          id="hydroFracPerformedOptions"
-          name="hydroFracturingPerformed"
-        >
-          <b-form-radio :value="false">No</b-form-radio>
-          <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
+        <RadioButtonGroup class="mt-1" v-model="hydroFracturingPerformedInput" name="hydroFracturingPerformed">
+          <div>
+            <RadioButton inputId="hydroFracturingPerformedInput.false" :value="false"/>
+            <label for="hydroFracturingPerformedInput.false" class="ml-2">No</label>
+          </div>
+          <div>
+            <RadioButton inputId="hydroFracturingPerformedInput.true" :value="true"/>
+            <label for="hydroFracturingPerformedInput.true" class="ml-2">Yes</label>
+          </div>
+        </RadioButtonGroup>
       </b-form-group>
       <form-input
         id="hydroFracturingYieldIncrease"
@@ -62,12 +65,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
-            id="drawdown"
-            label="Drawdown"
-            type="number"
-            v-model="drawdownInput"
-            hint="ft (btoc)"
-            ></form-input>
+          id="drawdown"
+          label="Drawdown"
+          type="number"
+          v-model="drawdownInput"
+          hint="ft (btoc)"></form-input>
       </div>
       <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
@@ -75,8 +77,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Recommended Pump Depth"
           type="number"
           v-model="recommendedPumpDepthInput"
-          hint="ft (btoc)"
-        />
+          hint="ft (btoc)"/>
       </div>
       <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
@@ -84,8 +85,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Recommended Pump Rate"
           type="number"
           v-model="recommendedPumpRateInput"
-          hint="USgpm"
-        />
+          hint="USgpm"/>
       </div>
     </div>
   </form-subsection>

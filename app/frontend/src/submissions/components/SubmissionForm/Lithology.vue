@@ -87,52 +87,51 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyDescriptor${index}`"
-                    aria-label="Descriptor"
-                    select
-                    :options="codes?.lithology_descriptors"
-                    text-field="description"
-                    value-field="lithology_description_code"
-                    placeholder="Select descriptor"
-                    v-model="lithologyData[index].lithology_description"
-                    group-class="mt-1 mb-0"
-                />
+                  :id="`lithologyDescriptor${index}`"
+                  aria-label="Descriptor"
+                  select
+                  :options="codes?.lithology_descriptors"
+                  text-field="description"
+                  value-field="lithology_description_code"
+                  placeholder="Select descriptor"
+                  v-model="lithologyData[index].lithology_description"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyMoisture${index}`"
-                    aria-label="Moisture"
-                    select
-                    :options="codes?.lithology_moisture_codes"
-                    text-field="description"
-                    value-field="lithology_moisture_code"
-                    placeholder="Select moisture"
-                    v-model="lithologyData[index].lithology_moisture"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyMoisture${index}`"
+                  aria-label="Moisture"
+                  select
+                  :options="codes?.lithology_moisture_codes"
+                  text-field="description"
+                  value-field="lithology_moisture_code"
+                  placeholder="Select moisture"
+                  v-model="lithologyData[index].lithology_moisture"
+                  group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyColour${index}`"
-                    aria-label="Colour"
-                    select
-                    :options="codes?.lithology_colours"
-                    text-field="description"
-                    placeholder="Select colour"
-                    value-field="lithology_colour_code"
-                    v-model="lithologyData[index].lithology_colour"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyColour${index}`"
+                  aria-label="Colour"
+                  select
+                  :options="codes?.lithology_colours"
+                  text-field="description"
+                  placeholder="Select colour"
+                  value-field="lithology_colour_code"
+                  v-model="lithologyData[index].lithology_colour"
+                  group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyHardness${index}`"
-                    aria-label="Hardness"
-                    select
-                    :options="codes?.lithology_hardness_codes"
-                    text-field="description"
-                    placeholder="Select hardness"
-                    value-field="lithology_hardness_code"
-                    v-model="lithologyData[index].lithology_hardness"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyHardness${index}`"
+                  aria-label="Hardness"
+                  select
+                  :options="codes?.lithology_hardness_codes"
+                  text-field="description"
+                  placeholder="Select hardness"
+                  value-field="lithology_hardness_code"
+                  v-model="lithologyData[index].lithology_hardness"
+                  group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -145,10 +144,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyObservations${index}`"
-                    aria-label="Observations"
-                    v-model="lithologyData[index].lithology_observation"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyObservations${index}`"
+                  aria-label="Observations"
+                  v-model="lithologyData[index].lithology_observation"
+                  group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -159,16 +158,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </table>
     </div>
     <b-btn size="sm" variant="primary" @click="addLithologyRow" id="addLithologyRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <Dialog
-      v-model:visible="confirmRemoveModal"
-      modal
-      header="Confirm remove"
-      @shown="focusRemoveModal">
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
+      <template #footer>
         <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-      </div>
+      </template>
     </Dialog>
   </form-subsection>
 </template>

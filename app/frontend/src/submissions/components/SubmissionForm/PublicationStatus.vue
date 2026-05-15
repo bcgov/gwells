@@ -14,19 +14,14 @@ limitations under the License.
 <template>
   <form-subsection title="Well Publication Status" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
-      <b-form-group id="wellPublicationStatusCodeInput">
-        <b-form-select
-          v-model="wellPublicationStatusCodeInput"
-          :options="codes?.well_publication_status_codes"
-          value-field="well_publication_status_code"
-          text-field="well_publication_status_code"
-          :errors="errors['well_publication_status']"
-          :loaded="fieldsLoaded['well_publication_status']">
-          <template v-slot:first>
-            <option :value="null" disabled>Select Publication Status</option>
-          </template>
-        </b-form-select>
-      </b-form-group>
+      <Dropdown
+        id="wellPublicationStatusCodeInput"
+        v-model="wellPublicationStatusCodeInput"
+        :options="codes?.well_publication_status_codes"
+        optionValue="well_publication_status_code"
+        optionLabel="well_publication_status_code"
+        :loading="!fieldsLoaded['well_publication_status']"
+        placeholder="Select Publication Status"/>
     </responsive-grid>
   </form-subsection>
 </template>

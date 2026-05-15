@@ -20,8 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Well Owner Name *"
           v-model="ownerFullNameInput"
           :errors="errors['owner_full_name']"
-          :loaded="fieldsLoaded['owner_full_name']"
-        ></form-input>
+          :loaded="fieldsLoaded['owner_full_name']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6">
         <form-input
@@ -32,8 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-on:focus="showList(true)"
           v-on:blur="showList(false)"
           :errors="errors['owner_mailing_address']"
-          :loaded="fieldsLoaded['owner_mailing_address']">
-        </form-input>
+          :loaded="fieldsLoaded['owner_mailing_address']"></form-input>
         <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="owner-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
@@ -46,58 +44,44 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </div>
     </div>
-    <b-row>
-      <b-col cols="12" md="4">
-        <form-input id="ownerCity" label="City *" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']" required></form-input>
-      </b-col>
-      <b-col cols="6" md="4">
-        <b-form-group
-            id="ownerProvince"
-            label="Province or State *"
-            aria-describedby="ownerProvinceInvalidFeedback">
-          <b-form-select
-              v-model="ownerProvinceInput"
-              :options="codes?.province_codes"
-              value-field="province_state_code"
-              text-field="description"
-              :state="errors['owner_province_state'] ? false : null">
-            <template v-slot:first>
-              <option :value="null" disabled>Select a province</option>
-            </template>
-          </b-form-select>
-          <b-form-invalid-feedback id="ownerProvinceInvalidFeedback">
-            <div v-for="(error, index) in errors['owner_province_state']" :key="`ProvinceInput error ${index}`">
-              {{ error }}
-            </div>
-          </b-form-invalid-feedback>
-        </b-form-group>
-      </b-col>
-      <b-col cols="6" md="4" xl="3">
-        <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"></form-input>
-      </b-col>
-    </b-row>
-    <b-row v-if="isStaffEdit">
-      <b-col cols="12" md="6" lg="4" xl="4">
-        <form-input id="ownerEmail" label="Email Address" v-model="ownerEmailInput" :errors="errors['owner_email']" :loaded="fieldsLoaded['owner_email']"></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4" xl="3">
-        <InputMask
-            id="ownerTel"
-            label="Telephone"
-            v-model="ownerTelInput"
-            :errors="errors['owner_tel']"
-            :loaded="fieldsLoaded['owner_tel']"
-            mask="(999) 999-9999"
-            >
-        </InputMask>
-      </b-col>
-    </b-row>
+    <responsive-grid :cols="[12, 6, 6]" :md="4" :xl="[undefined, undefined, 3]">
+      <form-input id="ownerCity" label="City *" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']" required></form-input>
+      <b-form-group
+        id="ownerProvince"
+        label="Province or State *"
+        aria-describedby="ownerProvinceInvalidFeedback">
+        <Dropdown
+          v-model="ownerProvinceInput"
+          :options="codes?.province_codes"
+          optionValue="province_state_code"
+          optionLabel="description"
+          :invalid="errors['owner_province_state'] ? true : false"
+          placeholder="Select a province"/>
+        <b-form-invalid-feedback id="ownerProvinceInvalidFeedback">
+          <div v-for="(error, index) in errors['owner_province_state']" :key="`ProvinceInput error ${index}`">
+            {{ error }}
+          </div>
+        </b-form-invalid-feedback>
+      </b-form-group>
+      <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"></form-input>
+    </responsive-grid>
+    <responsive-grid v-if="isStaffEdit" :cols="12" :md="6" :lg="4" :xl="[4, 3]">
+      <form-input id="ownerEmail" label="Email Address" v-model="ownerEmailInput" :errors="errors['owner_email']" :loaded="fieldsLoaded['owner_email']"></form-input>
+      <InputMask
+        id="ownerTel"
+        label="Telephone"
+        v-model="ownerTelInput"
+        :errors="errors['owner_tel']"
+        :loaded="fieldsLoaded['owner_tel']"
+        mask="(999) 999-9999"/>
+    </responsive-grid>
   </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import ApiService from '../../../common/services/ApiService'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
@@ -133,7 +117,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   fields: {
     ownerFullNameInput: 'ownerFullName',

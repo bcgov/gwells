@@ -41,7 +41,7 @@ governing permissions and limitations under the License. */
             </p>
           </Message>
 
-          <b-form @submit.prevent="confirmSubmit">
+          <Form @submit="confirmSubmit">
             <!-- if preview === true : Preview -->
             <submission-preview
               v-if="preview"
@@ -94,16 +94,16 @@ governing permissions and limitations under the License. */
               id="confirmSubmitModal"
               centered
               title="Confirm submission"
-              @shown="$refs.confirmSubmitConfirmBtn.focus()"
+              @show="$refs.confirmSubmitConfirmBtn.focus()"
               :return-focus="$refs.activitySubmitBtn"
             >
               Are you sure you want to submit this activity report?
-              <div slot="modal-footer">
+              <template #footer>
                 <Button label="Save" @click="confirmSubmitModal = false;formSubmit();" ref="confirmSubmitConfirmBtn"/>
                 <Button label="Cancel" severity="secondary" @click="confirmSubmitModal = false"/>
-              </div>
+              </template>
             </b-modal>
-          </b-form>
+          </Form>
         </div>
       </div>
       <div class="card" v-else-if="!commonStore.keycloak.authenticated">

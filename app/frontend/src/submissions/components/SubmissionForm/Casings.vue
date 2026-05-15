@@ -31,8 +31,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <tbody>
           <tr v-for="(casing, index) in casingsData" :key="casing.id">
             <td>
-              <b-form-checkbox
-                :checked="!casing.length_required"
+              <Checkbox
+                v-model="casing.length_not_required"
                 inline
                 class="mr-0 mt-2"
                 @change="toggleCasingLengthRequired(index)"/>
@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingFrom_' + index"
                 type="number"
                 v-model="casing.start"
-                :disabled="!casing.length_required"
+                :disabled="casing.length_not_required"
                 :errors="getCasingError(index).start"
                 :loaded="getFieldsLoaded(index).start"/>
             </td>
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingTo_' + index"
                 type="number"
                 v-model="casing.end"
-                :disabled="!casing.length_required"
+                :disabled="casing.length_not_required"
                 :errors="getCasingError(index).end"
                 :loaded="getFieldsLoaded(index).end"/>
             </td>
@@ -62,16 +62,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingCode_' + index"
                 class="mt-1 mb-0"
                 :aria-describedby="`casingCodeInvalidFeedback${index}`">
-                <b-form-select
-                    v-model="casing.casing_code"
-                    :options="codes?.casing_codes"
-                    value-field="code"
-                    text-field="description"
-                    :state="getCasingError(index).casing_code ? false : null">
-                  <template v-slot:first>
-                    <option :value="null">Select a type</option>
-                  </template>
-                </b-form-select>
+                <Dropdown
+                  v-model="casing.casing_code"
+                  :options="codes?.casing_codes"
+                  optionValue="code"
+                  optionLabel="description"
+                  :invalid="getCasingError(index).casing_code ? true : false"
+                  placeholder="Select a type"/>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Casing type input error ${error_index}`">
                     {{ error }}
@@ -84,16 +81,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingMaterial_' + index"
                 class="mt-1 mb-0"
                 :aria-describedby="`casingMaterialInvalidFeedback${index}`">
-                <b-form-select
-                    v-model="casing.casing_material"
-                    :options="codes?.casing_materials"
-                    value-field="code"
-                    text-field="description"
-                    :state="getCasingError(index).casing_material ? false : null">
-                  <template v-slot:first>
-                    <option :value="null" enabled>Select a material</option>
-                  </template>
-                </b-form-select>
+                <Dropdown
+                  v-model="casing.casing_material"
+                  :options="codes?.casing_materials"
+                  optionValue="code"
+                  optionLabel="description"
+                  :invalid="getCasingError(index).casing_material ? true : false"
+                  placeholder="Select a material"/>
                 <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
                   <div v-for="(error, error_index) in getCasingError(index).casing_material" :key="`Material input error ${error_index}`">
                     {{ error }}
@@ -120,19 +114,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
             <td>
-              <b-form-group :id="'casingDriveShoe_' + index" class="mt-1 mb-0">
-                <b-form-select
-                  v-model="casing.drive_shoe_status"
-                  value-field="drive_shoe_code"
-                  text-field="drive_shoe_code"
-                  :options="codes?.drive_shoe_codes"
-                  :errors="errors['drive_shoe_status']"
-                  :loaded="fieldsLoaded['drive_shoe_status']">
-                  <template v-slot:first>
-                    <option :value="null" enabled>Select drive shoe</option>
-                  </template>
-                </b-form-select>
-              </b-form-group>
+              <Dropdown
+                :id="'casingDriveShoe_' + index"
+                class="mt-1 mb-0"
+                v-model="casing.drive_shoe_status"
+                optionValue="drive_shoe_code"
+                optionLabel="drive_shoe_code"
+                :options="codes?.drive_shoe_codes"
+                :loading="!fieldsLoaded['drive_shoe_status']"
+                placeholder="Select drive shoe"/>
             </td>
             <td class="pt-1 py-0">
               <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -142,16 +132,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </table>
     </div>
     <b-btn size="sm" id="addCasingRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <Dialog
-      v-model:visible="confirmRemoveModal"
-      modal
-      header="Confirm remove"
-      @shown="focusRemoveModal">
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
+      <template #footer>
         <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-      </div>
+      </template>
     </Dialog>
   </form-subsection>
 </template>
@@ -211,7 +197,7 @@ export default {
         casing_code: null,
         casing_material: null,
         drive_shoe_status: null,
-        length_required: true
+        length_not_required: false
       }
     },
     removeRowByIndex (index) {
@@ -229,7 +215,7 @@ export default {
     },
     toggleCasingLengthRequired (index) {
       const instance = this.casingsData[index]
-      instance.length_required = !instance.length_required
+      instance.length_not_required = !instance.length_not_required
       this.casingsData[index] = instance
     },
     getCasingError (index) {
@@ -255,7 +241,7 @@ export default {
       this.$refs.cancelRemoveBtn.focus()
     },
     casingIsEmpty (casing) {
-      const fieldsToTest = omit(casing, 'length_required')
+      const fieldsToTest = omit(casing, 'length_not_required')
       return Object.values(fieldsToTest).every((x) => !x)
     }
   },

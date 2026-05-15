@@ -13,31 +13,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Observation Well Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <b-row>
-      <b-col cols="12" md="3" xl="2">
-        <form-input
-          id="obsWellNumber"
-          label="Observation Well Number"
-          v-model="obsWellNumberInput"
-          :errors="errors['observation_well_number']"
-          :loaded="fieldsLoaded['observation_well_number']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="3" xl="2">
-        <form-input
-          id="obsWellStatus"
-          label="Observation Well Status"
-          select
-          :options="codes?.observation_well_status"
-          :errors="errors['observation_well_status']"
-          :loaded="fieldsLoaded['observation_well_status']"
-          text-field="obs_well_status_code"
-          value-field="obs_well_status_code"
-          placeholder="Select status"
-          v-model="obsWellStatusInput"
-        ></form-input>
-      </b-col>
-    </b-row>
+    <responsive-grid :cols="12" :md="3" :xl="2">
+      <form-input
+        id="obsWellNumber"
+        label="Observation Well Number"
+        v-model="obsWellNumberInput"
+        :errors="errors['observation_well_number']"
+        :loaded="fieldsLoaded['observation_well_number']"></form-input>
+      <form-input
+        id="obsWellStatus"
+        label="Observation Well Status"
+        select
+        :options="codes?.observation_well_status"
+        :errors="errors['observation_well_status']"
+        :loaded="fieldsLoaded['observation_well_status']"
+        text-field="obs_well_status_code"
+        value-field="obs_well_status_code"
+        placeholder="Select status"
+        v-model="obsWellStatusInput"></form-input>
+    </responsive-grid>
   </form-subsection>
 </template>
 
@@ -45,6 +39,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
@@ -76,7 +71,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   fields: {
     commentsInput: 'comments',

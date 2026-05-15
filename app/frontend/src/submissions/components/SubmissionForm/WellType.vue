@@ -37,16 +37,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="wellClass"
             label="Class of Well *"
             aria-describedby="wellClassInvalidFeedback">
-            <b-form-select
+            <Dropdown
               v-model="wellClassInput"
               :options="codes?.well_classes"
-              value-field="well_class_code"
-              text-field="description"
-              :state="errors['well_class'] ? false : null">
-              <template v-slot:first>
-                <option :value="null">Select class</option>
-              </template>
-            </b-form-select>
+              optionValue="well_class_code"
+              optionLabel="description"
+              :invalid="errors['well_class'] ? true : false"
+              placeholder="Select class"/>
             <b-form-invalid-feedback id="wellClassInvalidFeedback">
               <div v-for="(error, index) in errors['well_class']" :key="`wellClass error ${index}`">
                 {{ error }}
@@ -57,17 +54,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="wellSubclass"
             label="Well Subclass"
             aria-describedby="wellSubclassInvalidFeedback">
-            <b-form-select
+            <Dropdown
               v-model="wellSubclassInput"
               :options="subclasses"
-              value-field="well_subclass_guid"
-              text-field="description"
+              optionValue="well_subclass_guid"
+              optionLabel="description"
               :disabled="wellSubclassDisabled"
-              :state="errors['well_subclass'] ? false : null">
-              <template v-slot:first>
-                <option :value="null">Select subclass</option>
-              </template>
-            </b-form-select>
+              :invalid="errors['well_subclass'] ? true : false"
+              placeholder="Select subclass"/>
             <b-form-invalid-feedback id="wellSubclassInvalidFeedback">
               <div v-for="(error, index) in errors['well_subclass']" :key="`wellSubclass error ${index}`">
                 {{ error }}
@@ -122,30 +116,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
         <div class="col-span-12 md:col-span-4">
           <form-input
-              id="idPlateNumber"
-              :label="wellIdentificationPlateNumberLabel"
-              type="number"
-              v-model="idPlateNumberInput"
-              :errors="errors['identification_plate_number']"
-              :loaded="fieldsLoaded['identification_plate_number']"></form-input>
+            id="idPlateNumber"
+            :label="wellIdentificationPlateNumberLabel"
+            type="number"
+            v-model="idPlateNumberInput"
+            :errors="errors['identification_plate_number']"
+            :loaded="fieldsLoaded['identification_plate_number']"></form-input>
         </div>
         <div class="col-span-12 md:col-span-4">
           <form-input
-              id="wellPlateAttached"
-              :label="wellIdentificationPlateAttachedLabel"
-              type="text"
-              v-model="wellPlateAttachedInput"
-              :errors="errors['well_identification_plate_attached']"
-              :loaded="fieldsLoaded['well_identification_plate_attached']"></form-input>
+            id="wellPlateAttached"
+            :label="wellIdentificationPlateAttachedLabel"
+            type="text"
+            v-model="wellPlateAttachedInput"
+            :errors="errors['well_identification_plate_attached']"
+            :loaded="fieldsLoaded['well_identification_plate_attached']"></form-input>
         </div>
         <div class="col-span-12 md:col-span-4" v-if="isStaffEdit">
           <form-input
-              id="wellPlateAttachedBy"
-              label="Identification Plate Attached By"
-              type="text"
-              v-model="idPlateAttachedByInput"
-              :errors="errors['id_plate_attached_by']"
-              :loaded="fieldsLoaded['id_plate_attached_by']"></form-input>
+            id="wellPlateAttachedBy"
+            label="Identification Plate Attached By"
+            type="text"
+            v-model="idPlateAttachedByInput"
+            :errors="errors['id_plate_attached_by']"
+            :loaded="fieldsLoaded['id_plate_attached_by']"></form-input>
         </div>
       </div>
       <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
@@ -166,26 +160,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </responsive-grid>
       <responsive-grid v-if="!isStaffEdit" :cols="12" :md="6">
         <form-input
-            id="workStartDateInput"
-            type="date"
-            :label="startDateOfWorkLabel"
-            placeholder="YYYY-MM-DD"
-            v-model="workStartDateInput"
-            :errors="errors.work_start_date"
-            :loaded="fieldsLoaded['work_start_date']"
-            @input="handleDateInput($event, 'workStartDate')">
-        </form-input>
+          id="workStartDateInput"
+          type="date"
+          :label="startDateOfWorkLabel"
+          placeholder="YYYY-MM-DD"
+          v-model="workStartDateInput"
+          :errors="errors.work_start_date"
+          :loaded="fieldsLoaded['work_start_date']"
+          @input="handleDateInput($event, 'workStartDate')"></form-input>
         <form-input
-            id="workEndDateInput"
-            type="date"
-            :label="endDateOfWorkLabel"
-            placeholder="YYYY-MM-DD"
-            v-model="workEndDateInput"
-            :errors="errors.work_end_date"
-            :loaded="fieldsLoaded['work_end_date']"
-            @input="handleDateInput($event, 'workEndDate')"
-            >
-        </form-input>
+          id="workEndDateInput"
+          type="date"
+          :label="endDateOfWorkLabel"
+          placeholder="YYYY-MM-DD"
+          v-model="workEndDateInput"
+          :errors="errors.work_end_date"
+          :loaded="fieldsLoaded['work_end_date']"
+          @input="handleDateInput($event, 'workEndDate')"></form-input>
       </responsive-grid>
     </form-subsection>
 </template>

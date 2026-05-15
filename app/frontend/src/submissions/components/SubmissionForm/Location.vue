@@ -32,8 +32,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-on:blur="showList(false)"
           :errors="errors['street_address']"
           :loaded="fieldsLoaded['street_address']"
-          :disabled="sameAsOwnerAddress"
-        ></form-input>
+          :disabled="sameAsOwnerAddress"></form-input>
           <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
@@ -49,15 +48,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-5">
         <form-input
-            id="wellCity"
-            label="City"
-            type="text"
-            v-model="cityInput"
-            :errors="errors['city']"
-            :loaded="fieldsLoaded['city']"
-            :disabled="sameAsOwnerAddress"
-            >
-        </form-input>
+          id="wellCity"
+          label="City"
+          type="text"
+          v-model="cityInput"
+          :errors="errors['city']"
+          :loaded="fieldsLoaded['city']"
+          :disabled="sameAsOwnerAddress"></form-input>
       </div>
     </div>
     <div class="flex">
@@ -78,128 +75,106 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalLot"
-            label="Lot"
-            type="text"
-            v-model="legalLotInput"
-            :errors="errors['legal_lot']"
-            :loaded="fieldsLoaded['legal_lot']"
-            >
-        </form-input>
+          id="legalLot"
+          label="Lot"
+          type="text"
+          v-model="legalLotInput"
+          :errors="errors['legal_lot']"
+          :loaded="fieldsLoaded['legal_lot']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalPlan"
-            label="Plan"
-            type="text"
-            v-model="legalPlanInput"
-            :errors="errors['legal_plan']"
-            :loaded="fieldsLoaded['legal_plan']"
-            >
-        </form-input>
+          id="legalPlan"
+          label="Plan"
+          type="text"
+          v-model="legalPlanInput"
+          :errors="errors['legal_plan']"
+          :loaded="fieldsLoaded['legal_plan']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalDistrictLot"
-            label="District Lot"
-            type="text"
-            v-model="legalDistrictLotInput"
-            :errors="errors['legal_district_lot']"
-            :loaded="fieldsLoaded['legal_district_lot']"
-            >
-        </form-input>
+          id="legalDistrictLot"
+          label="District Lot"
+          type="text"
+          v-model="legalDistrictLotInput"
+          :errors="errors['legal_district_lot']"
+          :loaded="fieldsLoaded['legal_district_lot']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalBlock"
-            label="Block"
-            type="text"
-            v-model="legalBlockInput"
-            :errors="errors['legal_block']"
-            :loaded="fieldsLoaded['legal_block']"
-            >
-        </form-input>
+          id="legalBlock"
+          label="Block"
+          type="text"
+          v-model="legalBlockInput"
+          :errors="errors['legal_block']"
+          :loaded="fieldsLoaded['legal_block']"></form-input>
       </div>
     </div>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalSection"
-            label="Section"
-            type="text"
-            v-model="legalSectionInput"
-            :errors="errors['legal_section']"
-            :loaded="fieldsLoaded['legal_section']"
-            >
-        </form-input>
+          id="legalSection"
+          label="Section"
+          type="text"
+          v-model="legalSectionInput"
+          :errors="errors['legal_section']"
+          :loaded="fieldsLoaded['legal_section']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalTownship"
-            label="Township"
-            type="text"
-            v-model="legalTownshipInput"
-            :errors="errors['legal_township']"
-            :loaded="fieldsLoaded['legal_township']"
-            >
-        </form-input>
+          id="legalTownship"
+          label="Township"
+          type="text"
+          v-model="legalTownshipInput"
+          :errors="errors['legal_township']"
+          :loaded="fieldsLoaded['legal_township']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="legalRange"
-            label="Range"
-            type="text"
-            v-model="legalRangeInput"
-            :errors="errors['legal_range']"
-            :loaded="fieldsLoaded['legal_range']"
-            >
-        </form-input>
+          id="legalRange"
+          label="Range"
+          type="text"
+          v-model="legalRangeInput"
+          :errors="errors['legal_range']"
+          :loaded="fieldsLoaded['legal_range']"></form-input>
       </div>
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <form-input
-            id="landDistrict"
-            label="Land District"
-            select
-            :options="districtCodes"
-            text-field="name"
-            value-field="land_district_code"
-            v-model="landDistrictInput"
-            :errors="errors['land_district']"
-            :loaded="fieldsLoaded['land_district']"
-            >
-        </form-input>
+          id="landDistrict"
+          label="Land District"
+          select
+          :options="districtCodes"
+          text-field="name"
+          value-field="land_district_code"
+          v-model="landDistrictInput"
+          :errors="errors['land_district']"
+          :loaded="fieldsLoaded['land_district']"></form-input>
       </div>
     </div>
     <div class="flex">
-      <div>
-        <p class="mb-1">OR</p>
-      </div>
+      <p class="mb-1">OR</p>
     </div>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6 lg:col-span-3">
         <p class="font-weight-bold">3) Parcel Identifier (PID)</p>
         <form-input
-            id="legalPID"
-            type="text"
-            hint="*Input a 9 digit number (including leading zeroes, if necessary)"
-            v-model="legalPIDInput"
-            :errors="errors['legal_pid']"
-            :loaded="fieldsLoaded['legal_pid']"
-            >
-        </form-input>
+          id="legalPID"
+          type="text"
+          hint="*Input a 9 digit number (including leading zeroes, if necessary)"
+          v-model="legalPIDInput"
+          :errors="errors['legal_pid']"
+          :loaded="fieldsLoaded['legal_pid']"></form-input>
       </div>
     </div>
     <b-row>
       <b-col cols="12" md="8">
         <form-input
-            id="wellLocationDescription"
-            label="Description of Well Location"
-            type="text"
-            v-model="wellLocationDescriptionInput"
-            :errors="errors['well_location_description']"
-            :loaded="fieldsLoaded['well_location_description']"
-            >
-        </form-input>
+          id="wellLocationDescription"
+          label="Description of Well Location"
+          type="text"
+          v-model="wellLocationDescriptionInput"
+          :errors="errors['well_location_description']"
+          :loaded="fieldsLoaded['well_location_description']"></form-input>
       </b-col>
     </b-row>
 

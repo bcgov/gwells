@@ -27,24 +27,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :value="true"
         :unchecked-value="false"
       >
-      <p>Person Responsible is the same as the Person Who Completed the Work</p>
+        <p>Person Responsible is the same as the Person Who Completed the Work</p>
       </b-form-checkbox>
       <responsive-grid :cols="12" :md="12" :lg="6">
         <b-form-group
-            label="Person Responsible for Work"
-            aria-describedby="personResponsibleInvalidFeedback"
-            :state="false">
+          label="Person Responsible for Work"
+          aria-describedby="personResponsibleInvalidFeedback"
+          :state="false">
           <v-select
-              :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
-              :disabled="persons === null"
-              id="personResponsibleSelect"
-              :filterable="false"
-              :options="personOptions"
-              label="name"
-              v-model="personResponsibleInput"
-              @search="onPersonSearch"
-              ref="personResponsible"
-              @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
+            :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
+            :disabled="persons === null"
+            id="personResponsibleSelect"
+            :filterable="false"
+            :options="personOptions"
+            label="name"
+            v-model="personResponsibleInput"
+            @search="onPersonSearch"
+            ref="personResponsible"
+            @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
             <template v-slot:no-options>
                 Type to search registry...
             </template>

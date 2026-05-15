@@ -12,23 +12,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset :id="id" class="mt-12">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 lg:col-span-6">
-        <legend>Change History</legend>
-      </div>
+  <form-subsection title="Change History" :id="id" class="mt-12" :hideSave="true">
+    <div class="flex">
+      <well-history :well-tag-number="wellTagNumber" resource="wells" :events="events" ref="wellHistory"/>
     </div>
-    <b-row>
-      <b-col cols="12">
-        <well-history :well-tag-number="wellTagNumber" resource="wells" :events="events" ref="wellHistory"/>
-      </b-col>
-    </b-row>
-  </fieldset>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import WellHistory from './WellHistory.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'StaffEditHistory',
@@ -48,7 +42,8 @@ export default {
     // }
   },
   components: {
-    WellHistory
+    WellHistory,
+    FormSubsection
   },
   data () {
     return {

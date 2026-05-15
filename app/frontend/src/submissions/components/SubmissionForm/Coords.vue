@@ -161,22 +161,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <coords-map :latitude="mapLatitude" :longitude="mapLongitude" v-on:coordinate="handleMapCoordinate" :drinking_water="this.drinking_water"/>
         </div>
       </div>
-      <b-card>
-        <b-modal
-          v-model="confirmRemoveModalInput"
+      <Card>
+        <Dialog
+          v-model:visible="confirmRemoveModalInput"
+          modal
           no-close-on-esc
           no-close-on-backdrop
           hide-header-close
-          centered
-          title="Confirm Coordinates Change"
-          @shown="focusRemoveModal">
+          header="Confirm Coordinates Change"
+          @show="focusRemoveModal">
           WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.
-          <div slot="modal-footer">
+          <template #footer>
             <Button label="No, Cancel" severity="secondary" @click="confirmRemoveModalInput=false;revertCoords()" ref="cancelRemoveBtn"/>
             <Button label="Yes, Update" severity="danger" @click="confirmRemoveModalInput=false;confirmCoords()"/>
-          </div>
-        </b-modal>
-      </b-card>
+          </template>
+        </Dialog>
+      </Card>
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
       <b-alert class="mt-4" variant="danger" :show="errorCoordsNotProvided">
         Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.

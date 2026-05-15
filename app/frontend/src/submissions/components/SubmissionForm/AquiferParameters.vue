@@ -169,16 +169,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </table>
     </div>
     <b-btn size="sm" id="addAquiferParameterRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <Dialog
-      v-model:visible="confirmRemoveModal"
-      modal
-      header="Confirm remove"
-      @shown="focusRemoveModal">
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
+      <template #footer>
         <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-      </div>
+      </template>
     </Dialog>
   </form-subsection>
 </template>

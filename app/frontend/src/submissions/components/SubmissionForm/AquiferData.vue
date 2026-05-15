@@ -46,17 +46,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-form-group
           id="aquiferLithology"
           label="Aquifer Material">
-          <b-form-select
+          <Dropdown
             v-model="aquiferLithologyInput"
-            value-field="aquifer_lithology_code"
+            optionValue="aquifer_lithology_code"
             :options="codes?.aquifer_lithology_codes"
-            :errors="errors['aquifer_lithology']"
-            :loaded="fieldsLoaded['aquifer_lithology']"
-            text-field="description">
-            <template v-slot:first>
-              <option :value="null" disabled>Select Lithology</option>
-            </template>
-          </b-form-select>
+            :loading="!fieldsLoaded['aquifer_lithology']"
+            optionLabel="description"
+            placeholder="Select Lithology"/>
         </b-form-group>
       </div>
     </div>

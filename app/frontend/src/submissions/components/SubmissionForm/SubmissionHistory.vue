@@ -19,17 +19,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
           There {{ filteredSubmissions.length !== 1 ? 'are' : 'is' }} {{ filteredSubmissions.length }} activity {{ filteredSubmissions.length !== 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
         <b-table
-            id="submissionHistoryTable"
-            ref="submissionHistoryTable"
-            v-model:busy="submissionsBusy"
-            :items="filteredSubmissions"
-            :fields="tableHeaders"
-            responsive
-            show-empty
-            empty-text="There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment."
-            :per-page="submissionsPerPage"
-            :current-page="submissionsPage"
-          >
+          id="submissionHistoryTable"
+          ref="submissionHistoryTable"
+          v-model:busy="submissionsBusy"
+          :items="filteredSubmissions"
+          :fields="tableHeaders"
+          responsive
+          show-empty
+          empty-text="There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment."
+          :per-page="submissionsPerPage"
+          :current-page="submissionsPage">
           <template v-slot:cell(report)="data">
             <div>
               <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>

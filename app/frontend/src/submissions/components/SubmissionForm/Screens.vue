@@ -49,24 +49,24 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="otherScreenMaterialInput"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
-        <form-input
-          id="screenOpening"
-          label="Screen Opening"
-          select
-          :options="codes?.screen_openings"
-          text-field="description"
-          value-field="screen_opening_code"
-          placeholder="Select opening"
-          v-model="screenOpeningInput"></form-input>
-        <form-input
-          id="screenBottom"
-          label="Screen Bottom"
-          select
-          :options="codes?.screen_bottoms"
-          text-field="description"
-          value-field="screen_bottom_code"
-          placeholder="Select bottom"
-          v-model="screenBottomInput"></form-input>
+      <form-input
+        id="screenOpening"
+        label="Screen Opening"
+        select
+        :options="codes?.screen_openings"
+        text-field="description"
+        value-field="screen_opening_code"
+        placeholder="Select opening"
+        v-model="screenOpeningInput"></form-input>
+      <form-input
+        id="screenBottom"
+        label="Screen Bottom"
+        select
+        :options="codes?.screen_bottoms"
+        text-field="description"
+        value-field="screen_bottom_code"
+        placeholder="Select bottom"
+        v-model="screenBottomInput"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
@@ -111,8 +111,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Depth from (feet)"
                   v-model="screensData[index].start"
                   :errors="getScreenError(index).start"
-                  :loaded="getScreenLoaded(index).start"
-                  />
+                  :loaded="getScreenLoaded(index).start"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -122,8 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Depth to (feet)"
                   v-model="screensData[index].end"
                   :errors="getScreenError(index).end"
-                  :loaded="getScreenLoaded(index).end"
-                  />
+                  :loaded="getScreenLoaded(index).end"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -133,23 +131,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Diameter (inches)"
                   v-model="screensData[index].diameter"
                   :errors="getScreenError(index).diameter"
-                  :loaded="getScreenLoaded(index).diameter"
-                  />
+                  :loaded="getScreenLoaded(index).diameter"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
-                    group-class="my-1"
-                    :id="`screenAssemblyType_${index}`"
-                    aria-label="Screen Assembly Type"
-                    v-model="screensData[index].assembly_type"
-                    select
-                    :options="codes?.screen_assemblies"
-                    text-field="description"
-                    value-field="screen_assembly_type_code"
-                    placeholder="Select type"
-                    :errors="getScreenError(index).assembly_type"
-                    :loaded="getScreenLoaded(index).assembly_type"
-                    />
+                  group-class="my-1"
+                  :id="`screenAssemblyType_${index}`"
+                  aria-label="Screen Assembly Type"
+                  v-model="screensData[index].assembly_type"
+                  select
+                  :options="codes?.screen_assemblies"
+                  text-field="description"
+                  value-field="screen_assembly_type_code"
+                  placeholder="Select type"
+                  :errors="getScreenError(index).assembly_type"
+                  :loaded="getScreenLoaded(index).assembly_type"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -160,8 +156,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   v-model="screensData[index].slot_size"
                   :errors="getScreenError(index).slot_size"
-                  :loaded="getScreenLoaded(index).slot_size"
-                  />
+                  :loaded="getScreenLoaded(index).slot_size"/>
               </td>
               <td class="py-0">
                 <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -175,16 +170,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}.00</option>
     </datalist>
     <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <Dialog
-      v-model:visible="confirmRemoveModal"
-      modal
-      header="Confirm remove"
-      @shown="focusRemoveModal">
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
+      <template #footer>
         <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-      </div>
+      </template>
     </Dialog>
   </form-subsection>
 </template>

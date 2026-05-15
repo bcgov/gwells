@@ -13,72 +13,54 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Liner Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6">
-        <form-input
-          id="linerMaterial"
-          label="Liner Material"
-          select
-          :options="codes?.liner_material_codes"
-          v-model="linerMaterialInput"
-          text-field="description"
-          value-field="code"
-          placeholder="Select material"
-          :errors="errors['liner_material']"
-          :loaded="fieldsLoaded['liner_material']"/>
-      </div>
-    </div>
-    <b-row>
-      <b-col cols="6" md="6">
-        <form-input
-          id="linerDiameter"
-          label="Liner Diameter"
-          hint="inches"
-          type="number"
-          v-model.number="linerDiameterInput"
-          :errors="errors['liner_diameter']"
-          :loaded="fieldsLoaded['liner_diameter']"
-          />
-      </b-col>
-      <b-col cols="6" md="6">
-        <form-input
-          id="linerThickness"
-          label="Liner Thickness"
-          hint="inches"
-          type="number"
-          v-model.number="linerThicknessInput"
-          :errors="errors['liner_thickness']"
-          :loaded="fieldsLoaded['liner_thickness']"
-          />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="6" md="6">
-        <form-input
-          id="linerFrom"
-          label="Liner From"
-          hint="ft (bgl)"
-          type="number"
-          v-model.number="linerFromInput"
-          :errors="errors['liner_from']"
-          :loaded="fieldsLoaded['liner_from']"
-          />
-      </b-col>
-      <b-col cols="6" md="6">
-        <form-input
-          id="linerTo"
-          label="Liner To"
-          hint="ft (bgl)"
-          type="number"
-          v-model.number="linerToInput"
-          :errors="errors['liner_to']"
-          :loaded="fieldsLoaded['liner_to']"
-          />
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>Liner Perforations</b-col>
-    </b-row>
+    <responsive-grid :cols="12" :md="6">
+      <form-input
+        id="linerMaterial"
+        label="Liner Material"
+        select
+        :options="codes?.liner_material_codes"
+        v-model="linerMaterialInput"
+        text-field="description"
+        value-field="code"
+        placeholder="Select material"
+        :errors="errors['liner_material']"
+        :loaded="fieldsLoaded['liner_material']"/>
+    </responsive-grid>
+    <responsive-grid :cols="6" :md="6">
+      <form-input
+        id="linerDiameter"
+        label="Liner Diameter"
+        hint="inches"
+        type="number"
+        v-model.number="linerDiameterInput"
+        :errors="errors['liner_diameter']"
+        :loaded="fieldsLoaded['liner_diameter']"/>
+      <form-input
+        id="linerThickness"
+        label="Liner Thickness"
+        hint="inches"
+        type="number"
+        v-model.number="linerThicknessInput"
+        :errors="errors['liner_thickness']"
+        :loaded="fieldsLoaded['liner_thickness']"/>
+      <form-input
+        id="linerFrom"
+        label="Liner From"
+        hint="ft (bgl)"
+        type="number"
+        v-model.number="linerFromInput"
+        :errors="errors['liner_from']"
+        :loaded="fieldsLoaded['liner_from']"/>
+      <form-input
+        id="linerTo"
+        label="Liner To"
+        hint="ft (bgl)"
+        type="number"
+        v-model.number="linerToInput"
+        :errors="errors['liner_to']"
+        :loaded="fieldsLoaded['liner_to']"/>
+    </responsive-grid>
+    <div class="flex">>Liner Perforations</div>
     <b-row>
       <b-col md="6">
         <table class="table table-sm no-border">
@@ -116,16 +98,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </tbody>
         </table>
         <b-btn size="sm" variant="primary" id="addlinerPerforationRowBtn" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-        <Dialog
-          v-model:visible="confirmRemoveModal"
-          modal
-          header="Confirm remove"
-          @shown="focusRemoveModal">
+        <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
           Are you sure you want to remove this row?
-          <div slot="modal-footer">
+          <template #footer>
             <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
             <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-          </div>
+          </template>
         </Dialog>
       </b-col>
     </b-row>
@@ -136,6 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
@@ -172,7 +151,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

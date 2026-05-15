@@ -16,14 +16,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <legend :id="id">Type of Work</legend>
     <responsive-grid :cols="12" :md="6">
       <b-form-group label="Type of Work *">
-        <b-form-radio-group v-model="wellActivityTypeInput"
-          stacked
-          name="submissionTypeRadio"
-          id="reportType">
-          <b-form-radio value="CON" v-if="show.edit">Construction</b-form-radio>
-          <b-form-radio value="ALT" v-if="show.edit">Alteration</b-form-radio>
-          <b-form-radio value="DEC" v-if="show.edit">Decommission</b-form-radio>
-        </b-form-radio-group>
+        <RadioButtonGroup v-if="show.edit" v-model="wellActivityTypeInput">
+          <div class="flex align-items-center">
+            <RadioButton inputId="wellActivityTypeInput.CON" value="CON"/>
+            <label for="wellActivityTypeInput.CDN" class="ml-2">Construction</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton inputId="wellActivityTypeInput.ALT" value="ALT"/>
+            <label for="wellActivityTypeInput.ALT" class="ml-2">Alteration</label>
+          </div>
+          <div class="flex align-items-center">
+            <RadioButton inputId="wellActivityTypeInput.DEC" value="DEC"/>
+            <label for="wellActivityTypeInput.DEC" class="ml-2">Decommission</label>
+          </div>
+        </RadioButtonGroup>
       </b-form-group>
     </responsive-grid>
   </fieldset>

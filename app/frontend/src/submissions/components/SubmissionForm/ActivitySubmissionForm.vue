@@ -18,12 +18,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div>
           <div v-if="isStaffEdit" id="top">Update Well Information</div>
           <div v-else>Well Activity Submission</div>
-          <b-form-group v-if="activityType !== 'STAFF_EDIT'">
-            <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
-              <b-form-radio v-bind:value="true" id="singleSubmissionPage">Single page</b-form-radio>
-              <b-form-radio v-bind:value="false" id="multiSubmissionPage">Multi page</b-form-radio>
-            </b-form-radio-group>
-          </b-form-group>
+          <b-form-radio-group v-if="activityType !== 'STAFF_EDIT'" button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
+            <b-form-radio v-bind:value="true" id="singleSubmissionPage">Single page</b-form-radio>
+            <b-form-radio v-bind:value="false" id="multiSubmissionPage">Multi page</b-form-radio>
+          </b-form-radio-group>
         </div>
       </div>
     </h1>
@@ -44,11 +42,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <b-alert show v-if="isStaffEdit && isUnpublished" variant="info">
         This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export.
       </b-alert>
-      <b-row v-if="isStaffEdit">
-          <b-col lg="3" v-for="step in stepCodes" :key='step'>
-            <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
-          </b-col>
-        </b-row>
+      <div v-if="isStaffEdit" class="grid grid-cols-12">
+        <div class="lg:col-span-3" v-for="step in stepCodes" :key='step'>
+          <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+        </div>
+      </div>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
       <p class="bg-yellow-400 p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
 
@@ -524,20 +522,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
 
       <!-- Form reload (load from save) confirmation -->
-      <b-modal
-        v-model="confirmLoadModal"
-        centered
-        title="Confirm load submission data"
-        @shown="$refs.confirmLoadConfirmBtn.focus()"
-        :return-focus="$refs.loadFormBtn">
+      <Dialog v-model:visible="confirmLoadModal" modal header="Confirm load submission data" @show="$refs.confirmLoadConfirmBtn.focus()">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
-        <div slot="modal-footer">
+        <template #footer>
           <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>
-          <b-btn variant="light" @click="confirmLoadModal=false">
-            Cancel
-          </b-btn>
-        </div>
-      </b-modal>
+          <Button label="Cancel" severity="secondary" @click="confirmLoadModal=false"/>
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>

@@ -47,7 +47,7 @@
           </div>
           <div class="grid grid-cols-3 gap-6">
             <label class="col-span-1">Select classification</label>
-              <RadioButtonGroup class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></RadioButtonGroup>
+            <RadioButtonGroup class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></RadioButtonGroup>
           </div>
           <div class="grid grid-cols-4 gap-6">
             <label class="col-span-1">Qualified{{activity === 'DRILL' ? ' to drill' : '' }}</label>

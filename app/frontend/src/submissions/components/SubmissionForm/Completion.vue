@@ -21,8 +21,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         hint="ft (bgl)"
         :errors="errors['total_depth_drilled']"
-        :loaded="fieldsLoaded['total_depth_drilled']">
-      </form-input>
+        :loaded="fieldsLoaded['total_depth_drilled']"></form-input>
       <form-input
         id="finishedWellDepth"
         :label="finishedWellDepthLabel"
@@ -30,8 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         hint="ft (bgl)"
         :errors="errors['finished_well_depth']"
-        :loaded="fieldsLoaded['finished_well_depth']">
-      </form-input>
+        :loaded="fieldsLoaded['finished_well_depth']"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -41,8 +39,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="finalCasingStickUpInput"
         hint="in"
         :errors="errors['final_casing_stick_up']"
-        :loaded="fieldsLoaded['final_casing_stick_up']">
-      </form-input>
+        :loaded="fieldsLoaded['final_casing_stick_up']"></form-input>
       <form-input
         id="bedrockDepth"
         label="Depth to Bedrock"
@@ -50,8 +47,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="bedrockDepthInput"
         hint="ft (bgl)"
         :errors="errors['depth_to_bedrock']"
-        :loaded="fieldsLoaded['depth_to_bedrock']">
-      </form-input>
+        :loaded="fieldsLoaded['depth_to_bedrock']"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -61,8 +57,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         hint="ft (btoc)"
         :errors="errors['static_water_level']"
-        :loaded="fieldsLoaded['static_water_level']">
-      </form-input>
+        :loaded="fieldsLoaded['static_water_level']"></form-input>
       <form-input
         id="wellYield"
         label="Estimated Well Yield"
@@ -70,18 +65,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="wellYieldInput"
         hint="USgpm"
         :errors="errors['well_yield']"
-        :loaded="fieldsLoaded['well_yield']">
-      </form-input>
+        :loaded="fieldsLoaded['well_yield']"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <b-form-group label="Artesian Well">
-        <b-form-radio-group
-          id="artesianConditionsRadio"
-          class="mt-1"
-          v-model="artesianConditionsInput">
-            <b-form-radio :value="false">No</b-form-radio>
-            <b-form-radio :value="true">Yes</b-form-radio>
-        </b-form-radio-group>
+        <RadioButtonGroup class="mt-1"v-model="artesianConditionsInput">
+          <div>
+            <RadioButton inputId="artesianConditionsInput.false" :value="false"/>
+            <label for="artesianConditionsInput.false" class="ml-2">No</label>
+          </div>
+          <div>
+            <RadioButton inputId="artesianConditionsInput.true" :value="true"/>
+            <label for="artesianConditionsInput.true" class="ml-2">Yes</label>
+          </div>
+        </RadioButtonGroup>
       </b-form-group>
       <form-input
         id="artesianFlow"
@@ -90,8 +87,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="USgpm"
         type="number"
         :errors="errors['artesian_flow']"
-        :loaded="fieldsLoaded['artesian_flow']">
-      </form-input>
+        :loaded="fieldsLoaded['artesian_flow']"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -102,8 +98,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="ft (agl)"
         type="number"
         :errors="errors['artesian_pressure_head']"
-        :loaded="fieldsLoaded['artesian_pressure_head']">
-      </form-input>
+        :loaded="fieldsLoaded['artesian_pressure_head']"></form-input>
       <form-input
         id="artesianPressurePSI"
         label="Artesian Pressure (PSI)"
@@ -112,8 +107,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="PSI"
         type="number"
         :errors="errors['artesian_pressure']"
-        :loaded="fieldsLoaded['artesian_pressure']">
-      </form-input>
+        :loaded="fieldsLoaded['artesian_pressure']"></form-input>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -121,17 +115,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Well Cap Type"
         v-model="wellCapTypeInput"
         :errors="errors['well_cap_type']"
-        :loaded="fieldsLoaded['well_cap_type']">
-      </form-input>
+        :loaded="fieldsLoaded['well_cap_type']"></form-input>
       <b-form-group label="Well Disinfected Status" id="wellDisinfectedStatusInput">
-        <b-form-select
+        <Dropdown
           v-model="wellDisinfectedInput"
-          value-field="well_disinfected_code"
-          text-field="well_disinfected_code"
+          optionValue="well_disinfected_code"
+          optionLabel="well_disinfected_code"
           :options="disinfected_codes()"
-          :errors="errors['well_disinfected_status']"
-          :loaded="fieldsLoaded['well_disinfected_status']">
-        </b-form-select>
+          :loading="!fieldsLoaded['well_disinfected_status']"/>
       </b-form-group>
     </responsive-grid>
   </form-subsection>

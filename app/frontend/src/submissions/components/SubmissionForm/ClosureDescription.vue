@@ -32,52 +32,48 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </thead>
             <tbody>
               <tr
-                  v-for="(item, index) in closureDescriptionSetData"
-                  :key="`closureDescription${index}`"
-                  :id="`closureDescription${index}`">
+                v-for="(item, index) in closureDescriptionSetData"
+                :key="`closureDescription${index}`"
+                :id="`closureDescription${index}`">
                 <td class="input-width-small">
                   <form-input
-                      group-class="mt-1 mb-0"
-                      :id="`closureFrom${index}`"
-                      type="number"
-                      v-model="item.start"
-                      :errors="getClosureError(index).start"
-                      :loaded="getFieldsLoaded(index).start"
-                  />
+                    group-class="mt-1 mb-0"
+                    :id="`closureFrom${index}`"
+                    type="number"
+                    v-model="item.start"
+                    :errors="getClosureError(index).start"
+                    :loaded="getFieldsLoaded(index).start"/>
                 </td>
                 <td class="input-width-small">
                   <form-input
-                      group-class="mt-1 mb-0"
-                      :id="`closureTo${index}`"
-                      v-model="item.end"
-                      type="number"
-                      :errors="getClosureError(index).end"
-                      :loaded="getFieldsLoaded(index).end"
-                  />
+                    group-class="mt-1 mb-0"
+                    :id="`closureTo${index}`"
+                    v-model="item.end"
+                    type="number"
+                    :errors="getClosureError(index).end"
+                    :loaded="getFieldsLoaded(index).end"/>
                 </td>
                 <td>
                   <form-input
-                      group-class="mt-1 mb-0"
-                      select
-                      :id="`decommissionMaterial${index}`"
-                      :options="codes?.decommission_materials"
-                      text-field="description"
-                      value-field="code"
-                      placeholder="Select material"
-                      value="Select material"
-                      v-model="item.material"
-                      :errors="getClosureError(index).material"
-                      :loaded="getFieldsLoaded(index).material"
-                  />
+                    group-class="mt-1 mb-0"
+                    select
+                    :id="`decommissionMaterial${index}`"
+                    :options="codes?.decommission_materials"
+                    text-field="description"
+                    value-field="code"
+                    placeholder="Select material"
+                    value="Select material"
+                    v-model="item.material"
+                    :errors="getClosureError(index).material"
+                    :loaded="getFieldsLoaded(index).material"/>
                 </td>
                 <td>
                   <form-input
-                      group-class="mt-1 mb-0"
-                      :id="`closureObservations${index}`"
-                      v-model="item.observations"
-                      :errors="getClosureError(index).observations"
-                      :loaded="getFieldsLoaded(index).observations"
-                  />
+                    group-class="mt-1 mb-0"
+                    :id="`closureObservations${index}`"
+                    v-model="item.observations"
+                    :errors="getClosureError(index).observations"
+                    :loaded="getFieldsLoaded(index).observations"/>
                 </td>
                 <td class="pt-1 py-0">
                   <b-btn size="sm" variant="primary" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
@@ -89,16 +85,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <b-btn size="sm" variant="primary" @click="addClosureRow" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
       </div>
     </div>
-    <Dialog
-      v-model:visible="confirmRemoveModal"
-      modal
-      header="Confirm remove"
-      @shown="focusRemoveModal">
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
+      <template #footer>
         <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
         <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
-      </div>
+      </template>
     </Dialog>
   </form-subsection>
 </template>
