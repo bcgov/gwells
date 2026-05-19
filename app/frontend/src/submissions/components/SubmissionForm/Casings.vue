@@ -58,11 +58,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :loaded="getFieldsLoaded(index).end"/>
             </td>
             <td>
-              <b-form-group
-                :id="'casingCode_' + index"
-                class="mt-1 mb-0"
-                :aria-describedby="`casingCodeInvalidFeedback${index}`">
+              <div class="flex flex-col gap-2 mt-1 mb-0" :aria-describedby="`casingCodeInvalidFeedback${index}`">
                 <Dropdown
+                  :id="'casingCode_' + index"
                   v-model="casing.casing_code"
                   :options="codes?.casing_codes"
                   optionValue="code"
@@ -74,7 +72,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     {{ error }}
                   </div>
                 </b-form-invalid-feedback>
-              </b-form-group>
+              </div>
             </td>
             <td>
               <b-form-group
@@ -125,13 +123,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 placeholder="Select drive shoe"/>
             </td>
             <td class="pt-1 py-0">
-              <b-btn size="sm" variant="primary" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+              <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeCasingRowBtn${index}`" @click="removeRowIfOk(casing)" class="mt-2 float-right"/>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" id="addCasingRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" id="addCasingRowBtn" @click="addRow"/>
     <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
       <template #footer>

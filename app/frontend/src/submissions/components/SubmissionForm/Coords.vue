@@ -44,8 +44,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </Card>
           <div class="flex"><p class="p-4 m-0">OR</p></div>
           <div class="container p-4 mx-1 mx-md-1">
-            <b-row>
-              <b-col cols="12" md="6" lg="6">
+            <div class="grid grid-cols-12">
+              <div class="col-span-12 md:col-span-6 lg:col-span-6">
                 <div class="mb-2">Latitude</div>
                 <responsive-grid :cols="12" :sm="4" :innerDivClass="['px-2', 'px-2', 'px-1']">
                   <form-input
@@ -73,8 +73,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :errors="errors['latitude']"
                     :loaded="fieldsLoaded['latitude']"></form-input>
                 </responsive-grid>
-              </b-col>
-              <b-col cols="12" md="6" lg="6" offset-lg="0">
+              </div>
+              <div class="col-span-12 md:col-span-6 lg:col-span-6 lg:col-start-1">
                 <div class="flex mb-2">Longitude</div>
                 <responsive-grid :cols="12" :sm="4" :innerDivClass="['px-2', 'px-2', 'px-1']">
                   <form-input
@@ -102,8 +102,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :errors="errors['longitude']"
                     :loaded="fieldsLoaded['longitude']"></form-input>
                 </responsive-grid>
-              </b-col>
-            </b-row>
+              </div>
+            </div>
           </div>
           <div class="flex"><p class="p-4 m-0">OR</p></div>
           <div class="container p-4 mx-1 mx-md-1">
@@ -178,9 +178,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </Dialog>
       </Card>
       <!-- Error message when coordinates not entered in at least one of the 3 input groups -->
-      <b-alert class="mt-4" variant="danger" :show="errorCoordsNotProvided">
+      <Message class="mt-4" severity="error" v-if="errorCoordsNotProvided">
         Must enter geographic coordinates in either decimal degrees, degrees/minutes/seconds, or UTM format.
-      </b-alert>
+      </Message>
     </form-subsection>
   </div>
 </template>

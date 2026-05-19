@@ -150,14 +150,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   group-class="mt-1 mb-0"></form-input>
               </td>
               <td class="pt-1">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"/>
               </td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" variant="primary" @click="addLithologyRow" id="addLithologyRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" @click="addLithologyRow" id="addLithologyRowButton"/>
     <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
       <template #footer>

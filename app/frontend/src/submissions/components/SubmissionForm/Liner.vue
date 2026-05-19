@@ -61,8 +61,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :loaded="fieldsLoaded['liner_to']"/>
     </responsive-grid>
     <div class="flex">>Liner Perforations</div>
-    <b-row>
-      <b-col md="6">
+    <div class="grid grid-cols-2">
+      <div class="md:col-span-1">
         <table class="table table-sm no-border">
           <thead>
             <tr>
@@ -90,14 +90,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :loaded="getFieldsLoaded(index).end"/>
               </td>
               <td class="py-0">
-                <b-btn size="sm" :id="`removeLinerPerfRowBtn${index}`" variant="primary" @click="removeRowIfOk(index)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeLinerPerfRowBtn${index}`" @click="removeRowIfOk(index)" class="mt-2"/>
               </td>
             </tr>
           </thead>
           <tbody>
           </tbody>
         </table>
-        <b-btn size="sm" variant="primary" id="addlinerPerforationRowBtn" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+        <Button label="Add row" icon="fa fa-plus-square-o" size="small" id="addlinerPerforationRowBtn" @click="addRow"/>
         <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
           Are you sure you want to remove this row?
           <template #footer>
@@ -105,8 +105,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
           </template>
         </Dialog>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
   </form-subsection>
 </template>
 

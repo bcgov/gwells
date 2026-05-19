@@ -89,20 +89,19 @@ governing permissions and limitations under the License. */
             </div>
 
             <!-- Form submission confirmation -->
-            <b-modal
-              v-model="confirmSubmitModal"
-              id="confirmSubmitModal"
-              centered
-              title="Confirm submission"
+            <Dialog
+              v-model:visible="confirmSubmitModal"
+              modal
+              header="Confirm submission"
               @show="$refs.confirmSubmitConfirmBtn.focus()"
-              :return-focus="$refs.activitySubmitBtn"
+              @after-hide="$refs.activitySubmitBtn.focus()"
             >
               Are you sure you want to submit this activity report?
               <template #footer>
                 <Button label="Save" @click="confirmSubmitModal = false;formSubmit();" ref="confirmSubmitConfirmBtn"/>
                 <Button label="Cancel" severity="secondary" @click="confirmSubmitModal = false"/>
               </template>
-            </b-modal>
+            </Dialog>
           </Form>
         </div>
       </div>

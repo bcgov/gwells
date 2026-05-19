@@ -15,33 +15,40 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <div>
     <form-subsection title="Attachments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <div v-if="uploadedFiles && uploadedFiles.private && uploadedFiles.public" class="table-responsive">
-        <b-table
-          hover
-          :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document', 'delete']"
-          striped
-          :items="[...uploadedFiles.public, ...uploadedFiles.private]">
-          <template v-slot:cell(document_type)="data">
-            {{ callLongFormLabel(data.item.document_type) }}
-          </template>
-          <template v-slot:cell(date_of_upload)="data">
-            {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
-          </template>
-          <template v-slot:cell(uploaded_document)="data">
-            <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
-          </template>
-          <template v-slot:cell(document_status)="data">
-            <p v-if="data.item.document_status">Private Document</p>
-            <p v-else>Public Document</p>
-          </template>
-          <template v-slot:cell(delete)="data">
-            <a
-              class="fa fa-trash fa-lg"
-              variant="primary"
-              style="margin-left: .5em"
-              href="#"
-              @click="handleFileDelete(data.item.name, data.item.document_status, $event)"></a>
-          </template>
-        </b-table>
+        <DataTable rowHover stripedRows :value="[...uploadedFiles.public, ...uploadedFiles.private]">
+          <Column field="well_number"/>
+          <Column field="document_type">
+            <template #body="slotProps">
+              {{ callLongFormLabel(slotProps.data.document_type) }}
+            </template>
+          </Column>
+          <Column field="date_of_upload">
+            <template #body="slotProps">
+              {{ slotProps.data.date_of_upload !== -1 ? new Date(slotProps.data.date_of_upload).toLocaleDateString() : "Date Unknown" }}
+            </template>
+          </Column>
+          <Column field="uploaded_document">
+            <template #body="slotProps">
+              <a :href="slotProps.data.url" :download="slotProps.data.name" target="_blank">{{ slotProps.data.name }}</a>
+            </template>
+          </Column>
+          <Column field="document_status">
+            <template #body="slotProps">
+              <p v-if="slotProps.data.document_status">Private Document</p>
+              <p v-else>Public Document</p>
+            </template>
+          </Column>
+          <Column>
+            <template #body="slotProps">
+              <a
+                class="fa fa-trash fa-lg"
+                variant="primary"
+                style="margin-left: .5em"
+                href="#"
+                @click="handleFileDelete(slotProps.data.name, slotProps.data.document_status, $event)"/>
+            </template>
+          </Column>
+        </DataTable>
       </div>
       <div v-else>
         No documents available
@@ -120,13 +127,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 {{ new Date().toLocaleDateString() }}
               </td>
               <td class="pt-1 py-0">
-                <b-btn size="sm" variant="primary" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i>&nbsp;Remove</b-btn>
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeAttachmentRowBtn${index}`" @click="removeRowIfOk(attachment)" class="mt-2 float-right"/>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <b-btn size="sm" id="addAttachmentRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i>&nbsp;Add file</b-btn>
+      <Button label="Add row" icon="fa fa-plus-square-o" size="small" id="addAttachmentRowBtn" @click="addRow"/>
       <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
         Are you sure you want to remove this row?
         <template #footer>

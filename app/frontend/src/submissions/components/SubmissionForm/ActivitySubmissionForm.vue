@@ -39,9 +39,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <div v-else>
-      <b-alert show v-if="isStaffEdit && isUnpublished" variant="info">
+      <Message v-if="isStaffEdit && isUnpublished" severity="info">
         This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export.
-      </b-alert>
+      </Message>
       <div v-if="isStaffEdit" class="grid grid-cols-12">
         <div class="lg:col-span-3" v-for="step in stepCodes" :key='step'>
           <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>

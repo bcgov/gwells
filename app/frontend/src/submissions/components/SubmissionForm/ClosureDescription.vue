@@ -76,13 +76,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :loaded="getFieldsLoaded(index).observations"/>
                 </td>
                 <td class="pt-1 py-0">
-                  <b-btn size="sm" variant="primary" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                  <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"/>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <b-btn size="sm" variant="primary" @click="addClosureRow" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+        <Button label="Add row" icon="fa fa-plus-square-o" size="small" @click="addClosureRow" id="addClosureRowButton"/>
       </div>
     </div>
     <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">

@@ -15,8 +15,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset>
     <legend :id="id">Type of Work</legend>
     <responsive-grid :cols="12" :md="6">
-      <b-form-group label="Type of Work *">
-        <RadioButtonGroup v-if="show.edit" v-model="wellActivityTypeInput">
+      <div class="flex flex-col gap-2">
+        <label for="wellActivityTypeInput">Type of Work *</label>
+        <RadioButtonGroup v-if="show.edit" v-model="wellActivityTypeInput" id="wellActivityTypeInput">
           <div class="flex align-items-center">
             <RadioButton inputId="wellActivityTypeInput.CON" value="CON"/>
             <label for="wellActivityTypeInput.CDN" class="ml-2">Construction</label>
@@ -30,7 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <label for="wellActivityTypeInput.DEC" class="ml-2">Decommission</label>
           </div>
         </RadioButtonGroup>
-      </b-form-group>
+      </div>
     </responsive-grid>
   </fieldset>
 </template>

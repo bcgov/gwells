@@ -43,17 +43,17 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </div>
       <div class="col-span-12 md:col-span-4">
-        <b-form-group
-          id="aquiferLithology"
-          label="Aquifer Material">
+        <div class="flex flex-col gap-2">
+          <label for="aquiferLithology">Aquifer Material</label>
           <Dropdown
+            id="aquiferLithology"
             v-model="aquiferLithologyInput"
             optionValue="aquifer_lithology_code"
             :options="codes?.aquifer_lithology_codes"
             :loading="!fieldsLoaded['aquifer_lithology']"
             optionLabel="description"
             placeholder="Select Lithology"/>
-        </b-form-group>
+        </div>
       </div>
     </div>
   </form-subsection>

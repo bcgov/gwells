@@ -159,7 +159,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :loaded="getScreenLoaded(index).slot_size"/>
               </td>
               <td class="py-0">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"/>
               </td>
             </tr>
           </template>
@@ -169,7 +169,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <datalist id="screenSlotSizeList">
       <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}.00</option>
     </datalist>
-    <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" @click="addScreenRow" id="addScreenRowButton"/>
     <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
       <template #footer>

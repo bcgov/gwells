@@ -161,14 +161,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </tr>
               <tr>
                 <td class="pt-2 pb-4">
-                  <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                  <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"/>
                 </td>
               </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" id="addAquiferParameterRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" id="addAquiferParameterRowBtn" @click="addRow"/>
     <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
       <template #footer>
