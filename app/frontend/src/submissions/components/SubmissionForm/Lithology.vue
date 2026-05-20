@@ -76,7 +76,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     v-model="lithologyData[index].lithology_raw_data"
                     group-class="mt-1 mb-0"
                     @input="parseDescription(index, $event)"
-                ></form-input>
+                />
               </td>
               <td class="input-width-medium">
                 <div class="material-badges">
@@ -107,7 +107,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   value-field="lithology_moisture_code"
                   placeholder="Select moisture"
                   v-model="lithologyData[index].lithology_moisture"
-                  group-class="mt-1 mb-0"></form-input>
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -119,7 +119,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   placeholder="Select colour"
                   value-field="lithology_colour_code"
                   v-model="lithologyData[index].lithology_colour"
-                  group-class="mt-1 mb-0"></form-input>
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -131,7 +131,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   placeholder="Select hardness"
                   value-field="lithology_hardness_code"
                   v-model="lithologyData[index].lithology_hardness"
-                  group-class="mt-1 mb-0"></form-input>
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -140,14 +140,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   v-model="lithologyData[index].water_bearing_estimated_flow"
                   group-class="mt-1 mb-0"
-                ></form-input>
+                />
               </td>
               <td class="input-width-medium">
                 <form-input
                   :id="`lithologyObservations${index}`"
                   aria-label="Observations"
                   v-model="lithologyData[index].lithology_observation"
-                  group-class="mt-1 mb-0"></form-input>
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="pt-1">
                 <Button label="Remove" icon="fa fa-minus-square-o" size="small" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"/>

@@ -37,7 +37,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         placeholder="Select colour"
         v-model="waterQualityColourInput"
         :errors="errors['water_quality_colour']"
-        :loaded="fieldsLoaded['water_quality_colour']"></form-input>
+        :loaded="fieldsLoaded['water_quality_colour']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="5" :lg="4">
       <form-input
@@ -45,7 +45,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Water Quality Odour"
         v-model="waterQualityOdourInput"
         :errors="errors['water_quality_odour']"
-        :loaded="fieldsLoaded['water_quality_odour']"></form-input>
+        :loaded="fieldsLoaded['water_quality_odour']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="5" :lg="4">
       <form-input
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Environmental Monitoring System (EMS) ID"
         v-model="emsIDInput"
         :errors="errors['ems']"
-        :loaded="fieldsLoaded['ems']"></form-input>
+        :loaded="fieldsLoaded['ems']"/>
     </responsive-grid>
   </form-subsection>
 </template>

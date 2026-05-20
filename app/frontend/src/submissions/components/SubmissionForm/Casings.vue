@@ -59,7 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </td>
             <td>
               <div class="flex flex-col gap-2 mt-1 mb-0" :aria-describedby="`casingCodeInvalidFeedback${index}`">
-                <Dropdown
+                <Select
                   :id="'casingCode_' + index"
                   v-model="casing.casing_code"
                   :options="codes?.casing_codes"
@@ -79,7 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingMaterial_' + index"
                 class="mt-1 mb-0"
                 :aria-describedby="`casingMaterialInvalidFeedback${index}`">
-                <Dropdown
+                <Select
                   v-model="casing.casing_material"
                   :options="codes?.casing_materials"
                   optionValue="code"
@@ -112,7 +112,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :loaded="getFieldsLoaded(index).wall_thickness"/>
             </td>
             <td>
-              <Dropdown
+              <Select
                 :id="'casingDriveShoe_' + index"
                 class="mt-1 mb-0"
                 v-model="casing.drive_shoe_status"

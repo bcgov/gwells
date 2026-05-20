@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Observation Well Number"
         v-model="obsWellNumberInput"
         :errors="errors['observation_well_number']"
-        :loaded="fieldsLoaded['observation_well_number']"></form-input>
+        :loaded="fieldsLoaded['observation_well_number']"/>
       <form-input
         id="obsWellStatus"
         label="Observation Well Status"
@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="obs_well_status_code"
         value-field="obs_well_status_code"
         placeholder="Select status"
-        v-model="obsWellStatusInput"></form-input>
+        v-model="obsWellStatusInput"/>
     </responsive-grid>
   </form-subsection>
 </template>

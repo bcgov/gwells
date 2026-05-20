@@ -204,19 +204,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-4 detail-section" v-if="sections.closureDescription">
       <legend>Decommission Description</legend>
       <div class="table-responsive">
-        <b-table
-          striped
-          small
-          bordered
-          :items="filterBlankRows(form.decommission_description_set)"
-          :fields="['start', 'end', 'material', 'observations']"
-          show-empty
-        >
-          <template v-slot:cell(start)="data">{{data.item.start}} ft</template>
-          <template v-slot:cell(end)="data">{{data.item.end}} ft</template>
-          <template v-slot:cell(material)="data">{{codeToDescription('decommission_materials', data.item.material)}}</template>
-          <template v-slot:cell(observations)="data">{{codeToDescription('decommission_materials', data.item.observations)}}</template>
-        </b-table>
+        <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.decommission_description_set)">
+          <Column field="start"/>
+          <Column field="end"/>
+          <Column field="material">
+            <template #body="slotProps">
+              {{ codeToDescription('decommission_materials', slotProps.data.material) }}
+            </template>
+          </Column>
+          <Column field="observations">
+            <template #body="slotProps">
+              {{ codeToDescription('decommission_materials', slotProps.data.observations) }}
+            </template>
+          </Column>
+        </DataTable>
       </div>
     </fieldset>
 

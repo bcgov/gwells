@@ -22,19 +22,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="yield_estimation_method_code"
         v-model="yieldEstimationMethodInput"
-        placeholder="Select method"></form-input>
+        placeholder="Select method"/>
       <form-input
         id="yieldEstimationRate"
         label="Yield Estimation Rate"
         type="number"
         hint="USgpm"
-        v-model="yieldEstimationRateInput"></form-input>
+        v-model="yieldEstimationRateInput"/>
       <form-input
         id="yieldEstimationRate"
         label="Yield Estimation Rate"
         type="number"
         hint="USgpm"
-        v-model="yieldEstimationRateInput"></form-input>
+        v-model="yieldEstimationRateInput"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
@@ -42,9 +42,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="SWL Before Test"
         type="number"
         v-model="staticLevelInput"
-        hint="ft (btoc)"></form-input>
-      <b-form-group label="Hydro-fracturing Performed">
-        <RadioButtonGroup class="mt-1" v-model="hydroFracturingPerformedInput" name="hydroFracturingPerformed">
+        hint="ft (btoc)"/>
+      <div class="flex flex-col gap-2">
+        <label for="hydroFracturingPerformed">Hydro-fracturing Performed</label>
+        <RadioButtonGroup 
+          class="mt-1" 
+          v-model="hydroFracturingPerformedInput"
+          id="hydroFracturingPerformed"
+          name="hydroFracturingPerformed">
           <div>
             <RadioButton inputId="hydroFracturingPerformedInput.false" :value="false"/>
             <label for="hydroFracturingPerformedInput.false" class="ml-2">No</label>
@@ -54,13 +59,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <label for="hydroFracturingPerformedInput.true" class="ml-2">Yes</label>
           </div>
         </RadioButtonGroup>
-      </b-form-group>
+      </div>
       <form-input
         id="hydroFracturingYieldIncrease"
         label="Increase in Well Yield Due to Hydro-fracturing"
         type="number"
         v-model="hydroFracturingYieldIncreaseInput"
-        hint="USgpm"></form-input>
+        hint="USgpm"/>
     </responsive-grid>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-4 lg:col-span-3">
@@ -69,7 +74,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Drawdown"
           type="number"
           v-model="drawdownInput"
-          hint="ft (btoc)"></form-input>
+          hint="ft (btoc)"/>
       </div>
       <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input

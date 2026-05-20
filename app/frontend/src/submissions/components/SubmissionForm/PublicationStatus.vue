@@ -14,7 +14,7 @@ limitations under the License.
 <template>
   <form-subsection title="Well Publication Status" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
-      <Dropdown
+      <Select
         id="wellPublicationStatusCodeInput"
         v-model="wellPublicationStatusCodeInput"
         :options="codes?.well_publication_status_codes"

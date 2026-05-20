@@ -45,7 +45,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <div class="col-span-12 md:col-span-4">
         <div class="flex flex-col gap-2">
           <label for="aquiferLithology">Aquifer Material</label>
-          <Dropdown
+          <Select
             id="aquiferLithology"
             v-model="aquiferLithologyInput"
             optionValue="aquifer_lithology_code"

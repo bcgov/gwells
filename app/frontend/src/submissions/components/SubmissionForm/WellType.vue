@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Well Tag Number"
           type="text"
           :value="$route.params.id"
-          disabled></form-input>
+          disabled/>
         <form-input
           select
           v-model="wellStatusCodeInput"
@@ -30,14 +30,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           placeholder="Select status"
           :errors="errors['well_status']"
           :loaded="fieldsLoaded['well_status']"
-          id="wellStatusCodeInput"></form-input>
+          id="wellStatusCodeInput"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="4">
           <b-form-group
             id="wellClass"
             label="Class of Well *"
             aria-describedby="wellClassInvalidFeedback">
-            <Dropdown
+            <Select
               v-model="wellClassInput"
               :options="codes?.well_classes"
               optionValue="well_class_code"
@@ -54,7 +54,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             id="wellSubclass"
             label="Well Subclass"
             aria-describedby="wellSubclassInvalidFeedback">
-            <Dropdown
+            <Select
               v-model="wellSubclassInput"
               :options="subclasses"
               optionValue="well_subclass_guid"
@@ -79,12 +79,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :errors="errors['intended_water_use']"
             :loaded="fieldsLoaded['intended_water_use']"
             :disabled="intendedWaterUseDisabled"
-            id="intendedWaterUse"></form-input>
+            id="intendedWaterUse"/>
       </responsive-grid>
       <div class="grid grid-cols-12">
         <div class="col-span-12 md:col-span-4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
-          <b-form-group>
-            <label>Well Tag Number (if known) <span class="font-weight-bold"></span></label>
+          <div class="flex flex-col gap-2">
+            <label for="wellTagNumberSelect">Well Tag Number (if known)</label>
             <v-select
               v-model="wellTagNumberInput"
               :disabled="wells === null"
@@ -112,7 +112,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <small id="wellTagNumberSelectHint" class="form-text text-muted">
               *displays a maximum of {{MAX_RESULTS}} results
             </small>
-          </b-form-group>
+          </div>
         </div>
         <div class="col-span-12 md:col-span-4">
           <form-input
@@ -121,7 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             type="number"
             v-model="idPlateNumberInput"
             :errors="errors['identification_plate_number']"
-            :loaded="fieldsLoaded['identification_plate_number']"></form-input>
+            :loaded="fieldsLoaded['identification_plate_number']"/>
         </div>
         <div class="col-span-12 md:col-span-4">
           <form-input
@@ -130,7 +130,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             type="text"
             v-model="wellPlateAttachedInput"
             :errors="errors['well_identification_plate_attached']"
-            :loaded="fieldsLoaded['well_identification_plate_attached']"></form-input>
+            :loaded="fieldsLoaded['well_identification_plate_attached']"/>
         </div>
         <div class="col-span-12 md:col-span-4" v-if="isStaffEdit">
           <form-input
@@ -139,7 +139,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             type="text"
             v-model="idPlateAttachedByInput"
             :errors="errors['id_plate_attached_by']"
-            :loaded="fieldsLoaded['id_plate_attached_by']"></form-input>
+            :loaded="fieldsLoaded['id_plate_attached_by']"/>
         </div>
       </div>
       <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
@@ -149,14 +149,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           type="text"
           v-model="waterSupplySystemInput"
           :errors="errors['water_supply_system_name']"
-          :loaded="fieldsLoaded['water_supply_system_name']"></form-input>
+          :loaded="fieldsLoaded['water_supply_system_name']"/>
         <form-input
           id="waterSupplyWell"
           label="Water Supply Well Name"
           type="text"
           v-model="waterSupplyWellInput"
           :errors="errors['water_supply_system_well_name']"
-          :loaded="fieldsLoaded['water_supply_system_well_name']"></form-input>
+          :loaded="fieldsLoaded['water_supply_system_well_name']"/>
       </responsive-grid>
       <responsive-grid v-if="!isStaffEdit" :cols="12" :md="6">
         <form-input
@@ -167,7 +167,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="workStartDateInput"
           :errors="errors.work_start_date"
           :loaded="fieldsLoaded['work_start_date']"
-          @input="handleDateInput($event, 'workStartDate')"></form-input>
+          @input="handleDateInput($event, 'workStartDate')"/>
         <form-input
           id="workEndDateInput"
           type="date"
@@ -176,7 +176,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="workEndDateInput"
           :errors="errors.work_end_date"
           :loaded="fieldsLoaded['work_end_date']"
-          @input="handleDateInput($event, 'workEndDate')"></form-input>
+          @input="handleDateInput($event, 'workEndDate')"/>
       </responsive-grid>
     </form-subsection>
 </template>

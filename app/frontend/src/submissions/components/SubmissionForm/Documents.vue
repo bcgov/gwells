@@ -82,9 +82,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     v-model="attachment.document_code"
                     :options="WELL_TAGS"
                     :state="getAttachmentError(index).document_code ? false : null"
-                    size="med"
-                  >
-                  </b-form-select>
+                    size="med"/>
                   <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
                     <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
                       {{ error }}
@@ -94,33 +92,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td>
                 <!-- File Upload -->
-                <b-form-file
-                  @input="setFileName(index)"
+                 <!-- The accept prop will need to be changed but the documentation is super unhelpful -->
+                <FileUpload
+                  @select="setFileName(index)"
                   accept=".jpg, .png, .jpeg, .pdf, .docx, .csv"
                   class="mt-1 mb-0"
                   v-model="attachment.file"
-                  :errors="getAttachmentError(index).file"
-                  :loaded="getFieldsLoaded(index).file"
-                />
+                  mode="basic"
+                  auto/>
               </td>
-            <!-- Privacy Flag  -->
-            <td>
-                <b-form-checkbox
-                  class="mt-2 ml-4"
-                  v-model="attachment.private"
-                  :loaded="getFieldsLoaded(index).private"
-                />
+              <!-- Privacy Flag  -->
+              <td>
+                <Checkbox class="mt-2 ml-4" v-model="attachment.private" binary :disabled="!getFieldsLoaded(index).private"/>
               </td>
               <td>
                 <!-- File Name -->
-                <b-form-input
+                <InputText
                   class="mt-1 mb-0"
                   v-model="attachment.file_name"
                   placeholder="File_Name"
-                  :errors="getAttachmentError(index).file_name"
-                  :loaded="getFieldsLoaded(index).file_name"
-                  disabled
-                />
+                  disabled/>
               </td>
               <!-- Date -->
               <td class="p-2">
@@ -338,11 +329,6 @@ export default {
       const instance = this.attachmentsData[index]
       instance.length_required = !instance.length_required
       this.attachmentsData[index] = instance
-    },
-    getAttachmentError (index) {
-      return this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']
-        ? this.errors['attachment_set'][index]
-        : {}
     },
     getFieldsLoaded (index) {
       return this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']

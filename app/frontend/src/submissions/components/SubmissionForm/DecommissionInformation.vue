@@ -21,7 +21,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="finishedWellDepthInput"
         hint="feet (below ground level)"
         :errors="errors['finished_well_depth']"
-        :loaded="fieldsLoaded['finished_well_depth']"></form-input>
+        :loaded="fieldsLoaded['finished_well_depth']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Reason for Well Decommission"
         v-model="decommissionReasonInput"
         :errors="errors['decommission_reason']"
-        :loaded="fieldsLoaded['decommission_reason']"></form-input>
+        :loaded="fieldsLoaded['decommission_reason']"/>
       <b-form-group label="Decommission Method">
         <b-form-radio-group id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
           <b-form-radio
@@ -45,13 +45,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Sealant Material"
         v-model="sealantMaterialInput"
         :errors="errors['decommission_sealant_material']"
-        :loaded="fieldsLoaded['decommission_sealant_material']"></form-input>
+        :loaded="fieldsLoaded['decommission_sealant_material']"/>
       <form-input
         id="backfillMaterial"
         label="Backfill Material"
         v-model="backfillMaterialInput"
         :errors="errors['decommission_backfill_material']"
-        :loaded="fieldsLoaded['decommission_backfill_material']"></form-input>
+        :loaded="fieldsLoaded['decommission_backfill_material']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :lg="8">
       <form-input
@@ -59,7 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Decommission Details"
         v-model="decommissionDetailsInput"
         :errors="errors['decommission_details']"
-        :loaded="fieldsLoaded['decommission_details']"></form-input>
+        :loaded="fieldsLoaded['decommission_details']"/>
     </responsive-grid>
   </form-subsection>
 </template>

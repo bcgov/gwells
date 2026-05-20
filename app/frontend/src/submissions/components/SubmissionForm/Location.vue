@@ -17,7 +17,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <div>
         <p>Please provide as much information as possible.</p> <p class="bg-yellow-400 p-2">A minimum of one type of well location information is required below:</p>
         <p class="d-inline font-weight-bold">1) Well Location Address</p>
-        <div class="d-inline pl-2"><b-form-checkbox v-model="sameAsOwnerAddress">Same as owner address</b-form-checkbox></div>
+        <div class="d-inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary>Same as owner address</Checkbox></div>
       </div>
     </div>
     <div class="grid grid-cols-12">
@@ -32,7 +32,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-on:blur="showList(false)"
           :errors="errors['street_address']"
           :loaded="fieldsLoaded['street_address']"
-          :disabled="sameAsOwnerAddress"></form-input>
+          :disabled="sameAsOwnerAddress"/>
           <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="cityInput"
         :errors="errors['city']"
         :loaded="fieldsLoaded['city']"
-        :disabled="sameAsOwnerAddress"></form-input>
+        :disabled="sameAsOwnerAddress"/>
     </responsive-grid>
     <div class="flex">
       <div>
@@ -77,49 +77,49 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="text"
         v-model="legalLotInput"
         :errors="errors['legal_lot']"
-        :loaded="fieldsLoaded['legal_lot']"></form-input>
+        :loaded="fieldsLoaded['legal_lot']"/>
       <form-input
         id="legalPlan"
         label="Plan"
         type="text"
         v-model="legalPlanInput"
         :errors="errors['legal_plan']"
-        :loaded="fieldsLoaded['legal_plan']"></form-input>
+        :loaded="fieldsLoaded['legal_plan']"/>
       <form-input
         id="legalDistrictLot"
         label="District Lot"
         type="text"
         v-model="legalDistrictLotInput"
         :errors="errors['legal_district_lot']"
-        :loaded="fieldsLoaded['legal_district_lot']"></form-input>
+        :loaded="fieldsLoaded['legal_district_lot']"/>
       <form-input
         id="legalBlock"
         label="Block"
         type="text"
         v-model="legalBlockInput"
         :errors="errors['legal_block']"
-        :loaded="fieldsLoaded['legal_block']"></form-input>
+        :loaded="fieldsLoaded['legal_block']"/>
       <form-input
         id="legalSection"
         label="Section"
         type="text"
         v-model="legalSectionInput"
         :errors="errors['legal_section']"
-        :loaded="fieldsLoaded['legal_section']"></form-input>
+        :loaded="fieldsLoaded['legal_section']"/>
       <form-input
         id="legalTownship"
         label="Township"
         type="text"
         v-model="legalTownshipInput"
         :errors="errors['legal_township']"
-        :loaded="fieldsLoaded['legal_township']"></form-input>
+        :loaded="fieldsLoaded['legal_township']"/>
       <form-input
         id="legalRange"
         label="Range"
         type="text"
         v-model="legalRangeInput"
         :errors="errors['legal_range']"
-        :loaded="fieldsLoaded['legal_range']"></form-input>
+        :loaded="fieldsLoaded['legal_range']"/>
       <form-input
         id="landDistrict"
         label="Land District"
@@ -129,7 +129,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         value-field="land_district_code"
         v-model="landDistrictInput"
         :errors="errors['land_district']"
-        :loaded="fieldsLoaded['land_district']"></form-input>
+        :loaded="fieldsLoaded['land_district']"/>
     </responsive-grid>
     <div class="flex">
       <p class="mb-1">OR</p>
@@ -143,7 +143,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           hint="*Input a 9 digit number (including leading zeroes, if necessary)"
           v-model="legalPIDInput"
           :errors="errors['legal_pid']"
-          :loaded="fieldsLoaded['legal_pid']"></form-input>
+          :loaded="fieldsLoaded['legal_pid']"/>
       </div>
     </div>
     <responsive-grid :cols="12" :md="8">
@@ -153,7 +153,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="text"
         v-model="wellLocationDescriptionInput"
         :errors="errors['well_location_description']"
-        :loaded="fieldsLoaded['well_location_description']"></form-input>
+        :loaded="fieldsLoaded['well_location_description']"/>
     </responsive-grid>
 
     <!-- Error message when location not given -->

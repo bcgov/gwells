@@ -14,18 +14,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <form-subsection title="Comments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid :cols="12" :md="8">
-      <b-form-group label="Comments" id="commentsGroup">
+      <div class="flex flex-col gap-2">
+        <label for="commentsEntry">Comments</label>
         <Textarea id="commentsEntry" :rows="3" autoResize v-model="commentsInput"/>
-      </b-form-group>
+      </div>
     </responsive-grid>
     <responsive-grid class="mt-4 mb-4" :cols="12" :md="8">
-      <b-form-group label="Internal Office Comments" id="commentsGroup">
+      <div class="flex flex-col gap-2">
+        <label for="internalCommentsEntry">Internal Office Comments</label>
         <Textarea id="internalCommentsEntry" :rows="3" autoResize v-model="internalCommentsInput"/>
-      </b-form-group>
+      </div>
     </responsive-grid>
     <responsive-grid :cols="12" :sm="6" :gap="4">
-      <b-form-group label="Alternative Specs Submitted">
-        <RadioButtonGroup class="mt-1" v-model="alternativeSpecsSubmittedInput">
+      <div class="flex flex-col gap-2">
+        <label for="alternativeSpecsSubmittedInput">Alternative Specs Submitted</label>
+        <RadioButtonGroup class="mt-1" v-model="alternativeSpecsSubmittedInput" id="alternativeSpecsSubmittedInput">
           <div>
             <RadioButton inputId="alternativeSpecsSubmittedInput.false" :value="false"/>
             <label for="alternativeSpecsSubmittedInput.false" class="ml-2">No</label>
@@ -35,9 +38,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <label for="alternativeSpecsSubmittedInput.true" class="ml-2">Yes</label>
           </div>
         </RadioButtonGroup>
-      </b-form-group>
-      <b-form-group label="Technical Report">
-        <RadioButtonGroup class="mt-1" v-model="technicalReportInput">
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="technicalReportInput">Technical Report</label>
+        <RadioButtonGroup class="mt-1" v-model="technicalReportInput" id="technicalReportInput">
           <div>
             <RadioButton inputId="technicalReportInput.false" :value="false"/>
             <label for="technicalReportInput.false" class="ml-2">No</label>
@@ -47,9 +51,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <label for="technicalReportInput.true" class="ml-2">Yes</label>
           </div>
         </RadioButtonGroup>
-      </b-form-group>
-      <b-form-group label="Drinking Water Area Indicator">
-        <RadioButtonGroup class="mt-1" v-model="drinkingWaterProtectionAreaInput">
+      </div>
+      <div class="flex flex-col gap-2">
+        <label for="drinkingWaterProtectionAreaInput">Drinking Water Area Indicator</label>
+        <RadioButtonGroup class="mt-1" v-model="drinkingWaterProtectionAreaInput" id="drinkingWaterProtectionAreaInput">
           <div>
             <RadioButton inputId="drinkingWaterProtectionAreaInput.false" :value="false"/>
             <label for="drinkingWaterProtectionAreaInput.false" class="ml-2">No</label>
@@ -59,7 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <label for="drinkingWaterProtectionAreaInput.true" class="ml-2">Yes</label>
           </div>
         </RadioButtonGroup>
-      </b-form-group>
+      </div>
     </responsive-grid>
   </form-subsection>
 </template>

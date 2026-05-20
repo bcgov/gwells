@@ -75,7 +75,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :disabled="drillerSameAsPersonResponsible"
           v-model="drillerNameInput"
           :errors="errors['driller_name']"
-          :loaded="fieldsLoaded['driller_name']"></form-input>
+          :loaded="fieldsLoaded['driller_name']"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="12" :lg="4">
         <b-form-group
@@ -113,14 +113,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           type="text"
           v-model="consultantNameInput"
           :errors="errors['consultant_name']"
-          :loaded="fieldsLoaded['consultant_name']"></form-input>
+          :loaded="fieldsLoaded['consultant_name']"/>
         <form-input
           id="consultantCompany"
           label="Consultant Company"
           type="text"
           v-model="consultantCompanyInput"
           :errors="errors['consultant_company']"
-          :loaded="fieldsLoaded['consultant_company']"></form-input>
+          :loaded="fieldsLoaded['consultant_company']"/>
       </responsive-grid>
     </fieldset>
 </template>

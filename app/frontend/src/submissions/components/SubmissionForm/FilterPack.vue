@@ -19,19 +19,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Filter Pack From"
         hint="ft"
         type="number"
-        v-model="filterPackFromInput"></form-input>
+        v-model="filterPackFromInput"/>
       <form-input
         id="filterPackTo"
         label="Filter Pack To"
         hint="ft"
         type="number"
-        v-model="filterPackToInput"></form-input>
+        v-model="filterPackToInput"/>
       <form-input
         id="filterPackThickness"
         label="Filter Pack Thickness"
         hint="inches"
         type="number"
-        v-model="filterPackThicknessInput"></form-input>
+        v-model="filterPackThicknessInput"/>
       <form-input
         id="filterPackMaterial"
         label="Filter Pack Material"
@@ -42,7 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="filterPackMaterialInput"
         placeholder="Select material"
         :errors="errors['filter_pack_material']"
-        :loaded="fieldsLoaded['filter_pack_material']"></form-input>
+        :loaded="fieldsLoaded['filter_pack_material']"/>
       <form-input
         id="filterPackMaterialSize"
         label="Filter Pack Material Size"
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="filterPackMaterialSizeInput"
         placeholder="Select size"
         :errors="errors['filter_pack_material_size']"
-        :loaded="fieldsLoaded['filter_pack_material_size']"></form-input>
+        :loaded="fieldsLoaded['filter_pack_material_size']"/>
     </responsive-grid>
   </form-subsection>
 </template>

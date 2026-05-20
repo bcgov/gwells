@@ -27,13 +27,13 @@
                 <div v-if="isTable(item)" class="mt-2">
                   {{ readable(formatKey(item.type)) }} changed to:
                   <div v-if="item.diff != null && item.diff.length > 0">
-                    <b-table
-                      responsive
-                      striped
-                      small
-                      fixed
-                      bordered
-                      :items="item.diff"/>
+                    <!-- Columns will need to be added here when testing -->
+                    <DataTable
+                      scrollable
+                      stripedRows
+                      size="small"
+                      showGridlines
+                      :value="item.diff"/>
                   </div>
                   <div v-else>
                     None
@@ -41,13 +41,13 @@
                   <div style="margin-bottom:10px;">
                     From:
                     <div v-if="item.prev != null && item.prev.length > 0">
-                      <b-table
-                        responsive
-                        striped
-                        small
-                        fixed
-                        bordered
-                        :items="item.prev"/>
+                      <!-- Columns will need to be added here when testing -->
+                      <DataTable
+                        scrollable
+                        stripedRows
+                        size="small"
+                        showGridlines
+                        :value="item.prev"/>
                     </div>
                     <div v-else>
                       None

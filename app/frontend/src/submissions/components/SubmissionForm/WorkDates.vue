@@ -21,7 +21,7 @@ limitations under the License.
         placeholder="YYYY-MM-DD"
         v-model="constructionStartDateInput"
         :errors="errors.construction_start_date"
-        :loaded="fieldsLoaded['construction_start_date']"></form-input>
+        :loaded="fieldsLoaded['construction_start_date']"/>
       <form-input
         id="constructionEndDateInput"
         type="date"
@@ -29,7 +29,7 @@ limitations under the License.
         placeholder="YYYY-MM-DD"
         v-model="constructionEndDateInput"
         :errors="errors.construction_end_date"
-        :loaded="fieldsLoaded['construction_end_date']"></form-input>
+        :loaded="fieldsLoaded['construction_end_date']"/>
       <form-input
         id="alterationStartDateInput"
         type="date"
@@ -37,7 +37,7 @@ limitations under the License.
         placeholder="YYYY-MM-DD"
         v-model="alterationStartDateInput"
         :errors="errors.alteration_start_date"
-        :loaded="fieldsLoaded['alteration_start_date']"></form-input>
+        :loaded="fieldsLoaded['alteration_start_date']"/>
       <form-input
         id="alterationEndDateInput"
         type="date"
@@ -45,7 +45,7 @@ limitations under the License.
         placeholder="YYYY-MM-DD"
         v-model="alterationEndDateInput"
         :errors="errors.alteration_end_date"
-        :loaded="fieldsLoaded['alteration_end_date']"></form-input>
+        :loaded="fieldsLoaded['alteration_end_date']"/>
       <form-input
         id="decommissionStartDateInput"
         type="date"
@@ -53,7 +53,7 @@ limitations under the License.
         placeholder="YYYY-MM-DD"
         v-model="decommissionStartDateInput"
         :errors="errors.decommission_start_date"
-        :loaded="fieldsLoaded['decommission_start_date']"></form-input>
+        :loaded="fieldsLoaded['decommission_start_date']"/>
       <form-input
         id="decommissionEndDateInput"
         type="date"
@@ -61,7 +61,7 @@ limitations under the License.
         placeholder="YYYY-MM-DD"
         v-model="decommissionEndDateInput"
         :errors="errors.decommission_end_date"
-        :loaded="fieldsLoaded['decommission_end_date']"></form-input>
+        :loaded="fieldsLoaded['decommission_end_date']"/>
     </responsive-grid>
   </form-subsection>
 </template>

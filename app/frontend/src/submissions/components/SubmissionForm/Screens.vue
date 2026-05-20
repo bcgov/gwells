@@ -22,7 +22,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="screen_intake_code"
         placeholder="Select intake"
-        v-model="screenIntakeMethodInput"></form-input>
+        v-model="screenIntakeMethodInput"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
@@ -33,7 +33,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="screen_type_code"
         placeholder="Select type"
-        v-model="screenTypeInput"></form-input>
+        v-model="screenTypeInput"/>
       <form-input
         id="screenMaterial"
         label="Screen Material"
@@ -42,11 +42,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="screen_material_code"
         placeholder="Select material"
-        v-model="screenMaterialInput"></form-input>
+        v-model="screenMaterialInput"/>
       <form-input
         id="otherScreenMaterial"
         label="Specify Other Screen Material"
-        v-model="otherScreenMaterialInput"></form-input>
+        v-model="otherScreenMaterialInput"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
@@ -57,7 +57,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="screen_opening_code"
         placeholder="Select opening"
-        v-model="screenOpeningInput"></form-input>
+        v-model="screenOpeningInput"/>
       <form-input
         id="screenBottom"
         label="Screen Bottom"
@@ -66,7 +66,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="screen_bottom_code"
         placeholder="Select bottom"
-        v-model="screenBottomInput"></form-input>
+        v-model="screenBottomInput"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
@@ -74,7 +74,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Screen Information"
         v-model="screenInformationInput"
         :errors="errors['screen_information']"
-        :loaded="fieldsLoaded['screen_information']"></form-input>
+        :loaded="fieldsLoaded['screen_information']"/>
     </responsive-grid>
     <p class="mt-4 mb-2">Screen Details</p>
     <div class="table-responsive">

@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   @input="handleDegreesChange"
                   v-model.number="degrees.latitude"
                   :errors="errors['latitude']"
-                  :loaded="fieldsLoaded['latitude']"></form-input>
+                  :loaded="fieldsLoaded['latitude']"/>
                 <form-input
                   id="longitude"
                   type="text"
@@ -38,7 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   hint="Decimal degrees"
                   v-model.number="degrees.longitude"
                   :errors="errors['longitude']"
-                  :loaded="fieldsLoaded['longitude']"></form-input>
+                  :loaded="fieldsLoaded['longitude']"/>
               </responsive-grid>
             </template>
           </Card>
@@ -55,7 +55,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="text"
                     v-model.number="dms.lat.deg"
                     :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"></form-input>
+                    :loaded="fieldsLoaded['latitude']"/>
                   <form-input
                     id="latitudeMin"
                     hint="Minutes"
@@ -63,7 +63,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="text"
                     v-model.number="dms.lat.min"
                     :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"></form-input>
+                    :loaded="fieldsLoaded['latitude']"/>
                   <form-input
                     id="latitudeSec"
                     type="text"
@@ -71,7 +71,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     hint="Seconds"
                     v-model.number="dms.lat.sec"
                     :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"></form-input>
+                    :loaded="fieldsLoaded['latitude']"/>
                 </responsive-grid>
               </div>
               <div class="col-span-12 md:col-span-6 lg:col-span-6 lg:col-start-1">
@@ -84,7 +84,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     hint="Degrees"
                     v-model.number="dms.long.deg"
                     :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"></form-input>
+                    :loaded="fieldsLoaded['longitude']"/>
                   <form-input
                     id="longitudeMin"
                     type="text"
@@ -92,7 +92,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     hint="Minutes"
                     v-model.number="dms.long.min"
                     :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"></form-input>
+                    :loaded="fieldsLoaded['longitude']"/>
                   <form-input
                     id="longitudeSec"
                     type="text"
@@ -100,7 +100,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     hint="Seconds"
                     v-model.number="dms.long.sec"
                     :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"></form-input>
+                    :loaded="fieldsLoaded['longitude']"/>
                 </responsive-grid>
               </div>
             </div>
@@ -117,7 +117,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-model="utm.zone"
                 text-field="name"
                 value-field="value"
-                :loaded="fieldsLoaded['utmZone']"></form-input>
+                :loaded="fieldsLoaded['utmZone']"/>
               <!-- UTM Easting should only allow 6 digits to be entered. -->
               <form-input
                 id="utmEasting"
@@ -126,7 +126,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-model.number="utm.easting"
                 @input="handleUTMChange"
                 :loaded="fieldsLoaded['utmEasting']"
-                :max="999999"></form-input>
+                :max="999999"/>
               <!-- UTM Northing should only allow 7 digits to be entered. -->
               <form-input
                 id="utmNorthing"
@@ -135,7 +135,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 @input="handleUTMChange"
                 v-model.number="utm.northing"
                 :max="9999999"
-                :loaded="fieldsLoaded['utmNorthing']"></form-input>
+                :loaded="fieldsLoaded['utmNorthing']"/>
             </responsive-grid>
             <div class="flex" v-if="isStaffEdit">
               <form-input
@@ -146,7 +146,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 v-model="coordinateAcquisitionCodeInput"
                 text-field="description"
                 value-field="code"
-                :loaded="fieldsLoaded['coordinateAcquisitionCode']"></form-input>
+                :loaded="fieldsLoaded['coordinateAcquisitionCode']"/>
             </div>
           </div>
           <div class="flex">

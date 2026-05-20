@@ -24,7 +24,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         value-field="development_method_code"
         v-model="developmentMethodInput"
         :errors="errors['development_method']"
-        :loaded="fieldsLoaded['development_method']"></form-input>
+        :loaded="fieldsLoaded['development_method']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="2">
       <form-input
@@ -33,7 +33,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         v-model="developmentHoursInput"
         :errors="errors['development_hours']"
-        :loaded="fieldsLoaded['development_hours']"></form-input>
+        :loaded="fieldsLoaded['development_hours']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="10" :lg="6">
       <form-input
@@ -41,7 +41,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Development Notes"
         v-model="developmentNotesInput"
         :errors="errors['development_notes']"
-        :loaded="fieldsLoaded['development_notes']"></form-input>
+        :loaded="fieldsLoaded['development_notes']"/>
     </responsive-grid>
   </form-subsection>
 </template>
