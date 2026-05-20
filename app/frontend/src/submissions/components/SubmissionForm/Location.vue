@@ -14,11 +14,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <form-subsection title="Well Location" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="flex">
-      <div>
-        <p>Please provide as much information as possible.</p> <p class="bg-yellow-400 p-2">A minimum of one type of well location information is required below:</p>
-        <p class="d-inline font-weight-bold">1) Well Location Address</p>
-        <div class="d-inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary>Same as owner address</Checkbox></div>
-      </div>
+      <p>Please provide as much information as possible.</p> <p class="bg-yellow-400 p-2">A minimum of one type of well location information is required below:</p>
+      <p class="d-inline font-weight-bold">1) Well Location Address</p>
+      <div class="d-inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary>Same as owner address</Checkbox></div>
     </div>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6">
@@ -33,7 +31,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['street_address']"
           :loaded="fieldsLoaded['street_address']"
           :disabled="sameAsOwnerAddress"/>
-          <!-- Display the address suggestions -->
+        <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
@@ -56,18 +54,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :disabled="sameAsOwnerAddress"/>
     </responsive-grid>
     <div class="flex">
-      <div>
-        <p class="mb-1">OR</p>
-        <p class="font-weight-bold">
-          2) Legal Description
-          <i id="legal_description_fields" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-          <b-popover
-            target="legal_description_fields"
-            triggers="hover focus"
-            :content="TOOLTIP_TEXT.location_vue.legal_description_fields"
-          />
-        </p>
-      </div>
+      <p class="mb-1">OR</p>
+      <p class="font-weight-bold">
+        2) Legal Description
+        <i id="legal_description_fields" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
+        <b-popover
+          target="legal_description_fields"
+          triggers="hover focus"
+          :content="TOOLTIP_TEXT.location_vue.legal_description_fields"
+        />
+      </p>
     </div>
 
     <responsive-grid :cols="12" :md="6" :lg="3">

@@ -75,11 +75,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </td>
             <td>
-              <b-form-group
-                :id="'casingMaterial_' + index"
-                class="mt-1 mb-0"
-                :aria-describedby="`casingMaterialInvalidFeedback${index}`">
+              <div class="flex flex-col gap-2 mt-1 mb-0" :aria-describedby="`casingMaterialInvalidFeedback${index}`">
                 <Select
+                  :id="'casingMaterial_' + index"
                   v-model="casing.casing_material"
                   :options="codes?.casing_materials"
                   optionValue="code"
@@ -91,7 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     {{ error }}
                   </div>
                 </b-form-invalid-feedback>
-              </b-form-group>
+              </div>
             </td>
             <td>
               <form-input

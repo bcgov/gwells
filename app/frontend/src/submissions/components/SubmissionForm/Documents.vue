@@ -73,22 +73,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td>
                 <!-- Document Selector -->
-                <b-form-group
-                  :id="'attachmentLabel_' + index"
-                  class="mt-1 mb-0"
-                  :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
-                  <b-form-select
-                    @change="setFileName(index)"
+                <div class="flex flex-col gap-2 mt-1 mb-0" :aria-describedby="`attachmentLabelInvalidFeedback${index}`">
+                  <Select
+                    :id="'attachmentLabel_' + index"
+                    @update:modelValue="setFileName(index)"
                     v-model="attachment.document_code"
                     :options="WELL_TAGS"
-                    :state="getAttachmentError(index).document_code ? false : null"
-                    size="med"/>
+                    :invalid="getAttachmentError(index).document_code ? true : false"/>
                   <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
                     <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
                       {{ error }}
                     </div>
                   </b-form-invalid-feedback>
-                </b-form-group>
+                </div>
               </td>
               <td>
                 <!-- File Upload -->
@@ -103,15 +100,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <!-- Privacy Flag  -->
               <td>
-                <Checkbox class="mt-2 ml-4" v-model="attachment.private" binary :disabled="!getFieldsLoaded(index).private"/>
+                <Checkbox class="mt-2 ml-4" v-model="attachment.private" binary/>
               </td>
               <td>
                 <!-- File Name -->
-                <InputText
-                  class="mt-1 mb-0"
-                  v-model="attachment.file_name"
-                  placeholder="File_Name"
-                  disabled/>
+                <InputText class="mt-1 mb-0" v-model="attachment.file_name" placeholder="File_Name" disabled/>
               </td>
               <!-- Date -->
               <td class="p-2">

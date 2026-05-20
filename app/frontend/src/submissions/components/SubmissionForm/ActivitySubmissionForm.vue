@@ -15,26 +15,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <div>
     <h1 class="card-title">
       <div class="flex">
-        <div>
-          <div v-if="isStaffEdit" id="top">Update Well Information</div>
-          <div v-else>Well Activity Submission</div>
-          <b-form-radio-group v-if="activityType !== 'STAFF_EDIT'" button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
-            <b-form-radio v-bind:value="true" id="singleSubmissionPage">Single page</b-form-radio>
-            <b-form-radio v-bind:value="false" id="multiSubmissionPage">Multi page</b-form-radio>
-          </b-form-radio-group>
+        <div v-if="isStaffEdit" id="top">Update Well Information</div>
+        <div v-else>Well Activity Submission</div>
+        <div class="flex flex-col gap-2 float-right">
+          <label for="formIsFlatInput">Form layout</label>
+          <SelectButton  v-if="activityType !== 'STAFF_EDIT'" size="small" v-model="formIsFlatInput" id="formIsFlatInput" :options="selectOptions"/>
         </div>
       </div>
     </h1>
 
     <div v-if="loading">
       <div class="flex">
-        <div>
-          <div class="fa-2x text-center">
-            Loading...
-          </div>
-          <div class="fa-2x text-center">
-            <i class="fa fa-circle-o-notch fa-spin"></i>
-          </div>
+        <div class="fa-2x text-center">
+          Loading...
+        </div>
+        <div class="fa-2x text-center">
+          <i class="fa fa-circle-o-notch fa-spin"></i>
         </div>
       </div>
     </div>
@@ -51,21 +47,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="bg-yellow-400 p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
 
       <!-- Form load/save -->
-      <div v-if="!isStaffEdit">
-        <div class="text-right">
-          <b-btn size="sm" variant="outline-primary" class="mr-2" @click="saveForm">
-            Save report progress
-            <transition name="bounce" mode="out-in">
-              <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
-            </transition>
-          </b-btn>
-          <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
-            Load saved report
-            <transition name="bounce">
-              <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
-            </transition>
-          </b-btn>
-        </div>
+      <div v-if="!isStaffEdit" class="flex text-right">
+        <b-btn size="sm" variant="outline-primary" class="mr-2" @click="saveForm">
+          Save report progress
+          <transition name="bounce" mode="out-in">
+            <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
+          </transition>
+        </b-btn>
+        <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
+          Load saved report
+          <transition name="bounce">
+            <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
+          </transition>
+        </b-btn>
       </div>
 
       <!-- Type of work performed -->
@@ -522,7 +516,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
 
       <!-- Form reload (load from save) confirmation -->
-      <Dialog v-model:visible="confirmLoadModal" modal header="Confirm load submission data" @show="$refs.confirmLoadConfirmBtn.focus()">
+      <Dialog
+        v-model:visible="confirmLoadModal"
+        modal
+        header="Confirm load submission data"
+        @show="$refs.confirmLoadConfirmBtn.focus()"
+        @after-hide="$refs.loadFormBtn.focus()">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
         <template #footer>
           <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>
@@ -720,7 +719,11 @@ export default {
       wellIdentificationPlateAttachedLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
       totalDepthDrilledLabel: WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED,
       finishedWellDepthLabel: WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH,
-      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS
+      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS,
+      selectOptions: [
+        { name: "Single page", value: true},
+        { name: "Multi page", value: false },
+      ],
     }
   },
   watch: {

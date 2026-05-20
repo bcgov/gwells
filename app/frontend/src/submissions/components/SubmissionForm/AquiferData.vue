@@ -13,49 +13,45 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Aquifer Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6 xl:col-span-3">
-        <div class="flex flex-col gap-2">
-          <label for="aquiferSelect">Associated Aquifer</label>
-          <v-select
-            v-model="aquiferInput"
-            id="aquiferSelect"
-            :filterable="false"
-            :options="aquiferList"
-            :reduce="aquifer => aquifer.aquifer_id"
-            label="description"
-            index="aquifer_id"
-            @search="onAquiferSearch">
-            <template v-slot:no-options>
-                Search for an aquifer by name or id number
-            </template>
-            <template v-slot:cell(option)="option">
-              <div>
-                {{ option.description }}
-              </div>
-            </template>
-            <template v-slot:cell(selected-option)="option">
-              <div>
-                {{ option.description }}
-              </div>
-            </template>
-          </v-select>
-        </div>
+    <responsive-grid :cols="12" :md="[6, 4]" :xl="[3, undefined]">
+      <div class="flex flex-col gap-2">
+        <label for="aquiferSelect">Associated Aquifer</label>
+        <v-select
+          v-model="aquiferInput"
+          id="aquiferSelect"
+          :filterable="false"
+          :options="aquiferList"
+          :reduce="aquifer => aquifer.aquifer_id"
+          label="description"
+          index="aquifer_id"
+          @search="onAquiferSearch">
+          <template v-slot:no-options>
+              Search for an aquifer by name or id number
+          </template>
+          <template v-slot:cell(option)="option">
+            <div>
+              {{ option.description }}
+            </div>
+          </template>
+          <template v-slot:cell(selected-option)="option">
+            <div>
+              {{ option.description }}
+            </div>
+          </template>
+        </v-select>
       </div>
-      <div class="col-span-12 md:col-span-4">
-        <div class="flex flex-col gap-2">
-          <label for="aquiferLithology">Aquifer Material</label>
-          <Select
-            id="aquiferLithology"
-            v-model="aquiferLithologyInput"
-            optionValue="aquifer_lithology_code"
-            :options="codes?.aquifer_lithology_codes"
-            :loading="!fieldsLoaded['aquifer_lithology']"
-            optionLabel="description"
-            placeholder="Select Lithology"/>
-        </div>
+      <div class="flex flex-col gap-2">
+        <label for="aquiferLithology">Aquifer Material</label>
+        <Select
+          id="aquiferLithology"
+          v-model="aquiferLithologyInput"
+          optionValue="aquifer_lithology_code"
+          :options="codes?.aquifer_lithology_codes"
+          :loading="!fieldsLoaded['aquifer_lithology']"
+          optionLabel="description"
+          placeholder="Select Lithology"/>
       </div>
-    </div>
+    </responsive-grid>
   </form-subsection>
 </template>
 
@@ -65,6 +61,7 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import ApiService from '@/common/services/ApiService.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
@@ -104,7 +101,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   fields: {
     aquiferInput: 'aquifer',

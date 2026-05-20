@@ -59,14 +59,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </template>
           </v-select>
+          <!-- TODO: Copy over the bootstrap form-text class to one of the css files -->
           <small id="personResponsibleSelectHint" class="form-text text-muted">
             *displays a maximum of {{MAX_RESULTS}} results
           </small>
-          <b-form-text id="personResponsibleInvalidFeedback" v-if="errors.person_responsible">
+          <div id="personResponsibleInvalidFeedback" class="form-text" v-if="errors.person_responsible">
             <div v-for="(error, index) in errors.person_responsible" :key="`personResponsible error ${index}`" class="text-danger">
               {{ error }}
             </div>
-          </b-form-text>
+          </div>
         </b-form-group>
         <form-input
           id="drillerName"
@@ -78,9 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :loaded="fieldsLoaded['driller_name']"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="12" :lg="4">
-        <b-form-group
-          aria-describedby="companyOfPersonResponsibleInvalidFeedback"
-          :state="false">
+        <div class="flex flex-col gap-2" aria-describedby="companyOfPersonResponsibleInvalidFeedback">
           <label>Company of Person Responsible for Drilling</label>
           <v-select
             :disabled="companies === null"
@@ -99,12 +98,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <small id="companyOfPersonResponsibleSelectHint" class="form-text text-muted">
             *displays a maximum of {{MAX_RESULTS}} results
           </small>
-          <b-form-text id="companyOfPersonResponsibleInvalidFeedback" v-if="errors.person_responsible">
+          <div id="companyOfPersonResponsibleInvalidFeedback" class="form-text" v-if="errors.person_responsible">
             <div v-for="(error, index) in errors.driller_company_responsible" :key="`companyOfPersonResponsible error ${index}`" class="text-danger">
               {{ error }}
             </div>
-          </b-form-text>
-        </b-form-group>
+          </div>
+        </div>
       </responsive-grid>
       <responsive-grid :cols="12" :md="6">
         <form-input

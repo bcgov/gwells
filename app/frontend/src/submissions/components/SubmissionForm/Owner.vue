@@ -46,11 +46,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </div>
     <responsive-grid :cols="[12, 6, 6]" :md="4" :xl="[undefined, undefined, 3]">
       <form-input id="ownerCity" label="City *" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']" required/>
-      <b-form-group
-        id="ownerProvince"
-        label="Province or State *"
-        aria-describedby="ownerProvinceInvalidFeedback">
+      <div class="flex flex-col gap-2" aria-describedby="ownerProvinceInvalidFeedback">
+        <label for="ownerProvince">Province or State *</label>
         <Select
+          id="ownerProvince"
           v-model="ownerProvinceInput"
           :options="codes?.province_codes"
           optionValue="province_state_code"
@@ -62,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             {{ error }}
           </div>
         </b-form-invalid-feedback>
-      </b-form-group>
+      </div>
       <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"/>
     </responsive-grid>
     <responsive-grid v-if="isStaffEdit" :cols="12" :md="6" :lg="4" :xl="[4, 3]">

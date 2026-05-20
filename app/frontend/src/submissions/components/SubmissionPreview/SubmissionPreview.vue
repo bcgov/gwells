@@ -14,8 +14,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <h1 class="card-title">
-      <div class="grid grid-cols-12">
-        <div class="col-span-12">
+      <div class="flex">
+        <div>
           <div>Well Activity Submission<span v-if="!reportSubmitted"> Preview</span></div>
           <Button v-if="reportSubmitted" label="Submit New Report" @click="$emit('startNewReport')"/>
           <Button v-else label="Back to Edit" class="float-right" @click="$emit('back')"/>
@@ -49,41 +49,34 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <fieldset class="my-4 detail-section">
       <legend>Person Responsible for Work</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Person Responsible for Work:</span> {{ form.person_responsible ? form.person_responsible['name'] : '' }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Person Who Performed Work:</span> {{ form.driller_name }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Company of Person Responsible for Work:</span> {{ form.company_of_person_responsible ? form.company_of_person_responsible['org_verbose_name'] : '' }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Consultant Name:</span> {{ form.consultant_name }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Consultant Company:</span> {{ form.consultant_company }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Person Responsible for Work:</b> {{ form.person_responsible ? form.person_responsible['name'] : '' }}</span>
+        <span><b>Person Who Performed Work:</b> {{ form.driller_name }}</span>
+        <span><b>Company of Person Responsible for Work:</b> {{ form.company_of_person_responsible ? form.company_of_person_responsible['org_verbose_name'] : '' }}</span>
+        <span><b>Consultant Name:</b> {{ form.consultant_name }}</span>
+        <span><b>Consultant Company:</b> {{ form.consultant_company }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section">
       <legend>Well Owner</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Name:</span> {{ form.owner_full_name }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-3"><span class="font-weight-bold">Mailing address:</span> {{ form.owner_mailing_address }}</div>
-        <div class="col-span-12 lg:col-span-3"><span class="font-weight-bold">City:</span> {{ form.owner_city }}</div>
-        <div class="col-span-12 lg:col-span-3"><span class="font-weight-bold">Province:</span> {{ form.owner_province_state }}</div>
-        <div class="col-span-12 lg:col-span-3"><span class="font-weight-bold">Postal Code:</span> {{ form.owner_postal_code }}</div>
-
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Name:</b> {{ form.owner_full_name }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="3">
+        <span><b>Mailing address:</b> {{ form.owner_mailing_address }}</span>
+        <span><b>City:</b> {{ form.owner_city }}</span>
+        <span><b>Province:</b> {{ form.owner_province_state }}</span>
+        <span><b>Postal Code:</b> {{ form.owner_postal_code }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section">
       <legend>Location Information</legend>
       <div class="grid grid-cols-12">
         <div class="col-span-12 lg:col-span-6 xl:col-span-4">
-          <div>
-            <div><span class="font-weight-bold">Street Address:</span> {{ form.street_address }}</div>
-          </div>
-          <div>
-            <div><span class="font-weight-bold">Town/City:</span> {{ form.city }}</div>
-          </div>
+          <div><span><b>Street Address:</b> {{ form.street_address }}</span></div>
+          <div><span><b>Town/City:</b> {{ form.city }}</span></div>
           <div>
             <div>
               <div class="my-4"><span class="font-weight-bold">Legal Description:</span></div>
@@ -141,32 +134,29 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
           <div class="my-4">&nbsp;</div>
           <div><span class="font-weight-bold">Geographic Coordinates - North American Datum of 1983 (NAD 83)</span></div>
-          <div class="grid grid-cols-12">
-            <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Latitude:</span> {{form.latitude}}</div>
-            <div class="col-span-12 lg:col-span-6"><span class="font-weight-bold">Longitude:</span> {{form.longitude}}</div>
-          </div>
-          <div class="grid grid-cols-12">
-            <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">UTM Easting:</span> {{UTM.easting}}</div>
-            <div class="col-span-12 lg:col-span-6"><span class="font-weight-bold">UTM Northing:</span> {{UTM.northing}}</div>
-          </div>
-          <div class="grid grid-cols-12">
-            <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Zone:</span> {{UTM.zone}}</div>
-            <div class="col-span-12 lg:col-span-6"><span class="font-weight-bold">Location Accuracy Code:</span> {{form.location_accuracy_code}}</div>
-          </div>
+          <!-- I think this table scheme should work, even though each row will have 10/12 columns filled, bc the 4 will overflow -->
+          <responsive-grid :cols="12" :lg="[4, 6, 4, 6, 4, 6]">
+            <span><b>Latitude:</b> {{form.latitude}}</span>
+            <span><b>Longitude:</b> {{form.longitude}}</span>
+            <span><b>UTM Easting:</b> {{UTM.easting}}</span>
+            <span><b>UTM Northing:</b> {{UTM.northing}}</span>
+            <span><b>Zone:</b> {{UTM.zone}}</span>
+            <span><b>Location Accuracy Code:</b> {{form.location_accuracy_code}}</span>
+          </responsive-grid>
         </div>
       </div>
     </fieldset>
 
     <fieldset class="my-4 detail-section">
       <legend>Method of Drilling</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Ground elevation:</span> {{ form.ground_elevation }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Method of determining elevation:</span> {{ codeToDescription('ground_elevation_methods', form.ground_elevation_method) }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Drilling methods:</span> <div v-for="(item, index) in form.drilling_methods" :key="index">{{ codeToDescription('drilling_methods', item) }}</div></div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Orientation of well:</span> {{ form.well_orientation_status }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Ground elevation:</b> {{ form.ground_elevation }}</span>
+        <span><b>Method of determining elevation:</b> {{ codeToDescription('ground_elevation_methods', form.ground_elevation_method) }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Drilling methods:</b> <span v-for="(item, index) in form.drilling_methods" :key="index">{{ codeToDescription('drilling_methods', item) }}</span></span>
+        <span><b>Orientation of well:</b> {{ form.well_orientation_status }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section" v-if="sections.lithology">
@@ -244,20 +234,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <fieldset class="my-4 detail-section" v-if="sections.backfill">
       <legend>Surface Seal and Backfill Details</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', form.surface_seal_material) }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', form.backfill_type) }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', form.surface_seal_method) }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Backfill Depth:</span> {{ form.backfill_depth }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Surface Seal Thickness:</span> {{ form.surface_seal_thickness }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Surface Seal Depth:</span> {{ form.surface_seal_depth }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Surface Seal Material:</b> {{ codeToDescription('surface_seal_materials', form.surface_seal_material) }}</span>
+        <span><b>Backfill Material Above Surface Seal:</b> {{ codeToDescription('surface_seal_materials', form.backfill_type) }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Surface Seal Installation Method:</b> {{ codeToDescription('surface_seal_methods', form.surface_seal_method) }}</span>
+        <span><b>Backfill Depth:</b> {{ form.backfill_depth }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Surface Seal Thickness:</b> {{ form.surface_seal_thickness }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Surface Seal Depth:</b> {{ form.surface_seal_depth }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section" v-if="sections.liner">
@@ -339,99 +329,89 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <fieldset class="my-4 detail-section" v-if="sections.filterPack">
       <legend>Filter Pack</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Filter pack from:</span> {{ form.filter_pack_from }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Filter pack to:</span> {{ form.filter_pack_to }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Filter pack thickness:</span> {{ form.filter_pack_thickness }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Filter pack material:</span> {{ codeToDescription('filter_pack_material', form.filter_pack_material) }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Filter pack material size:</span> {{ form.filter_pack_material_size }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Filter pack from:</b> {{ form.filter_pack_from }}</span>
+        <span><b>Filter pack to:</b> {{ form.filter_pack_to }}</span>
+        <span><b>Filter pack thickness:</b> {{ form.filter_pack_thickness }}</span>
+        <span><b>Filter pack material:</b> {{ codeToDescription('filter_pack_material', form.filter_pack_material) }}</span>
+        <span><b>Filter pack material size:</b> {{ form.filter_pack_material_size }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section" v-if="sections.wellDevelopment">
       <legend>Well Development</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Developed by:</span> <div v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</div></div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Development Total Duration:</span> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Development Notes:</span> {{ form.development_notes }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Developed by:</b> <span v-for="(item, index) in form.development_methods" :key="index"> {{ codeToDescription('development_methods', item) }}</span></span>
+        <span><b>Development Total Duration:</b> {{ form.development_hours }} {{ form.development_hours ? 'hours':'' }}</span>
+        <span><b>Development Notes:</b> {{ form.development_notes }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section" v-if="sections.wellYield">
       <legend>Well Yield</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', form.yield_estimation_method)}} </div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Estimation Rate:</span> {{form.yield_estimation_rate}} </div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Estimation Duration:</span> {{form.yield_estimation_duration}}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Static Water Level Before Test:</span> {{form.static_level_before_test}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Drawdown:</span> {{form.drawdown}}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Hydrofracturing Performed:</span> {{ nullBooleanToYesNo(form.hydro_fracturing_performed) }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Increase in Yield Due to Hydrofracturing:</span> {{form.hydro_fracturing_yield_increase}}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Estimation Method:</b> {{codeToDescription('yield_estimation_methods', form.yield_estimation_method)}} </span>
+        <span><b>Estimation Rate:</b> {{form.yield_estimation_rate}} </span>
+        <span><b>Estimation Duration:</b> {{form.yield_estimation_duration}}</span>
+        <span><b>Static Water Level Before Test:</b> {{form.static_level_before_test}}</span>
+        <span><b>Drawdown:</b> {{form.drawdown}}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Hydrofracturing Performed:</b> {{ nullBooleanToYesNo(form.hydro_fracturing_performed) }}</span>
+        <span><b>Increase in Yield Due to Hydrofracturing:</b> {{form.hydro_fracturing_yield_increase}}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section" v-if="sections.waterQuality">
       <legend>Water Quality</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Characteristics:</span>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Characteristics:</b>
           <span v-for="(item, index) in form.water_quality_characteristics" :key="`previewWaterCharacteristic${index}`">
             <!-- Add a comma before each item except index 0 -->
             {{ index ? ', ': ''}}{{ codeToDescription('water_quality_characteristics', item) }}
           </span>
-        </div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Water Quality Colour:</span> {{ codeToDescription('water_quality_colours', form.water_quality_colour) }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-6"><span class="font-weight-bold">Water Quality Odour:</span> {{ form.water_quality_odour }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-6"><span class="font-weight-bold">EMS ID:</span> {{ form.ems }}</div>
-      </div>
+        </span>
+        <span><b>Water Quality Colour:</b> {{ codeToDescription('water_quality_colours', form.water_quality_colour) }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="6">
+        <span><b>Water Quality Odour:</b> {{ form.water_quality_odour }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="6">
+        <span><b>EMS ID:</b> {{ form.ems }}</span>
+      </responsive-grid>
     </fieldset>
     <fieldset class="my-4 detail-section" v-if="sections.wellCompletion">
       <legend>Well Completion Data</legend>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Total Depth Drilled:</span> {{ form.total_depth_drilled }} {{ form.total_depth_drilled ? 'ft bgl':''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Static Water Level (BTOC):</span> {{ form.static_water_level }} {{ form.static_water_level ? 'feet': ''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Artesian Pressure (head):</span> {{ form.artesian_pressure_head }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Finished Well Depth:</span> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Estimated Well Yield:</span> {{ form.well_yield }} {{ form.well_yield ? 'USGPM': ''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Artesian Pressure (PSI):</span> {{ form.artesian_pressure }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Final Casing Stick Up:</span> {{ form.final_casing_stick_up }} {{ form.final_casing_stick_up ? 'inches':''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Artesian Condition:</span> {{ nullBooleanToYesNo(form.artesian_conditions) }} </div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Well Cap:</span> {{ form.well_cap_type }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Depth to Bedrock:</span> {{ form.bedrock_depth }} {{ form.bedrock_depth ? 'feet':''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Artesian Flow:</span> {{ form.artesian_flow }} {{ form.artesian_flow ? 'USGPM': ''}}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Well Disinfected:</span> {{ form.well_disinfected_status }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Total Depth Drilled:</b> {{ form.total_depth_drilled }} {{ form.total_depth_drilled ? 'ft bgl':''}}</span>
+        <span><b>Static Water Level (BTOC):</b> {{ form.static_water_level }} {{ form.static_water_level ? 'feet': ''}}</span>
+        <span><b>Artesian Pressure (head):</b> {{ form.artesian_pressure_head }}</span>
+        <span><b>Finished Well Depth:</b> {{ form.finished_well_depth }} {{ form.finished_well_depth ? 'feet':''}}</span>
+        <span><b>Estimated Well Yield:</b> {{ form.well_yield }} {{ form.well_yield ? 'USGPM': ''}}</span>
+        <span><b>Artesian Pressure (PSI):</b> {{ form.artesian_pressure }}</span>
+        <span><b>Final Casing Stick Up:</b> {{ form.final_casing_stick_up }} {{ form.final_casing_stick_up ? 'inches':''}}</span>
+        <span><b>Artesian Condition:</b> {{ nullBooleanToYesNo(form.artesian_conditions) }} </span>
+        <span><b>Well Cap:</b> {{ form.well_cap_type }}</span>
+        <span><b>Depth to Bedrock:</b> {{ form.bedrock_depth }} {{ form.bedrock_depth ? 'feet':''}}</span>
+        <span><b>Artesian Flow:</b> {{ form.artesian_flow }} {{ form.artesian_flow ? 'USGPM': ''}}</span>
+        <span><b>Well Disinfected:</b> {{ form.well_disinfected_status }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section" v-if="sections.decommissionInformation">
       <legend>Well Decommission Information</legend>
 
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Reason for Decommission:</span> {{ form.decommission_reason }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Method of Decommission:</span> {{ form.decommission_method }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Sealant Material:</span> {{ form.decommission_sealant_material }}</div>
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Backfill Material:</span> {{ form.decommission_backfill_material }}</div>
-      </div>
-      <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-4"><span class="font-weight-bold">Decommission Details:</span> {{ form.decommission_details }}</div>
-      </div>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Reason for Decommission:</b> {{ form.decommission_reason }}</span>
+        <span><b>Method of Decommission:</b> {{ form.decommission_method }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Sealant Material:</b> {{ form.decommission_sealant_material }}</span>
+        <span><b>Backfill Material:</b> {{ form.decommission_backfill_material }}</span>
+      </responsive-grid>
+      <responsive-grid :cols="12" :lg="4">
+        <span><b>Decommission Details:</b> {{ form.decommission_details }}</span>
+      </responsive-grid>
     </fieldset>
 
     <fieldset class="my-4 detail-section">
@@ -465,18 +445,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
     <fieldset class="my-4 detail-section">
       <legend>Comments</legend>
-      <p>
-        {{ form.comments ? form.comments : 'No comments submitted' }}
-      </p>
-      <p>
-        <span class="font-weight-bold">Alternative Specs Submitted:</span> {{ nullBooleanToYesNo(form.alternative_specs_submitted) }}
-      </p>
-      <p>
-        <span class="font-weight-bold">Technical Report:</span> {{ nullBooleanToYesNo(form.technical_report) }}
-      </p>
-      <p>
-        <span class="font-weight-bold">Drinking Water Area Indicator:</span> {{ nullBooleanToYesNo(form.drinking_water_protection_area_ind) }}
-      </p>
+      <p>{{ form.comments ? form.comments : 'No comments submitted' }}</p>
+      <p><b>Alternative Specs Submitted:</b> {{ nullBooleanToYesNo(form.alternative_specs_submitted) }}</p>
+      <p><b>Technical Report:</b> {{ nullBooleanToYesNo(form.technical_report) }}</p>
+      <p><b>Drinking Water Area Indicator:</b> {{ nullBooleanToYesNo(form.drinking_water_protection_area_ind) }}</p>
     </fieldset>
 
     <fieldset v-if="commonStore.uploadFiles && commonStore.uploadFiles.length > 0">

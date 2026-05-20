@@ -18,7 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="bg-yellow-400 p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
       <div class="grid grid-cols-12">
         <div class="sm:col-span-12 md:col-span-6">
-          <Card class="p-4 m-1 md:m-1">
+          <div class="container p-4 m-1 md:m-1">
             <template #default>
               <responsive-grid :cols="12" :sm="6" :lg="3">
                 <form-input
@@ -41,9 +41,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :loaded="fieldsLoaded['longitude']"/>
               </responsive-grid>
             </template>
-          </Card>
+          </div>
           <div class="flex"><p class="p-4 m-0">OR</p></div>
-          <div class="container p-4 mx-1 mx-md-1">
+          <div class="container p-4 mx-1 md:mx-1">
             <div class="grid grid-cols-12">
               <div class="col-span-12 md:col-span-6 lg:col-span-6">
                 <div class="mb-2">Latitude</div>
@@ -106,7 +106,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </div>
           </div>
           <div class="flex"><p class="p-4 m-0">OR</p></div>
-          <div class="container p-4 mx-1 mx-md-1">
+          <div class="container p-4 mx-1 md:mx-1">
             <responsive-grid :cols="12" :sm="4" :lg="4">
               <form-input
                 id="utmZone"
@@ -149,11 +149,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :loaded="fieldsLoaded['coordinateAcquisitionCode']"/>
             </div>
           </div>
-          <div class="flex">
-            <div class="mt-4">
-              <div v-if="validCoordinate === false">
-                <div class="alert alert-danger" role="alert">You have entered an invalid coordinate</div>
-              </div>
+          <div class="flex mt-4">
+            <div v-if="validCoordinate === false">
+              <div class="alert alert-danger" role="alert">You have entered an invalid coordinate</div>
             </div>
           </div>
         </div>
@@ -165,9 +163,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <Dialog
           v-model:visible="confirmRemoveModalInput"
           modal
-          no-close-on-esc
-          no-close-on-backdrop
-          hide-header-close
+          :closeOnEscape="false"
+          :closeable="false"
           header="Confirm Coordinates Change"
           @show="focusRemoveModal">
           WARNING, a well capture zone has been delineated based on the existing coordinates. Are you sure you want to update the coordinates? Note: If you select 'Yes, Update' a notification email will be sent to the data managers of the Capture Zones dataset.

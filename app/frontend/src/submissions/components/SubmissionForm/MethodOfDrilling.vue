@@ -13,59 +13,49 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Method of Drilling" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6">
-        <form-input
-          id="groundElevation"
-          label="Ground Elevation"
-          hint="ft (asl)"
-          v-model.number="groundElevationInput"
-          type="number"
-          :errors="errors['ground_elevation']"
-          :loaded="fieldsLoaded['ground_elevation']"/>
-      </div>
-      <div class="col-span-12 md:col-span-6">
-        <form-input
-          select
-          id="groundElevationMethod"
-          label="Method for Determining Ground Elevation"
-          v-model="groundElevationMethodInput"
-          value-field="ground_elevation_method_code"
-          text-field="description"
-          placeholder="Select Method"
-          :options="method_codes()"
-          :errors="errors['ground_elevation_method']"
-          :loaded="fieldsLoaded['ground_elevation_method']"/>
-      </div>
-    </div>
-    <div class="grid grid-cols-12">
-      <div class="col-span-12 md:col-span-6">
-        <form-input
-          id="drillingMethod"
-          :label="drillingMethodsLabel"
-          select
-          :options="codes?.drilling_methods"
-          value-field="drilling_method_code"
-          text-field="description"
-          hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
-          v-model="drillingMethodInput"
-          :errors="errors['drilling_methods']"
-          :loaded="fieldsLoaded['drilling_methods']"/>
-      </div>
-      <div>
-        <form-input
-          select
-          id="wellOrientationStatus"
-          label="Orientation of Well"
-          v-model="wellOrientationStatusInput"
-          value-field="well_orientation_code"
-          text-field="description"
-          placeholder="Select Orientation"
-          :options="codes?.well_orientation_codes"
-          :errors="errors['well_orientation_status']"
-          :loaded="fieldsLoaded['well_orientation_status']"/>
-      </div>
-    </div>
+    <responsive-grid :cols="12" :md="6">
+      <form-input
+        id="groundElevation"
+        label="Ground Elevation"
+        hint="ft (asl)"
+        v-model.number="groundElevationInput"
+        type="number"
+        :errors="errors['ground_elevation']"
+        :loaded="fieldsLoaded['ground_elevation']"/>
+      <form-input
+        select
+        id="groundElevationMethod"
+        label="Method for Determining Ground Elevation"
+        v-model="groundElevationMethodInput"
+        value-field="ground_elevation_method_code"
+        text-field="description"
+        placeholder="Select Method"
+        :options="method_codes()"
+        :errors="errors['ground_elevation_method']"
+        :loaded="fieldsLoaded['ground_elevation_method']"/>
+      <form-input
+        id="drillingMethod"
+        :label="drillingMethodsLabel"
+        select
+        :options="codes?.drilling_methods"
+        value-field="drilling_method_code"
+        text-field="description"
+        hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+        v-model="drillingMethodInput"
+        :errors="errors['drilling_methods']"
+        :loaded="fieldsLoaded['drilling_methods']"/>
+      <form-input
+        select
+        id="wellOrientationStatus"
+        label="Orientation of Well"
+        v-model="wellOrientationStatusInput"
+        value-field="well_orientation_code"
+        text-field="description"
+        placeholder="Select Orientation"
+        :options="codes?.well_orientation_codes"
+        :errors="errors['well_orientation_status']"
+        :loaded="fieldsLoaded['well_orientation_status']"/>
+    </responsive-grid>
   </form-subsection>
 </template>
 
@@ -73,6 +63,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
@@ -107,7 +98,8 @@ export default {
     }
   },
   components: {
-    FormSubsection
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

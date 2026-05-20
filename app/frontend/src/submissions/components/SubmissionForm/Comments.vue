@@ -13,13 +13,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Comments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <responsive-grid :cols="12" :md="8">
+    <responsive-grid :cols="12" :md="8" :gap="4">
       <div class="flex flex-col gap-2">
         <label for="commentsEntry">Comments</label>
         <Textarea id="commentsEntry" :rows="3" autoResize v-model="commentsInput"/>
       </div>
     </responsive-grid>
-    <responsive-grid class="mt-4 mb-4" :cols="12" :md="8">
+    <responsive-grid :cols="12" :md="8" :gap="4">
       <div class="flex flex-col gap-2">
         <label for="internalCommentsEntry">Internal Office Comments</label>
         <Textarea id="internalCommentsEntry" :rows="3" autoResize v-model="internalCommentsInput"/>
@@ -39,6 +39,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </RadioButtonGroup>
       </div>
+    </responsive-grid>
+    <responsive-grid :cols="12" :sm="6" :gap="4">
       <div class="flex flex-col gap-2">
         <label for="technicalReportInput">Technical Report</label>
         <RadioButtonGroup class="mt-1" v-model="technicalReportInput" id="technicalReportInput">
@@ -52,6 +54,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </RadioButtonGroup>
       </div>
+    </responsive-grid>
+    <responsive-grid :cols="12" :sm="6" :gap="4">
       <div class="flex flex-col gap-2">
         <label for="drinkingWaterProtectionAreaInput">Drinking Water Area Indicator</label>
         <RadioButtonGroup class="mt-1" v-model="drinkingWaterProtectionAreaInput" id="drinkingWaterProtectionAreaInput">

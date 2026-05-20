@@ -71,12 +71,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td>
                 <form-input
-                    :id="`lithologyDescription${index}`"
-                    aria-label="Soil or Bedrock Description"
-                    v-model="lithologyData[index].lithology_raw_data"
-                    group-class="mt-1 mb-0"
-                    @input="parseDescription(index, $event)"
-                />
+                  :id="`lithologyDescription${index}`"
+                  aria-label="Soil or Bedrock Description"
+                  v-model="lithologyData[index].lithology_raw_data"
+                  group-class="mt-1 mb-0"
+                  @input="parseDescription(index, $event)"/>
               </td>
               <td class="input-width-medium">
                 <div class="material-badges">
@@ -139,8 +138,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Water bearing flow"
                   type="number"
                   v-model="lithologyData[index].water_bearing_estimated_flow"
-                  group-class="mt-1 mb-0"
-                />
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
