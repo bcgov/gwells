@@ -22,13 +22,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <back-to-top-link v-if="isStaffEdit"/>
         </div>
       </responsive-grid>
-      <b-form-checkbox id="checkbox1"
-        v-model="drillerSameAsPersonResponsibleInput"
-        :value="true"
-        :unchecked-value="false"
-      >
-        <p>Person Responsible is the same as the Person Who Completed the Work</p>
-      </b-form-checkbox>
+      <div class="flex items-center gap-2">
+        <Checkbox inputId="checkbox1" v-model="drillerSameAsPersonResponsibleInput" binary/>
+        <label for="checkbox1">Person Responsible is the same as the Person Who Completed the Work</label>
+      </div>
       <responsive-grid :cols="12" :md="12" :lg="6">
         <b-form-group
           label="Person Responsible for Work"

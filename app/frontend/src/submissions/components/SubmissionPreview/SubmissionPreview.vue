@@ -162,32 +162,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-4 detail-section" v-if="sections.lithology">
       <legend>Lithology</legend>
       <div class="table-responsive">
-        <b-table
-          striped
-          small
-          bordered
-          :items="filterBlankRows(form.lithologydescription_set)"
-          show-empty
-          :fields="[
-            'from',
-            'to',
-            'description',
-            'colour',
-            'hardness',
-            'moisture',
-            'descriptor',
-            'water_bearing_estimated_flow',
-            'observations'
-          ]">
-          <template v-slot:cell(description)="data">{{data.item.lithology_raw_data}}</template>
-          <template v-slot:cell(from)="data">{{data.item.start}}</template>
-          <template v-slot:cell(to)="data">{{data.item.end}}</template>
-          <template v-slot:cell(colour)="data">{{codeToDescription('lithology_colours', data.item.lithology_colour) }}</template>
-          <template v-slot:cell(hardness)="data">{{codeToDescription('lithology_hardness_codes', data.item.lithology_hardness) }}</template>
-          <template v-slot:cell(moisture)="data">{{codeToDescription('lithology_moisture_codes', data.item.lithology_moisture) }}</template>
-          <template v-slot:cell(descriptor)="data">{{codeToDescription('lithology_descriptors', data.item.lithology_description) }}</template>
-          <template v-slot:cell(observations)="data">{{ data.item.lithology_observation }}</template>
-        </b-table>
+        <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.lithologydescription_set)">
+          <Column field="start" header="From"/>
+          <Column field="end" header="To"/>
+          <Column field="lithology_raw_data" header="Description"/>
+          <Column field="lithology_colour" header="Colour">
+            <template #body="slotProps">{{ codeToDescription('lithology_colours', slotProps.data.lithology_colour) }}</template>
+          </Column>
+          <Column field="lithology_hardness" header="Hardness">
+            <template #body="slotProps">{{ codeToDescription('lithology_hardness_codes', slotProps.data.lithology_hardness) }}</template>
+          </Column>
+          <Column field="lithology_moisture" header="Moisture">
+            <template #body="slotProps">{{ codeToDescription('lithology_moisture_codes', slotProps.data.lithology_moisture) }}</template>
+          </Column>
+          <Column field="lithology_description" header="Descriptor">
+            <template #body="slotProps">{{ codeToDescription('lithology_descriptors', slotProps.data.lithology_description) }}</template>
+          </Column>
+          <Column field="water_bearing_estimated_flow"/>
+          <Column field="lithology_observation" header="Observations"/>
+        </DataTable>
       </div>
     </fieldset>
 
@@ -198,14 +191,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <Column field="start"/>
           <Column field="end"/>
           <Column field="material">
-            <template #body="slotProps">
-              {{ codeToDescription('decommission_materials', slotProps.data.material) }}
-            </template>
+            <template #body="slotProps">{{ codeToDescription('decommission_materials', slotProps.data.material) }}</template>
           </Column>
           <Column field="observations">
-            <template #body="slotProps">
-              {{ codeToDescription('decommission_materials', slotProps.data.observations) }}
-            </template>
+            <template #body="slotProps">{{ codeToDescription('decommission_materials', slotProps.data.observations) }}</template>
           </Column>
         </DataTable>
       </div>
@@ -214,21 +203,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-4 detail-section">
       <legend>Casing Details</legend>
       <div class="table-responsive">
-        <b-table
-            striped
-            small
-            bordered
-            :items="filterBlankRows(form.casing_set)"
-            :fields="['from', 'to', 'casing_type', 'casing_material', 'diameter', 'wall_thickness', 'drive_shoe_status']"
-            show-empty>
-
-          <template v-slot:cell(from)="data">{{data.item.start}}{{data.item.start ? ' ft' : '' }}</template>
-          <template v-slot:cell(to)="data">{{data.item.end}}{{data.item.end ? ' ft' : '' }}</template>
-          <template v-slot:cell(casing_type)="data">{{codeToDescription('casing_codes', data.item.casing_code)}}</template>
-          <template v-slot:cell(casing_material)="data">{{codeToDescription('casing_materials', data.item.casing_material)}}</template>
-          <template v-slot:cell(drive_shoe_status)="data">{{codeToDescription('drive_shoe_status', data.item.drive_shoe_status)}}</template>
-
-        </b-table>
+        <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.casing_set)">
+          <Column field="start" header="From">
+            <template #body="slotProps">{{slotProps.data.start}}{{slotProps.data.start ? ' ft' : '' }}</template>
+          </Column>
+          <Column field="end" header="To">
+            <template #body="slotProps">{{slotProps.data.end}}{{slotProps.data.end ? ' ft' : '' }}</template>
+          </Column>
+          <Column field="casing_code" header="Casing Type">
+            <template #body="slotProps">{{codeToDescription('casing_codes', slotProps.data.casing_code)}}</template>
+          </Column>
+          <Column field="casing_material">
+            <template #body="slotProps">{{codeToDescription('casing_materials', slotProps.data.casing_material)}}</template>
+          </Column>
+          <Column field="diameter"/>
+          <Column field="wall_thickness"/>
+          <Column field="drive_shoe_status">
+            <template #body="slotProps">{{codeToDescription('drive_shoe_status', slotProps.data.drive_shoe_status)}}</template>
+          </Column>
+        </DataTable>
       </div>
     </fieldset>
 
@@ -268,17 +261,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
         <div class="col-span-12 lg:col-span-6">
           <div class="font-weight-bold">Liner perforations</div>
-          <b-table
-              striped
-              small
-              bordered
-              :items="filterBlankRows(form.linerperforation_set)"
-              :fields="['from', 'to']"
-              show-empty
-          >
-            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
-            <template v-slot:cell(to)="data" >{{data.item.end}} ft</template>
-          </b-table>
+          <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.linerperforation_set)">
+            <Column field="start" header="From">
+              <template #body="slotProps">{{slotProps.data.start}} ft</template>
+            </Column>
+            <Column field="end" header="To">
+              <template #body="slotProps">{{slotProps.data.end}} ft</template>
+            </Column>
+          </DataTable>
         </div>
       </div>
     </fieldset>
@@ -311,18 +301,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
         <div class="col-span-12 lg:col-span-8">
           <div class="font-weight-bold">Installed Screens</div>
-          <b-table
-              striped
-              small
-              bordered
-              :items="filterBlankRows(form.screen_set)"
-              :fields="['from', 'to', 'diameter', 'assembly_type', 'slot_size']"
-              show-empty
-              >
-            <template v-slot:cell(from)="data">{{data.item.start}} ft</template>
-            <template v-slot:cell(to)="data">{{data.item.end}} ft</template>
-            <template v-slot:cell(assembly_type)="data">{{codeToDescription('screen_assemblies', data.item.assembly_type)}}</template>
-          </b-table>
+          <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.screen_set)">
+            <Column field="start" header="From">
+              <template #body="slotProps">{{slotProps.data.start}} ft</template>
+            </Column>
+            <Column field="end" header="To">
+              <template #body="slotProps">{{slotProps.data.end}} ft</template>
+            </Column>
+            <Column field="diameter"/>
+            <Column field="assembly_type">
+              <template #body="slotProps">{{codeToDescription('screen_assemblies', slotProps.data.assembly_type)}}</template>
+            </Column>
+            <Column field="slot_size"/>
+          </DataTable>
         </div>
       </div>
     </fieldset>
@@ -417,29 +408,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-4 detail-section">
       <legend>Pumping Test Information and Aquifer Parameters</legend>
       <div class="table-responsive">
-        <b-table
-            striped
-            small
-            bordered
-            :items="filterBlankRows(form.aquifer_parameters_set)"
-            :fields="[
-                  'start_date_pumping_test',
-                  'pumping_test_description',
-                  { key: 'test_duration', label: 'Test Duration (min)' },
-                  'boundary_effect',
-                  'storativity',
-                  { key: 'transmissivity', label: 'Transmissivity (m²/day)' },
-                  { key: 'hydraulic_conductivity', label: 'Hydraulic Conductivity (m/day)' },
-                  'specific_yield',
-                  { key: 'specific_capacity', label: 'Specific Capacity (L/s/m)' },
-                  'analysis_method',
-                  'comments'
-                ]"
-            show-empty>
-            <template v-slot:cell(pumping_test_description)="data">{{codeToDescription('pumping_test_description_codes', data.item.pumping_test_description)}}</template>
-            <template v-slot:cell(boundary_effect)="data">{{codeToDescription('boundary_effect_codes', data.item.boundary_effect)}}</template>
-            <template v-slot:cell(analysis_method)="data">{{codeToDescription('analysis_method_codes', data.item.analysis_method)}}</template>
-        </b-table>
+        <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.aquifer_parameters_set)">
+          <Column field="start_date_pumping_test"/>
+          <Column field="pumping_test_description">
+            <template #body="slotProps">{{codeToDescription('pumping_test_description_codes', slotProps.data.pumping_test_description)}}</template>
+          </Column>
+          <Column field="test_duration" header="Test Duration (min)"/>
+          <Column field="boundary_effect">
+            <template #body="slotProps">{{codeToDescription('boundary_effect_codes', slotProps.data.boundary_effect)}}</template>
+          </Column>
+          <Column field="storativity"/>
+          <Column field="transmissivity" header="Transmissivity (m²/day)"/>
+          <Column field="hydraulic_conductivity" header="Hydraulic Conductivity (m/day)"/>
+          <Column field="specific_yield"/>
+          <Column field="specific_capacity" header="Specific Capacity (L/s/m)"/>
+          <Column field="analysis_method">
+            <template #body="slotProps">{{codeToDescription('analysis_method_codes', slotProps.data.analysis_method)}}</template>
+          </Column>
+          <Column field="comments"/>
+        </DataTable>
       </div>
     </fieldset>
 
