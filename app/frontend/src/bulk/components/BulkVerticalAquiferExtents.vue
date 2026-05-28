@@ -22,7 +22,7 @@
         </template>
       </Breadcrumb>
     </div>
-    <b-card class="container p-1" v-if="perms.verticalAquiferExtents">
+    <div class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
       <div class="border-bottom mb-4 pb-2 pt-2">

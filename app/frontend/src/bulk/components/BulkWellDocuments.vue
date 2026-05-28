@@ -22,7 +22,7 @@
         </template>
       </Breadcrumb>
     </div>
-    <b-card class="container p-1" v-if="perms.wellDocuments">
+    <div class="container p-1" v-if="perms.wellDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
       <div>
