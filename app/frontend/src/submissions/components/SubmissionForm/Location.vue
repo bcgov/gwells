@@ -57,12 +57,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="mb-1">OR</p>
       <p class="font-weight-bold">
         2) Legal Description
-        <i id="legal_description_fields" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-        <b-popover
-          target="legal_description_fields"
-          triggers="hover focus"
-          :content="TOOLTIP_TEXT.location_vue.legal_description_fields"
-        />
+        <i 
+          tabindex="0"
+          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+          @mouseenter="showPopover"
+          @mouseleave="hidePopover"
+          @focus="showPopover"
+          @blur="hidePopover"/>
+        <Popover ref="op">{{ TOOLTIP_TEXT.location_vue.legal_description_fields }}</Popover>
       </p>
     </div>
 
@@ -330,6 +332,14 @@ export default {
       if (document.getElementById('location-address-suggestions-list')) {
         document.getElementById('location-address-suggestions-list').style.display = show ? 'block' : 'none'
       }
+    },
+
+    // Show and hide popover
+    showPopover() {
+      this.$refs.op.show()
+    },
+    hidePopover() {
+      this.$refs.op.hide()
     }
   }
 }

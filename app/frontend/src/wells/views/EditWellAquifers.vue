@@ -120,12 +120,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                               </div>
                             </template>
                           </v-select>
-                          <!-- There isn't a replacement. Will need to redo error logic later.
-                            <b-form-invalid-feedback :id="`aquifer${index}InvalidFeedback`">
-                            <div v-for="(error, errIndex) in getRowError(index).aquifer_id" :key="`aquifer${index}Input error ${errIndex}`">
+                          <div :id="`aquifer${index}InvalidFeedback`">
+                            <div v-for="(error, e_index) in getRowError(index).aquifer_id" class="mt-1 text-sm text-red-600" :key="`aquifer${index}Input error ${e_index}`">
                               {{ error }}
                             </div>
-                          </b-form-invalid-feedback> -->
+                          </div>
                         </InputGroupAddon>
                       </td>
                       <td class="py-0 text-right">

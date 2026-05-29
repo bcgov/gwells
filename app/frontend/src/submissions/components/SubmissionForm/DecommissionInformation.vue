@@ -30,14 +30,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="decommissionReasonInput"
         :errors="errors['decommission_reason']"
         :loaded="fieldsLoaded['decommission_reason']"/>
-      <b-form-group label="Decommission Method">
-        <b-form-radio-group id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
-          <b-form-radio
-            v-for="(method, index) in codes.decommission_methods"
-            :key="`decommissionMethodOption${index}`"
-            :value="method.decommission_method_code">{{method.description}}</b-form-radio>
-        </b-form-radio-group>
-      </b-form-group>
+      <div class="flex flex-col gap-2">
+        <label>Decommission Method</label>
+        <RadioButtonGroup id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
+          <div v-for="(method, index) in codes.decommission_methods" class="flex align-items-center" :key="`decommissionMethodOption${index}`">
+            <RadioButton :inputId="`decommissionMethodInput.${method.decommission_method_code}`" :value="method.decommission_method_code"/>
+            <label :for="`decommissionMethodInput.${method.decommission_method_code}`" class="ml-2">{{method.description}}</label>
+          </div>
+        </RadioButtonGroup>
+      </div>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input

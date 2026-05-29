@@ -19,28 +19,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <div class="grid grid-cols-12">
         <div class="sm:col-span-12 md:col-span-6">
           <div class="container p-4 m-1 md:m-1">
-            <template #default>
-              <responsive-grid :cols="12" :sm="6" :lg="3">
-                <form-input
-                  id="latitude"
-                  type="text"
-                  label="Latitude"
-                  hint="Decimal degrees"
-                  @input="handleDegreesChange"
-                  v-model.number="degrees.latitude"
-                  :errors="errors['latitude']"
-                  :loaded="fieldsLoaded['latitude']"/>
-                <form-input
-                  id="longitude"
-                  type="text"
-                  @input="handleDegreesChange"
-                  label="Longitude"
-                  hint="Decimal degrees"
-                  v-model.number="degrees.longitude"
-                  :errors="errors['longitude']"
-                  :loaded="fieldsLoaded['longitude']"/>
-              </responsive-grid>
-            </template>
+            <responsive-grid :cols="12" :sm="6" :lg="3">
+              <form-input
+                id="latitude"
+                type="text"
+                label="Latitude"
+                hint="Decimal degrees"
+                @input="handleDegreesChange"
+                v-model.number="degrees.latitude"
+                :errors="errors['latitude']"
+                :loaded="fieldsLoaded['latitude']"/>
+              <form-input
+                id="longitude"
+                type="text"
+                @input="handleDegreesChange"
+                label="Longitude"
+                hint="Decimal degrees"
+                v-model.number="degrees.longitude"
+                :errors="errors['longitude']"
+                :loaded="fieldsLoaded['longitude']"/>
+            </responsive-grid>
           </div>
           <div class="flex"><p class="p-4 m-0">OR</p></div>
           <div class="container p-4 mx-1 md:mx-1">

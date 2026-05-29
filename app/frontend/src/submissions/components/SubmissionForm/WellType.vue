@@ -33,53 +33,51 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="wellStatusCodeInput"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="4">
-          <b-form-group
+        <div class="flex flex-col gap-2" aria-describedby="wellClassInvalidFeedback">
+          <label>Class of Well *</label>
+          <Select
             id="wellClass"
-            label="Class of Well *"
-            aria-describedby="wellClassInvalidFeedback">
-            <Select
-              v-model="wellClassInput"
-              :options="codes?.well_classes"
-              optionValue="well_class_code"
-              optionLabel="description"
-              :invalid="errors['well_class'] ? true : false"
-              placeholder="Select class"/>
-            <b-form-invalid-feedback id="wellClassInvalidFeedback">
-              <div v-for="(error, index) in errors['well_class']" :key="`wellClass error ${index}`">
-                {{ error }}
-              </div>
-            </b-form-invalid-feedback>
-          </b-form-group>
-          <b-form-group
+            v-model="wellClassInput"
+            :options="codes?.well_classes"
+            optionValue="well_class_code"
+            optionLabel="description"
+            :invalid="errors['well_class'] ? true : false"
+            placeholder="Select class"/>
+          <div id="wellClassInvalidFeedback">
+            <div v-for="(error, index) in errors['well_class']" class="mt-1 text-sm text-red-600" :key="`wellClass error ${index}`">
+              {{ error }}
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2" aria-describedby="wellSubclassInvalidFeedback">
+          <label>Well Subclass</label>
+          <Select
             id="wellSubclass"
-            label="Well Subclass"
-            aria-describedby="wellSubclassInvalidFeedback">
-            <Select
-              v-model="wellSubclassInput"
-              :options="subclasses"
-              optionValue="well_subclass_guid"
-              optionLabel="description"
-              :disabled="wellSubclassDisabled"
-              :invalid="errors['well_subclass'] ? true : false"
-              placeholder="Select subclass"/>
-            <b-form-invalid-feedback id="wellSubclassInvalidFeedback">
-              <div v-for="(error, index) in errors['well_subclass']" :key="`wellSubclass error ${index}`">
-                {{ error }}
-              </div>
-            </b-form-invalid-feedback>
-          </b-form-group>
-          <form-input
-            select
-            v-model="intendedWaterUseInput"
-            :options="intendedWaterUseOptions"
-            value-field="intended_water_use_code"
-            text-field="description"
-            label="Intended Water Use *"
-            placeholder="Select intended use"
-            :errors="errors['intended_water_use']"
-            :loaded="fieldsLoaded['intended_water_use']"
-            :disabled="intendedWaterUseDisabled"
-            id="intendedWaterUse"/>
+            v-model="wellSubclassInput"
+            :options="subclasses"
+            optionValue="well_subclass_guid"
+            optionLabel="description"
+            :disabled="wellSubclassDisabled"
+            :invalid="errors['well_subclass'] ? true : false"
+            placeholder="Select subclass"/>
+          <div id="wellSubclassInvalidFeedback">
+            <div v-for="(error, index) in errors['well_subclass']" class="mt-1 text-sm text-red-600" :key="`wellSubclass error ${index}`">
+              {{ error }}
+            </div>
+          </div>
+        </div>
+        <form-input
+          select
+          v-model="intendedWaterUseInput"
+          :options="intendedWaterUseOptions"
+          value-field="intended_water_use_code"
+          text-field="description"
+          label="Intended Water Use *"
+          placeholder="Select intended use"
+          :errors="errors['intended_water_use']"
+          :loaded="fieldsLoaded['intended_water_use']"
+          :disabled="intendedWaterUseDisabled"
+          id="intendedWaterUse"/>
       </responsive-grid>
       <div class="grid grid-cols-12">
         <div class="col-span-12 md:col-span-4" v-if="!isStaffEdit && wellActivityType !== 'CON'">

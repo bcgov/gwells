@@ -80,11 +80,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     v-model="attachment.document_code"
                     :options="WELL_TAGS"
                     :invalid="getAttachmentError(index).document_code ? true : false"/>
-                  <b-form-invalid-feedback :id="`attachmentCodeInvalidFeedback${index}`">
-                    <div v-for="(error, error_index) in getAttachmentError(index).document_code" :key="`Document Type input error ${error_index}`">
+                  <div :id="`attachmentCodeInvalidFeedback${index}`">
+                    <div v-for="(error, e_index) in getAttachmentError(index).document_code" class="mt-1 text-sm text-red-600" :key="`Document Type input error ${e_index}`">
                       {{ error }}
                     </div>
-                  </b-form-invalid-feedback>
+                  </div>
                 </div>
               </td>
               <td>

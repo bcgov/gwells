@@ -56,11 +56,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           optionLabel="description"
           :invalid="errors['owner_province_state'] ? true : false"
           placeholder="Select a province"/>
-        <b-form-invalid-feedback id="ownerProvinceInvalidFeedback">
-          <div v-for="(error, index) in errors['owner_province_state']" :key="`ProvinceInput error ${index}`">
+        <div id="ownerProvinceInvalidFeedback">
+          <div v-for="(error, index) in errors['owner_province_state']" class="mt-1 text-sm text-red-600" :key="`ProvinceInput error ${index}`">
             {{ error }}
           </div>
-        </b-form-invalid-feedback>
+        </div>
       </div>
       <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"/>
     </responsive-grid>

@@ -4,7 +4,7 @@
       <h6 class="card-title mb-0" id="changeHistoryTitle">
         Change History
         <span class="ml-4">
-          <b-button link size="sm" variant="outline-primary" v-on:click="toggleShow">{{showHistory ? "Hide":"Show"}}</b-button>
+          <Button :label="showHistory ? 'Hide':'Show'" size="small" severity="secondary" v-on:click="toggleShow"/>
         </span>
       </h6>
       <div v-if="loading">

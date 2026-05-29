@@ -27,10 +27,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <label for="checkbox1">Person Responsible is the same as the Person Who Completed the Work</label>
       </div>
       <responsive-grid :cols="12" :md="12" :lg="6">
-        <b-form-group
-          label="Person Responsible for Work"
-          aria-describedby="personResponsibleInvalidFeedback"
-          :state="false">
+        <div class="flex flex-col gap-2" aria-describedby="personResponsibleInvalidFeedback">
+          <label>Person Responsible for Work</label>
           <v-select
             :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
             :disabled="persons === null"
@@ -43,17 +41,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
             ref="personResponsible"
             @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
             <template v-slot:no-options>
-                Type to search registry...
+              Type to search registry...
             </template>
             <template v-slot:cell(selected-option)="option">
-              <div>
-                {{ personNameReg (option) }}
-              </div>
+              <div>{{ personNameReg (option) }}</div>
             </template>
             <template v-slot:cell(option)="option">
-              <div>
-                {{ personNameReg (option) }}
-              </div>
+              <div>{{ personNameReg (option) }}</div>
             </template>
           </v-select>
           <!-- TODO: Copy over the bootstrap form-text class to one of the css files -->
@@ -65,7 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               {{ error }}
             </div>
           </div>
-        </b-form-group>
+        </div>
         <form-input
           id="drillerName"
           label="Person Who Completed the Work"
@@ -89,7 +83,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             ref="companyOfPersonResponsible"
             @search:blur="handleSearchBlur(companyOfPersonResponsibleOptions, $refs.companyOfPersonResponsible, 'companyOfPersonResponsibleInput')">
             <template v-slot:no-options>
-                Search by company name
+              Search by company name
             </template>
           </v-select>
           <small id="companyOfPersonResponsibleSelectHint" class="form-text text-muted">

@@ -45,11 +45,11 @@
         :text-field="textField"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-      <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
-        <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
+      <div :id="`${id}InvalidFeedback`">
+        <div v-for="(error, index) in errors" class="mt-1 text-sm text-red-600" :key="`${id}Input error ${index}`">
           {{ error }}
         </div>
-      </b-form-invalid-feedback>
+      </div>
     </b-col>
     <b-col sm="5" v-if="type === 'range' || type === 'dateRange'">
       <b-form-input

@@ -67,11 +67,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   optionLabel="description"
                   :invalid="getCasingError(index).casing_code ? true : false"
                   placeholder="Select a type"/>
-                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
-                  <div v-for="(error, error_index) in getCasingError(index).casing_code" :key="`Casing type input error ${error_index}`">
+                <div :id="`casingCodeInvalidFeedback${index}`">
+                  <div v-for="(error, e_index) in getCasingError(index).casing_code" class="mt-1 text-sm text-red-600" :key="`Casing type input error ${e_index}`">
                     {{ error }}
                   </div>
-                </b-form-invalid-feedback>
+                </div>
               </div>
             </td>
             <td>
@@ -84,11 +84,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   optionLabel="description"
                   :invalid="getCasingError(index).casing_material ? true : false"
                   placeholder="Select a material"/>
-                <b-form-invalid-feedback :id="`casingCodeInvalidFeedback${index}`">
-                  <div v-for="(error, error_index) in getCasingError(index).casing_material" :key="`Material input error ${error_index}`">
+                <div :id="`casingCodeInvalidFeedback${index}`">
+                  <div v-for="(error, e_index) in getCasingError(index).casing_material" class="mt-1 text-sm text-red-600" :key="`Material input error ${e_index}`">
                     {{ error }}
                   </div>
-                </b-form-invalid-feedback>
+                </div>
               </div>
             </td>
             <td>

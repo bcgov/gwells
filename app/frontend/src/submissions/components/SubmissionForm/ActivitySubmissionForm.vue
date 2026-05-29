@@ -48,18 +48,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
       <!-- Form load/save -->
       <div v-if="!isStaffEdit" class="flex text-right">
-        <b-btn size="sm" variant="outline-primary" class="mr-2" @click="saveForm">
-          Save report progress
-          <transition name="bounce" mode="out-in">
-            <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
-          </transition>
-        </b-btn>
-        <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
-          Load saved report
-          <transition name="bounce">
-            <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
-          </transition>
-        </b-btn>
+        <Button
+          label="Save report progress"
+          :icon="saveFormSuccess ? 'fa fa-check text-success animate-bounce':''"
+          size="small"
+          severity="secondary"
+          class="mr-2"
+          @click="saveForm"/>
+        <Button
+          label="Load saved report"
+          :icon="loadFormSuccess ? 'fa fa-check text-success animate-bounce':''"
+          size="small"
+          severity="secondary"
+          @click="loadConfirmation"
+          ref="confirmLoadBtn"
+          :disabled="isLoadFormDisabled"/>
       </div>
 
       <!-- Type of work performed -->
