@@ -79,9 +79,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td class="input-width-medium">
                 <div class="material-badges">
-                  <b-badge v-for="(soil, j) in lithSoils[index]" variant="light" class="font-weight-normal" :key="`soilTerm-${index}-${j}`">
+                  <Badge v-for="(soil, j) in lithSoils[index]" severity="secondary" class="font-weight-normal" :key="`soilTerm-${index}-${j}`">
                     {{ soil }}
-                  </b-badge>
+                  </Badge>
                 </div>
               </td>
               <td class="input-width-medium">

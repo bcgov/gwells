@@ -25,7 +25,9 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs, TabList, Tab, TabPanels, TabPanel, ConfirmDialog
+  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs,
+  TabList, Tab, TabPanels, TabPanel, ConfirmDialog,
+  Badge
 } from 'primevue';
 import { Form } from '@primevue/forms';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -129,6 +131,7 @@ app.component("TabList", TabList);
 app.component("TabPanel", TabPanel);
 app.component("TabPanels", TabPanels);
 app.component("ConfirmDialog", ConfirmDialog);
+app.component("Badge", Badge);
 
 const pinia = createPinia();
 app.use(pinia);
