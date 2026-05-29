@@ -14,17 +14,15 @@
 
 <template>
   <div id="bulk-vertical-aquifer-extents-screen">
-    <div class="bg-white mx-8 mb-4">
-      <Breadcrumb
-        class="p-0"
-        :model="breadcrumbs">
+    <div class="container mb-4 !px-0">
+      <Breadcrumb class="p-0" :model="breadcrumbs">
         <template #item="{ item }">
           <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
           <span v-else>{{ item.label }}</span>
         </template>
       </Breadcrumb>
     </div>
-    <div class="bg-white mx-8 mb-4 p-6" v-if="perms.verticalAquiferExtents">
+    <div class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
       <div class="border-bottom mb-4 pb-2 pt-2">

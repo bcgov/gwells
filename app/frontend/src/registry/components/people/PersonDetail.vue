@@ -1,6 +1,11 @@
 <template>
   <div class="container mb-4 !px-0">
-    <Breadcrumb :model="breadcrumbs"/>
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
   </div>
   <div v-if="showSpinner" class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
     <div class="fa-2x text-center">
@@ -417,8 +422,8 @@ export default {
       drillApplication: null,
       pumpApplication: null,
       breadcrumbs: [
-        { label: 'Registry', url: '/registries' },
-        { label: 'Person Profile' }
+        { label: 'Registry', route: { name: 'SearchHome' } },
+        { label: 'Person Profile', active: true }
       ],
       editCompany: 0,
       editRegistration: 0,

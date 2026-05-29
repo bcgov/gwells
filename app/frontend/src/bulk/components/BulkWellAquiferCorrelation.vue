@@ -14,10 +14,8 @@
 
 <template>
   <div id="bulk-well-aquifer-correlation-screen">
-    <div class="bg-white mx-8 mb-4">
-      <Breadcrumb
-        class="p-0"
-        :model="breadcrumbs">
+    <div class="container mb-4 !px-0">
+      <Breadcrumb class="p-0" :model="breadcrumbs">
         <template #item="{ item }">
           <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
           <span v-else>{{ item.label }}</span>

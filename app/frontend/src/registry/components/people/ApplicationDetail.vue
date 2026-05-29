@@ -14,7 +14,12 @@
 <template>
   <div class="container">
     <div class="container mb-4 !px-0">
-      <Breadcrumb :model="breadcrumbs"/>
+      <Breadcrumb class="p-0" :model="breadcrumbs">
+        <template #item="{ item }">
+          <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+          <span v-else>{{ item.label }}</span>
+        </template>
+      </Breadcrumb>
     </div>
     <div class="card">
       <div class="card-body">
@@ -213,15 +218,15 @@ export default {
       registryStore: useRegistryStore(),
       breadcrumbs: [
         {
-          text: 'Registry',
-          to: { name: 'SearchHome' }
+          label: 'Registry',
+          route: { name: 'SearchHome' }
         },
         {
-          text: 'Profile',
-          to: { name: 'PersonDetail', params: { person_guid: this.$route.params.person_guid } }
+          label: 'Profile',
+          route: { name: 'PersonDetail', params: { person_guid: this.$route.params.person_guid } }
         },
         {
-          text: `Classification`,
+          label: `Classification`,
           active: true
         }
       ],

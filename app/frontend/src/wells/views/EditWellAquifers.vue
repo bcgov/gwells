@@ -14,7 +14,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
 <template>
   <div class="container mb-4 !px-0">
-    <Breadcrumb :model="breadcrumbs"/>
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
   </div>
   <div v-if="loading" class="ml-20 mr-20 bg-white">
     <div class="fa-2x text-center">
@@ -182,30 +187,35 @@ export default {
       aquiferList: [],
       errorNotFound: false,
       showSavedMessage: false,
-      isSaving: false
+      isSaving: false,
+      breadcrumbs: [
+        {
+          label: 'Well Search',
+          route: { name: 'wells-home' }
+        },
+        {
+          label: `Well ${this.$route.params.id} Summary`,
+          route: {
+            name: "wells-detail",
+            params: { id: this.$route.params.id }
+          }
+        },
+        {
+          label: `Edit Well`,
+          route: {
+            name: "SubmissionsEdit",
+            params: { id: this.$route.params.id },
+          }
+        },
+        {
+          label: this.errorNotFound ? 'Not found' : 'Edit Vertical Aquifer Extents',
+          active: true
+        }
+      ]
     }
   },
   computed: {
     wellTagNumber () { return parseInt(this.$route.params.wellTagNumber) || null },
-    breadcrumbs () {
-      return [
-        {
-          label: 'Well Search',
-          url: '/'
-        },
-        {
-          label: `Well ${this.wellTagNumber} Summary`,
-          url: `/well/${this.wellTagNumber}`
-        },
-        {
-          label: 'Edit Well',
-          url: `/submissions/${this.wellTagNumber}/edit`
-        },
-        {
-          label: this.errorNotFound ? 'Not found' : 'Edit Vertical Aquifer Extents'
-        }
-      ]
-    },
     filledInData () {
       return this.aquifersData.filter((row) => this.rowHasValues(row))
     },

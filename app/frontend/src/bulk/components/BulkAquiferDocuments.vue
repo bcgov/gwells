@@ -14,17 +14,15 @@
 
 <template>
   <div id="bulk-aquifer-documents-upload-screen">
-    <div class="bg-white mx-8 mb-4">
-      <Breadcrumb
-        class="p-0"
-        :model="breadcrumbs">
+    <div class="container mb-4 !px-0">
+      <Breadcrumb class="p-0" :model="breadcrumbs">
         <template #item="{ item }">
           <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
           <span v-else>{{ item.label }}</span>
         </template>
       </Breadcrumb>
     </div>
-    <div class="bg-white mx-8 mb-4 p-6" v-if="perms.aquiferDocuments">
+    <div class="container p-1" v-if="perms.aquiferDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
       <div>

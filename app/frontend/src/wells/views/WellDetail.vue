@@ -13,7 +13,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div class="container mb-4 !px-0">
-    <Breadcrumb :model="breadcrumbs"/>
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
   </div>
   <div v-if="loading" class="ml-20 mr-20 bg-white">
     <div class="fa-2x text-center">
@@ -655,6 +660,16 @@ export default {
         { key: 'analysis_method', label: 'Analysis Method' },
         { key: 'comments', label: 'Comments' }
       ],
+      breadcrumbs: [
+        {
+          label: 'Well Search',
+          route: { name: 'wells-home' }
+        },
+        {
+          label: this.errorNotFound ? 'Not found' : 'Well Summary',
+          active: true
+        }
+      ],
       submissionsPerPage: 5,
       submissionsPage: 1,
       loading: false,
@@ -702,17 +717,6 @@ export default {
         return this.convertToUTM(Number(this.well.longitude), Number(this.well.latitude))
       }
       return {}
-    },
-    breadcrumbs () {
-      return [
-        {
-          label: 'Well Search',
-          url: '/'
-        },
-        {
-          label: this.errorNotFound ? 'Not found' : 'Well Summary'
-        }
-      ]
     },
     isUnpublished () {
       //  TypeError: Cannot read properties of undefined (reading 'is_published')

@@ -14,7 +14,12 @@ governing permissions and limitations under the License. */
     </div>
     <div v-else>
       <div class="container mb-4 !px-0" v-if="breadcrumbs && breadcrumbs.length">
-        <Breadcrumb :model="breadcrumbs"/>
+        <Breadcrumb class="p-0" :model="breadcrumbs">
+          <template #item="{ item }">
+            <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+            <span v-else>{{ item.label }}</span>
+          </template>
+        </Breadcrumb>
       </div>
       <div
         class="card"
@@ -161,6 +166,37 @@ export default {
       //   },
       // }),
       ...initialState(),
+      breadcrumbs: [
+        ...(this.errorWellNotFound ? [
+          {
+            label: `Well Search`,
+            route: { name: "wells-home" }
+          },
+          {
+            text: `Not found`,
+            active: true
+          }
+        ] : []),
+
+        ...(this.isStaffEdit ? [
+          {
+            label: `Well Search`,
+            route: { name: "wells-home" }
+          },
+          {
+            label: `Well ${this.$route.params.id} Summary`,
+            route: { name: "wells-detail", params: { id: this.$route.params.id } }
+          },
+          {
+            label: `Edit Well`,
+            route: {
+              name: "SubmissionsEdit",
+              params: { id: this.$route.params.id },
+            },
+            active: true
+          }
+        ] : [])
+      ]
     };
   },
   computed: {
@@ -179,44 +215,6 @@ export default {
     },
     isStaffEdit() {
       return this.activityType === "STAFF_EDIT" && this.commonStore.userRoles.wells.edit;
-    },
-    breadcrumbs() {
-      const breadcrumbs = [];
-
-      if (this.errorWellNotFound) {
-        breadcrumbs.push(
-          {
-            text: `Well Search`,
-            to: { name: "wells-home" },
-          },
-          {
-            text: `Not found`,
-            active: true,
-          }
-        );
-        return breadcrumbs;
-      }
-
-      if (this.isStaffEdit) {
-        breadcrumbs.push(
-          {
-            text: `Well Search`,
-            to: { name: "wells-home" },
-          },
-          {
-            text: `Well ${this.$route.params.id} Summary`,
-            to: { name: "wells-detail", params: { id: this.$route.params.id } },
-          },
-          {
-            text: `Edit Well`,
-            to: {
-              name: "SubmissionsEdit",
-              params: { id: this.$route.params.id },
-            },
-          }
-        );
-      }
-      return breadcrumbs;
     },
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;

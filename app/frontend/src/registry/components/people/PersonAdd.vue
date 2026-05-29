@@ -1,6 +1,11 @@
 <template>
   <div class="container mb-4 !px-0">
-    <Breadcrumb :model="breadcrumbs"/>
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
   </div>
   <div class="container mb-4 !px-0" v-if="error">
     <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
@@ -257,8 +262,8 @@ export default {
       registryStore: useRegistryStore(),
       commonStore: useCommonStore(),
       breadcrumbs: [
-        { label: 'Registry', url: '/registries/'},
-        { label: 'Add a Person'}
+        { label: 'Registry', route: { name: 'SearchHome' } },
+        { label: 'Add a Person', active: true }
       ],
       drillerForm: {
         person: {
