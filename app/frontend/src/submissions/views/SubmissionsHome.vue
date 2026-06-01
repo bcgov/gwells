@@ -407,7 +407,7 @@ export default {
           this.formSubmitSuccess = true;
           this.formSubmitSuccessWellTag = response.data.well;
 
-          this.$emit("formSaved");
+          this.$refs.activitySubmissionForm.onFormSave();
           // Save completed notification
 
           if (this.isStaffEdit) {

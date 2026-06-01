@@ -160,7 +160,9 @@ export default {
   mixins: [filterMixin],
   components: {
     'qaqc-filters': QaQcFilters,
-    'qaqc-exports': QaQcExports
+    'qaqc-exports': QaQcExports,
+    Badge,
+    Popover
   },
   data () {
     return {

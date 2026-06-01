@@ -162,7 +162,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-
+import { ConfirmDialog, InputGroupAddon } from 'primevue'
 import { debounce, uniq } from 'lodash-es'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
@@ -173,7 +173,9 @@ export default {
   components: {
     'api-error': APIErrorMessage,
     'form-input': FormInput,
-    'v-select': vSelect
+    'v-select': vSelect,
+    ConfirmDialog,
+    InputGroupAddon
   },
   data () {
     return {

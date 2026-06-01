@@ -21,13 +21,11 @@ import PrimeVue from 'primevue/config';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import {
-  Button, InputText, InputMask, Card, Message,Panel,
+  Button, InputText, InputMask, Card, Message,
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs,
-  TabList, Tab, TabPanels, TabPanel, ConfirmDialog,
-  Badge
+  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab
 } from 'primevue';
 import { Form } from '@primevue/forms';
 import ConfirmationService from 'primevue/confirmationservice';
@@ -106,7 +104,6 @@ app.component("InputText", InputText);
 app.component("InputMask", InputMask)
 app.component("Card", Card);
 app.component("Message", Message);
-app.component("Panel", Panel);
 app.component("Select", Select);
 app.component("MultiSelect", MultiSelect)
 app.component("RadioButton", RadioButton);
@@ -124,14 +121,9 @@ app.component("FileUpload", FileUpload)
 app.component("Textarea", Textarea)
 app.component("Menubar", Menubar);
 app.component("ScrollTop", ScrollTop);
-app.component("InputGroupAddon", InputGroupAddon);
-app.component("Tab", Tab);
 app.component("Tabs", Tabs);
 app.component("TabList", TabList);
-app.component("TabPanel", TabPanel);
-app.component("TabPanels", TabPanels);
-app.component("ConfirmDialog", ConfirmDialog);
-app.component("Badge", Badge);
+app.component("Tab", Tab);
 
 const pinia = createPinia();
 app.use(pinia);

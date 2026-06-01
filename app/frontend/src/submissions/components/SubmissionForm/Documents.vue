@@ -323,6 +323,11 @@ export default {
       instance.length_required = !instance.length_required
       this.attachmentsData[index] = instance
     },
+    getAttachmentError (index) {
+      return this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']
+        ? this.errors['attachment_set'][index]
+        : {}
+    },
     getFieldsLoaded (index) {
       return this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']
         ? this.fieldsLoaded['attachment_set'][index]

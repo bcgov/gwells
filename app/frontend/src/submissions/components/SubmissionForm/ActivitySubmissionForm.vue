@@ -536,6 +536,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import { SelectButton } from 'primevue'
 import smoothScroll from 'smoothscroll'
 
 import ActivityType from './ActivityType.vue'
@@ -665,7 +666,8 @@ export default {
     ObservationWellInfo,
     SubmissionHistory,
     EditHistory,
-    AquiferParameters
+    AquiferParameters,
+    SelectButton
   },
   data () {
     return {
@@ -896,11 +898,13 @@ export default {
       const dateString = event
       const isNewWellConstruction = this.checkNewWellConstructionDates(dateString, dateInputType)
       this.handleNewWellConstruction(isNewWellConstruction)
+    },
+    onFormSave () {
+      // When the form is saved, reset the formValueChanged variable
+      this.formValueChanged = false
     }
   },
   created () {
-    // When the form is saved, reset the formValueChanged variable.
-    this.$parent.$on('formSaved', () => { this.formValueChanged = false })
     if (this.$route.hash) {
       this.step = 1
       this.changeRouteHash(this.step)

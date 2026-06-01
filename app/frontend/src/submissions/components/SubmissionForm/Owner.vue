@@ -79,6 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+import querystring from 'querystring'
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
@@ -169,7 +170,6 @@ export default {
         addressString: this.ownerAddressInput
       }
 
-      const querystring = require('querystring')
       const searchParams = querystring.stringify(params)
       try {
         ApiService.getAddresses(searchParams).then((response) => {

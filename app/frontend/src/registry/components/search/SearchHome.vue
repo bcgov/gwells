@@ -246,6 +246,7 @@ import querystring from 'querystring-es3'
 import mapboxgl from 'mapbox-gl'
 import { omit } from 'lodash'
 import axios from 'axios'
+import { Panel } from 'primevue'
 
 import ApiService from '@/common/services/ApiService.js'
 import RegistryMap from '@/registry/components/search/RegistryMap.vue'
@@ -260,7 +261,8 @@ export default {
     'registry-table': SearchTable,
     'registry-map': RegistryMap,
     'api-error': APIErrorMessage,
-    'register-legal-text': LegalText
+    'register-legal-text': LegalText,
+    Panel
   },
   data () {
     return {
