@@ -152,14 +152,9 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   name: 'LinerInformation',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     linerMaterial: String,
     linerDiameter: null,

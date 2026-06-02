@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset :id="id" class="mt-5">
+  <fieldset :id="id" class="mt-12">
     <b-row>
       <b-col cols="12" lg="6">
         <legend>Change History</legend>
@@ -27,7 +27,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import Vue from 'vue'
 import { useSubmissionStore } from '@/stores/submission'
 import WellHistory from './WellHistory.vue'
 
@@ -41,9 +40,12 @@ export default {
       type: Number,
       isInput: false
     },
-    events: {
-      type: Vue
-    }
+    // TBD events handled differently in Vue 3
+    // and not need to be passed a prop
+    // Possibly replace with vue watch.
+    // events: {
+    //   type: Vue
+    // }
   },
   components: {
     WellHistory

@@ -104,7 +104,7 @@ export const useQAQCStore = defineStore('qaqc', {
     results: null,
     resultCount: 0,
     downloads: null,
-    selectedTab: null
+    selectedTab: 0
   }),
 
   getters: {

@@ -215,7 +215,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </b-row>
 
       <!-- Error message when location not given -->
-      <b-alert class="mt-3" variant="danger" :show="errors.well_location_section && errors.well_location_section.length > 0">
+      <b-alert class="mt-4" variant="danger" :show="errors.well_location_section && errors.well_location_section.length > 0">
         Must provide well location as either an address, legal description, or parcel identifier.
       </b-alert>
 
@@ -224,16 +224,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
 import ApiService from '../../../common/services/ApiService'
 import { TOOLTIP_TEXT } from '@/common/constants'
 
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     id: {
       type: String,

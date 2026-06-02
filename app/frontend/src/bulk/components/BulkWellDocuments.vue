@@ -14,30 +14,39 @@
 
 <template>
   <div id="bulk-well-documents-upload-screen">
-    <b-card no-body class="mb-3 container d-print-none">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-    </b-card>
-    <b-card class="container p-1" v-if="perms.wellDocuments">
+    <div class="container mb-4 !px-0">
+      <Breadcrumb class="p-0" :model="breadcrumbs">
+        <template #item="{ item }">
+          <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+          <span v-else>{{ item.label }}</span>
+        </template>
+      </Breadcrumb>
+    </div>
+    <div class="container p-1" v-if="perms.wellDocuments">
       <api-error v-if="apiError" :error="apiError"/>
 
-      <b-container>
-        <b-row class="border-bottom mb-3 pb-2 pt-2">
-          <b-col><h4>Well Documents Bulk Upload</h4></b-col>
-        </b-row>
-
+      <div>
+        <div class="pb-5 pt-2">
+          <h3>Well Documents Bulk Upload</h3>
+        </div>
+        <div class="w-full border-gray-300 border-1 border-solid h-0 mb-5" >&nbsp;</div>
         <div v-if="showSaveSuccess">
-          <b-alert show variant="success" >
-            All documents uploaded for wells.
-          </b-alert>
+          <Message
+            class="my-3"
+            severity="success"
+          >
+            <p class="m-0">
+              All documents uploaded for wells.
+            </p>
+          </Message>
 
-          <b-button
-            variant="default"
+          <Button
             @click="restart">
             Upload more documents
-          </b-button>
+          </Button>
         </div>
         <div v-else>
-          <div id="instructions" class="mb-3" title="Instructions">
+          <div id="instructions" class="mb-4" title="Instructions">
             <ol>
               <li :class="{active: keyedActiveStep === 'one'}">
                 Use the file picker below to choose one or more documents keyed by well tag number
@@ -71,93 +80,113 @@
               </li>
             </ol>
           </div>
-
-          <b-form @submit.prevent="save()" @reset.prevent="reset()">
-            <b-row>
-              <b-col md="6" id="documents">
-                <h5>Documents</h5>
-                <b-row class="align-items-center mb-3">
-                  <b-col md="3">
-                    <b-form-file
-                      multiple
-                      :disabled="isSaving"
-                      :key="`file-upload-${commonStore.uploadFiles.length}`"
-                      @input="filesPicked"/>
-                  </b-col>
-                  <b-col md="9">
-                    <div>
-                      <b-form-checkbox
-                        id="private-documents-checkbox"
-                        :disabled="isSaving"
-                        v-model="privateDocument">Are these documents private?</b-form-checkbox>
-                    </div>
-                  </b-col>
-                </b-row>
-                <table id="files-to-upload">
-                  <tbody>
-                    <tr v-for="(file, index) in commonStore.uploadFiles" :key="index" :class="{ error: fileIsInvalid(file) }">
-                      <td><input type="button" value="remove" :disabled="isSaving" @click.prevent="removeFile(file)"/></td>
-                      <td>{{file.name}}</td>
-                      <td>{{formatFileSize(file.size)}}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </b-col>
-              <b-col md="6" id="wells">
-                <h5>Wells</h5>
-                <b-alert show variant="warning" v-if="unknownWellIdsExist">
-                  Wells in <span style="color:red">red</span> do not exist
-                </b-alert>
-
-                <b-alert show variant="warning" v-if="showOverwriteWarningMessage">
-                  Wells in <span style="color:orange">orange</span> will be overwritten
-                </b-alert>
-
-                <b-table
-                  :items="wellTableData"
-                  :fields="wellTableFields"
-                  v-if="commonStore.uploadFiles.length > 0"
-                  :show-empty="wellTableData.length === 0"
-                  empty-text="No documents with well tag numbers"
-                  striped>
-                  <template v-slot:cell(wellTagNumber)="row">
-                    <span :class="{ unknown: checkWellIsUnknown(row.item.wellTagNumber) }">
-                      {{row.item.wellTagNumber}}
-                    </span>
-                    <b-spinner v-if="fetchWellFilesInProgress[row.item.wellTagNumber]" small/>
+          <div class="flex">
+            <div class="w-1/2 p-2">
+              <h4>Documents</h4>
+              <div class="mb-3 flex items-center">
+                <FileUpload
+                  ref="fileUpload"
+                  name="files[]"
+                  mode="basic"
+                  :showUploadButton="false"
+                  :showCancelButton="false"
+                  :disabled="isSaving"
+                  auto
+                  @select="filesPicked($event.files)"
+                  class="mr-4"
+                />
+                <Checkbox v-model="privateDocument" :disabled="isSaving" binary class="mr-3"/>Are these documents private?
+              </div>
+              <DataTable
+                v-if="commonStore.uploadFiles.length > 0"
+                :value="commonStore.uploadFiles"
+                stripedRows
+              >
+                <Column header="" class="max-w-16">
+                  <template #body="slotProps">
+                    <Button
+                      size="small"
+                      severity="danger"
+                      @click="commonStore.removeFile(slotProps.data)"
+                      :disabled="isSaving">
+                      Remove
+                    </Button>
                   </template>
-                  <template v-slot:cell(documents)="row">
-                    <ul>
-                      <li v-for="(doc, index) in row.item.documents" :key="index" :class="{overwrite: doc.exists}">
+                </Column>
+                <Column field="name" header="File name"></Column>
+                <Column field="size" header="Size">
+                  <template #body="slotProps">
+                    {{ formatFileSize(slotProps.data.size) }}
+                  </template>
+                </Column>
+              </DataTable>
+            </div>
+            <div class="w-1/2 p-2">
+              <h4>Wells</h4>
+              <Message
+                class="my-3"
+                severity="error"
+                v-if="unknownWellIdsExist"
+              >
+                <p class="m-0">
+                  Wells in <span style="color:red">red</span> do not exist
+                </p>
+              </Message>
+              <Message
+                class="my-3"
+                severity="error"
+                v-if="showOverwriteWarningMessage"
+              >
+                <p class="m-0">
+                  Wells in <span style="color:orange">orange</span> will be overwritten
+                </p>
+              </Message>
+              <DataTable
+                v-if="commonStore.uploadFiles.length > 0"
+                :value="wellTableData"
+                stripedRows
+              >
+                <template #empty>No documents with well tag numbers</template>
+                <Column field="wellTagNumber" header="Well">
+                  <template #body="slotProps">
+                    <span :class="{ unknown: checkWellIsUnknown(slotProps.data.wellTagNumber) }">
+                      {{slotProps.data.wellTagNumber}}
+                    </span>
+                  </template>
+                </Column>
+                <Column field="documents" header="Documents">
+                  <template #body="slotProps">
+                    <ul class="list-disc m-4">
+                      <li v-for="(doc, index) in slotProps.data.documents" :key="index" :class="{overwrite: doc.exists}">
                         {{ doc.name }}
                       </li>
                     </ul>
                   </template>
-                </b-table>
-              </b-col>
-            </b-row>
-
-            <b-button-group class="mt-3">
-              <b-button
-                v-if="showSubmitButton"
-                :disabled="submitButtonIsDisabled"
-                variant="primary"
-                @click="save">
-                <b-spinner v-if="isSaving" small label="Loading…"/>
-                Submit
-              </b-button>
-              <b-button
-                v-if="showResetButton"
-                variant="default"
-                :disabled="isSaving"
-                @click="reset">
-                Reset
-              </b-button>
-            </b-button-group>
-          </b-form>
+                </Column>
+              </DataTable>
+            </div>
+          </div>
+          <div class="mt-4">
+            <Button
+              v-if="showSubmitButton"
+              :disabled="submitButtonIsDisabled"
+              @click="save"
+              class="mr-4"
+            >
+              <b-spinner v-if="isSaving" small label="Loading…"/>
+              Submit
+            </Button>
+            <Button
+              v-if="showResetButton"
+              severity="secondary"
+              :disabled="isSaving"
+              @click="reset">
+              Reset
+            </Button>
+          </div>
         </div>
-      </b-container>
-    </b-card>
+      </div>
+    </div>
     <div class="card container" v-else-if="!commonStore.keycloak.authenticated">
       <div class="card-body">
         <p>Please log in to continue.</p>
@@ -204,11 +233,11 @@ export default {
       ],
       breadcrumbs: [
         {
-          text: 'Bulk Upload',
-          to: { name: 'bulk-home' }
+          label: 'Bulk Upload',
+          route: { name: 'bulk-home' }
         },
         {
-          text: 'Well Documents Bulk Upload',
+          label: 'Well Documents Bulk Upload',
           active: true
         }
       ],
@@ -487,6 +516,8 @@ export default {
     filesPicked (files) {
       // Only setFiles when files > 0 because setFiles will empty the
       // uploadFiles collection if sent an empty array.
+      console.log(files)
+
       if (files.length > 0) {
         this.commonStore.setFiles(files)
       }

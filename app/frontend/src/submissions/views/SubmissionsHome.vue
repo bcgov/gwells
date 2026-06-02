@@ -7,28 +7,28 @@ KIND, either express or implied. See the License for the specific language
 governing permissions and limitations under the License. */
 <template>
   <div class="container p-1">
-    <div v-if="loading" class="mt-3">
+    <div v-if="loading" class="mt-4">
       <div class="fa-2x text-center">
         <i class="fa fa-circle-o-notch fa-spin"></i>
       </div>
     </div>
     <div v-else>
-      <b-card
-        v-if="breadcrumbs && breadcrumbs.length"
-        no-body
-        class="mb-3 d-print-none"
-      >
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-      </b-card>
+      <div class="container mb-4 !px-0" v-if="breadcrumbs && breadcrumbs.length">
+        <Breadcrumb class="p-0" :model="breadcrumbs">
+          <template #item="{ item }">
+            <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+            <span v-else>{{ item.label }}</span>
+          </template>
+        </Breadcrumb>
+      </div>
       <div
         class="card"
         v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit"
       >
         <div class="card-body">
-          <b-alert
-            show
+          <Message
             variant="info"
-            class="mb-3"
+            class="mb-4"
             v-for="(survey, index) in surveys[
               isStaffEdit ? 'edit' : 'submissions'
             ]"
@@ -39,7 +39,7 @@ governing permissions and limitations under the License. */
                 {{ survey.survey_introduction_text }}
               </a>
             </p>
-          </b-alert>
+          </Message>
 
           <b-form @submit.prevent="confirmSubmit">
             <!-- if preview === true : Preview -->
@@ -127,16 +127,15 @@ governing permissions and limitations under the License. */
 </template>
 
 <script>
-import Vue from "vue";
 import { mapStores } from "pinia";
 import { useSubmissionStore } from "@/stores/submission.js";
 import { useWellsStore } from "@/stores/wells.js";
+import { useCommonStore } from "@/stores/common.js"
 import { diff } from "deep-diff";
 import { camelCase } from "lodash";
 import smoothScroll from "smoothscroll";
 
 import ApiService from "@/common/services/ApiService.js";
-import inputFormatMixin from "@/common/inputFormatMixin.js";
 import SubmissionPreview from "@/submissions/components/SubmissionPreview/SubmissionPreview.vue";
 import filterBlankRows from "@/common/filterBlankRows.js";
 import ActivitySubmissionForm from "@/submissions/components/SubmissionForm/ActivitySubmissionForm.vue";
@@ -150,7 +149,7 @@ import { isValidPostalCodeOrZipCode } from "@/common/helpers/isValidPostalCodeOr
 
 export default {
   name: "SubmissionsHome",
-  mixins: [inputFormatMixin, filterBlankRows],
+  mixins: [filterBlankRows],
   components: {
     ActivitySubmissionForm,
     SubmissionPreview,
@@ -160,17 +159,48 @@ export default {
       compareForm: {},
       submissionStore: null,
       // event bus; use by emitting events on the events instance eg. this.events.$emit('updated')
-      events: new Vue({
-        el: "activity-submission-form",
-        data: {
-          isInput: false,
-        },
-      }),
+      // events: new Vue({
+      //   el: "activity-submission-form",
+      //   data: {
+      //     isInput: false,
+      //   },
+      // }),
       ...initialState(),
+      breadcrumbs: [
+        ...(this.errorWellNotFound ? [
+          {
+            label: `Well Search`,
+            route: { name: "wells-home" }
+          },
+          {
+            text: `Not found`,
+            active: true
+          }
+        ] : []),
+
+        ...(this.isStaffEdit ? [
+          {
+            label: `Well Search`,
+            route: { name: "wells-home" }
+          },
+          {
+            label: `Well ${this.$route.params.id} Summary`,
+            route: { name: "wells-detail", params: { id: this.$route.params.id } }
+          },
+          {
+            label: `Edit Well`,
+            route: {
+              name: "SubmissionsEdit",
+              params: { id: this.$route.params.id },
+            },
+            active: true
+          }
+        ] : [])
+      ]
     };
   },
   computed: {
-    ...mapStores(useSubmissionStore, useWellsStore),
+    ...mapStores(useSubmissionStore, useWellsStore, useCommonStore),
     displayFormSection() {
       // returns an object describing which components should be displayed
       // when in "flat form" mode
@@ -185,44 +215,6 @@ export default {
     },
     isStaffEdit() {
       return this.activityType === "STAFF_EDIT" && this.commonStore.userRoles.wells.edit;
-    },
-    breadcrumbs() {
-      const breadcrumbs = [];
-
-      if (this.errorWellNotFound) {
-        breadcrumbs.push(
-          {
-            text: `Well Search`,
-            to: { name: "wells-home" },
-          },
-          {
-            text: `Not found`,
-            active: true,
-          }
-        );
-        return breadcrumbs;
-      }
-
-      if (this.isStaffEdit) {
-        breadcrumbs.push(
-          {
-            text: `Well Search`,
-            to: { name: "wells-home" },
-          },
-          {
-            text: `Well ${this.$route.params.id} Summary`,
-            to: { name: "wells-detail", params: { id: this.$route.params.id } },
-          },
-          {
-            text: `Edit Well`,
-            to: {
-              name: "SubmissionsEdit",
-              params: { id: this.$route.params.id },
-            },
-          }
-        );
-      }
-      return breadcrumbs;
     },
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;

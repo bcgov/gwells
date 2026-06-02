@@ -24,7 +24,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </b-col>
     </b-row>
-    <b-row class="mt-3">
+    <b-row class="mt-4">
       <b-col cols="12" md="4" lg="3">
         <form-input
             id="yieldEstimationMethod"
@@ -120,13 +120,8 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     yieldEstimationMethod: String,
     yieldEstimationRate: String,

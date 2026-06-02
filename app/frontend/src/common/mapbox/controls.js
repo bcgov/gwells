@@ -478,11 +478,11 @@ export class ClearSearchCriteriaControl {
   onAdd (map) {
     this._map = map
     this._container = document.createElement('div')
-    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-clear-search-criteria ml-5'
+    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-clear-search-criteria ml-12'
     this._container.hidden = !this._isShown
 
     const messageEl = document.createElement('div')
-    messageEl.className = 'mapboxgl-ctrl-clear-search-criteria-active-search-info py-1 px-3 mb-1 font-weight-bold'
+    messageEl.className = 'mapboxgl-ctrl-clear-search-criteria-active-search-info py-1 px-4 mb-1 font-weight-bold'
     messageEl.innerHTML = 'Wells that match active search criteria are highlighted.'
 
     const button = document.createElement('button')

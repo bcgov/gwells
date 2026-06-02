@@ -13,37 +13,41 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 
 <template>
-  <div class="edit-well-aquifers">
-    <div v-if="loading">
-      <div class="fa-2x text-center">
-        <i class="fa fa-circle-o-notch fa-spin"></i>
-      </div>
+  <div class="container mb-4 !px-0">
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
+  </div>
+  <div v-if="loading" class="ml-20 mr-20 bg-white">
+    <div class="fa-2x text-center">
+      <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
-    <div v-else>
-      <b-card no-body class="mb-3 container d-print-none">
-        <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"/>
-      </b-card>
-      <b-card v-if="errorNotFound" class="container p-1">
+  </div>
+  <Card v-else class="container">
+    <template id="page-title" #title><h2>Well {{wellTagNumber}} Vertical Aquifer Extents</h2></template>
+    <template #content>
+      <div v-if="errorNotFound" class="m-3">
         <h1>Not Found</h1>
         <p>The page you are looking for was not found.</p>
-      </b-card>
-      <b-card v-else class="container">
+      </div>
+      <div v-else class="p-1">
         <api-error v-if="error" :error="error"/>
 
-        <b-alert variant="success" show v-if="showSavedMessage" id="aquifer-success-alert">
+        <Message severity="success" v-if="showSavedMessage" id="aquifer-success-alert">
           Well {{wellTagNumber}} has had it's vertical aquifer extents updated
-        </b-alert>
+        </Message>
 
-        <h2 id="page-title">Well {{wellTagNumber}} Vertical Aquifer Extents</h2>
-
-        <b-alert v-if="warnings.length > 0" variant="warning" show id="warnings">
+        <Message v-if="warnings.length > 0" severity="warn" id="warnings">
           Possible invalid data. Double check the warnings listed below before you save.
           <ul>
             <li v-for="(warning, index) in warnings" :key="index">{{warning}}</li>
           </ul>
-        </b-alert>
+        </Message>
 
-        <b-form @submit.prevent="save" @reset.prevent="resetForm" :disabled="isSaving">
+        <Form @submit="save" @reset="resetForm" :disabled="isSaving">
           <div>
             <div id="vertical-aquifer-extents-table">
               <table class="table table-sm mb-0">
@@ -58,7 +62,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 <tbody>
                   <template v-for="(row, index) in tableData" :key="`row-${index}`">
                     <tr v-if="row.isNonAquifer" class="non-aquifer">
-                      <td colspan="5" class="py-3">
+                      <td colspan="5" class="py-4">
                         Non Aquifer {{ row.nonAquiferStart.toFixed(2) }}m to
                         {{ row.nonAquiferEnd.toFixed(2) }}m
                         ({{ (row.nonAquiferSize).toFixed(2) }}m)
@@ -88,7 +92,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                           />
                       </td>
                       <td class="input-width-small py-0 pr-0">
-                        <b-form-group
+                        <InputGroupAddon
                           class="aquifer-search-dropdown"
                           :class="{'has-error': getRowError(index).aquifer_id}">
                           <v-select
@@ -116,51 +120,46 @@ Licensed under the Apache License, Version 2.0 (the "License");
                               </div>
                             </template>
                           </v-select>
-                          <b-form-invalid-feedback :id="`aquifer${index}InvalidFeedback`">
+                          <!-- There isn't a replacement. Will need to redo error logic later.
+                            <b-form-invalid-feedback :id="`aquifer${index}InvalidFeedback`">
                             <div v-for="(error, errIndex) in getRowError(index).aquifer_id" :key="`aquifer${index}Input error ${errIndex}`">
                               {{ error }}
                             </div>
-                          </b-form-invalid-feedback>
-                        </b-form-group>
+                          </b-form-invalid-feedback> -->
+                        </InputGroupAddon>
                       </td>
                       <td class="py-0 text-right">
-                        <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeAquiferRowButton${index}`" class="mt-2" :disabled="isSaving"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                        <Button
+                          size="small"
+                          @click="removeRowIfOk(index)"
+                          :id="`removeAquiferRowButton${index}`"
+                          label="Remove"
+                          class="mt-2"
+                          :loading="isSaving"
+                          icon="fa fa-minus-square-o"
+                        />
                       </td>
                     </tr>
                   </template>
                 </tbody>
               </table>
             </div>
-            <b-btn class="mt-2" size="sm" variant="primary" @click="addAquiferRow" id="addAquiferRowButton" :disabled="isSaving"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
+            <Button size="small" class="mt-2" @click="addAquiferRow" id="addAquiferRowButton" :loading="isSaving" icon="fa fa-plus-square-o" label="Add row" />
           </div>
-          <b-row class="mt-3">
-            <b-col>
-              <b-btn type="submit" variant="primary" class="mr-2" :disabled="isSaving">
+          <div class="mt-4">
+            <div>
+              <Button type="submit" class="mr-2" :loading="isSaving">
                 <i v-if="isSaving" class="fa fa-circle-o-notch fa-spin ml-1"/>
                 Save
-              </b-btn>
-              <b-btn type="reset" variant="default" :disabled="isSaving">Reset</b-btn>
-            </b-col>
-          </b-row>
-        </b-form>
-        <b-modal
-          v-model="confirmRemoveModal"
-          centered
-          title="Confirm remove"
-          @shown="focusRemoveModal">
-          Are you sure you want to remove this row?
-          <div slot="modal-footer">
-            <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-              Cancel
-            </b-btn>
-            <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-              Remove
-            </b-btn>
+              </Button>
+              <Button type="Reset" severity="secondary" :loading="isSaving" label="Reset" />
+            </div>
           </div>
-        </b-modal>
-      </b-card>
-    </div>
-  </div>
+        </Form>
+        <ConfirmDialog/>
+      </div>
+    </template>
+  </Card>
 </template>
 
 <script>
@@ -182,40 +181,41 @@ export default {
       loading: false,
       error: null,
       fieldErrors: [],
-      confirmRemoveModal: false,
       rowIndexToRemove: null,
       aquifers: [],
       aquifersData: [],
       aquiferList: [],
       errorNotFound: false,
       showSavedMessage: false,
-      isSaving: false
+      isSaving: false,
+      breadcrumbs: [
+        {
+          label: 'Well Search',
+          route: { name: 'wells-home' }
+        },
+        {
+          label: `Well ${this.$route.params.id} Summary`,
+          route: {
+            name: "wells-detail",
+            params: { id: this.$route.params.id }
+          }
+        },
+        {
+          label: `Edit Well`,
+          route: {
+            name: "SubmissionsEdit",
+            params: { id: this.$route.params.id },
+          }
+        },
+        {
+          label: this.errorNotFound ? 'Not found' : 'Edit Vertical Aquifer Extents',
+          active: true
+        }
+      ]
     }
   },
   computed: {
     wellTagNumber () { return parseInt(this.$route.params.wellTagNumber) || null },
-    breadcrumbs () {
-      const breadcrumbs = [
-        {
-          text: 'Well Search',
-          to: { name: 'wells-home' }
-        },
-        {
-          text: `Well ${this.wellTagNumber} Summary`,
-          to: { name: 'wells-detail', params: { id: this.wellTagNumber } }
-        },
-        {
-          text: 'Edit Well',
-          to: { name: 'SubmissionsEdit', params: { id: this.wellTagNumber } }
-        },
-        {
-          text: this.errorNotFound ? 'Not found' : 'Edit Vertical Aquifer Extents',
-          active: true
-        }
-      ]
-
-      return breadcrumbs
-    },
     filledInData () {
       return this.aquifersData.filter((row) => this.rowHasValues(row))
     },
@@ -296,8 +296,25 @@ export default {
     },
     removeRowIfOk (rowNumber) {
       if (this.rowHasValues(this.aquifersData[rowNumber])) {
-        this.rowIndexToRemove = rowNumber
-        this.confirmRemoveModal = true
+        this.$confirm.require({
+          header: 'Confirm remove',
+          message: 'Are you sure you want to remove this row?',
+          acceptClass: 'p-button-danger',
+          rejectProps: {
+            label: 'Cancel',
+            severity: 'secondary'
+          },
+          acceptProps: {
+              label: 'Remove',
+              severity: 'danger'
+          },
+          accept: () => {
+            this.removeRowByIndex(rowNumber);
+          },
+          reject: () => {
+            this.rowIndexToRemove = null;
+          }
+        })
       } else {
         this.removeRowByIndex(rowNumber)
       }

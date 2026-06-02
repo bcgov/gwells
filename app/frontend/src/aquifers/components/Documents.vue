@@ -6,7 +6,7 @@
         <i class="fa fa-circle-o-notch fa-spin"/>
       </div>
     </div>
-    <div v-else class="mt-3">
+    <div v-else class="mt-4">
       <!-- public documents -->
       <div v-if="error">
         {{error}}
@@ -44,7 +44,7 @@
       <div v-if="publicHighlightedFiles.length === 0 && publicFiles.length === 0">
         No additional documentation available for this aquifer.
       </div>
-      <div class="internal-documents mt-5" v-if="commonStore.userRoles.aquifers.edit">
+      <div class="internal-documents mt-12" v-if="commonStore.userRoles.aquifers.edit">
         <h5>Internal documentation - authorized access only</h5>
         <div v-if="error">
           {{error}}

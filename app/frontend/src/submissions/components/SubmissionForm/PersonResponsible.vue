@@ -148,14 +148,9 @@ import { useCommonStore } from '@/stores/common.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   name: 'PersonResponsible',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     personResponsible: Object,
     companyOfPersonResponsible: Object,

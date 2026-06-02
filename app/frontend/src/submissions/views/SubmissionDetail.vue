@@ -1,8 +1,13 @@
 <template>
 <div>
-  <b-card v-if="breadcrumbs && breadcrumbs.length" no-body class="mb-3 container d-print-none">
-    <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-  </b-card>
+  <div class="container mb-4 !px-0" v-if="breadcrumbs && breadcrumbs.length">
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
+  </div>
   <b-card v-if="commonStore.userRoles.wells.edit || commonStore.userRoles.submissions.edit" class="container p-1">
     <b-card-body>
       <h1>Activity Report Summary</h1>
@@ -14,7 +19,7 @@
       <div v-else>
         <div v-if="submission.create_date">Filed: {{ moment(submission.create_date, "MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
-        <dl class="mt-5">
+        <dl class="mt-12">
           <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
             <div
               class="row record"
@@ -44,19 +49,25 @@ export default {
       submissionStore: null,
       breadcrumbs: [
         {
-          text: `Well Search`,
-          to: { name: 'wells-home' }
+          label: `Well Search`,
+          route: { name: 'wells-home' }
         },
         {
-          text: `Well ${this.$route.params.id} Summary`,
-          to: { name: 'wells-detail', params: { id: this.$route.params.id } }
+          label: `Well ${this.$route.params.id} Summary`,
+          route: {
+            name: 'wells-detail',
+            params: { id: this.$route.params.id }
+          }
         },
         {
-          text: `Edit Well`,
-          to: { name: 'SubmissionsEdit', params: { id: this.$route.params.id } }
+          label: `Edit Well`,
+          route: {
+            name: 'SubmissionsEdit',
+            params: { id: this.$route.params.id }
+          }
         },
         {
-          text: `Activity Report Summary`,
+          label: `Activity Report Summary`,
           active: true
         }
       ],

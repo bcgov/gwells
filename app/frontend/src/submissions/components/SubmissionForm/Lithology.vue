@@ -194,14 +194,10 @@ import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 import Lithology from '@/submissions/components/lithology.js'
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
 export default {
   name: 'Lithology',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     lithology: {
       type: Array,

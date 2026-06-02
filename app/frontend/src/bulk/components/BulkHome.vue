@@ -13,50 +13,54 @@
 */
 
 <template>
-  <b-card id="bulk-home-screen" class="container p-1">
-    <div v-if="noPerm">
-      <b-alert show variant="danger" >
-        You do not have permission to make any bulk changes to Gwells.
-      </b-alert>
-      Return <router-link to="/">home</router-link>
-    </div>
-    <div v-else>
-      <h2 class="border-bottom pb-1 mb-3">Bulk Operations</h2>
-      <p>
-        Update multiple wells or aquifers at the same time with the following bulk operation utilities.
-      </p>
-      <ul>
-        <li v-if="perms.wellAquiferCorrelation">
-          <h5><router-link :to="{ name: 'bulk-well-aquifer-correlation' }">Well Aquifer Correlation</router-link></h5>
-          <p>
-            Allow bulk changes to well aquifer correlations to be performed based on an uploaded CSV file.
-          </p>
-        </li>
-        <li v-if="perms.wellDocuments">
-          <h5><router-link :to="{ name: 'bulk-well-documents' }">Well Documents</router-link></h5>
-          <p>
-            Upload multiple documents to one or more wells.
-          </p>
-        </li>
-        <li v-if="perms.aquiferDocuments">
-          <h5><router-link :to="{ name: 'bulk-aquifer-documents' }">Aquifer Documents</router-link></h5>
-          <p>
-            Upload multiple documents to one or more aquifers.
-          </p>
-        </li>
-        <li v-if="perms.verticalAquiferExtents">
-          <h5><router-link :to="{ name: 'bulk-vertical-aquifer-extents' }">Vertical Aquifer Extents</router-link></h5>
-          <p>
-            Upload a CSV with vertical aquifer extents.
-          </p>
-        </li>
-      </ul>
-    </div>
-  </b-card>
+  <Card id="bulk-home-screen" class="mx-8">
+    <template #content>
+      <div v-if="noPerm">
+        <b-alert show variant="danger" >
+          You do not have permission to make any bulk changes to Gwells.
+        </b-alert>
+        Return <router-link to="/">home</router-link>
+      </div>
+      <div v-else>
+        <h2 class="border-bottom pb-1 mb-4">Bulk Operations</h2>
+        <p>
+          Update multiple wells or aquifers at the same time with the following bulk operation utilities.
+        </p>
+        <ul>
+          <li v-if="perms.wellAquiferCorrelation">
+            <h5><router-link :to="{ name: 'bulk-well-aquifer-correlation' }">Well Aquifer Correlation</router-link></h5>
+            <p>
+              Allow bulk changes to well aquifer correlations to be performed based on an uploaded CSV file.
+            </p>
+          </li>
+          <li v-if="perms.wellDocuments">
+            <h5><router-link :to="{ name: 'bulk-well-documents' }">Well Documents</router-link></h5>
+            <p>
+              Upload multiple documents to one or more wells.
+            </p>
+          </li>
+          <li v-if="perms.aquiferDocuments">
+            <h5><router-link :to="{ name: 'bulk-aquifer-documents' }">Aquifer Documents</router-link></h5>
+            <p>
+              Upload multiple documents to one or more aquifers.
+            </p>
+          </li>
+          <li v-if="perms.verticalAquiferExtents">
+            <h5><router-link :to="{ name: 'bulk-vertical-aquifer-extents' }">Vertical Aquifer Extents</router-link></h5>
+            <p>
+              Upload a CSV with vertical aquifer extents.
+            </p>
+          </li>
+        </ul>
+      </div>
+    </template>
+  </Card>
 </template>
 
 <script>
 import { useCommonStore } from '@/stores/common.js'
+import Card from 'primevue/card';
+
 export default {
   computed: {
     commonStore () { return useCommonStore() },

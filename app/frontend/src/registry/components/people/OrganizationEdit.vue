@@ -1,325 +1,322 @@
 <template>
-  <b-container class="p-1 p-md-3">
-    <b-card no-body class="mb-3">
-      <b-breadcrumb :items="breadcrumbs" class="py-0 my-2"></b-breadcrumb>
-    </b-card>
-    <b-card title="Manage Companies">
+  <div class="container mb-4 !px-0">
+    <Breadcrumb class="p-0" :model="breadcrumbs">
+      <template #item="{ item }">
+        <router-link v-if="!item.active" :to="item.route">{{ item.label }}</router-link>
+        <span v-else>{{ item.label }}</span>
+      </template>
+    </Breadcrumb>
+  </div>
+  <Card class="container">
+    <template #title>Manage Companies</template>
+    <template #content>
 
       <!-- Company selector (used to select company to edit) -->
-      <b-row>
-        <b-col cols="12" md="7">
-          <b-form-group label="Select a company:" label-for="orgEditSelectDropdown">
+      <div class="grid grid-cols-3 gap-6 mb-6">
+          <label for="orgEditSelectDropdown">Select a company:
             <v-select
                 id="orgEditSelectDropdown"
                 :options="companies"
                 label="org_verbose_name"
                 v-model="selectedCompany"
                 placeholder="Begin typing a company name"
+                class="mt-2 col-span-3"
                 ></v-select>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="5">
-          <b-alert variant="warning" :show="!!companyListError" dismissible @dismissed="companyListError=false">
-            Error retrieving list of companies. Please try again later.
-          </b-alert>
-        </b-col>
-      </b-row>
+          </label>
+        <Message
+          v-if="!!companyListError"
+          @close="companyListError=false"
+          severity="warn">
+          Error retrieving list of companies. Please try again later.
+        </Message>
+      </div>
 
       <!-- Add company button (opens 'add company' modal) and success feedback -->
-      <b-row>
-        <b-col>
-          <b-button
-              id="orgAddNewButton"
-              type="button"
-              v-b-modal.orgAddModal
-              variant="primary"
-              size="sm"
-              class="mb-5">
-            <i class="fa fa-plus-square-o"></i> Add new company</b-button>
-          <organization-add @newOrgAdded="newOrgHandler"></organization-add>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <b-alert variant="success" id="orgAddSuccessAlert" :show="companyAddSuccess" dismissible @dismissed="companyAddSuccess=false">Company added.</b-alert>
-        </b-col>
-      </b-row>
+      <div class="flex flex-col mb-12">
+        <div>
+          <Button
+            id="orgAddNewButton"
+            @click="showAddModal = true"
+            type="button"
+            size="small"
+            class="mb-12">
+          <i class="fa fa-plus-square-o"></i> Add new company</Button>
+        <organization-add v-model:visible="showAddModal"  @newOrgAdded="newOrgHandler"></organization-add>
+        </div>
+      </div>
+      <div class="grid grid-flow-col">
+        <div class="col-span-12">
+          <Message
+            severity="success"
+            id="orgAddSuccessAlert"
+            v-if="companyAddSuccess"
+            :closable="true"
+            @close="companyAddSuccess=false">
+            Company added.
+          </Message>
+        </div>
+      </div>
 
       <!-- Selected company details and edit form fields -->
-      <b-card no-body class="p-2 p-md-3" v-if="!!selectedCompany">
-        <h6 class="card-subtitle mb-3">Company Information</h6>
-        <b-form @submit.prevent="submitConfirm" @reset.prevent="cancelConfirm">
-          <b-row>
-            <b-col cols="12" md="5">
-                <b-form-group
-                  label="Company name:"
-                  label-for="orgEditNameInput">
-                  <b-form-input
+      <div class="grid grid-cols-1 gap-6 mb-6">
+        <Card class="rounded-lg" v-if="!!selectedCompany">
+          <template #content>
+            <Form @submit="submitConfirm" @reset="cancelConfirm">
+              <h6 class="text-xl font-bold mb-6">Company Information</h6>
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditNameInput">Company name:</label>
+                  <InputText
+                    type="text"
                     :disabled="!selectedCompany"
                     id="orgEditNameInput"
-                    type="text"
+                    class="w-full md:w-80"
                     v-model="companyForm.name"/>
-                </b-form-group>
-            </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
-                  label="Street address:"
-                  label-for="orgEditAddressInput">
-                  <b-form-input
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditAddressInput">Street address:</label>
+                  <InputText
+                    type="text"
                     :disabled="!selectedCompany"
                     id="orgEditAddressInput"
-                    type="text"
+                    class="w-full md:w-80"
                     v-model="companyForm.street_address"/>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
-                <b-form-group
-                  label="City:"
-                  label-for="orgEditCityInput">
-                  <b-form-input
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditCityInput">City:</label>
+                  <InputText
                     :disabled="!selectedCompany"
                     id="orgEditCityInput"
                     type="text"
+                    class="w-full md:w-80"
                     v-model="companyForm.city"/>
-                </b-form-group>
-            </b-col>
-              <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
-                  label="Province:"
-                  label-for="orgEditProvinceInput">
-                  <b-form-select
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditProvinceInput">Province:</label>
+                  <Select
                     :disabled="!selectedCompany"
                     id="orgEditProvinceInput"
                     :state="validation.province_state"
                     :options="provinceStateOptions"
+                    class="w-full md:w-80"
                     aria-describedby="provInputFeedback"
                     v-model="companyForm.province_state">
-                  </b-form-select>
-                  <b-form-invalid-feedback id="provInputFeedback">
-                    <div v-for="(error, index) in fieldErrors.province_state" :key="`provInput error ${index}`">
-                      {{ error }}
-                    </div>
-                  </b-form-invalid-feedback>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
-                <b-form-group
-                  label="Postal code:"
-                  label-for="orgEditPostalInput">
-                  <b-form-input
+                  </Select>
+                  <Message id="provInputFeedback" severity="error" v-for="(error, index) in fieldErrors.province_state" :key="`provInput error ${index}`">
+                    {{ error }}
+                  </Message>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditPostalInput">Postal code:</label>
+                  <InputText
                     :disabled="!selectedCompany"
                     id="orgEditPostalInput"
-                    type="text"
+                    class="w-full md:w-80"
                     v-model="companyForm.postal_code"/>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-4">
-            <b-col cols="12" md="5">
-              <b-form-group
-                label="Office telephone number:"
-                label-for="orgEditPhoneInput">
-                <b-form-input
-                  :disabled="!selectedCompany"
-                  id="orgEditPhoneInput"
-                  type="text"
-                  :formatter="formatTel"
-                  lazy-formatter
-                  v-model="companyForm.main_tel"/>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="5" offset-md="1">
-                <b-form-group
-                  label="Fax number:"
-                  label-for="orgEditFaxInput">
-                  <b-form-input
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditPhoneInput">Office telephone number:</label>
+                  <InputMask
+                    :disabled="!selectedCompany"
+                    id="orgEditPhoneInput"
+                    class="w-full md:w-80"
+                    mask="(999) 999-9999"
+                    v-model="companyForm.main_tel"/>
+                </div>
+                <div class="flex flex-col gap-2" offset-md="1">
+                  <label for="orgEditFaxInput">Fax number:</label>
+                  <InputMask
                     :disabled="!selectedCompany"
                     id="orgEditFaxInput"
                     type="text"
-                    :formatter="formatTel"
-                    lazy-formatter
+                    class="w-full md:w-80"
+                    mask="(999) 999-9999"
                     v-model="companyForm.fax_tel"/>
-                </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col cols="12" md="5">
-              <b-form-group
-                label="Email:"
-                label-for="orgEditEmailInput">
-                <b-form-input
-                    id="orgEditEmailInput"
-                    type="text"
-                    :state="validation.email"
-                    :disabled="!selectedCompany"
-                    aria-describedby="orgEditEmailFeedback"
-                    v-model="companyForm.email"/>
-                <b-form-invalid-feedback id="orgEditEmailFeedback">
-                  <div v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`">
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <div class="flex flex-col gap-2">
+                  <label for="orgEditEmailInput">Email:</label>
+                  <InputText
+                      id="orgEditEmailInput"
+                      type="text"
+                      :state="validation.email"
+                      :disabled="!selectedCompany"
+                      aria-describedby="orgEditEmailFeedback"
+                      class="w-full md:w-80"
+                      v-model="companyForm.email"/>
+                  <Message id="orgEditEmailFeedback" severity="error" v-for="(error, index) in fieldErrors.email" :key="`urlInput error ${index}`">
                     {{ error }}
+                  </Message>
+                </div>
+                <div class="flex flex-col gap-2" offset-md="1">
+                  <label for="orgEditWebsiteInput">Website:</label>
+                  <InputText
+                    :disabled="!selectedCompany"
+                    id="orgEditWebsiteInput"
+                    :state="validation.website_url"
+                    aria-describedby="orgEditWebsiteFeedback"
+                    class="w-full md:w-80"
+                    placeholder="eg. http://www.example.com"
+                    type="text"
+                    v-model="companyForm.website_url"/>
+                  <Message id="orgEditWebsiteFeedback" severity="error" v-for="(error, index) in fieldErrors.website_url" :key="`websiteInput error ${index}`">
+                    {{ error }}
+                  </Message>
+                  <div id="orgEditEmailInput">
+                    Use a full website address, including http://
                   </div>
-                </b-form-invalid-feedback>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="5" offset-md="1">
-              <b-form-group
-                label="Website:"
-                label-for="orgEditWebsiteInput">
-                <b-form-input
-                  :disabled="!selectedCompany"
-                  id="orgEditWebsiteInput"
-                  :state="validation.website_url"
-                  aria-describedby="orgEditWebsiteFeedback"
-                  placeholder="eg. http://www.example.com"
-                  type="text"
-                  v-model="companyForm.website_url"/>
-                <b-form-invalid-feedback id="orgEditWebsiteFeedback">
-                    <div v-for="(error, index) in fieldErrors.website_url" :key="`websiteInput error ${index}`">
-                      {{ error }}
-                    </div>
-                </b-form-invalid-feedback>
-                <b-form-text id="orgEditEmailInput">
-                  Use a full website address, including http://
-                </b-form-text>
-              </b-form-group>
-            </b-col>
-            <b-col cols="12" md="12">
-              <b-form-group label="Region:" label-for="regionOptions">
-                <b-form-select
-                    multiple="multiple"
+                </div>
+                <div class="flex flex-col gap-2">
+                  <label for="regionOptions">Region:</label>
+                  <MultiSelect
                     id="regionOptions"
                     v-model="companyForm.regional_areas"
-                    class="mb-3">
-                    <option v-for="region in regionOptions" :key="`${region.regional_area_guid}`" :value="region.regional_area_guid">{{ region.name }}</option>
-                </b-form-select>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-row class="mt-3">
-            <b-col>
-              <button type="submit" class="btn btn-primary" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged">Update</button>
-              <button type="reset" class="btn btn-light" ref="orgUpdateCancelBtn" :disabled="!selectedCompany || !formChanged">Cancel</button>
-            </b-col>
-          </b-row>
-          <b-row>
-            <b-col>
-              <b-alert class="mt-3" variant="success" id="orgUpdateSuccessAlert" :show="companyUpdateSuccess" dismissible @dismissed="companyUpdateSuccess=false">
-                Successfully updated company information.
-              </b-alert>
-            </b-col>
-          </b-row>
+                    display="chip"
+                    :options="regionOptions"
+                    optionLabel="name"
+                    optionValue="regional_area_guid"
+                    filter
+                    placeholder="Select Regions"
+                    class="w-full md:w-80" />
+                </div>
+              </div>
+              <div class="grid gap-6 grid-cols-2 mb-6">
+                <div class="col-span-1">
+                  <Button label="Update" type="submit" class="btn btn-primary mr-2" ref="orgUpdateSaveBtn" :disabled="!selectedCompany || !formChanged" />
+                  <Button label="Cancel" type="reset" class="btn btn-light" severity="danger" ref="orgUpdateCancelBtn" :disabled="!selectedCompany || !formChanged" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <Message class="mt-4" severity="success" id="orgUpdateSuccessAlert" v-if="companyUpdateSuccess" :closable="true" @close="companyUpdateSuccess=false">
+                  Successfully updated company information.
+                </Message>
+              </div>
 
-          <!-- Modals for confirming update/cancel editing -->
-          <b-modal
-              id="orgUpdateModal"
-              v-model="confirmSubmitModal"
-              centered
-              title="Confirm update"
-              @shown="focusSubmitModal"
-              :return-focus="$refs.orgUpdateSaveBtn">
-            Are you sure you want to save these changes?
-            <div slot="modal-footer">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;submitForm()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
-            </div>
-          </b-modal>
-          <b-modal
-              v-model="confirmCancelModal"
-              centered
-              title="Confirm cancel"
-              @shown="focusCancelModal"
-              :return-focus="$refs.orgUpdateCancelBtn">
-            Are you sure you want to discard your changes?
-            <div slot="modal-footer">
-              <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
-                Cancel
-              </b-btn>
-              <b-btn variant="danger" @click="confirmCancelModal=false;formReset()">
-                Discard
-              </b-btn>
-            </div>
-          </b-modal>
-        </b-form>
-      </b-card>
+              <!-- Modals for confirming update/cancel editing -->
+                <Dialog
+                  id="orgUpdateModal"
+                  v-model="confirmSubmitModal"
+                  modal
+                  header="Confirm update"
+                  @shown="focusSubmitModal">
+                Are you sure you want to save these changes?
+                <template #footer>
+                  <Button label="Save" @click="confirmSubmitModal=false;submitForm()" ref="confirmSubmitConfirmBtn" />
+                  <Button label="Cancel" severity="Danger" @click="confirmSubmitModal=false" />
+                </template>
+              </Dialog>
+              <Dialog
+                  v-model="confirmCancelModal"
+                  modal
+                  header="Confirm cancel"
+                  @shown="focusCancelModal">
+                Are you sure you want to discard your changes?
+                <template #footer>
+                  <Button label="Cancel" severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn" />
+                  <Button label="Discard" severity="danger" @click="confirmCancelModal=false;formReset()" />
+                </template>
+              </Dialog>
+            </Form>
+          </template>
+        </Card>
 
-      <!-- Company notes -->
-      <notes
-          class="mt-3"
-          v-if="!!companyDetails"
-          type="organization"
-          @updated="loadCompanyDetails()"
-          :guid="companyDetails.org_guid"
-          :record="companyDetails"></notes>
+        <!-- Company notes -->
+        <Card class="rounded-lg" v-if="!!companyDetails">
+          <template #content>
+            <notes
+              ref="notes"
+              class="my-4"
+              v-if="!!companyDetails"
+              type="organization"
+              @updated="loadCompanyDetails()"
+              :guid="companyDetails.org_guid"
+              :record="companyDetails"></notes>
+          </template>
+        </Card>
 
-      <!-- Change history for this record -->
-      <change-history
-          ref="changeHistory"
-          class="my-3"
-          v-if="!!selectedCompany"
-          resource="organization"
-          :id="selectedCompany.org_guid"></change-history>
+        <!-- Change history for this record -->
+        <Card class="rounded-lg" v-if="!!selectedCompany">
+          <template #content>
+            <change-history
+              ref="changeHistory"
+              class="my-4"
+              v-if="!!selectedCompany"
+              resource="organization"
+              :id="selectedCompany.org_guid"></change-history>
+          </template>
+        </Card>
+      </div>
 
       <!-- Delete company button and confirmation modals -->
       <div v-if="!!companyDetails">
-        <p class="mt-3">
+        <p class="mt-4">
           There {{ companyDetails.registrations_count === 1 ? 'is': 'are' }}
-          <span class="font-weight-bold">{{ companyDetails.registrations_count }}</span>
+          <span class="font-bold">{{ companyDetails.registrations_count }}</span>
           {{ companyDetails.registrations_count === 1 ? 'registrant': 'registrants' }}
           listed under
           {{ selectedCompany.name }}{{ selectedCompany.name.slice(-1) === '.' ? '' : '.' }}
         </p>
-        <b-table
+        <DataTable
           v-if="companyRegistrants.length > 0"
+          :value="companyRegistrants"
           id="registrants"
-          striped
-          hover
-          small
-          :items="companyRegistrants"
-          :fields="['name', 'contact_tel', 'contact_email']"
+          stripedRows
+          rowHover
+          size="small"
+          v-model="companyRegistrants"
+          tableStyle="min-width: 50rem"
         >
-          <template v-slot:cell(name)="row">
-            <router-link :to="{ name: 'PersonDetail', params: { person_guid: row.item.person_guid }}">{{ row.item.surname }}, {{ row.item.first_name }}</router-link>
-          </template>
-        </b-table>
-        <b-button
+          <Column field="name" header="Name">
+            <template #body="slotProps">
+              <router-link :to="{ name: 'PersonDetail', params: { person_guid: slotProps.data.person_guid }}">
+                {{ slotProps.data.surname }}, {{ slotProps.data.first_name }}
+              </router-link>
+            </template>
+          </Column>
+          <Column field="contact_tel" header="Phone"></Column>
+          <Column field="contact_email" header="Email"></Column>
+        </DataTable>
+        <Button
+          label="Delete this company"
           variant="danger"
+          severity="danger"
+          class="mt-6 mb-6"
           :disabled="companyDetails.registrations_count > 0"
           @click="companyDeleteConfirm()"
-        >
-          Delete this company
-        </b-button>
+        />
         <p v-if="companyDetails.registrations_count > 0" class="delete-company">You must remove all registrants from this company before deleting.</p>
       </div>
-      <b-modal
+      <Dialog
           id="orgDeleteModal"
           v-model="companyDeleteModal"
-          centered
-          title="Confirm delete"
-          @shown="focusDeleteModal"
-          :return-focus="$refs.orgDeleteBtn">
+          modal
+          header="Confirm delete"
+          @shown="focusDeleteModal">
         Are you sure you want to delete this company?
-        <div slot="modal-footer">
-          <b-btn variant="secondary" @click="companyDeleteModal=false" ref="companyDeleteCancelBtn">
-            Cancel
-          </b-btn>
-          <b-btn variant="danger" @click="companyDeleteModal=false;companyDelete()">
-            Delete
-          </b-btn>
-        </div>
-      </b-modal>
-      <b-alert variant="success" class="mt-3" id="orgDeleteSuccessAlert" :show="!!companyDeleted" dismissible @dismissed="companyDeleted=false">
-          {{ companyDeleted }} removed.
-      </b-alert>
-    </b-card>
-  </b-container>
+        <template #footer>
+          <Button label="Cancel" severity="secondary" @click="companyDeleteModal=false" ref="companyDeleteCancelBtn" />
+          <Button label="Delete" severity="danger" @click="companyDeleteModal=false;companyDelete()" />
+        </template>
+      </Dialog>
+      <Message
+        severity="success"
+        class="mt-4"
+        id="orgDeleteSuccessAlert"
+        v-if="!!companyDeleted"
+        :closable="true"
+        @close="companyDeleted=false">
+        {{ companyDeleted }} removed.
+      </Message>
+
+    </template>
+  </Card>
 </template>
 
 <script>
@@ -327,7 +324,6 @@ import ApiService from '@/common/services/ApiService.js'
 import OrganizationAdd from '@/registry/components/people/OrganizationAdd.vue'
 import Notes from '@/registry/components/people/Notes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
-import inputFormatMixin from '@/common/inputFormatMixin.js'
 import { useRegistryStore } from '@/stores/registry.js'
 
 export default {
@@ -337,20 +333,16 @@ export default {
     Notes,
     ChangeHistory
   },
-  mixins: [inputFormatMixin],
   data () {
     return {
       registryStore: useRegistryStore(),
       breadcrumbs: [
-        {
-          text: 'Registry',
-          to: { name: 'SearchHome' }
-        },
-        {
-          text: 'Manage Companies',
-          active: true
-        }
+        { label: 'Registry', route: { name: 'SearchHome' } },
+        { label: 'Manage Companies', active: true }
       ],
+
+      // to show organizationAdd.vue on button click
+      showAddModal: false,
 
       // companies list from API
       companies: [{ name: '', org_guid: '', org_verbose_name: '' }],

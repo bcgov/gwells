@@ -63,18 +63,18 @@
             <td :colspan="columnCount">
               <div class="position-relative my-1 mx-1">
                 <div v-if="isBusy" class="d-flex">
-                  <div class="spinner-border m-3" role="status" aria-hidden="true"></div>
-                  <strong class="align-middle my-3 pt-1">
+                  <div class="spinner-border m-4" role="status" aria-hidden="true"></div>
+                  <strong class="align-middle my-4 pt-1">
                     Loading...
                   </strong>
                 </div>
-                <strong v-else-if="hasResultErrors" class="text-danger align-middle my-3 pt-1">
+                <strong v-else-if="hasResultErrors" class="text-danger align-middle my-4 pt-1">
                   An error occurred processing the search.
                 </strong>
-                <strong v-else-if="isReset" class="align-middle my-3 pt-1">
+                <strong v-else-if="isReset" class="align-middle my-4 pt-1">
                   Enter some criteria in the form above to search.
                 </strong>
-                <strong v-else-if="isEmpty" class="align-middle my-3 pt-1">
+                <strong v-else-if="isEmpty" class="align-middle my-4 pt-1">
                   No results matched your search criteria.
                 </strong>
               </div>
@@ -118,12 +118,12 @@
         </tbody>
       </table>
     </div>
-    <div class="my-3" v-if="resultCount > 0">
+    <div class="my-4" v-if="resultCount > 0">
       <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
-      <search-result-exports class="my-3" :field-data="searchFields" />
+      <search-result-exports class="my-4" :field-data="searchFields" />
     </div>
     <b-pagination
-      class="mt-3"
+      class="mt-4"
       size="md"
       :disabled="isBusy"
       :total-rows="resultCount"

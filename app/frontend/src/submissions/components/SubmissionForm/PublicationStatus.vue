@@ -49,15 +49,10 @@ limitations under the License.
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
 export default {
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     wellPublicationStatusCode: String,
     errors: {

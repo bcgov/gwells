@@ -12,9 +12,9 @@
     limitations under the License.
 */
 <template>
-  <b-form @submit.prevent="handleSubmit()" @reset.prevent="handleReset()">
-    <b-row>
-      <b-col>
+  <Form @submit="handleSubmit()" @reset="handleReset()">
+    <div>
+      <div>
         <b-form-group>
           <form-input id="id_search" group-class="font-weight-bold" v-model="searchString">
             <label>
@@ -24,14 +24,14 @@
             </label>
           </form-input>
         </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row class="my-3">
-      <b-col>
-        <b-btn variant="primary" type="submit" :disabled="searchInProgress">Search</b-btn>
+      </div>
+    </div>
+    <div class="my-4">
+      <div>
+        <Button type="submit" :disabled="searchInProgress">Search</Button>
         <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <b-row>
       <b-col>
         <well-exports/>
@@ -46,7 +46,7 @@
         </ul>
       </b-col>
     </b-row>
-  </b-form>
+  </Form>
 </template>
 
 <script>

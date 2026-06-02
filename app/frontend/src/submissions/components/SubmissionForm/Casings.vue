@@ -172,20 +172,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
-import Vue from 'vue'
 import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
-
 export default {
   name: 'Casings',
   mixins: [inputBindingsMixin],
-  components: {
-    BackToTopLink
-  },
   props: {
     casings: Array,
     errors: {

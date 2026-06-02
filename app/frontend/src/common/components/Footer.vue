@@ -1,66 +1,57 @@
 <template>
-  <footer class="footer">
-    <b-navbar type="dark" variant="primary" toggleable="sm">
-      <b-container>
-      <!-- Navbar content -->
-        <b-navbar-nav>
-            <b-nav-item id="footer-home" href="https://www.gov.bc.ca/">Home
-            </b-nav-item>
-            <b-nav-item id="footer-about" href="https://www2.gov.bc.ca/gov/content/about-gov-bc-ca">About gov.bc.ca
-            </b-nav-item>
-            <b-nav-item id="footer-disclaimer" href="http://gov.bc.ca/disclaimer/">Disclaimer
-            </b-nav-item>
-            <b-nav-item id="footer-privacy" href="http://gov.bc.ca/privacy/">Privacy
-            </b-nav-item>
-            <b-nav-item id="footer-accessibility" href="http://gov.bc.ca/webaccessibility/">Accessibility
-            </b-nav-item>
-            <b-nav-item id="footer-copyright" href="http://gov.bc.ca/copyright">Copyright
-            </b-nav-item>
-            <b-nav-item href="https://www2.gov.bc.ca/gov/content/home/contact-us">Contact Us
-            </b-nav-item>
-        </b-navbar-nav>
-      </b-container>
-    </b-navbar>
+  <footer id="footer">
+    <Menubar class="footer-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white !pl-[10%]" :model="footItems">
+      <template #item="{ item }">
+        <a v-if="item.visible"
+          :href="item.route"
+          target="_blank"
+          rel="noopener"
+          class="px-3 hover:underline">
+          {{ item.label }}
+        </a>
+      </template>
+      </Menubar>
   </footer>
 </template>
 
 <script>
 export default {
-
+  computed: {
+    footItems () {
+      return [
+        { label: 'Home', route: "https://www.gov.bc.ca/", visible: true },
+        { label: 'About gov.bc.ca', route: "https://www2.gov.bc.ca/gov/content/about-gov-bc-ca", visible: true },
+        { label: 'Disclaimer', route: "http://gov.bc.ca/disclaimer/", visible: true },
+        { label: 'Privacy', route: "http://gov.bc.ca/privacy/", visible: true },
+        { label: 'Copyright', route: "http://gov.bc.ca/copyright", visible: true },
+        { label: 'Contact Us', route: "https://www2.gov.bc.ca/gov/content/home/contact-us", visible: true },
+      ]
+    }
+  }
 }
 </script>
 
 <style lang="scss">
-@import 'bootstrap/scss/_functions';
-@import 'bootstrap/scss/_variables';
-@import 'bootstrap/scss/mixins/_breakpoints';
 
-.footer {
-  @include media-breakpoint-only(xs) {
-    height: 8.2rem!important;
-    margin-top: 10rem;
-  }
-  @include media-breakpoint-up(sm) {
-    height: 45px!important;
-  }
-  position: absolute;
-  bottom: 0
+.footer-nav-links {
+  background: #003366 !important;
+  border-top: #F9B81B solid 3px !important;
+  border-left: 0px !important;
+  border-right: 0px !important;
+  border-bottom: 0px !important;
+  border-radius: 0px !important;
 }
-.footer .nav-item {
+#footer .nav-item {
   font-size: 13px;
 }
-.footer .nav-link {
+#footer .nav-link {
   padding: .1rem .5rem;
 }
-.footer nav {
+#footer nav {
   min-height: 45px;
 }
-.footer a {
-  color: #fff!important;
+#footer a {
+  color: #ffffff !important;
 }
-footer li+li  {
-  @include media-breakpoint-up(sm) {
-    border-left: 1px solid #4b5e73;
-  }
-}
+
 </style>

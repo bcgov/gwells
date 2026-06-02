@@ -2,10 +2,9 @@
   <div id="registry-screen">
 
     <!-- Active surveys -->
-    <b-alert
-        show
-        variant="info"
-        class="container mb-3"
+    <Message
+        class="container mb-4"
+        severity="info"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
       <p class="m-0">
@@ -13,238 +12,232 @@
           {{ survey.survey_introduction_text }}
         </a>
       </p>
-    </b-alert>
+    </Message>
 
     <!-- Main Registries content -->
-    <b-card class="container p-1">
-      <h1 class="card-title">Search for a Well Driller or Well Pump Installer</h1>
-      <p>To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.</p>
-      <p>
-        <a href="https://www2.gov.bc.ca/gov/content?id=63B6DFF0024949B6867C459C19C23F88" target="_blank">
-          Learn more about registering as a well driller or well pump installer in B.C.
-        </a>
-      </p>
+    <Card class="container">
+      <template #title><h1>Search for a Well Driller or Well Pump Installer</h1></template>
+      <template #content>
+        <div>
+          <p class="mb-2">To update contact information or for general enquiries email <a href="mailto:Groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca</a>.</p>
+          <p class="mb-2">
+            <a href="https://www2.gov.bc.ca/gov/content?id=63B6DFF0024949B6867C459C19C23F88" target="_blank">
+              Learn more about registering as a well driller or well pump installer in B.C.
+            </a>
+          </p>
+        </div>
 
-      <!-- Admin options -->
-      <b-card v-if="userRoles.registry.edit" no-body class="container p-1 mb-3">
-        <b-card-header header-tag="header" class="p-1" role="tab">
-          <b-btn block href="#" v-b-toggle.adminPanel variant="light" class="text-left">Administrator options</b-btn>
-        </b-card-header>
-        <b-collapse visible id="adminPanel">
-          <b-card-body class="pb-1">
-            <b-button
-              class="mb-2 mr-1"
-              variant="primary"
-              id="addNewEntryButton"
-              :to="{ name: 'PersonAdd' }"
-            >
-              Add new entry
-            </b-button>
-            <b-button
-              class="mb-2"
-              variant="primary"
-              id="manageCompaniesButton"
-              :to="{ name: 'OrganizationEdit' }"
-            >
-              Manage companies
-            </b-button>
-          </b-card-body>
-        </b-collapse>
-      </b-card>
+        <!-- Admin options -->
+        <div v-if="userRoles.registry.edit" class="p-1 mb-4">
+          <div>
+            <Panel :toggleable="true" :collapsed="true" header="Administrator options">
+              <div class="pb-1 gap-2 flex flex-row">
+                <Button id="addNewEntryButton" asChild v-slot="slotProps">
+                  <RouterLink :to="{ name: 'PersonAdd' }" :class="slotProps.class">Add new entry</RouterLink>
+                </Button>
+                <Button id="manageCompaniesButton" asChild v-slot="slotProps">
+                  <RouterLink :to="{ name: 'OrganizationEdit' }" :class="slotProps.class">Manage companies</RouterLink>
+                </Button>
+              </div>
+            </Panel>
+          </div>
+        </div>
 
-      <!-- Search options -->
-      <div class="pr-3 mb-4">
-        <b-row class="mt-4">
-          <!-- Search form -->
-          <b-col cols="12" lg="6" xl="5">
-            <div class="mb-3">
-              Use the search function below to define your search criteria.
-              Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C.
-              Some well drillers and well pump installers may operate in multiple areas throughout B.C.
-              For a complete list refer to the results table below.
-            </div>
-            <b-form @submit.prevent="drillerSearch" @reset.prevent="resetSearch({clearDrillers: true})" id="drillerSearchForm">
-              <b-form-row>
-                <b-col cols="12">
-                  <b-form-group label="Choose professional type:">
-                    <b-form-radio-group v-model="searchParams.activity" name="activitySelector">
-                      <b-form-radio value="DRILL" id="activityDriller">Well Driller</b-form-radio>
-                      <b-form-radio value="PUMP" id="activityInstaller">Well Pump Installer</b-form-radio>
-                    </b-form-radio-group>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row v-if="subactivities && subactivities.length > 1">
-                <b-col md="12">
-                  <b-form-group label="Choose classification(s):">
-                    <b-form-checkbox-group name="subactivitySelector"
-                      class="fixed-width font-weight-normal pt-2"
-                      :options="subactivities"
-                      v-model="searchParams.subactivities"></b-form-checkbox-group>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row>
-                <b-col cols="12" md="12">
-                  <b-form-group label="Community:" label-for="cityOptions">
-                    <b-form-select
-                        multiple="multiple"
-                        id="cityOptions"
-                        v-model="searchParams.city"
-                        class="mb-3"
-                        :select-size="6">
-                        <option value="">All</option>
-                        <template v-for="prov in cityList[formatActivityForCityList]" :key="prov.prov">
-                          <optgroup
-                            v-if="prov.cities && prov.cities.length"
-                            :label="prov.prov"
-                          >
-                            <option v-for="city in prov.cities" :key="`${city} ${prov.prov}`" :value="city">{{ city }}</option>
-                          </optgroup>
-                        </template>
-                    </b-form-select>
-                    <b-alert
+        <!-- Search options -->
+        <div class="pr-4">
+          <div class="grid grid-cols-2 gap-6">
+            <!-- Search form -->
+            <div class="col-span-1 mb-2">
+              <div class="mb-6">
+                Use the search function below to define your search criteria.
+                Please note: The map only shows registered well drillers and well pump installers whose base operation and address are within B.C.
+                Some well drillers and well pump installers may operate in multiple areas throughout B.C.
+                For a complete list refer to the results table below.
+              </div>
+              <Form @submit="drillerSearch" @reset="resetSearch" id="drillerSearchForm">
+                <div class="grid grid-cols-4 mb-6 gap-6">
+                  <label class="col-span-3">Choose professional type:
+                    <RadioButtonGroup v-model="searchParams.activity" name="activitySelector" class="mt-2">
+                      <RadioButton inputId="activityDriller" value="DRILL"/>
+                      <label for="activityDriller" style="margin-right: 10px; margin-left: 5px;">Well Driller</label>
+                      <RadioButton inputId="activityInstaller" value="PUMP"/>
+                      <label for="activityInstaller" style="margin-right: 10px; margin-left: 5px;">Well Pump Installer</label>
+                    </RadioButtonGroup>
+                  </label>
+                </div>
+                <div v-if="subactivities && subactivities.length > 1" class="flex flex-col gap-2 mb-2">
+                  <label for="subactivitySelector" class="flex flex-col gap-2">Choose classification(s):
+                    <CheckboxGroup v-model="searchParams.subactivities" class="flex flex-col gap-2">
+                      <div v-for="sub of subactivities" :key="sub.value" class="flex items-center gap-2">
+                        <Checkbox
+                          inputId="subactivitySelector"
+                          name="subactivitySelector"
+                          :value="sub.value"
+                        />
+                        <label :for="sub.value">{{ sub.text }}</label>
+                      </div>
+                    </CheckboxGroup>
+                  </label>
+                </div>
+                <div class="grid grid-flow-col gap-6 mb-6">
+                  <div class="mt-2">
+                    <span>Community:</span>
+                    <!-- should update based on drill or pump subactivity selection -->
+                    <Listbox
+                      id="cityOptions"
+                      v-model="searchParams.city"
+                      :options="cityList"
+                      optionGroupLabel="prov"
+                      optionGroupChildren="cities"
+                      :virtualScrollerOptions="{ itemSize: 38 }"
+                      :disabled="false"
+                      class="mt-2"
+                      listStyle="max-height:200px;"
+                    >
+                      <template #optiongroup="slotProps">
+                        <div style="color: #38598a; font-style: bold; font-size: 0.875rem;">
+                          <div>{{ slotProps.option.prov }}</div>
+                        </div>
+                      </template>
+                    </Listbox>
+                    <Message
                       show
                       variant="warning"
-                      class="container mb-3"
+                      class="mb-4"
+                      severity="warn"
                       v-if="limitSearchToCurrentMapBounds && isCommunitySelected">
-                    Caution: Your are filtering the search by community ({{searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure
-                    these two selections are consistent, or you won't get any search results.
-                  </b-alert>
-                  </b-form-group>
-                </b-col>
-                <b-col cols="12" md="6" v-if="userRoles.registry.view" class="md-5">
-                  <b-form-group label="Registration status:" label-for="registrationStatusSelect">
-                    <b-form-select
-                        :options="regStatusOptions"
-                        v-model="searchParams.status"
-                        id="registrationStatusSelect"
-                        name="registryStatuses"/>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row>
-                <b-col cols="12" md="12">
-                  <b-form-group label="Region:" label-for="regionOptions">
-                    <b-form-select
-                        multiple="multiple"
-                        id="regionOptions"
-                        v-model="searchParams.region"
-                        class="mb-3"
-                        :select-size="6">
-                        <option value="">All</option>
-                        <option v-for="region in regionOptions" :key="`${region.regional_area_guid}`" :value="region.regional_area_guid">{{ region.name }}</option>
-                    </b-form-select>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row>
-                <b-col cols="12" md="6">
-                  <b-form-group label="Individual, company, or registration number:" label-for="regTypeInput">
-                    <b-form-input
-                        type="text"
-                        class="form-control"
-                        id="regTypeInput"
-                        placeholder="Search"
-                        v-model="searchParams.search"/>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row>
-                <b-col>
-                  <b-form-group label="Entries:" label-for="registriesResultsNumberSelect">
-                    <select
-                        v-model="searchParams.limit"
-                        id="registriesResultsNumberSelect">
-                      <option>10</option>
-                      <option>25</option>
-                    </select>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row>
-                <b-col cols="12">
-                  <b-form-group label="Map options:">
-                    <b-form-radio-group v-model="limitSearchToCurrentMapBounds" name="limitSearchToCurrentMapBounds">
-                      <b-form-radio v-bind:value="false" id="dontLimitSearchToMap">Snap map to search results</b-form-radio><br/>
-                      <b-form-radio v-bind:value="true" id="limitSearchToMap">Limit search to map area</b-form-radio>
-                    </b-form-radio-group>
-                    <b-form-checkbox
-                      class="ml-4"
+                      Caution: Your are filtering the search by community ({{registryStore.searchParams.city.filter(c => c).join(", ")}}) <i>and</i> by the map area.  Ensure these two selections are consistent, or you won't get any search results.
+                    </Message>
+                  </div>
+                </div>
+                <div v-if="userRoles.registry.view" class="flex flex-col gap-2 mb-6">
+                  <label for="registrationStatusSelect">Registration status:</label>
+                  <Select
+                  :options="regStatusOptions"
+                  v-model="searchParams.status"
+                  id="registrationStatusSelect"
+                  name="registryStatuses"
+                  class="w-full md:w-80"/>
+                </div>
+                <div class="flex flex-col gap-2 mb-6">
+                  <label>Region:</label>
+                  <Listbox
+                    id="regionOptions"
+                    v-model="searchParams.region"
+                    :options="regionOptions"
+                    optionLabel="name"
+                    :virtualScrollerOptions="{ itemSize: 38 }"
+                    listStyle="max-height:200px;"
+                  />
+                </div>
+                <div class="flex flex-col gap-2 mb-6">
+                  <label for="regTypeInput">
+                    Individual, company, or registration number:
+                  </label>
+                  <InputText
+                    id="regTypeInput"
+                    type="text"
+                    class="w-full md:w-80"
+                    placeholder="Search"
+                    v-model="searchParams.search"
+                  />
+                </div>
+                <div class="mb-6">
+                  <span>Entries:</span>
+                  <Select
+                    v-model="searchParams.limit"
+                    :options="[10, 25]"
+                    inputId="registriesResultsNumberSelect"
+                    class="ml-2 w-24"
+                  />
+                </div>
+                <div class="flex flex-col gap-2 mb-6">
+                  <legend for="mapOptionsRadioGroup" class="flex flex-col gap-2">Map options:</legend>
+                  <RadioButtonGroup v-model="limitSearchToCurrentMapBounds" name="limitSearchToCurrentMapBounds" class="flex flex-col gap-2">
+                    <div>
+                      <RadioButton :value="false" inputId="dontLimitSearchToMap"/>
+                      <label for="dontLimitSearchToMap" style="margin-right: 10px; margin-left: 5px;">Snap map to search results</label>
+                    </div>
+                    <div>
+                      <RadioButton :value="true" inputId="limitSearchToMap"/>
+                      <label for="limitSearchToMap" style="margin-right: 10px; margin-left: 5px;">Limit search to map area</label>
+                    </div>
+                  </RadioButtonGroup>
+                  <label class="ml-6">
+                    <Checkbox
+                      class="ml-6"
                       v-model="refreshOnMapChange"
                       id="refreshOnMapChange"
-                      :disabled="!limitSearchToCurrentMapBounds">
-                        Refresh search results when map area changes</b-form-checkbox>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-              <b-form-row>
-                <b-col>
-                  <b-form-group>
-                    <button
-                      type="submit"
-                      class="btn btn-primary registries-search-btn mr-md-1"
-                      :disabled="loading || isSearchInProgress">
-                      Search
-                      <i v-if="isSearchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
-                    </button>
-                    <button type="reset" class="btn btn-default">Reset</button>
-                  </b-form-group>
-                </b-col>
-              </b-form-row>
-            </b-form>
-          </b-col>
-
-          <!-- search map -->
-          <b-col>
-            <registry-map
-              ref="registryMap"
-              />
-          </b-col>
-        </b-row>
-
-        <div id="registry-download" v-if="userRoles.registry.view">
-          <h6 class="mt-3">Download everyone in registry</h6>
-          <ul class="ml-3">
-            <li><a href="drillers/xlsx" @click.prevent="downloadFile">Registries extract (XLSX)</a></li>
-            <li><a href="drillers/csv" @click.prevent="downloadFile">Registries extract (CSV)</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- Search results table -->
-      <div id="search-results-table">
-        <template v-if="!loading && !isSearchInProgress">
-          <b-row>
-            <b-col cols="12" v-if="!hasResults && hasSearched">
-              No results were found.
-            </b-col>
-            <b-col cols="12" v-if="listError">
-              <api-error :error="listError" :on-clear="() => registryStore.setListError(null)"></api-error>
-            </b-col>
-          </b-row>
-          <b-row v-if="hasResults">
-            <div class="col-xs-12 col-sm-4">
-              <h3>{{ activityTitle }} Results</h3>
+                      :disabled="!limitSearchToCurrentMapBounds"
+                      style="margin-right: 5px"
+                    />
+                    Refresh search results when map area changes
+                  </label>
+                </div>
+                <div class="flex flex-row gap-2 mb-6">
+                  <Button
+                    label="Submit"
+                    type="submit"
+                    :disabled="loading || isSearchInProgress">
+                    <i v-if="isSearchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
+                  </Button>
+                  <Button label="Reset" type="button" severity="warn" @click="resetSearch"/>
+                </div>
+              </Form>
             </div>
-            <b-col cols="12">
-              To update contact information email <a href="mailto:Groundwater@gov.bc.ca">groundwater@gov.bc.ca</a>.
-            </b-col>
-            <b-col cols="12" class="mt-2">
+
+            <!-- search map -->
+            <div class="col-span-1">
+              <registry-map
+                ref="registryMap"
+                />
+            </div>
+          </div>
+
+          <div id="registry-download" v-if="userRoles.registry.view">
+            <h6 class="mt-4">Download everyone in registry</h6>
+            <ul class="list-disc pl-10 mb-4 ml-4">
+              <li><a href="drillers/xlsx" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (XLSX)</a></li>
+              <li><a href="drillers/csv" @click.prevent="downloadFile" class="text-blue-500 hover:underline">Registries extract (CSV)</a></li>
+            </ul>
+          </div>
+        </div>
+      </template>
+
+        <!-- Search results table -->
+      <template id="search-results-table" #footer>
+        <div v-if="!loading && !isSearchInProgress">
+          <div>
+            <div v-if="!hasResults && hasSearched">
+              No results were found.
+            </div>
+            <div v-if="listError">
+              <api-error :error="listError" :on-clear="() => registryStore.setListError(null)"></api-error>
+            </div>
+          </div>
+          <div v-if="hasResults">
+            <div class="col-xs-12 col-sm-4">
+              <h3 class="text-2xl font-bold mb-2">{{ activityTitle }} Results</h3>
+            </div>
+            <div cols="12">
+              To update contact information email <a href="mailto:Groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca</a>.
+            </div>
+            <div cols="12" class="mt-2">
               <registry-table @sort="sortTable"/>
-            </b-col>
-          </b-row>
+            </div>
+          </div>
           <div id="searched-registry-download" v-if="hasResults && userRoles.registry.view">
             Download searched well driller or well pump installer:
-            <a :href="`drillers/xlsx?${downloadLinkQS}`" @click.prevent="downloadFile">XLSX</a> |
-            <a :href="`drillers/csv?${downloadLinkQS}`" @click.prevent="downloadFile">CSV</a>
+            <a :href="`drillers/xlsx?${downloadLinkQS}`" @click.prevent="downloadFile" class="text-blue-500 hover:underline">XLSX</a> |
+            <a :href="`drillers/csv?${downloadLinkQS}`" @click.prevent="downloadFile" class="text-blue-500 hover:underline">CSV</a>
           </div>
-          <div v-if="hasResults" class="mt-5">
+          <div v-if="hasResults" class="mt-12">
             <register-legal-text class="register-legal" :activity="activity"/>
           </div>
-        </template>
-      </div>
-    </b-card>
+        </div>
+      </template>
+
+    </Card>
   </div>
 </template>
 
@@ -288,8 +281,8 @@ export default {
     drillerOptions () { return this.registryStore.drillerOptions },
     loading () { return this.registryStore.loading },
     listError () { return this.registryStore.listError },
-    cityList () { return this.registryStore.cityList },
-    regionOptions () { return this.registryStore.regionOptions },
+    cityList () { return this.registryStore.cityList[this.formatActivityForCityList] },
+    regionOptions () { return this.registryStore.regionOptions},
     searchResponse () { return this.registryStore.searchResponse },
     activity () { return this.registryStore.activity },
     hasSearched () { return this.registryStore.hasSearched },
@@ -355,7 +348,7 @@ export default {
     }
   },
   watch: {
-    'searchParams.activity': function (activity) {
+    'searchParams.activity': function () {
       this.registryStore.setSearchParams(Object.assign({}, this.searchParams, { city: [''] }))
       this.resetSelectedSubactivities(this.subactivities)
       this.registryStore.fetchCityList(this.formatActivityForCityList)
@@ -392,15 +385,11 @@ export default {
       }
       this.registryStore.search(params)
     },
-    sortTable (sortCode) {
+    sortTable ({ field, order }) {
       if (!this.lastSearchedParams) {
         return
       }
-      if (this.lastSearchedParams.raw.ordering[0] !== '-') {
-        this.lastSearchedParams.raw['ordering'] = `-${sortCode}`
-      } else {
-        this.lastSearchedParams.raw['ordering'] = `${sortCode}`
-      }
+      this.lastSearchedParams.raw['ordering'] = order === 1 ? field : `-${field}`
       this.registryStore.search(this.lastSearchedParams.raw)
     },
     downloadFile (e) {

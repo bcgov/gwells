@@ -3,7 +3,7 @@
     <div class="card-body">
       <h6 class="card-title mb-0" id="changeHistoryTitle">
         Change History
-        <span class="ml-3">
+        <span class="ml-4">
           <b-button link size="sm" variant="outline-primary" v-on:click="toggleShow">{{showHistory ? "Hide":"Show"}}</b-button>
         </span>
       </h6>
@@ -12,7 +12,7 @@
       </div>
       <div id="historyList" ref="history" v-if="loaded && !loading">
         <div class="mt-2" v-if="displayHistory">
-          <div class="mt-3" v-for="(history_item, index) in cleanHistory" :key="`history-version ${index}`" :id="`history-version-${index}`">
+          <div class="mt-4" v-for="(history_item, index) in cleanHistory" :key="`history-version ${index}`" :id="`history-version-${index}`">
             <div class="font-weight-bold">
               {{history_item[0].user}}
               Edited this Well on
@@ -63,7 +63,7 @@
             </div>
           </div>
         </div>
-        <div class="font-weight-bold mt-3" v-if="showHistory">
+        <div class="font-weight-bold mt-4" v-if="showHistory">
           {{create_user}}
           created this well on
           {{ moment(create_date, "MMMM Do YYYY [at] LT")}}
@@ -77,7 +77,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {
@@ -87,9 +86,12 @@ export default {
       type: Number,
       isInput: false
     },
-    events: {
-      type: Vue
-    }
+    // TBD events handled differently in Vue 3
+    // and not need to be passed a prop
+    // Possibly replace with vue watch.
+    // events: {
+    //   type: Vue
+    // }
   },
   data () {
     return {

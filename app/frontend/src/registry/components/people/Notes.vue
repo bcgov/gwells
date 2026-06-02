@@ -1,82 +1,94 @@
 <template>
   <div class="card" ref="noteSection">
-    <div class="card-body p-2 p-md-3">
-      <h6 class="card-title" id="notesSectionTitle">Notes</h6>
-      <div class="mt-3" v-if="commonStore.userRoles.registry.edit">
-        <b-form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
-          <b-form-group
-              id="noteInputGroup"
-              label="Add a note:"
-              label-for="noteInput">
-            <b-form-textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></b-form-textarea>
-          </b-form-group>
-          <div class="submit-row">
-            <b-button
-            type="submit"
-            variant="primary"
-            :disabled="!noteInput || submitLoading || invalidNewNoteLength"
-            ref="noteInputSaveBtn"
-          >
-            Save
-          </b-button>
-          <b-button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</b-button>
-            <p
-              class="font-weight-bold text-count"
-              :class="[invalidNewNoteLength ? 'error': '']"
-            >
-              {{ noteInput.length }}/{{ maxNoteLength }}
-            </p>
-          </div>
-          <b-alert
-            class="mt-3"
-            variant="success"
-            dismissible
-            :show="submitSuccess"
-            @dismissed="submitSuccess=false"
-          >
-            {{ alertText }}
-          </b-alert>
-          <!-- Submit Modal -->
-          <b-modal
-              v-model="confirmSubmitModal"
-              centered
-              title="Confirm save"
-              @shown="focusSubmitModal"
-              :return-focus="$refs.noteInputSaveBtn"
-            >
-              Are you sure you want to save this note?
-            <div slot="modal-footer" class="buttons">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
+    <div class="card-body">
+      <h6 class="text-xl font-bold mb-6" id="notesSectionTitle">Notes</h6>
+
+      <!-- Add Note Form -->
+      <div class="mt-4" v-if="commonStore.userRoles.registry.edit">
+        <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
+          <div class="flex flex-col gap-2 mb-4">
+            <label for="noteInput">Add a note:</label>
+            <Textarea
+              id="noteInput"
+              v-model="noteInput"
+              :disabled="submitLoading"
+              :rows="3"
+              :max-rows="6"
+              class="w-full"
+            />
+            <div class="flex justify-between items-center mt-1">
+              <div class="flex gap-2">
+              <Button
+                type="submit"
+                label="Save"
+                :disabled="!noteInput || submitLoading || invalidNewNoteLength"
+                ref="noteInputSaveBtn"
+              />
+                <Button
+                  type="reset"
+                  label="Cancel"
+                  severity="secondary"
+                  size="small"
+                  outlined
+                  :disabled="!noteInput"
+                />
+              </div>
+              <p class="text-sm font-bold" :class="[invalidNewNoteLength ? 'error': '']">
+                {{ noteInput.length }}/{{ maxNoteLength }}
+              </p>
             </div>
-          </b-modal>
+          </div>
+
+          <Message v-if="submitSuccess" severity="success" class="mt-4" :closable="true" @close="submitSuccess = false">
+            {{ alertText }}
+          </Message>
+          <!-- Submit Modal -->
+          <Dialog
+            v-model="confirmSubmitModal"
+            v-model:visible="visible"
+            centered
+            modal
+            header="Confirm save"
+            @shown="focusSubmitModal"
+            :return-focus="$refs.noteInputSaveBtn"
+          >
+            Are you sure you want to save this note?
+            <div slot="modal-footer" class="buttons">
+              <Button variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn">
+                Save
+              </Button>
+              <Button variant="light" @click="confirmSubmitModal=false">
+                Cancel
+              </Button>
+            </div>
+          </Dialog>
           <!-- Cancellation Modal -->
-          <b-modal
+          <Dialog
               v-model="confirmCancelModal"
+              v-model:visible="visible"
               centered
-              title="Confirm cancel"
+              modal
+              header="Confirm cancel"
               @shown="focusCancelModal"
               :return-focus="$refs.noteInputCancelBtn"
             >
             Your note is not saved. Are you sure you want to discard your changes?
             <div slot="modal-footer" class="buttons">
-              <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
+              <Button severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
                 Cancel
-              </b-btn>
-              <b-btn variant="danger" @click="confirmCancelModal=false;noteReset()">
+              </Button>
+              <Button severity="danger" @click="confirmCancelModal=false;noteReset()">
                 Discard
-              </b-btn>
+              </Button>
             </div>
-          </b-modal>
+          </Dialog>
           <!-- Delete Note Modal  -->
-          <b-modal
+          <Dialog
             v-model="confirmDeleteModal"
+            v-model:visible="visible"
             centered
-            title="Confirm Deletion"
+            modal
+            header="Confirm Deletion"
             @shown="focusDeleteModal"
             :return-focus="$refs.noteInputCancelBtn"
           >
@@ -85,31 +97,33 @@
               <p class="font-weight-bold wb">"{{activeNote.note}}"</p>
             </div>
             <div slot="modal-footer" class="buttons">
-              <b-btn
+              <Button
                 variant="light"
                 @click="confirmDeleteModal=false"
                 ref="cancelDeleteBtn"
               >
                 Cancel
-              </b-btn>
-              <b-btn
-                variant="danger"
+              </Button>
+              <Button
+                severity="danger"
                 @click="confirmDeleteModal=false;deleteNote()"
               >
                 Delete
-              </b-btn>
+              </Button>
             </div>
-          </b-modal>
+          </Dialog>
           <!-- Edit Modal -->
-          <b-modal
+          <Dialog
               v-model="confirmEditNoteModal"
+              v-model:visible="visible"
               centered
-              title="Editing Note"
+              modal
+              header="Editing Note"
               @shown="focusEditNoteModal"
               :return-focus="$refs.noteInputCancelBtn"
             >
             <div>
-              <b-form-textarea
+              <InputText
                 id="editNoteTextArea"
                 v-model="noteContentEdit"
                 placeholder="Edit Note..."
@@ -124,44 +138,55 @@
             </p>
             </div>
             <div slot="modal-footer" class="buttons">
-              <b-btn variant="light" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn">
+              <Button variant="light" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn">
                 Cancel
-              </b-btn>
-              <b-btn variant="primary" :disabled="invalidEditNoteLength || !noteContentEdit" @click="notePatchHandle()">
+              </Button>
+              <Button variant="primary" :disabled="invalidEditNoteLength || !noteContentEdit" @click="notePatchHandle()">
                 Submit
-              </b-btn>
+              </Button>
             </div>
-          </b-modal>
-        </b-form>
+          </Dialog>
+        </Form>
       </div>
-      <div id="notesList" ref="notes">
-        <div class="mt-5" v-if="!notes || !notes.length">
-          <b-row><b-col>No notes for this record.</b-col></b-row>
+
+      <!-- Notes List -->
+      <div id="notesList" class="mt-6 border-t border-surface-200 pt-6">
+        <div v-if="!notes || !notes.length" class="text-surface-500">
+          No notes for this record.
         </div>
-        <div class="mt-5 note-container" v-if="notes && notes.length">
-          <div class="note wb" v-for="(note, index) in notes" :key="`note ${index}`" :id="`note-${index}`">
-            <p>
-              <span class="font-weight-bold">{{ note.author }}</span> ({{ moment(note.date, "MMMM Do YYYY [at] LT") }}):
-              {{ note.note }}
-            </p>
-            <div class="crud-options">
-              <b-btn
-                :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
+        <div v-else class="flex flex-col gap-6">
+          <div
+            v-for="(note, index) in notes"
+            :key="index"
+            class="p-6 bg-surface-50 rounded-md border border-surface-100 flex flex-col sm:flex-row justify-between gap-6"
+          >
+            <div class="break-words max-w-full">
+              <p class="mb-1">
+                <span class="font-bold text-primary">{{ note.author }}</span>
+                <span class="text-surface-500 text-sm ml-1">({{ note.date }})</span>:
+              </p>
+              <p>{{ note.note }}</p>
+            </div>
+
+            <div class="flex items-start gap-2 shrink-0">
+              <!-- Kept FontAwesome icons inside PrimeVue buttons -->
+              <Button
                 @click="noteEditHandler(note)"
-                size="sm"
-                variant="primary"
+                size="small"
+                outlined
+                :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
               >
-                <i class="fa fa-edit"></i>
-                Edit
-              </b-btn>
-              <b-btn
-                :disabled="!commonStore.userRoles.registry.admin && commonStore.keycloak.idTokenParsed.display_name !== note.author"
+                <i class="fa fa-edit mr-2"></i> Edit
+              </Button>
+              <Button
                 @click="noteDeleteHandler(note)"
-                size="sm"
-                variant="danger"
+                size="small"
+                severity="danger"
+                outlined
+                :disabled="!commonStore.userRoles.registry.admin && commonStore.keycloak.idTokenParsed.display_name !== note.author"
               >
-                &#x2715;
-              </b-btn>
+                <i class="fa fa-times"></i>
+              </Button>
             </div>
           </div>
         </div>
@@ -172,7 +197,7 @@
 
 <script>
 import smoothScroll from 'smoothscroll'
-
+import { useCommonStore } from '@/stores/common.js'
 import ApiService from '@/common/services/ApiService.js'
 
 export default {

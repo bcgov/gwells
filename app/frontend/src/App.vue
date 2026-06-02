@@ -1,11 +1,11 @@
 <template>
   <div>
     <gwells-header ref="header"/>
-    <main role="main" class="p-0 mt-4">
+    <main role="main" class="p-0 mt-6">
       <router-view/>
     </main>
+    <ScrollTop/>
     <gwells-footer/>
-    <back-to-top :target="$refs.header"/>
   </div>
 </template>
 
@@ -13,14 +13,12 @@
 import { useCommonStore } from '@/stores/common.js'
 import Header from './common/components/Header.vue'
 import Footer from './common/components/Footer.vue'
-import BackToTop from './common/components/BackToTop.vue'
 import useSubmissionStore from './stores/submission'
 export default {
   name: 'App',
   components: {
     'gwells-header': Header,
     'gwells-footer': Footer,
-    BackToTop
   },
   computed: {
     commonStore () { return useCommonStore() },

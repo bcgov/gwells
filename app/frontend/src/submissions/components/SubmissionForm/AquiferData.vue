@@ -80,15 +80,9 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import ApiService from '@/common/services/ApiService.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
-import inputFormatMixin from '@/common/inputFormatMixin.js'
-
-import BackToTopLink from '@/common/components/BackToTopLink.vue'
 
 export default {
-  mixins: [inputBindingsMixin, inputFormatMixin],
-  components: {
-    BackToTopLink
-  },
+  mixins: [inputBindingsMixin],
   props: {
     aquifer: null,
     aquiferVulnerabilityIndex: null,

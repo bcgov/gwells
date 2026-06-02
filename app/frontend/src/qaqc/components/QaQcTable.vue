@@ -12,30 +12,27 @@
     limitations under the License.
 */
 <template>
-  <div id="qaqcResults">
-    <b-col sm="4"></b-col>
-    <b-row align-h="between" class="mb-2">
-      <b-col sm="4">
-        <!-- Date Range Filter specifically for createDate -->
-        <div><b>Created Date Range</b></div>
-        <div :class="`qaqc-filters-${dateColumn.type}`">
-          <qaqc-filters
-            v-if="dateColumn"
-            :type="dateColumn.type"
-            :id="`${dateColumn.id}ResultFilter`"
-            :errors="resultErrors[dateColumn.param]"
-            :param-names="dateColumn.params"
-            :options="dateColumn.options || filterSelectOptions[dateColumn.id]"
-            :value="filterParams[dateColumn.id]"
-            :text-field="dateColumn.textField"
-            @input="applyFilter(dateColumn, $event)" />
-        </div>
-      </b-col>
-      <b-col sm="4" class="form-inline">
-        Show <b-form-select class="mx-1" :value="qaqcStore.limit" @input="setLimit($event)" :options="limitOptions" /> results
-      </b-col>
-    </b-row>
-    <div class="table-responsive">
+  <div class="grid grid-cols-3 gap-2" id="qaqcResults">
+    <div class="col-start-1">
+      <!-- Date Range Filter specifically for createDate -->
+      <div><b>Created Date Range</b></div>
+      <div :class="`qaqc-filters-${dateColumn.type}`">
+        <qaqc-filters
+          v-if="dateColumn"
+          :type="dateColumn.type"
+          :id="`${dateColumn.id}ResultFilter`"
+          :errors="resultErrors[dateColumn.param]"
+          :param-names="dateColumn.params"
+          :options="dateColumn.options || filterSelectOptions[dateColumn.id]"
+          :value="filterParams[dateColumn.id]"
+          :text-field="dateColumn.textField"
+          @input="applyFilter(dateColumn, $event)" />
+      </div>
+    </div>
+    <div class="col-start-3 form-inline">
+      Show <Select class="mx-1" v-model="qaqcStore.limit" @input="setLimit($event)" :options="limitOptions" optionLabel="text" optionValue="value" /> results
+    </div>
+    <div class="col-span-3 table-responsive">
       <table id="qaqcTable" class="table table-striped" aria-describedby="qaqcTableDesc">
         <thead>
           <tr>
@@ -45,24 +42,24 @@
               class="text-nowrap"
               scope="col">
               {{ columnLabels(column.id) }}
-              <b-button
+              <Button
                 v-if="column.sortParam !== 'latitude' && column.sortParam !== 'longitude'"
                 class="sort-button px-0"
                 :class="{active: column.sortParam === orderingParam}"
-                variant="link"
+                variant="text"
                 @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
                 {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
-              </b-button>
+              </Button>
               <div
                 v-if="column.sortParam === 'latitude' || column.sortParam === 'longitude'"
                 class="py-1 px-0"
               ></div>
               <!-- Only show the badge and popover if there is tooltip content -->
               <template v-if="getTooltipContent(column.id)">
-                <b-badge pill variant="primary" :id="`${column.id}-tooltip`" tabindex="0" class="ml-1">
+                <Badge :id="`${column.id}-tooltip`" tabindex="0" class="ml-1">
                   <i class="fa fa-question fa-sm"></i>
-                </b-badge>
-                <b-popover :target="`${column.id}-tooltip`" placement="bottom" triggers="hover focus" :content="getTooltipContent(column.id)"></b-popover>
+                </Badge>
+                <Popover ref="op" triggers="hover focus">{{getTooltipContent(column.id)}}</Popover>
               </template>
             </th>
           </tr>
@@ -87,18 +84,18 @@
             <td :colspan="columnCount">
               <div class="position-relative my-1 mx-1">
                 <div v-if="isBusy" class="d-flex">
-                  <div class="spinner-border m-3" role="status" aria-hidden="true"></div>
-                  <strong class="align-middle my-3 pt-1">
+                  <div class="spinner-border m-4" role="status" aria-hidden="true"></div>
+                  <strong class="align-middle my-4 pt-1">
                     Loading...
                   </strong>
                 </div>
-                <strong v-else-if="hasResultErrors" class="text-danger align-middle my-3 pt-1">
+                <strong v-else-if="hasResultErrors" class="text-danger align-middle my-4 pt-1">
                   An error occurred processing the search.
                 </strong>
-                <strong v-else-if="isReset" class="align-middle my-3 pt-1">
+                <strong v-else-if="isReset" class="align-middle my-4 pt-1">
                   Enter some criteria in the form above to search.
                 </strong>
-                <strong v-else-if="isEmpty" class="align-middle my-3 pt-1">
+                <strong v-else-if="isEmpty" class="align-middle my-4 pt-1">
                   No results matched your search criteria.
                 </strong>
               </div>
@@ -138,22 +135,21 @@
         </tbody>
       </table>
     </div>
-    <div class="my-3" v-if="qaqcStore.resultCount > 0">
+    <div class="my-4" v-if="qaqcStore.resultCount > 0">
       <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ qaqcStore.resultCount }} {{ qaqcStore.resultCount === 1 ? 'record' : 'records'}}.</div>
-      <qaqc-exports class="my-3" :field-data="searchFields" />
+      <qaqc-exports class="my-4" :field-data="searchFields" />
     </div>
-    <b-pagination
-      class="mt-3"
-      size="md"
+    <Pagination
+      class="mt-4"
       :disabled="isBusy"
       :total-rows="qaqcStore.resultCount"
-      :value="currentPage"
-      :per-page="qaqcStore.limit"
-      @input="changePage($event)"/>
+      :rows="qaqcStore.limit"
+      @page="changePage($event)"/>
   </div>
 </template>
 
 <script>
+import { Badge, Popover } from 'primevue'
 import QaQcFilters from '@/qaqc/components/QaQcFilters.vue'
 import QaQcExports from '@/qaqc/components/QaQcExports.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
@@ -287,7 +283,8 @@ export default {
 
       this.qaqcStore.search()
     },
-    changePage (page) {
+    changePage (pageState) {
+      const page = pageState.page
       const offset = this.qaqcStore.limit * (page - 1)
 
       this.qaqcStore.setOffset(offset)

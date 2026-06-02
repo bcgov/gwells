@@ -15,22 +15,31 @@ import "@/common/helpers/browserUpdate.js";
 import { createApp } from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
-import VueNoty from "vuejs-noty";
-import BootstrapVue from "bootstrap-vue";
+// import VueNoty from "vuejs-noty";
+import { createPinia } from "pinia";
+import PrimeVue from 'primevue/config';
+import { definePreset } from '@primeuix/themes';
+import Aura from '@primeuix/themes/aura';
+import {
+  Button, InputText, InputMask, Card, Message,Panel,
+  Select, MultiSelect, RadioButton, RadioButtonGroup,
+  Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
+  Breadcrumb, Dialog, DataTable, Column, FileUpload,
+  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs, TabList, Tab, TabPanels, TabPanel, ConfirmDialog
+} from 'primevue';
+import { Form } from '@primevue/forms';
+import ConfirmationService from 'primevue/confirmationservice';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
 import router from "./router.js";
-import "@/common/assets/css/bootstrap-theme.min.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
-import VueMoment from "vue-moment";
+// import VueMoment from "vue-moment";
 import FormInput from "@/common/components/FormInput.vue";
 import * as filters from "./common/filters";
 // GWELLS js API library (helper methods for working with API)
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
-import { createPinia } from "pinia";
 
 const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
 const STAGING_GWELLS_URLS = [
@@ -74,17 +83,52 @@ if (isProduction()) {
 }
 
 app.use(router);
-app.use(VueNoty, {
-  layout: "topRight",
-  theme: "bootstrap-v4",
-  timeout: 1800,
-});
-app.use(BootstrapVue);
-app.use(VueMoment);
+app.use(ConfirmationService);
+// TBD replace VueNoty with a more modern notification library
+// app.use(VueNoty, {
+//   layout: "topRight",
+//   theme: "bootstrap-v4",
+//   timeout: 1800,
+// });
+
+// TBD replace VueMoment with a maintained date library or use MomentJS directly
+// Non-functional without vue/compat
+// app.use(VueMoment);
 
 // Register global components
 app.component("v-select", vSelect);
 app.component("form-input", FormInput);
+// PrimeVue components
+app.component("Button", Button);
+app.component("InputText", InputText);
+app.component("InputMask", InputMask)
+app.component("Card", Card);
+app.component("Message", Message);
+app.component("Panel", Panel);
+app.component("Select", Select);
+app.component("MultiSelect", MultiSelect)
+app.component("RadioButton", RadioButton);
+app.component("RadioButtonGroup", RadioButtonGroup);
+app.component("Checkbox", Checkbox);
+app.component("CheckboxGroup", CheckboxGroup);
+app.component("Form", Form);
+app.component("Listbox", Listbox);
+app.component("ProgressSpinner", ProgressSpinner)
+app.component("Breadcrumb", Breadcrumb)
+app.component("Dialog", Dialog)
+app.component("DataTable", DataTable)
+app.component("Column", Column)
+app.component("FileUpload", FileUpload)
+app.component("Textarea", Textarea)
+app.component("Menubar", Menubar);
+app.component("ScrollTop", ScrollTop);
+app.component("InputGroupAddon", InputGroupAddon);
+app.component("Tab", Tab);
+app.component("Tabs", Tabs);
+app.component("TabList", TabList);
+app.component("TabPanel", TabPanel);
+app.component("TabPanels", TabPanels);
+app.component("ConfirmDialog", ConfirmDialog);
 
 const pinia = createPinia();
 app.use(pinia);
@@ -120,5 +164,42 @@ app.config.globalProperties.excludeZeroDecimals = filters.excludeZeroDecimals;
 app.config.globalProperties.nullBooleanToYesNo = filters.nullBooleanToYesNo;
 app.config.globalProperties.booleanToYesNo = filters.booleanToYesNo;
 
+const MyPreset = definePreset(Aura, {
+  semantic: {
+    colorScheme: {
+      light: {
+        primary: {
+          color: "#003366",
+          hoverColor: "#002040",
+        }
+      }
+    }
+  },
+  components: {
+    card: {
+      root: {
+        borderRadius: 0,
+      }
+    },
+    fieldset: {
+      root: {
+        padding: 0,
+      },
+      legend: {
+        padding: 0,
+        fontWeight: "inherit",
+      }
+    }
+  }
+})
+
+app.use(PrimeVue, {
+  theme: {
+    preset: MyPreset,
+    options: {
+      darkModeSelector: false,
+    }
+  }
+});
 // Mount app
 app.mount("#app");
