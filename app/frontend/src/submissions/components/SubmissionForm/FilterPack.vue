@@ -12,84 +12,58 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Filter Pack</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </b-col>
-      </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="3">
-        <form-input
-          id="filterPackFrom"
-          label="Filter Pack From"
-          hint="ft"
-          type="number"
-          v-model="filterPackFromInput"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="3">
-        <form-input
-          id="filterPackTo"
-          label="Filter Pack To"
-          hint="ft"
-          type="number"
-          v-model="filterPackToInput"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="3">
-        <form-input
-          id="filterPackThickness"
-          label="Filter Pack Thickness"
-          hint="inches"
-          type="number"
-          v-model="filterPackThicknessInput"
-        ></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="3">
-        <form-input
-          id="filterPackMaterial"
-          label="Filter Pack Material"
-          select
-          :options="codes?.filter_pack_material"
-          text-field="description"
-          value-field="filter_pack_material_code"
-          v-model="filterPackMaterialInput"
-          placeholder="Select material"
-          :errors="errors['filter_pack_material']"
-          :loaded="fieldsLoaded['filter_pack_material']"
-        ></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="3">
-        <form-input
-          id="filterPackMaterialSize"
-          label="Filter Pack Material Size"
-          select
-          :options="codes?.filter_pack_material_size"
-          text-field="description"
-          value-field="filter_pack_material_size_code"
-          v-model="filterPackMaterialSizeInput"
-          placeholder="Select size"
-          :errors="errors['filter_pack_material_size']"
-          :loaded="fieldsLoaded['filter_pack_material_size']"
-        ></form-input>
-      </b-col>
-    </b-row>
-  </fieldset>
+  <form-subsection title="Filter Pack" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <responsive-grid :cols="12" :md="6" :lg="3">
+      <form-input
+        id="filterPackFrom"
+        label="Filter Pack From"
+        hint="ft"
+        type="number"
+        v-model="filterPackFromInput"/>
+      <form-input
+        id="filterPackTo"
+        label="Filter Pack To"
+        hint="ft"
+        type="number"
+        v-model="filterPackToInput"/>
+      <form-input
+        id="filterPackThickness"
+        label="Filter Pack Thickness"
+        hint="inches"
+        type="number"
+        v-model="filterPackThicknessInput"/>
+      <form-input
+        id="filterPackMaterial"
+        label="Filter Pack Material"
+        select
+        :options="codes?.filter_pack_material"
+        text-field="description"
+        value-field="filter_pack_material_code"
+        v-model="filterPackMaterialInput"
+        placeholder="Select material"
+        :errors="errors['filter_pack_material']"
+        :loaded="fieldsLoaded['filter_pack_material']"/>
+      <form-input
+        id="filterPackMaterialSize"
+        label="Filter Pack Material Size"
+        select
+        :options="codes?.filter_pack_material_size"
+        text-field="description"
+        value-field="filter_pack_material_size_code"
+        v-model="filterPackMaterialSizeInput"
+        placeholder="Select size"
+        :errors="errors['filter_pack_material_size']"
+        :loaded="fieldsLoaded['filter_pack_material_size']"/>
+    </responsive-grid>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'FilterPack',
@@ -120,6 +94,10 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
   },
   fields: {
     filterPackFromInput: 'filterPackFrom',

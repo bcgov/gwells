@@ -14,7 +14,6 @@
 <script>
 
 // Import your table components
-import { Tabs, TabList, Tab } from 'primevue'
 import QaQcTable from '../components/QaQcTable.vue'
 import { useSubmissionStore } from '@/stores/submission'
 import { useQAQCStore } from '@/stores/qaqc'
@@ -22,10 +21,7 @@ import { useQAQCStore } from '@/stores/qaqc'
 export default {
   name: 'QaQcDashboard',
   components: {
-    QaQcTable,
-    Tab,
-    TabList,
-    Tabs
+    QaQcTable
   },
   computed: {
     submissionStore() { return useSubmissionStore() },

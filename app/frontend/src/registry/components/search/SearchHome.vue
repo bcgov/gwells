@@ -181,7 +181,7 @@
                     :disabled="loading || isSearchInProgress">
                     <i v-if="isSearchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
                   </Button>
-                  <Button label="Reset" type="button" severity="warn" @click="resetSearch"/>
+                  <Button label="Reset" type="button" severity="secondary" @click="resetSearch"/>
                 </div>
               </Form>
             </div>
@@ -246,6 +246,7 @@ import querystring from 'querystring-es3'
 import mapboxgl from 'mapbox-gl'
 import { omit } from 'lodash'
 import axios from 'axios'
+import { Panel } from 'primevue'
 
 import ApiService from '@/common/services/ApiService.js'
 import RegistryMap from '@/registry/components/search/RegistryMap.vue'
@@ -260,7 +261,8 @@ export default {
     'registry-table': SearchTable,
     'registry-map': RegistryMap,
     'api-error': APIErrorMessage,
-    'register-legal-text': LegalText
+    'register-legal-text': LegalText,
+    Panel
   },
   data () {
     return {

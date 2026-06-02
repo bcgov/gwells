@@ -12,95 +12,70 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Screen Information</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenIntake"
-          label="Intake"
-          select
-          :options="codes?.screen_intake_methods"
-          text-field="description"
-          value-field="screen_intake_code"
-          placeholder="Select intake"
-          v-model="screenIntakeMethodInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenType"
-          label="Screen Type"
-          select
-          :options="codes?.screen_types"
-          text-field="description"
-          value-field="screen_type_code"
-          placeholder="Select type"
-          v-model="screenTypeInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenMaterial"
-          label="Screen Material"
-          select
-          :options="codes?.screen_materials"
-          text-field="description"
-          value-field="screen_material_code"
-          placeholder="Select material"
-          v-model="screenMaterialInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="otherScreenMaterial"
-          label="Specify Other Screen Material"
-          v-model="otherScreenMaterialInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenOpening"
-          label="Screen Opening"
-          select
-          :options="codes?.screen_openings"
-          text-field="description"
-          value-field="screen_opening_code"
-          placeholder="Select opening"
-          v-model="screenOpeningInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenBottom"
-          label="Screen Bottom"
-          select
-          :options="codes?.screen_bottoms"
-          text-field="description"
-          value-field="screen_bottom_code"
-          placeholder="Select bottom"
-          v-model="screenBottomInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-          id="screenInformation"
-          label="Screen Information"
-          v-model="screenInformationInput"
-          :errors="errors['screen_information']"
-          :loaded="fieldsLoaded['screen_information']"></form-input>
-      </b-col>
-    </b-row>
+  <form-subsection title="Screen Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenIntake"
+        label="Intake"
+        select
+        :options="codes?.screen_intake_methods"
+        text-field="description"
+        value-field="screen_intake_code"
+        placeholder="Select intake"
+        v-model="screenIntakeMethodInput"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenType"
+        label="Screen Type"
+        select
+        :options="codes?.screen_types"
+        text-field="description"
+        value-field="screen_type_code"
+        placeholder="Select type"
+        v-model="screenTypeInput"/>
+      <form-input
+        id="screenMaterial"
+        label="Screen Material"
+        select
+        :options="codes?.screen_materials"
+        text-field="description"
+        value-field="screen_material_code"
+        placeholder="Select material"
+        v-model="screenMaterialInput"/>
+      <form-input
+        id="otherScreenMaterial"
+        label="Specify Other Screen Material"
+        v-model="otherScreenMaterialInput"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenOpening"
+        label="Screen Opening"
+        select
+        :options="codes?.screen_openings"
+        text-field="description"
+        value-field="screen_opening_code"
+        placeholder="Select opening"
+        v-model="screenOpeningInput"/>
+      <form-input
+        id="screenBottom"
+        label="Screen Bottom"
+        select
+        :options="codes?.screen_bottoms"
+        text-field="description"
+        value-field="screen_bottom_code"
+        placeholder="Select bottom"
+        v-model="screenBottomInput"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="screenInformation"
+        label="Screen Information"
+        v-model="screenInformationInput"
+        :errors="errors['screen_information']"
+        :loaded="fieldsLoaded['screen_information']"/>
+    </responsive-grid>
     <p class="mt-4 mb-2">Screen Details</p>
     <div class="table-responsive">
       <table class="table table-sm" aria-describedby="screenDetails">
@@ -136,8 +111,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Depth from (feet)"
                   v-model="screensData[index].start"
                   :errors="getScreenError(index).start"
-                  :loaded="getScreenLoaded(index).start"
-                  />
+                  :loaded="getScreenLoaded(index).start"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -147,8 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Depth to (feet)"
                   v-model="screensData[index].end"
                   :errors="getScreenError(index).end"
-                  :loaded="getScreenLoaded(index).end"
-                  />
+                  :loaded="getScreenLoaded(index).end"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -158,23 +131,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Diameter (inches)"
                   v-model="screensData[index].diameter"
                   :errors="getScreenError(index).diameter"
-                  :loaded="getScreenLoaded(index).diameter"
-                  />
+                  :loaded="getScreenLoaded(index).diameter"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
-                    group-class="my-1"
-                    :id="`screenAssemblyType_${index}`"
-                    aria-label="Screen Assembly Type"
-                    v-model="screensData[index].assembly_type"
-                    select
-                    :options="codes?.screen_assemblies"
-                    text-field="description"
-                    value-field="screen_assembly_type_code"
-                    placeholder="Select type"
-                    :errors="getScreenError(index).assembly_type"
-                    :loaded="getScreenLoaded(index).assembly_type"
-                    />
+                  group-class="my-1"
+                  :id="`screenAssemblyType_${index}`"
+                  aria-label="Screen Assembly Type"
+                  v-model="screensData[index].assembly_type"
+                  select
+                  :options="codes?.screen_assemblies"
+                  text-field="description"
+                  value-field="screen_assembly_type_code"
+                  placeholder="Select type"
+                  :errors="getScreenError(index).assembly_type"
+                  :loaded="getScreenLoaded(index).assembly_type"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -185,11 +156,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   v-model="screensData[index].slot_size"
                   :errors="getScreenError(index).slot_size"
-                  :loaded="getScreenLoaded(index).slot_size"
-                  />
+                  :loaded="getScreenLoaded(index).slot_size"/>
               </td>
               <td class="py-0">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"/>
               </td>
             </tr>
           </template>
@@ -199,29 +169,23 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <datalist id="screenSlotSizeList">
       <option v-for="size in screenSlotSizeSuggestions" :key="`screenSlotSizeListOption-${size}`">{{size}}.00</option>
     </datalist>
-    <b-btn size="sm" variant="primary" @click="addScreenRow" id="addScreenRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <b-modal
-      v-model="confirmRemoveModal"
-      centered
-      title="Confirm remove"
-      @shown="focusRemoveModal">
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" @click="addScreenRow" id="addScreenRowButton"/>
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
-      </div>
-    </b-modal>
-  </fieldset>
+      <template #footer>
+        <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+        <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
+      </template>
+    </Dialog>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -257,6 +221,10 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

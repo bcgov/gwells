@@ -72,29 +72,27 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 target="_blank"
               >{{ observation_well_number }}</a>
             </span>
-          </responsive-grid>
-          <responsive-grid :cols="12" :md="4">
+
             <span><b>Well Identification Plate Number:</b> {{ identification_plate_number }}</span>
             <span><b>Well Class:</b> {{ well_class }}</span>
             <span><b>Observation Well Status:</b> {{ observation_well_status }}</span>
-          </responsive-grid>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Owner Name:</span> {{ owner_full_name }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Subclass:</span> {{ well_subclass }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Environmental Monitoring System (EMS) ID:</span> {{ ems }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Intended Water Use:</span> {{ intended_water_use }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Aquifer Number: </span>
+
+            <span><b>Owner Name:</b> {{ owner_full_name }}</span>
+            <span><b>Well Subclass:</b> {{ well_subclass }}</span>
+            <span><b>Environmental Monitoring System (EMS) ID:</b> {{ ems }}</span>
+
+            <span><b>Intended Water Use:</b> {{ intended_water_use }}</span>
+            <span>
+              <b>Aquifer Number: </b>
               <router-link v-if="aquifer" :to="{ name: 'aquifers-view', params: { id: aquifer } }">
                 {{ aquifer }}
               </router-link>
-            </div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Alternative specs submitted:</span> {{ alternative_specs_submitted }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Artesian Condition:</span> {{ booleanToYesNo(artesian_conditions) }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Technical Report:</span>
+            </span>
+            <span><b>Alternative specs submitted:</b> {{ alternative_specs_submitted }}</span>
+
+            <span><b>Artesian Condition:</b> {{ booleanToYesNo(artesian_conditions) }}</span>
+            <span>
+              <b>Technical Report:</b>
               <a
                 v-if="technical_report"
                 id="technical_report"
@@ -103,37 +101,35 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 rel="noopener noreferrer"
               > Report Available</a>
               <span v-if="!technical_report"> N/A</span>
-            </div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Drinking Water Area Indicator:</span> {{ booleanToYesNo(drinking_water_protection_area_ind) }}</div>
-          </div>
+            </span>
+            <span><b>Drinking Water Area Indicator:</b> {{ booleanToYesNo(drinking_water_protection_area_ind) }}</span>
+          </responsive-grid>
         </fieldset>
 
         <!-- LINKS -->
         <fieldset id="jump_links_fieldset" class="d-print-none detail-section my-4">
           <legend class="w-full mb-2">Sections</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#location_information_fieldset">Location Information</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_activity_fieldset">Well Activity</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_work_dates_fieldset">Well Work Dates</a></div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_completion_data_fieldset">Well Completion Data and Artesian Flow</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#lithology_fieldset">Lithology</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#casing_fieldset">Casing Details</a></div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#aquifer_parameters_fieldset">Aquifer Parameters</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#liner_details_fieldset">Liner Details</a></div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#screen_details_fieldset">Screen Details</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_development_fieldset">Well Development</a></div>
-            <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_yield_fieldset">Well Yield</a></div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
+          <responsive-grid :cols="12" :md="4">
+            <a class="jump_link" href="#location_information_fieldset">Location Information</a>
+            <a class="jump_link" href="#well_activity_fieldset">Well Activity</a>
+            <a class="jump_link" href="#well_work_dates_fieldset">Well Work Dates</a>
+
+            <a class="jump_link" href="#well_completion_data_fieldset">Well Completion Data and Artesian Flow</a>
+            <a class="jump_link" href="#lithology_fieldset">Lithology</a>
+            <a class="jump_link" href="#casing_fieldset">Casing Details</a>
+
+            <a class="jump_link" href="#aquifer_parameters_fieldset">Aquifer Parameters</a>
+            <a class="jump_link" href="#surface_seal_fieldset">Surface Seal and Backfill Details</a>
+            <a class="jump_link" href="#liner_details_fieldset">Liner Details</a>
+
+            <a class="jump_link" href="#screen_details_fieldset">Screen Details</a>
+            <a class="jump_link" href="#well_development_fieldset">Well Development</a>
+            <a class="jump_link" href="#well_yield_fieldset">Well Yield</a>
+          </responsive-grid>
+          <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_decommissioning_fieldset">Well Decommissioning</a></div>
             <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#well_comments_fieldset">Comments</a></div>
+            <!-- Can't put in reponsive grid bc of this v-if; it doesn't support conditional col display -->
             <div v-if="commonStore.config && commonStore.config.enable_documents" class="col-span-12 md:col-span-4"><a class="jump_link" href="#documents_fieldset">Documentation</a></div>
             <div class="col-span-12 md:col-span-4"><a class="jump_link" href="#disclaimer_fieldset">Disclaimer</a></div>
           </div>
@@ -142,20 +138,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <!-- LICENSING -->
         <fieldset id="well_licensing_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Licensing Information</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Licensed Status:</span> {{ recordLicence?.status }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Licence Number{{ recordLicence.number.length > 1 ? "s" : "" }}:</span>&nbsp;
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Licensed Status:</b> {{ recordLicence?.status }}</span>
+            <span>
+              <b>Licence Number{{ recordLicence.number.length > 1 ? "s" : "" }}:</b>&nbsp;
               <a v-for="(licence, index) in recordLicence.number" :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${licence}`" target="_blank">
                 {{ licence}}{{ index + 1 < recordLicence.number.length ? ", " : ""}}
               </a>
-            </div>
-          </div>
+            </span>
+          </responsive-grid>
         </fieldset>
 
         <!-- LOCATION -->
         <fieldset id="location_information_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Location Information</legend>
-          <div class="grid grid-cols-12 gap-4">
+          <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-6">
               <div>
                 <span class="font-bold">Street Address:</span> {{ street_address }}
@@ -291,34 +288,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
         <fieldset id="well_completion_data_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Completion Data</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Total Depth Drilled:</span> {{ excludeZeroDecimals(total_depth_drilled) }} {{ total_depth_drilled ? 'ft bgl':''}}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Estimated Well Yield:</span> {{ excludeZeroDecimals(well_yield) }} {{ well_yield ? 'USgpm':'' }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Static Water Level (BTOC):</span> {{ excludeZeroDecimals(static_water_level) }} {{ static_water_level ? 'feet btoc': ''}}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Finished Well Depth:</span> {{ excludeZeroDecimals(finished_well_depth) }} {{ finished_well_depth ? 'ft bgl':''}}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Cap:</span> {{ well_cap_type }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Artesian Flow:</span> {{ excludeZeroDecimals(artesian_flow) }} {{ artesian_flow ? 'USgpm':'' }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Final Casing Stick Up:</span> {{ excludeZeroDecimals(final_casing_stick_up) }} {{ final_casing_stick_up ? 'inches':''}}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Well Disinfected Status:</span> {{ well_disinfected_status }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Artesian Pressure (head):</span> {{ excludeZeroDecimals(artesian_pressure_head) }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Depth to Bedrock:</span> {{ excludeZeroDecimals(bedrock_depth) }} {{ bedrock_depth ? 'feet bgl':''}}</div>
-            <div class="col-span-12 md:col-span-4">
-              <span class="font-bold">Drilling Method<span v-if="drilling_methods && drilling_methods.length > 1">s</span>:</span>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Total Depth Drilled:</b> {{ excludeZeroDecimals(total_depth_drilled) }} {{ total_depth_drilled ? 'ft bgl':''}}</span>
+            <span><b>Estimated Well Yield:</b> {{ excludeZeroDecimals(well_yield) }} {{ well_yield ? 'USgpm':'' }}</span>
+            <span><b>Static Water Level (BTOC):</b> {{ excludeZeroDecimals(static_water_level) }} {{ static_water_level ? 'feet btoc': ''}}</span>
+
+            <span><b>Finished Well Depth:</b> {{ excludeZeroDecimals(finished_well_depth) }} {{ finished_well_depth ? 'ft bgl':''}}</span>
+            <span><b>Well Cap:</b> {{ well_cap_type }}</span>
+            <span><b>Artesian Flow:</b> {{ excludeZeroDecimals(artesian_flow) }} {{ artesian_flow ? 'USgpm':'' }}</span>
+
+            <span><b>Final Casing Stick Up:</b> {{ excludeZeroDecimals(final_casing_stick_up) }} {{ final_casing_stick_up ? 'inches':''}}</span>
+            <span><b>Well Disinfected Status:</b> {{ well_disinfected_status }}</span>
+            <span><b>Artesian Pressure (head):</b> {{ excludeZeroDecimals(artesian_pressure_head) }}</span>
+
+            <span><b>Depth to Bedrock:</b> {{ excludeZeroDecimals(bedrock_depth) }} {{ bedrock_depth ? 'feet bgl':''}}</span>
+            <span>
+              <b>Drilling Method<span v-if="drilling_methods && drilling_methods.length > 1">s</span>:</b>
               <span v-for="(method, index) in drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
-            </div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Artesian Pressure (PSI):</span> {{ excludeZeroDecimals(artesian_pressure) }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Ground elevation:</span> {{ excludeZeroDecimals(ground_elevation) }} {{ ground_elevation ? 'feet':'' }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Method of determining elevation:</span> {{ ground_elevation_method }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Orientation of Well:</span> {{ well_orientation_status }}</div>
-          </div>
+            </span>
+            <span><b>Artesian Pressure (PSI):</b> {{ excludeZeroDecimals(artesian_pressure) }}</span>
+
+            <span><b>Ground elevation:</b> {{ excludeZeroDecimals(ground_elevation) }} {{ ground_elevation ? 'feet':'' }}</span>
+            <span><b>Method of determining elevation:</b> {{ ground_elevation_method }}</span>
+            <span><b>Orientation of Well:</b> {{ well_orientation_status }}</span>
+          </responsive-grid>
         </fieldset>
 
         <fieldset id="lithology_fieldset" class="my-4 detail-section">
@@ -389,25 +382,25 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
         <fieldset id="surface_seal_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Surface Seal and Backfill Details</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Surface Seal Material:</span> {{ codeToDescription('surface_seal_materials', surface_seal_material) }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Backfill Material Above Surface Seal:</span> {{ codeToDescription('surface_seal_materials', backfill_above_surface_seal) }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Surface Seal Installation Method:</span> {{ codeToDescription('surface_seal_methods', surface_seal_method) }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Backfill Depth:</span> {{ excludeZeroDecimals(backfill_depth) }} {{ backfill_depth ? 'feet':'' }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Surface Seal Thickness:</span> {{ excludeZeroDecimals(surface_seal_thickness) }} {{ surface_seal_thickness ? 'inches':'' }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Surface Seal Depth:</span> {{ excludeZeroDecimals(surface_seal_depth) }} {{ surface_seal_depth ? 'feet':''}}</div>
-          </div>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Surface Seal Material:</b> {{ codeToDescription('surface_seal_materials', surface_seal_material) }}</span>
+            <span><b>Backfill Material Above Surface Seal:</b> {{ codeToDescription('surface_seal_materials', backfill_above_surface_seal) }}</span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Surface Seal Installation Method:</b> {{ codeToDescription('surface_seal_methods', surface_seal_method) }}</span>
+            <span><b>Backfill Depth:</b> {{ excludeZeroDecimals(backfill_depth) }} {{ backfill_depth ? 'feet':'' }}</span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Surface Seal Thickness:</b> {{ excludeZeroDecimals(surface_seal_thickness) }} {{ surface_seal_thickness ? 'inches':'' }}</span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Surface Seal Depth:</b> {{ excludeZeroDecimals(surface_seal_depth) }} {{ surface_seal_depth ? 'feet':''}}</span>
+          </responsive-grid>
         </fieldset>
 
         <fieldset id="liner_details_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Liner Details</legend>
-          <div class="grid grid-cols-12 gap-4">
+          <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-6">
               <div><span class="font-bold">Liner Material:</span> {{ codeToDescription('liner_materials', liner_material) }}</div>
               <div class="grid grid-cols-2">
@@ -444,7 +437,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
         <fieldset id="screen_details_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Screen Details</legend>
-          <div class="grid grid-cols-12 gap-4">
+          <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-3">
               <div><span class="font-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', screen_intake_method) }}</div>
               <div><span class="font-bold">Type:</span> {{ codeToDescription('screen_types', screen_type) }}</div>
@@ -487,47 +480,43 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
         <fieldset id="well_development_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Development</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4">
-              <span class="font-bold">Developed by:</span>
+          <responsive-grid :cols="12" :md="4">
+            <span>
+              <b>Developed by:</b>
               <span v-for="(method, index) in development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
-            </div>
-            <div class="col-span-12 md:col-span-4">
-              <span class="font-bold">Development Total Duration:</span> {{ excludeZeroDecimals(development_hours) }} {{ development_hours ? 'hours':'' }}
-            </div>
-          </div>
+            </span>
+            <span><b>Development Total Duration:</b> {{ excludeZeroDecimals(development_hours) }} {{ development_hours ? 'hours':'' }}</span>
+          </responsive-grid>
         </fieldset>
 
         <fieldset id="well_yield_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Yield</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Estimation Method:</span> {{codeToDescription('yield_estimation_methods', yield_estimation_method)}} </div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Estimation Rate:</span> {{ excludeZeroDecimals(yield_estimation_rate) }} {{ yield_estimation_rate ? 'USgpm':'' }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Estimation Duration:</span> {{ excludeZeroDecimals(yield_estimation_duration) }} {{ yield_estimation_duration ? 'hours':'' }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Static Water Level Before Test:</span> {{ excludeZeroDecimals(static_level_before_test) }} {{ static_level_before_test ? 'ft (btoc)':'' }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Drawdown:</span> {{ excludeZeroDecimals(drawdown) }} {{ drawdown ? 'ft (btoc)':'' }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Hydrofracturing Performed:</span> {{booleanToYesNo(hydro_fracturing_performed)}}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Increase in Yield Due to Hydrofracturing:</span> {{ excludeZeroDecimals(hydro_fracturing_yield_increase) }} {{ hydro_fracturing_yield_increase ? 'USgpm':'' }}</div>
-          </div>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Estimation Method:</b> {{codeToDescription('yield_estimation_methods', yield_estimation_method)}}</span>
+            <span><b>Estimation Rate:</b> {{ excludeZeroDecimals(yield_estimation_rate) }} {{ yield_estimation_rate ? 'USgpm':'' }}</span>
+            <span><b>Estimation Duration:</b> {{ excludeZeroDecimals(yield_estimation_duration) }} {{ yield_estimation_duration ? 'hours':'' }}</span>
+            <span><b>Static Water Level Before Test:</b> {{ excludeZeroDecimals(static_level_before_test) }} {{ static_level_before_test ? 'ft (btoc)':'' }}</span>
+            <span><b>Drawdown:</b> {{ excludeZeroDecimals(drawdown) }} {{ drawdown ? 'ft (btoc)':'' }}</span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Hydrofracturing Performed:</b> {{booleanToYesNo(hydro_fracturing_performed)}}</span>
+            <span><b>Increase in Yield Due to Hydrofracturing:</b> {{ excludeZeroDecimals(hydro_fracturing_yield_increase) }} {{ hydro_fracturing_yield_increase ? 'USgpm':'' }}</span>
+          </responsive-grid>
         </fieldset>
 
         <fieldset id="well_decommissioning_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Decommission Information</legend>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Reason for Decommission:</span> {{ decommission_reason }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Method of Decommission:</span> {{ decommission_method }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Sealant Material:</span> {{ decommission_sealant_material }}</div>
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Backfill Material:</span> {{ decommission_backfill_material }}</div>
-          </div>
-          <div class="grid grid-cols-12 gap-4">
-            <div class="col-span-12 md:col-span-4"><span class="font-bold">Decommission Details:</span> {{ decommission_details }}</div>
-          </div>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Reason for Decommission:</b> {{ decommission_reason }}</span>
+            <span><b>Method of Decommission:</b> {{ decommission_method }}</span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Sealant Material:</b> {{ decommission_sealant_material }}</span>
+            <span><b>Backfill Material:</b> {{ decommission_backfill_material }}</span>
+          </responsive-grid>
+          <responsive-grid :cols="12" :md="4">
+            <span><b>Decommission Details:</b> {{ decommission_details }}</span>
+          </responsive-grid>
         </fieldset>
 
         <fieldset id="aquifer_parameters_fieldset" class="my-4 detail-section">

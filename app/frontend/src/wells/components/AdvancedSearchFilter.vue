@@ -134,11 +134,11 @@
           </b-form-row>
         </b-col>
       </b-form-row>
-      <b-form-invalid-feedback :id="`${id}InvalidFeedback`">
-        <div v-for="(error, index) in errors" :key="`${id}Input error ${index}`">
+      <div :id="`${id}InvalidFeedback`">
+        <div v-for="(error, index) in errors" class="mt-1 text-sm text-red-600" :key="`${id}Input error ${index}`">
           {{ error }}
         </div>
-      </b-form-invalid-feedback>
+      </div>
     </b-col>
     <b-col cols="1" v-if="removable">
       <b-button-close @click="$emit('remove')" class="pt-1">&times;</b-button-close>

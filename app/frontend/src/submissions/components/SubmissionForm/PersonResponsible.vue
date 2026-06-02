@@ -13,132 +13,105 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
     <fieldset>
-      <b-row>
-        <b-col xs="12">
-          <legend :id="id">
-            Person Responsible for Work
-          </legend>
-        </b-col>
-        <b-col xs="12">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
+      <responsive-grid :xs="12">
+        <legend :id="id">
+          Person Responsible for Work
+        </legend>
+        <div class="float-right">
+          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
+          <back-to-top-link v-if="isStaffEdit"/>
+        </div>
+      </responsive-grid>
+      <div class="flex items-center gap-2">
+        <Checkbox inputId="checkbox1" v-model="drillerSameAsPersonResponsibleInput" binary/>
+        <label for="checkbox1">Person Responsible is the same as the Person Who Completed the Work</label>
+      </div>
+      <responsive-grid :cols="12" :md="12" :lg="6">
+        <div class="flex flex-col gap-2" aria-describedby="personResponsibleInvalidFeedback">
+          <label>Person Responsible for Work</label>
+          <v-select
+            :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
+            :disabled="persons === null"
+            id="personResponsibleSelect"
+            :filterable="false"
+            :options="personOptions"
+            label="name"
+            v-model="personResponsibleInput"
+            @search="onPersonSearch"
+            ref="personResponsible"
+            @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
+            <template v-slot:no-options>
+              Type to search registry...
+            </template>
+            <template v-slot:cell(selected-option)="option">
+              <div>{{ personNameReg (option) }}</div>
+            </template>
+            <template v-slot:cell(option)="option">
+              <div>{{ personNameReg (option) }}</div>
+            </template>
+          </v-select>
+          <!-- TODO: Copy over the bootstrap form-text class to one of the css files -->
+          <small id="personResponsibleSelectHint" class="form-text text-muted">
+            *displays a maximum of {{MAX_RESULTS}} results
+          </small>
+          <div id="personResponsibleInvalidFeedback" class="form-text" v-if="errors.person_responsible">
+            <div v-for="(error, index) in errors.person_responsible" :key="`personResponsible error ${index}`" class="text-danger">
+              {{ error }}
+            </div>
           </div>
-        </b-col>
-      </b-row>
-      <b-form-checkbox id="checkbox1"
-        v-model="drillerSameAsPersonResponsibleInput"
-        :value="true"
-        :unchecked-value="false"
-      >
-      <p>Person Responsible is the same as the Person Who Completed the Work</p>
-      </b-form-checkbox>
-      <b-row>
-        <b-col cols="12" md="12" lg="6">
-          <b-form-group
-              label="Person Responsible for Work"
-              aria-describedby="personResponsibleInvalidFeedback"
-              :state="false">
-            <v-select
-                :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
-                :disabled="persons === null"
-                id="personResponsibleSelect"
-                :filterable="false"
-                :options="personOptions"
-                label="name"
-                v-model="personResponsibleInput"
-                @search="onPersonSearch"
-                ref="personResponsible"
-                @search:blur="handleSearchBlur(personOptions, $refs.personResponsible, 'personResponsibleInput')">
-              <template v-slot:no-options>
-                  Type to search registry...
-              </template>
-              <template v-slot:cell(selected-option)="option">
-                <div>
-                  {{ personNameReg (option) }}
-                </div>
-              </template>
-              <template v-slot:cell(option)="option">
-                <div>
-                  {{ personNameReg (option) }}
-                </div>
-              </template>
-            </v-select>
-            <small id="personResponsibleSelectHint" class="form-text text-muted">
-              *displays a maximum of {{MAX_RESULTS}} results
-            </small>
-            <b-form-text id="personResponsibleInvalidFeedback" v-if="errors.person_responsible">
-              <div v-for="(error, index) in errors.person_responsible" :key="`personResponsible error ${index}`" class="text-danger">
-                {{ error }}
-              </div>
-            </b-form-text>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="12" lg="6">
-          <form-input
-              id="drillerName"
-              label="Person Who Completed the Work"
-              type="text"
-              :disabled="drillerSameAsPersonResponsible"
-              v-model="drillerNameInput"
-              :errors="errors['driller_name']"
-              :loaded="fieldsLoaded['driller_name']"
-          ></form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="12" lg="4">
-          <b-form-group
-              aria-describedby="companyOfPersonResponsibleInvalidFeedback"
-              :state="false">
-            <label>Company of Person Responsible for Drilling</label>
-            <v-select
-              :disabled="companies === null"
-              id="companyOfPersonResponsibleSelect"
-              :filterable="false"
-              :options="companyOfPersonResponsibleOptions"
-              label="org_verbose_name"
-              v-model="companyOfPersonResponsibleInput"
-              @search="onCompanyOfPersonResponsibleSearch"
-              ref="companyOfPersonResponsible"
-              @search:blur="handleSearchBlur(companyOfPersonResponsibleOptions, $refs.companyOfPersonResponsible, 'companyOfPersonResponsibleInput')">
-              <template v-slot:no-options>
-                  Search by company name
-              </template>
-            </v-select>
-            <small id="companyOfPersonResponsibleSelectHint" class="form-text text-muted">
-              *displays a maximum of {{MAX_RESULTS}} results
-            </small>
-            <b-form-text id="companyOfPersonResponsibleInvalidFeedback" v-if="errors.person_responsible">
-              <div v-for="(error, index) in errors.driller_company_responsible" :key="`companyOfPersonResponsible error ${index}`" class="text-danger">
-                {{ error }}
-              </div>
-            </b-form-text>
-          </b-form-group>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="6">
-          <form-input
-              id="consultantName"
-              label="Consultant Name"
-              type="text"
-              v-model="consultantNameInput"
-              :errors="errors['consultant_name']"
-              :loaded="fieldsLoaded['consultant_name']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="6">
-          <form-input
-              id="consultantCompany"
-              label="Consultant Company"
-              type="text"
-              v-model="consultantCompanyInput"
-              :errors="errors['consultant_company']"
-              :loaded="fieldsLoaded['consultant_company']"
-          ></form-input>
-        </b-col>
-      </b-row>
+        </div>
+        <form-input
+          id="drillerName"
+          label="Person Who Completed the Work"
+          type="text"
+          :disabled="drillerSameAsPersonResponsible"
+          v-model="drillerNameInput"
+          :errors="errors['driller_name']"
+          :loaded="fieldsLoaded['driller_name']"/>
+      </responsive-grid>
+      <responsive-grid :cols="12" :md="12" :lg="4">
+        <div class="flex flex-col gap-2" aria-describedby="companyOfPersonResponsibleInvalidFeedback">
+          <label>Company of Person Responsible for Drilling</label>
+          <v-select
+            :disabled="companies === null"
+            id="companyOfPersonResponsibleSelect"
+            :filterable="false"
+            :options="companyOfPersonResponsibleOptions"
+            label="org_verbose_name"
+            v-model="companyOfPersonResponsibleInput"
+            @search="onCompanyOfPersonResponsibleSearch"
+            ref="companyOfPersonResponsible"
+            @search:blur="handleSearchBlur(companyOfPersonResponsibleOptions, $refs.companyOfPersonResponsible, 'companyOfPersonResponsibleInput')">
+            <template v-slot:no-options>
+              Search by company name
+            </template>
+          </v-select>
+          <small id="companyOfPersonResponsibleSelectHint" class="form-text text-muted">
+            *displays a maximum of {{MAX_RESULTS}} results
+          </small>
+          <div id="companyOfPersonResponsibleInvalidFeedback" class="form-text" v-if="errors.person_responsible">
+            <div v-for="(error, index) in errors.driller_company_responsible" :key="`companyOfPersonResponsible error ${index}`" class="text-danger">
+              {{ error }}
+            </div>
+          </div>
+        </div>
+      </responsive-grid>
+      <responsive-grid :cols="12" :md="6">
+        <form-input
+          id="consultantName"
+          label="Consultant Name"
+          type="text"
+          v-model="consultantNameInput"
+          :errors="errors['consultant_name']"
+          :loaded="fieldsLoaded['consultant_name']"/>
+        <form-input
+          id="consultantCompany"
+          label="Consultant Company"
+          type="text"
+          v-model="consultantCompanyInput"
+          :errors="errors['consultant_company']"
+          :loaded="fieldsLoaded['consultant_company']"/>
+      </responsive-grid>
     </fieldset>
 </template>
 
@@ -147,6 +120,7 @@ import { useCommonStore } from '@/stores/common.js'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   name: 'PersonResponsible',
@@ -180,6 +154,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    ResponsiveGrid
   },
   data () {
     return {
