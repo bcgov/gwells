@@ -27,7 +27,7 @@ djangorestframework-csv==3.0.2
 coverage==7.2.0
 MarkupSafe==2.1.5
 
-gunicorn==19.9.0
+gunicorn==22.0.0
 gevent==23.7.0
 django-settings-export==1.2.1
 lxml==6.1.0
