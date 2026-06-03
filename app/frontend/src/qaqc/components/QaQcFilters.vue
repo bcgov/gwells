@@ -44,7 +44,7 @@
         :value-field="valueField"
         :text-field="textField"
         v-model="localValue[paramNames[0]]"
-        @keyup.enter="applyFilter"/>
+        @keyup.enter="applyFilter" />
       <div :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" class="mt-1 text-sm text-red-600" :key="`${id}Input error ${index}`">
           {{ error }}
