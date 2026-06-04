@@ -1,5 +1,5 @@
 <template>
-  <div :class="groupClass" :id="id">
+  <div class="form-group" :class="groupClass" :id="id">
     <label v-if="label" :for="`${id}Input`" class="block mb-1">
       {{ label }}
       <span v-if="required" class="text-red-500 ml-1">*</span>

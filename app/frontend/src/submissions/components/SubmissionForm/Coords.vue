@@ -15,96 +15,114 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <div>
     <form-subsection title="Geographic Coordinates" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <p>To determine coordinates using a Global Positioning System (GPS), set the datum to North America Datum of 1983 (NAD 83), the current ministry standard for mapping.</p>
-      <p class="bg-yellow-400 p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
+      <p class="bg-amber-300 p-2">The map pin can be placed manually, by clicking, or by dragging on the map. The GPS coordinates will be updated automatically.</p>
       <div class="grid grid-cols-12">
         <div class="sm:col-span-12 md:col-span-6">
-          <div class="container p-4 m-1 md:m-1">
-            <responsive-grid :cols="12" :sm="6" :lg="3">
-              <form-input
-                id="latitude"
-                type="text"
-                label="Latitude"
-                hint="Decimal degrees"
-                @input="handleDegreesChange"
-                v-model.number="degrees.latitude"
-                :errors="errors['latitude']"
-                :loaded="fieldsLoaded['latitude']"/>
-              <form-input
-                id="longitude"
-                type="text"
-                @input="handleDegreesChange"
-                label="Longitude"
-                hint="Decimal degrees"
-                v-model.number="degrees.longitude"
-                :errors="errors['longitude']"
-                :loaded="fieldsLoaded['longitude']"/>
-            </responsive-grid>
-          </div>
-          <div class="flex"><p class="p-4 m-0">OR</p></div>
-          <div class="container p-4 mx-1 md:mx-1">
+          <div class="card p-4 m-1 md:m-1">
             <div class="grid grid-cols-12">
-              <div class="col-span-12 md:col-span-6 lg:col-span-6">
-                <div class="mb-2">Latitude</div>
-                <responsive-grid :cols="12" :sm="4" :innerDivClass="['px-2', 'px-2', 'px-1']">
-                  <form-input
-                    id="latitudeDeg"
-                    @input="handleDMSChange"
-                    hint="Degrees"
-                    type="text"
-                    v-model.number="dms.lat.deg"
-                    :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"/>
-                  <form-input
-                    id="latitudeMin"
-                    hint="Minutes"
-                    @input="handleDMSChange"
-                    type="text"
-                    v-model.number="dms.lat.min"
-                    :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"/>
-                  <form-input
-                    id="latitudeSec"
-                    type="text"
-                    @input="handleDMSChange"
-                    hint="Seconds"
-                    v-model.number="dms.lat.sec"
-                    :errors="errors['latitude']"
-                    :loaded="fieldsLoaded['latitude']"/>
-                </responsive-grid>
+              <div class="col-span-12 sm:col-span-6 lg:col-span-3">
+                <form-input
+                  id="latitude"
+                  type="text"
+                  label="Latitude"
+                  hint="Decimal degrees"
+                  @input="handleDegreesChange"
+                  v-model.number="degrees.latitude"
+                  :errors="errors['latitude']"
+                  :loaded="fieldsLoaded['latitude']"/>
               </div>
-              <div class="col-span-12 md:col-span-6 lg:col-span-6 lg:col-start-1">
-                <div class="flex mb-2">Longitude</div>
-                <responsive-grid :cols="12" :sm="4" :innerDivClass="['px-2', 'px-2', 'px-1']">
-                  <form-input
-                    id="longitudeDeg"
-                    type="text"
-                    @input="handleDMSChange"
-                    hint="Degrees"
-                    v-model.number="dms.long.deg"
-                    :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"/>
-                  <form-input
-                    id="longitudeMin"
-                    type="text"
-                    @input="handleDMSChange"
-                    hint="Minutes"
-                    v-model.number="dms.long.min"
-                    :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"/>
-                  <form-input
-                    id="longitudeSec"
-                    type="text"
-                    @input="handleDMSChange"
-                    hint="Seconds"
-                    v-model.number="dms.long.sec"
-                    :errors="errors['longitude']"
-                    :loaded="fieldsLoaded['longitude']"/>
-                </responsive-grid>
+              <div class="col-span-12 sm:col-span-6 lg:col-span-3 lg:col-start-6">
+                <form-input
+                  id="longitude"
+                  type="text"
+                  @input="handleDegreesChange"
+                  label="Longitude"
+                  hint="Decimal degrees"
+                  v-model.number="degrees.longitude"
+                  :errors="errors['longitude']"
+                  :loaded="fieldsLoaded['longitude']"/>
               </div>
             </div>
           </div>
           <div class="flex"><p class="p-4 m-0">OR</p></div>
-          <div class="container p-4 mx-1 md:mx-1">
+          <div class="card p-4 mx-1 md:mx-1">
+            <div class="grid grid-cols-12">
+              <div class="col-span-12 md:col-span-6 lg:col-span-6">
+                <div class="mb-2">Latitude</div>
+                <div class="grid grid-cols-3">
+                  <div class="xs:col-span-3 px-2">
+                    <form-input
+                      id="latitudeDeg"
+                      @input="handleDMSChange"
+                      hint="Degrees"
+                      type="text"
+                      v-model.number="dms.lat.deg"
+                      :errors="errors['latitude']"
+                      :loaded="fieldsLoaded['latitude']"/>
+                  </div>
+                  <div class="xs:col-span-3 px-2">
+                    <form-input
+                      id="latitudeMin"
+                      hint="Minutes"
+                      @input="handleDMSChange"
+                      type="text"
+                      v-model.number="dms.lat.min"
+                      :errors="errors['latitude']"
+                      :loaded="fieldsLoaded['latitude']"/>
+                  </div>
+                  <div class="xs:col-span-3 px-1">
+                     <form-input
+                      id="latitudeSec"
+                      type="text"
+                      @input="handleDMSChange"
+                      hint="Seconds"
+                      v-model.number="dms.lat.sec"
+                      :errors="errors['latitude']"
+                      :loaded="fieldsLoaded['latitude']"/>
+                  </div>
+                </div>
+              </div>
+              <div class="col-span-12 md:col-span-6 lg:col-span-6 lg:col-start-7">
+                <div class="flex mb-2">Longitude</div>
+                <div class="grid grid-cols-3">
+                  <div class="xs:col-span-3 px-2">
+                    <form-input
+                      id="longitudeDeg"
+                      type="text"
+                      @input="handleDMSChange"
+                      hint="Degrees"
+                      v-model.number="dms.long.deg"
+                      :errors="errors['longitude']"
+                      :loaded="fieldsLoaded['longitude']"/>
+                  </div>
+                  <div class="xs:col-span-3 px-2">
+                    <form-input
+                      id="longitudeMin"
+                      type="text"
+                      @input="handleDMSChange"
+                      hint="Minutes"
+                      v-model.number="dms.long.min"
+                      :errors="errors['longitude']"
+                      :loaded="fieldsLoaded['longitude']"/>
+                  </div>
+                  <div class="xs:col-span-3 px-1">
+                     <form-input
+                      id="longitudeSec"
+                      type="text"
+                      @input="handleDMSChange"
+                      hint="Seconds"
+                      v-model.number="dms.long.sec"
+                      :errors="errors['longitude']"
+                      :loaded="fieldsLoaded['longitude']"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex"><p class="p-4 m-0">OR</p></div>
+          <div class="card p-4 mx-1 md:mx-1">
+            <!-- UTM Easting should only allow 6 digits to be entered. -->
+            <!-- UTM Northing should only allow 7 digits to be entered. -->
             <responsive-grid :cols="12" :sm="4" :lg="4">
               <form-input
                 id="utmZone"
@@ -116,7 +134,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 text-field="name"
                 value-field="value"
                 :loaded="fieldsLoaded['utmZone']"/>
-              <!-- UTM Easting should only allow 6 digits to be entered. -->
               <form-input
                 id="utmEasting"
                 type="text"
@@ -125,7 +142,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 @input="handleUTMChange"
                 :loaded="fieldsLoaded['utmEasting']"
                 :max="999999"/>
-              <!-- UTM Northing should only allow 7 digits to be entered. -->
               <form-input
                 id="utmNorthing"
                 type="text"
@@ -191,10 +207,6 @@ import { fetchInsideBCCheck } from '../../../common/mapbox/geometry'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
-  components: {
-    ResponsiveGrid,
-    'coords-map': CoordsMap
-  },
   name: 'Coords',
   mixins: [inputBindingsMixin, convertCoordinatesMixin],
   props: {
@@ -228,6 +240,8 @@ export default {
     }
   },
   components: {
+    'coords-map': CoordsMap,
+    ResponsiveGrid,
     FormSubsection
   },
   data () {

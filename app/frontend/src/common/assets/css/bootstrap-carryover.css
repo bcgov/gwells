@@ -30,6 +30,19 @@ h6 {
     font-size: 1rem
 }
 
+p {
+    margin-top: 0;
+    margin-bottom: 1rem
+}
+
+p a {
+    text-decoration: underline
+}
+
+label {
+    margin-bottom: 0.5rem;
+}
+
 ul {
     display: block;
     list-style-type: disc;
@@ -65,12 +78,48 @@ a:not([href]):not([tabindex]):focus {
     outline: 0
 }
 
+legend {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 0;
+    margin-bottom: .5rem;
+    font-size: 1.5rem;
+    line-height: inherit;
+    color: inherit;
+    white-space: normal
+}
+
 .container {
     width: 100%;
     padding-right: 15px;
     padding-left: 15px;
     margin-right: auto;
     margin-left: auto
+}
+
+@media (min-width: 576px) {
+    .container {
+        max-width:540px
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width:720px
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width:960px
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width:1140px
+    }
 }
 
 .table {
@@ -304,6 +353,45 @@ a:not([href]):not([tabindex]):focus {
     border: 0
 }
 
+.card {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem
+}
+
+.card>hr {
+    margin-right: 0;
+    margin-left: 0
+}
+
+.card>.list-group:first-child .list-group-item:first-child {
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem
+}
+
+.card>.list-group:last-child .list-group-item:last-child {
+    border-bottom-right-radius: .25rem;
+    border-bottom-left-radius: .25rem
+}
+
+.card-body {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 1.25rem
+}
+
 @media print {
     h1,h2,h3,h4,h5,h6 {
         font-weight: 500!important;
@@ -321,4 +409,12 @@ a:not([href]):not([tabindex]):focus {
     .table-bordered td,.table-bordered th {
         border: 1px solid #ddd!important
     }
+}
+
+.grid.grid-cols-12 {
+    column-gap: 30px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
 }

@@ -43,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         v-model="staticLevelInput"
         hint="ft (btoc)"/>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="hydroFracturingPerformed">Hydro-fracturing Performed</label>
         <RadioButtonGroup 
           class="mt-1" 

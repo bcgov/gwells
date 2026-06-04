@@ -30,7 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="decommissionReasonInput"
         :errors="errors['decommission_reason']"
         :loaded="fieldsLoaded['decommission_reason']"/>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label>Decommission Method</label>
         <RadioButtonGroup id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
           <div v-for="(method, index) in codes.decommission_methods" class="flex align-items-center" :key="`decommissionMethodOption${index}`">

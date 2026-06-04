@@ -13,11 +13,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
     <fieldset>
-      <responsive-grid :xs="12">
+      <responsive-grid :cols="12">
         <legend :id="id">
           Person Responsible for Work
         </legend>
-        <div class="float-right">
+        <div class="ml-auto">
           <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
           <back-to-top-link v-if="isStaffEdit"/>
         </div>
@@ -27,7 +27,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <label for="checkbox1">Person Responsible is the same as the Person Who Completed the Work</label>
       </div>
       <responsive-grid :cols="12" :md="12" :lg="6">
-        <div class="flex flex-col gap-2" aria-describedby="personResponsibleInvalidFeedback">
+        <div class="flex flex-col form-group" aria-describedby="personResponsibleInvalidFeedback">
           <label>Person Responsible for Work</label>
           <v-select
             :class="errors.person_responsible?'border border-danger dropdown-error-border':''"
@@ -70,7 +70,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :loaded="fieldsLoaded['driller_name']"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="12" :lg="4">
-        <div class="flex flex-col gap-2" aria-describedby="companyOfPersonResponsibleInvalidFeedback">
+        <div class="flex flex-col form-group" aria-describedby="companyOfPersonResponsibleInvalidFeedback">
           <label>Company of Person Responsible for Drilling</label>
           <v-select
             :disabled="companies === null"

@@ -14,7 +14,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <form-subsection title="Aquifer Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid :cols="12" :md="[6, 4]" :xl="[3, undefined]">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="aquiferSelect">Associated Aquifer</label>
         <v-select
           v-model="aquiferInput"
@@ -40,7 +40,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </template>
         </v-select>
       </div>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="aquiferLithology">Aquifer Material</label>
         <Select
           id="aquiferLithology"
