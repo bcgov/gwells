@@ -12,12 +12,8 @@
     limitations under the License.
 */
 <template>
-  <b-form @submit.prevent>
-    <b-button
-      variant="dark"
-      @click="showModal">
-      Add/remove columns
-    </b-button>
+  <Form @submit.prevent>
+    <Button label="Add/remove columns" severity="contrast" @click="showModal"/>
     <b-modal
       ref="column-select-modal"
       id="columnSelectModal"
@@ -52,13 +48,13 @@
         </tbody>
       </table>
       <div slot="modal-footer">
-        <div class="d-flex justify-content-start">
-          <b-button variant="primary" @click="applyChanges()" :disabled="!validation" class="mr-2">Apply</b-button>
-          <b-button variant="dark" @click="cancelChanges()">Cancel</b-button>
+        <div class="flex justify-start">
+          <Button label="Apply" @click="applyChanges()" :disabled="!validation" class="mr-2"/>
+          <Button label="Cancel" severity="contrast" @click="cancelChanges()"/>
         </div>
       </div>
     </b-modal>
-  </b-form>
+  </Form>
 </template>
 
 <script>

@@ -12,13 +12,11 @@
     limitations under the License.
 */
 <template>
-  <b-form @submit.prevent="handleSubmit()" @reset.prevent="handleReset()">
+  <Form @submit="handleSubmit()" @reset="handleReset()">
     <div v-for="section in defaultFilterSections" :key="section.header">
-      <b-row class="mt-1">
-        <b-col>
-          <h3>{{ section.header }}</h3>
-        </b-col>
-      </b-row>
+      <div class="flex mt-1">
+        <h3>{{ section.header }}</h3>
+      </div>
       <!--TBD issue with component null values in child component -->
       <!-- <search-filter
         v-for="field in getFilterFields(section.fields)"
@@ -34,17 +32,15 @@
         :any-value-checkbox="field.anyValueBoolean"
         v-model="filterParams[field.id]" /> -->
     </div>
-    <b-row>
-      <b-col class="my-4">
-        <b-btn variant="primary" type="submit" :disabled="wellsStore.searchInProgress">Search</b-btn>
-        <b-btn variant="dark" type="reset" :disabled="wellsStore.searchInProgress" class="mx-2">Reset</b-btn>
-      </b-col>
-    </b-row>
-    <b-row class="mt-1">
-      <b-col>
-        <h3>Additional Fields</h3>
-      </b-col>
-    </b-row>
+    <div class="flex">
+      <div class="my-4">
+        <Button label="Search" type="submit" :disabled="wellsStore.searchInProgress"/>
+        <Button label="Reset" severity="contrast" type="reset" :disabled="wellsStore.searchInProgress" class="mx-2"/>
+      </div>
+    </div>
+    <div class="flex mt-1">
+      <h3>Additional Fields</h3>
+    </div>
     <!--TBD issue with component null values in child component-->
     <!-- <search-filter
       v-for="field in selectedAdditionalFilters"
@@ -61,26 +57,23 @@
       v-model="filterParams[field.id]"
       @remove="removeSelectedFilter(field.id)"
       removable /> -->
-    <b-row>
-      <b-col sm="9" class="mb-1">
+    <responsive-grid :sm="[9, 3]" innerDivClass="mb-1">
         <b-form-select id="additionalFilterInput" v-model="selectedFilterId">
           <option :value="null">Select a field</option>
           <optgroup v-for="optGroup in additionalFilterSelectOptions" :key="optGroup.label" :label="optGroup.label">
             <option v-for="option in optGroup.options" :key="option.id" :value="option.value" :disabled="option.disabled">{{ option.text }}</option>
           </optgroup>
         </b-form-select>
-      </b-col>
-      <b-col sm="3" class="mb-1">
-        <b-button block variant="primary" @click="addSelectedFilter" :disabled="selectedFilterId === null">Add Field</b-button>
-      </b-col>
-    </b-row>
-  </b-form>
+        <Button label="Add Field" class="w-full" @click="addSelectedFilter" :disabled="selectedFilterId === null"/>
+    </responsive-grid>
+  </Form>
 </template>
 
 <script>
 import { SEARCH_TRIGGER } from '@/wells/triggers.types.js'
 import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import { useWellsStore } from '@/stores/wells'
 
 const ADDITIONAL_FILTER_SECTIONS = [
@@ -207,7 +200,8 @@ const reduceSections = (sectionsArray) => {
 export default {
   mixins: [filterMixin],
   components: {
-    'search-filter': AdvancedSearchFilter
+    'search-filter': AdvancedSearchFilter,
+    ResponsiveGrid
   },
   data () {
     return {

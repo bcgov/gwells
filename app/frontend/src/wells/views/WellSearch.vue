@@ -81,6 +81,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <!--  handle 0 search results in BC with "No matching wells found in BC" -->
               <div v-else-if="noWellsInView">
                 <div v-if="searchBCInProgress">
+                  <!-- TODO: Replace this with non-bootstrap component or copy this class over -->
                   <div class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></div>
                   Searching all of BC for any matching wells ...
                 </div>

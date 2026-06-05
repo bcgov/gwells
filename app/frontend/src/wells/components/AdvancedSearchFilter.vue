@@ -12,21 +12,19 @@
     limitations under the License.
 */
 <template>
-  <b-form-row class="advanced-search-filter mb-2" :class="`advanced-search-filter-${type}`">
-    <b-col v-if="label" :sm="labelColWidth">
+  <div class="grid grid-cols-12 advanced-search-filter mb-2" :class="`advanced-search-filter-${type}`">
+    <div v-if="label" :class="`sm:col-span${labelColWidth}`">
       <label v-if="(type === 'text' || type === 'number' || type === 'select') && !anyValueCheckbox" :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
       <legend v-else tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
-    </b-col>
-    <b-col v-if="anyValueCheckbox" sm="3">
-      <div class="pt-2 d-flex justify-content-sm-end">
-        <b-form-checkbox
-          :id="`${id}AnyValue`"
-          :checked="value[anyValueParam]"
-          @input="updateAnyValueCheckbox($event)">
-          Any value
-        </b-form-checkbox>
+    </div>
+    <div v-if="anyValueCheckbox" class="sm:col-span-3">
+      <div class="pt-2 flex sm:justify-end">
+        <div class="flex items-center gap-2">
+          <Checkbox :inputId="`${id}AnyValue`" v-model="value[anyValueParam]" @input="updateAnyValueCheckbox($event)" binary/>
+          <label :for="`${id}AnyValue`">Any value</label>
+        </div>
       </div>
-    </b-col>
+    </div>
     <b-col :sm="inputColWidth">
       <b-form-input
         v-if="type === 'text' || type === 'number'"
@@ -40,23 +38,20 @@
         @input="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)" />
-      <b-form-select
+      <Select 
         v-else-if="type === 'select'"
         :id="`${id}Input`"
-        :value="value[paramNames[0]] ? value[paramNames[0]] : null"
-        :state="validation"
+        :modelValue="value[paramNames[0]] ? value[paramNames[0]] : null"
+        :invalid="!validation"
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
         :options="selectOptions"
-        :value-field="valueField"
-        :text-field="textField"
+        :optionValue="valueField"
+        :optionLabel="textField"
         @input="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
-        @blur="$emit('blur', true)">
-        <template v-slot:first>
-          <option :value="null">{{ placeholder || '----------' }}</option>
-        </template>
-      </b-form-select>
+        @blur="$emit('blur', true)"
+        :placeholder="placeholder || '----------'"/>
       <b-form-radio-group
         v-else-if="type === 'radio'"
         :id="`${id}Input`"
@@ -68,7 +63,7 @@
         @input="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)" />
-      <b-form-row v-else-if="type === 'range' || type === 'dateRange'">
+      <div v-else-if="type === 'range' || type === 'dateRange'">
         <b-col class="mb-1">
           <b-form-row>
             <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-sm-right">From</label>
@@ -101,39 +96,39 @@
             </b-col>
           </b-form-row>
         </b-col>
-        <b-col class="mb-1">
-          <b-form-row>
-            <label :id="`${id}EndLabel`" :label-for="`${id}EndInput`" class="col-sm-4 col-form-label text-sm-right">To</label>
-            <b-col sm="8">
-              <b-form-input
+        <div class="mb-1">
+          <div class="grid grid-cols-12">
+            <label :id="`${id}EndLabel`" :for="`${id}EndInput`" class="sm:col-span-4 sm:text-right">To</label>
+            <div class="col-span-8">
+              <InputText
                 v-if="type === 'range'"
                 type="number"
                 step="any"
                 :id="`${id}EndInput`"
-                :value="value[paramNames[1]]"
-                :state="validation"
+                :modelValue="value[paramNames[1]]"
+                :invalid="isInvalid"
                 :disabled="inputDisabled"
                 :aria-describedby="`${id}InvalidFeedback`"
                 :placeholder="placeholder"
                 @input="updateParamValue(paramNames[1], $event)"
                 @focus="$emit('focus', true)"
                 @blur="$emit('blur', true)" />
-              <b-form-input
+              <InputText
                 v-else-if="type === 'dateRange'"
                 type="date"
                 :id="`${id}EndInput`"
-                :value="value[paramNames[1]]"
-                :state="validation"
+                :modelValue="value[paramNames[1]]"
+                :invalid="isInvalid"
                 :disabled="inputDisabled"
                 :aria-describedby="`${id}InvalidFeedback`"
                 placeholder="YYYY/MM/DD"
                 @input="updateParamValue(paramNames[1], $event)"
                 @focus="$emit('focus', true)"
                 @blur="$emit('blur', true)" />
-            </b-col>
-          </b-form-row>
-        </b-col>
-      </b-form-row>
+            </div>
+          </div>
+        </div>
+      </div>
       <div :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" class="mt-1 text-sm text-red-600" :key="`${id}Input error ${index}`">
           {{ error }}
@@ -143,7 +138,7 @@
     <b-col cols="1" v-if="removable">
       <b-button-close @click="$emit('remove')" class="pt-1">&times;</b-button-close>
     </b-col>
-  </b-form-row>
+  </div>
 </template>
 
 <script>
@@ -202,7 +197,7 @@ export default {
     return {}
   },
   computed: {
-    validation () {
+    isInvalid () {
       return (this.errors && this.errors.length)
     },
     labelColWidth () {

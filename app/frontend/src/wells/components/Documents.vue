@@ -25,26 +25,26 @@
       <div v-if="error">
         {{error}}
       </div>
-        <b-table
-            hover
-            :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document']"
-            striped
-            :items="files.private ? [...files.public, ...files.private] : [...files.public]"
-          >
-            <template v-slot:cell(document_type)="data">
-              {{ callLongFormLabel(data.item.document_type) }}
-            </template>
-            <template v-slot:cell(date_of_upload)="data">
-              {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
-            </template>
-            <template v-slot:cell(uploaded_document)="data">
-              <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
-            </template>
-            <template v-slot:cell(document_status)="data">
-              <p v-if="data.item.document_status">Private Document</p>
-              <p v-else>Public Document</p>
-            </template>
-        </b-table>
+      <b-table
+        hover
+        :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document']"
+        striped
+        :items="files.private ? [...files.public, ...files.private] : [...files.public]"
+        >
+          <template v-slot:cell(document_type)="data">
+            {{ callLongFormLabel(data.item.document_type) }}
+          </template>
+          <template v-slot:cell(date_of_upload)="data">
+            {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
+          </template>
+          <template v-slot:cell(uploaded_document)="data">
+            <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
+          </template>
+          <template v-slot:cell(document_status)="data">
+            <p v-if="data.item.document_status">Private Document</p>
+            <p v-else>Public Document</p>
+          </template>
+      </b-table>
     </div>
     <Dialog v-model:visible="isDeleteModalVisible" modal header="Confirmation">
       <p>Are you sure you would like to delete this file?</p>
