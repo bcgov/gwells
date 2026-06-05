@@ -14,13 +14,15 @@
 
 <template>
   <div>
-    <b-card class="container p-1">
-      <api-error v-if="error" :error="error"/>
+    <Card class="container p-1">
+      <template #header>
+        <api-error v-if="error" :error="error"/>
+      </template>
 
-      <b-container>
-        <b-row class="border-bottom mb-4 pb-2 pt-2">
-          <b-col><h4>Add new Aquifer</h4></b-col>
-        </b-row>
+      <template #content>
+        <div class="border-b mb-4 pb-2 pt-2">
+          <div><h4>Add new Aquifer</h4></div>
+        </div>
 
         <aquifer-form
           :isNew="true"
@@ -29,8 +31,8 @@
           @save="save"
           @cancel="navigateToView"
           />
-      </b-container>
-    </b-card>
+      </template>
+    </Card>
   </div>
 </template>
 

@@ -300,10 +300,6 @@ export default {
             snapToCenter: true,
             createTooltipContent: this.createGroundWaterLicencePopupElement
           },
-          [DATABC_GROUND_WATER_LICENCES_LAYER_ID]: {
-            snapToCenter: true,
-            createTooltipContent: this.createGroundWaterLicencePopupElement
-          },
           [WELLS_OBSERVATION_LAYER_ID]: {
             snapToCenter: true,
             createTooltipContent: this.createWellPopupElement
@@ -374,22 +370,26 @@ export default {
       this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none')
     },
     listenForReset () {
-      this.$parent.$on('resetLayers', (data) => {
-        this.hideMapSearchButton()
-        this.supressShowMapSearchButton = true
+      this.storeSubscription = this.aquiferStore.$onAction(({ name }) => {
+        if (name === 'resetSearch') {
+          after(() => {
+            this.hideMapSearchButton()
+            this.supressShowMapSearchButton = true
 
-        this.mapLayers.forEach((layer) => {
-          let show = false
-          if (layer.id === DATABC_CADASTREL_LAYER_ID) {
-            show = true
-          }
-          layer.show = show
-          this.map.setLayoutProperty(layer.id, 'visibility', layer.show ? 'visible' : 'none')
-        })
-        this.layersControl.update()
-        this.legendControl.update()
-        this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
-        this.map.fire('reset')
+            this.mapLayers.forEach((layer) => {
+              let show = false
+              if (layer.id === DATABC_CADASTREL_LAYER_ID) {
+                show = true
+              }
+              layer.show = show
+              this.map.setLayoutProperty(layer.id, 'visibility', layer.show ? 'visible' : 'none')
+            })
+            this.layersControl.update()
+            this.legendControl.update()
+            this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
+            this.map.fire('reset')
+          })
+        }
       })
     },
     hideMapSearchButton () {

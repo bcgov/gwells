@@ -27,7 +27,7 @@ governing permissions and limitations under the License. */
       >
         <div class="card-body">
           <Message
-            variant="info"
+            severity="info"
             class="mb-4"
             v-for="(survey, index) in surveys[
               isStaffEdit ? 'edit' : 'submissions'
