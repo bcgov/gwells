@@ -25,7 +25,7 @@
     <div class="container p-1" v-if="perms.verticalAquiferExtents">
       <api-error v-if="apiError" :error="apiError"/>
 
-      <div class="border-bottom mb-4 pb-2 pt-2">
+      <div class="border-b mb-4 pb-2 pt-2">
         <h3>Aquifer Documents Bulk Upload</h3>
       </div>
       <div class="w-full border-gray-300 border-1 border-solid h-0 mb-5" >&nbsp;</div>
