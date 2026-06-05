@@ -68,7 +68,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :loaded="fieldsLoaded['well_yield']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="artesianConditionsInput">Artesian Well</label>
         <RadioButtonGroup class="mt-1" v-model="artesianConditionsInput" id="artesianConditionsInput">
           <div>
@@ -117,7 +117,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="wellCapTypeInput"
         :errors="errors['well_cap_type']"
         :loaded="fieldsLoaded['well_cap_type']"/>
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="wellDisinfectedStatusInput">Well Disinfected Status</label>
         <Select
           id="wellDisinfectedStatusInput"

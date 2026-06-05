@@ -13,10 +13,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <form-subsection title="Well Location" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
-    <div class="flex">
-      <p>Please provide as much information as possible.</p> <p class="bg-yellow-400 p-2">A minimum of one type of well location information is required below:</p>
+    <div class="flex flex-col">
+      <p>Please provide as much information as possible.</p> <p class="bg-amber-300 p-2">A minimum of one type of well location information is required below:</p>
       <p class="d-inline font-weight-bold">1) Well Location Address</p>
-      <div class="d-inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary>Same as owner address</Checkbox></div>
+      <div class="d-inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary/> Same as owner address</div>
     </div>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6">
@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :loaded="fieldsLoaded['city']"
         :disabled="sameAsOwnerAddress"/>
     </responsive-grid>
-    <div class="flex">
+    <div class="flex flex-col">
       <p class="mb-1">OR</p>
       <p class="font-weight-bold">
         2) Legal Description

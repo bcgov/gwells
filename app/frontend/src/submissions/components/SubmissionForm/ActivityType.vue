@@ -15,9 +15,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <fieldset>
     <legend :id="id">Type of Work</legend>
     <responsive-grid :cols="12" :md="6">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="wellActivityTypeInput">Type of Work *</label>
-        <RadioButtonGroup v-if="show.edit" v-model="wellActivityTypeInput" id="wellActivityTypeInput">
+        <RadioButtonGroup v-if="show.edit" v-model="wellActivityTypeInput" id="wellActivityTypeInput" class="flex flex-col">
           <div class="flex align-items-center">
             <RadioButton inputId="wellActivityTypeInput.CON" value="CON"/>
             <label for="wellActivityTypeInput.CDN" class="ml-2">Construction</label>

@@ -33,8 +33,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="wellStatusCodeInput"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="4">
-        <div class="flex flex-col gap-2" aria-describedby="wellClassInvalidFeedback">
-          <label>Class of Well *</label>
+        <div class="flex flex-col form-group" aria-describedby="wellClassInvalidFeedback">
+          <label for="wellClass">Class of Well *</label>
           <Select
             id="wellClass"
             v-model="wellClassInput"
@@ -49,8 +49,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </div>
           </div>
         </div>
-        <div class="flex flex-col gap-2" aria-describedby="wellSubclassInvalidFeedback">
-          <label>Well Subclass</label>
+        <div class="flex flex-col form-group" aria-describedby="wellSubclassInvalidFeedback">
+          <label for="wellSubclass">Well Subclass</label>
           <Select
             id="wellSubclass"
             v-model="wellSubclassInput"
@@ -81,7 +81,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </responsive-grid>
       <div class="grid grid-cols-12">
         <div class="col-span-12 md:col-span-4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
-          <div class="flex flex-col gap-2">
+          <div class="flex flex-col form-group">
             <label for="wellTagNumberSelect">Well Tag Number (if known)</label>
             <v-select
               v-model="wellTagNumberInput"

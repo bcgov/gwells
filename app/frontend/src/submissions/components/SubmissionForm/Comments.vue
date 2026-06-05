@@ -14,19 +14,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <form-subsection title="Comments" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid :cols="12" :md="8" :gap="4">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="commentsEntry">Comments</label>
         <Textarea id="commentsEntry" :rows="3" autoResize v-model="commentsInput"/>
       </div>
     </responsive-grid>
     <responsive-grid :cols="12" :md="8" :gap="4">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="internalCommentsEntry">Internal Office Comments</label>
         <Textarea id="internalCommentsEntry" :rows="3" autoResize v-model="internalCommentsInput"/>
       </div>
     </responsive-grid>
     <responsive-grid :cols="12" :sm="6" :gap="4">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="alternativeSpecsSubmittedInput">Alternative Specs Submitted</label>
         <RadioButtonGroup class="mt-1" v-model="alternativeSpecsSubmittedInput" id="alternativeSpecsSubmittedInput">
           <div>
@@ -41,7 +41,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </responsive-grid>
     <responsive-grid :cols="12" :sm="6" :gap="4">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="technicalReportInput">Technical Report</label>
         <RadioButtonGroup class="mt-1" v-model="technicalReportInput" id="technicalReportInput">
           <div>
@@ -56,7 +56,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </responsive-grid>
     <responsive-grid :cols="12" :sm="6" :gap="4">
-      <div class="flex flex-col gap-2">
+      <div class="flex flex-col form-group">
         <label for="drinkingWaterProtectionAreaInput">Drinking Water Area Indicator</label>
         <RadioButtonGroup class="mt-1" v-model="drinkingWaterProtectionAreaInput" id="drinkingWaterProtectionAreaInput">
           <div>

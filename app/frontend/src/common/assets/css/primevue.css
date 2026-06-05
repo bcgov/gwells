@@ -24,3 +24,20 @@
     line-height: inherit;
     white-space: normal;
 }
+
+.p-radiobutton-group > div {
+    margin-right: 1rem;
+}
+
+.p-multiselect {
+    width: 100%;
+}
+
+.p-button-outlined {
+    border-color: #003366 !important;
+}
+
+.p-button-outlined:not(:disabled):hover {
+    background-color: #003366 !important;
+    color: #ffffff !important;
+}

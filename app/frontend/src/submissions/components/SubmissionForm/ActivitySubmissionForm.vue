@@ -14,12 +14,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <h1 class="card-title">
-      <div class="flex">
+      <div class="flex flex-col">
         <div v-if="isStaffEdit" id="top">Update Well Information</div>
         <div v-else>Well Activity Submission</div>
-        <div class="flex flex-col gap-2 float-right">
-          <label for="formIsFlatInput">Form layout</label>
-          <SelectButton  v-if="activityType !== 'STAFF_EDIT'" size="small" v-model="formIsFlatInput" id="formIsFlatInput" :options="selectOptions"/>
+        <div class="ml-auto">
+          <SelectButton  v-if="activityType !== 'STAFF_EDIT'" size="small" v-model="formIsFlatInput" :options="selectOptions" optionLabel="name"/>
         </div>
       </div>
     </h1>
@@ -44,22 +43,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
       </div>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
-      <p class="bg-yellow-400 p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
+      <p class="bg-amber-300 p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
 
       <!-- Form load/save -->
-      <div v-if="!isStaffEdit" class="flex text-right">
+      <div v-if="!isStaffEdit" class="flex justify-end">
         <Button
           label="Save report progress"
           :icon="saveFormSuccess ? 'fa fa-check text-success animate-bounce':''"
           size="small"
-          severity="secondary"
+          variant="outlined"
           class="mr-2"
           @click="saveForm"/>
         <Button
           label="Load saved report"
           :icon="loadFormSuccess ? 'fa fa-check text-success animate-bounce':''"
           size="small"
-          severity="secondary"
+          variant="outlined"
           @click="loadConfirmation"
           ref="confirmLoadBtn"
           :disabled="isLoadFormDisabled"/>
