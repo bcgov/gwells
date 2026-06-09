@@ -25,9 +25,10 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip
+  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip, Popover
 } from 'primevue';
 import { Form } from '@primevue/forms';
+import Chart from 'primevue/chart';
 import ConfirmationService from 'primevue/confirmationservice';
 import VueMatomo from "vue-matomo";
 import App from "./App.vue";
@@ -125,6 +126,8 @@ app.component("Tabs", Tabs);
 app.component("TabList", TabList);
 app.component("Tab", Tab);
 app.directive("Tooltip", Tooltip);
+app.component("Popover", Popover)
+app.component("Chart", Chart)
 
 const pinia = createPinia();
 app.use(pinia);

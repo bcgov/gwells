@@ -316,38 +316,47 @@
                     </ul>
                     <div v-if="licenceDetails.lic_qty.length > 0">
                       <div class="pt-12">
-                        <responsive-grid :cols="12" :md="6" :lg="12" class="pb-12">
+                        <div class="pb-12">
                           <h5 class="pie-chart-title">Licensed volume by purpose (millions of cubic meters)</h5>
                           <pie-chart
                             :data="licenceUsageChartData"
                             :labels="licenceUsageChartLabels"
                             :chart-options="licenceUsageChartOptions"
                             class="mt-4"/>
-                        </responsive-grid>
-                        <responsive-grid :cols="12" :md="6" :lg="12" class="pb-12">
+                        </div>
+                        <div :cols="12" :md="6" :lg="12" class="pb-12">
                           <h5 class="pie-chart-title">Number of licences by purpose</h5>
                           <pie-chart
                             :data="licenceQuantityChartData"
                             :labels="licenceQuantityChartLabels"
                             :chart-options="licenceQuantityChartOptions"
                             class="mt-4"/>
-                        </responsive-grid>
+                        </div>
                       </div>
                     </div>
-                    <b-table id="licenses" striped :items="licenceDetails.wells_by_licence">
-                      <template v-slot:cell(licence_number)="row">
-                        <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${row.item.licence_number}`" target="_blank">
-                          {{ row.item.licence_number }}
-                        </a>
-                      </template>
-                      <template v-slot:cell(well_tag_numbers_in_licence)="row">
-                        <ul class="p-0 m-0">
-                          <li v-for="wtn in row.item.well_tag_numbers_in_licence" :key="wtn">
-                            <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
-                          </li>
-                        </ul>
-                      </template>
-                    </b-table>
+                    <DataTable
+                      v-if="licenceDetails?.wells_by_licence?.length"
+                      id="licenses"
+                      :value="licenceDetails.wells_by_licence"
+                      stripedRows
+                    >
+                      <Column field="licence_number" header="Licence Number">
+                        <template #body="slotProps">
+                          <a :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${slotProps.data.licence_number}`" target="_blank">
+                            {{ slotProps.data.licence_number }}
+                          </a>
+                        </template>
+                      </Column>
+                      <Column field="well_tag_numbers_in_licence" header="Well Tag Numbers">
+                        <template #body="slotProps">
+                          <ul class="p-0 m-0" style="list-style-type: none;">
+                            <li v-for="wtn in slotProps.data.well_tag_numbers_in_licence" :key="wtn">
+                              <router-link :to="{ name: 'wells-detail', params: { id: wtn }}">{{ wtn }}</router-link>
+                            </li>
+                          </ul>
+                        </template>
+                      </Column>
+                    </DataTable>
                     <p><i v-if="licenceDetails.licences_updated && licenceDetails.licences_updated.update_date__max">Licence info last updated {{ formatDate(licenceDetails.licences_updated.update_date__max) }}</i></p>
                     <p>
                       Licensing information is obtained from
