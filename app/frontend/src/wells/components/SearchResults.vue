@@ -13,17 +13,17 @@
 */
 <template>
   <div id="searchResults">
-    <b-row align-h="between" class="mb-2">
-      <b-col sm="4" class="form-inline">
-        Show <b-form-select class="mx-1" :value="limit" @input="setLimit($event)" :options="limitOptions" /> results
-      </b-col>
-      <b-col sm="4">
+    <div class="grid grid-cols-12 mb-2">
+      <div class="col-span-12 sm:col-span-4 form-inline">
+        Show <Select class="mx-1 inline-block w-full" v-model="limit" @input="setLimit($event)" :options="limitOptions" optionLabel="text" optionValue="value"/> results
+      </div>
+      <div class="col-span-12 sm:col-span-4 sm:col-start-9 flex flex-col justify-center items-end">
         <search-column-select
           id="searchColumnSelect"
           class="float-right"
           :column-data="searchFields" />
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <div class="table-responsive">
       <table id="searchResultsTable" class="table table-striped">
         <thead class="sticky-header">

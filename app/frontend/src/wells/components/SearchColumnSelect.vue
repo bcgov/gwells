@@ -14,11 +14,7 @@
 <template>
   <Form @submit.prevent>
     <Button label="Add/remove columns" severity="contrast" @click="showModal"/>
-    <b-modal
-      ref="column-select-modal"
-      id="columnSelectModal"
-      title="Column Display"
-      footer-class="justify-content-start">
+    <Dialog header="Column Display" ref="column-select-modal" id="columnSelectModal" centered modal>
       <table class="table">
         <thead>
           <tr>
@@ -38,22 +34,22 @@
               />
             </td>
             <td>
-              <b-form-select
+              <Select
                 :id="`${column.id}ColumnOrder`"
                 :options="columnOrderRange"
-                :value="columnOrders[column.id]"
-                @input="setColumnOrder(column.id, $event)" />
+                v-model="columnOrders[column.id]"
+                @input="setColumnOrder(column.id, $event)"/>
             </td>
           </tr>
         </tbody>
       </table>
-      <div slot="modal-footer">
+      <template #footer>
         <div class="flex justify-start">
           <Button label="Apply" @click="applyChanges()" :disabled="!validation" class="mr-2"/>
           <Button label="Cancel" severity="contrast" @click="cancelChanges()"/>
         </div>
-      </div>
-    </b-modal>
+      </template>
+    </Dialog>
   </Form>
 </template>
 

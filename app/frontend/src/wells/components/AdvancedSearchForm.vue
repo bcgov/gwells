@@ -58,12 +58,17 @@
       @remove="removeSelectedFilter(field.id)"
       removable /> -->
     <responsive-grid :sm="[9, 3]" innerDivClass="mb-1">
-        <b-form-select id="additionalFilterInput" v-model="selectedFilterId">
-          <option :value="null">Select a field</option>
-          <optgroup v-for="optGroup in additionalFilterSelectOptions" :key="optGroup.label" :label="optGroup.label">
-            <option v-for="option in optGroup.options" :key="option.id" :value="option.value" :disabled="option.disabled">{{ option.text }}</option>
-          </optgroup>
-        </b-form-select>
+        <Select
+          id="additionalFilterInput"
+          v-model="selectedFilterId"
+          placeholder="Select a field"
+          :options="additionalFilterSelectOptions"
+          optionGroupLabel="label"
+          optionGroupChildren="options"
+          optionLabel="text"
+          optionValue="value"
+          optionDisabled="disabled"
+          dataKey="id"/>
         <Button label="Add Field" class="w-full" @click="addSelectedFilter" :disabled="selectedFilterId === null"/>
     </responsive-grid>
   </Form>
