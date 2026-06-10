@@ -185,7 +185,6 @@ export default {
   mounted () {
     this.$emit('mapLoading')
     this.initMapBox()
-    this.listenForReset()
   },
   unmounted () {
     this.map.remove()
@@ -369,29 +368,6 @@ export default {
       // Turn the layer's visibility on / off
       this.map.setLayoutProperty(layerId, 'visibility', show ? 'visible' : 'none')
     },
-    listenForReset () {
-      this.storeSubscription = this.aquiferStore.$onAction(({ name }) => {
-        if (name === 'resetSearch') {
-          after(() => {
-            this.hideMapSearchButton()
-            this.supressShowMapSearchButton = true
-
-            this.mapLayers.forEach((layer) => {
-              let show = false
-              if (layer.id === DATABC_CADASTREL_LAYER_ID) {
-                show = true
-              }
-              layer.show = show
-              this.map.setLayoutProperty(layer.id, 'visibility', layer.show ? 'visible' : 'none')
-            })
-            this.layersControl.update()
-            this.legendControl.update()
-            this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
-            this.map.fire('reset')
-          })
-        }
-      })
-    },
     hideMapSearchButton () {
       window.clearTimeout(this.showMapSearchButtonTimer)
       this.showMapSearchButtonTimer = null
@@ -498,7 +474,24 @@ export default {
         canInteract,
         ecocatLayerIds: [ DATABC_ECOCAT_LAYER_ID ]
       })
-    }
+    },
+    onResetLayers () {
+      this.hideMapSearchButton()
+      this.supressShowMapSearchButton = true
+
+      this.mapLayers.forEach((layer) => {
+        let show = false
+        if (layer.id === DATABC_CADASTREL_LAYER_ID) {
+          show = true
+        }
+        layer.show = show
+        this.map.setLayoutProperty(layer.id, 'visibility', layer.show ? 'visible' : 'none')
+      })
+      this.layersControl.update()
+      this.legendControl.update()
+      this.map.flyTo({ center: CENTRE_LNG_LAT_BC, zoom: DEFAULT_MAP_ZOOM })
+      this.map.fire('reset')
+    },
   },
   watch: {
     'aquiferStore.searchInProgress' (inProgress) {

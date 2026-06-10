@@ -80,10 +80,10 @@
                     <label :for="option.text">{{ option.text }}</label>
                   </div>
                 </CheckboxGroup>
-                <div class="aquifer-search-actions">
+                <div class="aquifer-search-actions flex gap-2">
                   <Button class="aquifer-buttons" type="submit" id="aquifers-search-button" :disabled="searchInProgress" label="Search"/>
                   <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
-                  <Button class="aquifer-buttons" variant="default" type="reset" label="Reset"/>
+                  <Button class="aquifer-buttons" type="reset" label="Reset"/>
                 </div>
                 <h6 class="mt-4">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
@@ -401,7 +401,7 @@ export default {
       this.selectedAquiferId = null
       this.showRetiredAquifers = false
       this.resetSearch()
-      this.$emit('resetLayers')
+      this.$refs.aquiferMap.onResetLayers()
     },
     triggerSearch (options = {}) {
       let constrainSearch = !!options.constrain
