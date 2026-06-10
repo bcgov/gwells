@@ -46,14 +46,14 @@
             </template>
         </b-table>
     </div>
-    <b-modal
-      ok-variant="primary"
-      cancel-variant="default"
-      v-on:ok="deleteFile"
-      ref="deleteModal" >
+    <Dialog v-model:visible="isDeleteModalVisible" modal header="Confirmation">
       <p>Are you sure you would like to delete this file?</p>
-      <p>{{ file }}</p>
-    </b-modal>
+      <p>{{file}}</p>
+      <template #footer>
+        <Button label="Cancel" text @click="isDeleteModalVisible = false" />
+        <Button label="OK" severity="primary" @click="deleteFile" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -75,7 +75,8 @@ export default {
       error: null,
       file: '',
       fileType: '',
-      splitFiles: []
+      splitFiles: [],
+      isDeleteModalVisible: false
     }
   },
   watch: {
@@ -120,10 +121,10 @@ export default {
       return getLongFormLabel(shortFormLabel)
     },
     showModal () {
-      this.$refs.deleteModal.show()
+      this.isDeleteModalVisible = true
     },
     hideModal () {
-      this.$refs.deleteModal.hide()
+      this.isDeleteModalVisible = false
     },
     confirmDeleteFile (file, fileType, e) {
       e.preventDefault()
