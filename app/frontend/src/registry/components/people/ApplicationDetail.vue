@@ -110,7 +110,7 @@
                                 <Checkbox
                                   inputId="qualifications"
                                   name="qualifications"
-                                  value="q.value"
+                                  :value="q.value"
                                   class="fixed-width font-weight-normal"
                                   disabled
                                   />

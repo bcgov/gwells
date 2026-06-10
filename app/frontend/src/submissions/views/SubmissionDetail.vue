@@ -20,6 +20,7 @@
         <div v-if="submission.create_date">Filed: {{ moment(submission.create_date, "MMMM Do YYYY [at] LT") }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-12">
+          <!-- TODO: Look into these old bootstrap classes -->
           <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
             <div
               class="row record"

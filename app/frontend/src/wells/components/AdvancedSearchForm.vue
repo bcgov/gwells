@@ -17,8 +17,7 @@
       <div class="flex mt-1">
         <h3>{{ section.header }}</h3>
       </div>
-      <!--TBD issue with component null values in child component -->
-      <!-- <search-filter
+      <advanced-search-filter
         v-for="field in getFilterFields(section.fields)"
         :key="field.id"
         :type="field.type"
@@ -30,7 +29,7 @@
         :value-field="field.valueField"
         :text-field="field.textField"
         :any-value-checkbox="field.anyValueBoolean"
-        v-model="filterParams[field.id]" /> -->
+        v-model="filterParams[field.id]" />
     </div>
     <div class="flex">
       <div class="my-4">
@@ -41,8 +40,7 @@
     <div class="flex mt-1">
       <h3>Additional Fields</h3>
     </div>
-    <!--TBD issue with component null values in child component-->
-    <!-- <search-filter
+    <advanced-search-filter
       v-for="field in selectedAdditionalFilters"
       :key="field.id"
       :type="field.type"
@@ -56,20 +54,20 @@
       :any-value-checkbox="field.anyValueBoolean"
       v-model="filterParams[field.id]"
       @remove="removeSelectedFilter(field.id)"
-      removable /> -->
-    <responsive-grid :sm="[9, 3]" innerDivClass="mb-1">
-        <Select
-          id="additionalFilterInput"
-          v-model="selectedFilterId"
-          placeholder="Select a field"
-          :options="additionalFilterSelectOptions"
-          optionGroupLabel="label"
-          optionGroupChildren="options"
-          optionLabel="text"
-          optionValue="value"
-          optionDisabled="disabled"
-          dataKey="id"/>
-        <Button label="Add Field" class="w-full" @click="addSelectedFilter" :disabled="selectedFilterId === null"/>
+      removable />
+    <responsive-grid :sm="[8, 4]" innerDivClass="mb-1">
+      <Select
+        id="additionalFilterInput"
+        v-model="selectedFilterId"
+        placeholder="Select a field"
+        :options="additionalFilterSelectOptions"
+        optionGroupLabel="label"
+        optionGroupChildren="options"
+        optionLabel="text"
+        optionValue="value"
+        optionDisabled="disabled"
+        dataKey="id"/>
+      <Button label="Add Field" class="w-full" @click="addSelectedFilter" :disabled="selectedFilterId === null"/>
     </responsive-grid>
   </Form>
 </template>
@@ -205,7 +203,7 @@ const reduceSections = (sectionsArray) => {
 export default {
   mixins: [filterMixin],
   components: {
-    'search-filter': AdvancedSearchFilter,
+    AdvancedSearchFilter,
     ResponsiveGrid
   },
   data () {

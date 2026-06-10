@@ -4,12 +4,12 @@ import ApiService from '@/common/services/ApiService.js'
 export const useSubmissionStore = defineStore('submission', {
 	state: () => ({
 		error: null,
-		codes: null,
+		_codes: null,
 		wells: null
 	}),
 
 	getters: {
-		codes: (state) => state.codes || {
+		codes: (state) => state._codes || {
 			land_district_codes: {}
 		},
 		globalError: (state) => state.error
@@ -17,10 +17,10 @@ export const useSubmissionStore = defineStore('submission', {
 
 	actions: {
 		async fetchCodes () {
-			if (this.codes === null) {
+			if (this._codes === null) {
 				try {
 					const response = await ApiService.query('submissions/options')
-					this.codes = response.data
+					this._codes = response.data
 				} catch (err) {
 					this.error = err.response
 				}

@@ -34,13 +34,12 @@
               class="text-nowrap vertical-align-middle"
               scope="col">
               {{ column.resultLabel ? column.resultLabel : column.label }}
-              <b-button v-if="column.sortable"
+              <Button v-if="column.sortable"
                 class="sort-button px-0"
                 :class="{active: column.sortParam === orderingParam}"
                 variant="link"
-                @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
-                {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
-              </b-button>
+                @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })"
+                :label="(column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;'"/>
             </th>
           </tr>
           <tr class="filters">

@@ -13,24 +13,24 @@
 */
 <template>
   <div class="grid grid-cols-12 advanced-search-filter mb-2" :class="`advanced-search-filter-${type}`">
-    <div v-if="label" :class="`sm:col-span-${labelColWidth}`">
+    <div v-if="label" :class="`col-span-12 sm:col-span-${labelColWidth}`">
       <label v-if="(type === 'text' || type === 'number' || type === 'select') && !anyValueCheckbox" :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
       <legend v-else tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
     </div>
-    <div v-if="anyValueCheckbox" class="sm:col-span-3">
+    <div v-if="anyValueCheckbox" class="col-span-12 sm:col-span-3">
       <div class="pt-2 flex sm:justify-end">
         <div class="flex items-center gap-2">
-          <Checkbox :inputId="`${id}AnyValue`" v-model="value[anyValueParam]" @input="updateAnyValueCheckbox($event)" binary/>
+          <Checkbox :inputId="`${id}AnyValue`" v-model="modelValue[anyValueParam]" @input="updateAnyValueCheckbox($event)" binary/>
           <label :for="`${id}AnyValue`">Any value</label>
         </div>
       </div>
     </div>
-    <div :class="`sm:col-span-${inputColWidth}`">
+    <div :class="`col-span-12 sm:col-span-${inputColWidth}`">
       <InputText
         v-if="type === 'text' || type === 'number'"
         :type="type"
         :id="`${id}Input`"
-        :modelValue="value[paramNames[0]]"
+        :modelValue="modelValue[paramNames[0]]"
         :invalid="isInvalid"
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
@@ -41,8 +41,8 @@
       <Select 
         v-else-if="type === 'select'"
         :id="`${id}Input`"
-        :modelValue="value[paramNames[0]] ? value[paramNames[0]] : null"
-        :invalid="!validation"
+        :modelValue="modelValue[paramNames[0]] ? modelValue[paramNames[0]] : null"
+        :invalid="isInvalid"
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
         :options="selectOptions"
@@ -52,10 +52,16 @@
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)"
         :placeholder="placeholder || '----------'"/>
+      <!--
+      <RadioButtonGroup v-else-if="type === 'radio'" :id="`${id}Input`">
+        <div v-for="option in options" class="flex align-items-center">
+
+        </div>
+      </RadioButtonGroup>
       <b-form-radio-group
         v-else-if="type === 'radio'"
         :id="`${id}Input`"
-        :checked="value[paramNames[0]]"
+        :checked="modelValue[paramNames[0]]"
         :state="validation"
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
@@ -63,17 +69,18 @@
         @input="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)" />
+      -->
       <div v-else-if="type === 'range' || type === 'dateRange'">
         <div class="mb-1">
           <div class="grid grid-cols-12">
-            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-sm-4 col-form-label text-sm-right">From</label>
+            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="sm:col-span-4 col-form-label sm:text-right">From</label>
             <div class="sm:col-span-8">
               <InputText
                 v-if="type === 'range'"
                 type="number"
                 step="any"
                 :id="`${id}StartInput`"
-                :modelValue="value[paramNames[0]]"
+                :modelValue="modelValue[paramNames[0]]"
                 :invalid="isInvalid"
                 :disabled="inputDisabled"
                 :aria-describedby="`${id}InvalidFeedback`"
@@ -85,7 +92,7 @@
                 v-else-if="type === 'dateRange'"
                 type="date"
                 :id="`${id}StartInput`"
-                :modelValue="value[paramNames[0]]"
+                :modelValue="modelValue[paramNames[0]]"
                 :invalid="isInvalid"
                 :disabled="inputDisabled"
                 :aria-describedby="`${id}InvalidFeedback`"
@@ -98,14 +105,14 @@
         </div>
         <div class="mb-1">
           <div class="grid grid-cols-12">
-            <label :id="`${id}EndLabel`" :for="`${id}EndInput`" class="sm:col-span-4 sm:text-right">To</label>
+            <label :id="`${id}EndLabel`" :for="`${id}EndInput`" class="sm:col-span-4 col-form-label sm:text-right">To</label>
             <div class="col-span-8">
               <InputText
                 v-if="type === 'range'"
                 type="number"
                 step="any"
                 :id="`${id}EndInput`"
-                :modelValue="value[paramNames[1]]"
+                :modelValue="modelValue[paramNames[1]]"
                 :invalid="isInvalid"
                 :disabled="inputDisabled"
                 :aria-describedby="`${id}InvalidFeedback`"
@@ -117,7 +124,7 @@
                 v-else-if="type === 'dateRange'"
                 type="date"
                 :id="`${id}EndInput`"
-                :modelValue="value[paramNames[1]]"
+                :modelValue="modelValue[paramNames[1]]"
                 :invalid="isInvalid"
                 :disabled="inputDisabled"
                 :aria-describedby="`${id}InvalidFeedback`"
@@ -136,7 +143,7 @@
       </div>
     </div>
     <div class="col-span-1" v-if="removable">
-      <b-button-close @click="$emit('remove')" class="pt-1">&times;</b-button-close>
+      <Button icon="fa fa-times" severity="secondary" variant="text" rounded aria-label="Remove" @click="$emit('remove')" class="pt-1"/>
     </div>
   </div>
 </template>
@@ -153,10 +160,6 @@
  *
  */
 export default {
-  model: {
-    prop: 'value',
-    event: 'input'
-  },
   props: {
     id: { // an ID for the form group that will be used to generate IDs for the related components
       required: true,
@@ -168,7 +171,7 @@ export default {
     },
     label: String,
     errors: null, // pass any "field errors" returned by the API into the "errors" prop
-    value: Object, // internal (holds the values for the field)
+    modelValue: Object, // internal (holds the values for the field)
     type: { // the type of filter (e.g. text, range, dateRange)
       type: String,
       default: 'text'
@@ -192,7 +195,7 @@ export default {
       default: false
     }
   },
-  emits: ['focus', 'blur'],
+  emits: ['focus', 'blur', 'update:modelValue'],
   data () {
     return {}
   },
@@ -224,12 +227,12 @@ export default {
       return this.paramNames.slice(-1)[0]
     },
     inputDisabled () {
-      return this.anyValueCheckbox && this.value[this.anyValueParam] === true
+      return this.anyValueCheckbox && this.modelValue[this.anyValueParam] === true
     }
   },
   methods: {
     updateParamValue (param, value) {
-      this.$emit('input', { ...this.value, [param]: value })
+      this.$emit('update:modelValue', { ...this.modelValue, [param]: value })
     },
     updateAnyValueCheckbox (value) {
       if (!this.anyValueCheckbox) {
@@ -237,9 +240,9 @@ export default {
       }
 
       if (value === true) {
-        this.$emit('input', { [this.anyValueParam]: true })
+        this.$emit('update:modelValue', { [this.anyValueParam]: true })
       } else {
-        this.$emit('input', {})
+        this.$emit('update:modelValue', {})
       }
     }
   }

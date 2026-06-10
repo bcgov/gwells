@@ -29,6 +29,10 @@
     margin-right: 1rem;
 }
 
+.p-select {
+    width: 100%;
+}
+
 .p-multiselect {
     width: 100%;
 }

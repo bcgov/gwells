@@ -433,6 +433,14 @@ legend {
     width: 100%;
 }
 
+.col-form-label {
+    padding-top: calc(.375rem + 1px);
+    padding-bottom: calc(.375rem + 1px);
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: 1.5
+}
+
 @media (min-width: 576px) {
     .form-inline .form-group,.form-inline label {
         display: -webkit-box;
@@ -444,4 +452,3 @@ legend {
         margin-bottom: 0
     }
 }
-
