@@ -25,7 +25,7 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip, Popover
+  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab
 } from 'primevue';
 import { Form } from '@primevue/forms';
 import Chart from 'primevue/chart';
@@ -125,8 +125,6 @@ app.component("ScrollTop", ScrollTop);
 app.component("Tabs", Tabs);
 app.component("TabList", TabList);
 app.component("Tab", Tab);
-app.directive("Tooltip", Tooltip);
-app.component("Popover", Popover)
 app.component("Chart", Chart)
 
 const pinia = createPinia();

@@ -122,6 +122,7 @@
             :disabled="fieldDisabled"
             optionLabel="description"
             optionValue="code"
+            showClear
             class="w-full"/>
           <Message v-if="fieldHasError.material" severity="error">
             {{  fieldErrorMessages.material }}

@@ -57,7 +57,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="mb-1">OR</p>
       <p class="font-weight-bold">
         2) Legal Description
-        <i 
+        <i
           tabindex="0"
           class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
           @mouseenter="showPopover"
@@ -168,10 +168,14 @@ import ApiService from '../../../common/services/ApiService'
 import { TOOLTIP_TEXT } from '@/common/constants'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import { Popover } from 'primevue'
 
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
+  components: {
+    Popover
+  },
   props: {
     id: {
       type: String,
