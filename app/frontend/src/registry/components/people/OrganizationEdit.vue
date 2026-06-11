@@ -274,9 +274,9 @@
           tableStyle="min-width: 50rem"
         >
           <Column field="name" header="Name">
-            <template #body="slotProps">
-              <router-link :to="{ name: 'PersonDetail', params: { person_guid: slotProps.data.person_guid }}">
-                {{ slotProps.data.surname }}, {{ slotProps.data.first_name }}
+            <template #body="{ data }">
+              <router-link :to="{ name: 'PersonDetail', params: { person_guid: data.person_guid }}">
+                {{ data.surname }}, {{ data.first_name }}
               </router-link>
             </template>
           </Column>

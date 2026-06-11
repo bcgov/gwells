@@ -74,14 +74,14 @@
         @keyup.enter="applyFilter()" />
     </div>
     <div :class="`sm:col-span-${(type === 'text') ? 3 : 2}`">
-      <b-button
+      <Button
         variant="link"
         class="py-2 px-0"
         :class="{'apply-filter': !isActive, 'clear-filter': isActive}"
         :disabled="!hasLocalValue"
-        @click.prevent="isActive ? clearFilter() : applyFilter()">
-          <span class="fa fa-lg" :class="{'fa-check': !isActive, 'fa-times': isActive}" :aria-label="isActive ? 'Clear' : 'Apply'" />
-      </b-button>
+        @click="isActive ? clearFilter() : applyFilter()"
+        :icon="`fa fa-lg ${isActive ? 'fa-times' : 'fa-check'}`"
+        :aria-label="isActive ? 'Clear' : 'Apply'"/>
     </div>
   </div>
 </template>

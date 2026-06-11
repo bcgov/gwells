@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    <div :class="`col-span-12 sm:col-span-${inputColWidth}`">
+    <div v-if="!anyValueCheckbox" :class="`col-span-12 sm:col-start-${labelColWidth + 1} sm:col-end-${removable ? 11 : 12}`">
       <InputText
         v-if="type === 'text' || type === 'number'"
         :type="type"
@@ -207,7 +207,7 @@ export default {
       if (!this.anyValueCheckbox && (this.type === 'text' || this.type === 'select' || this.type === 'radio')) {
         return 6
       }
-      return false
+      return 4
     },
     inputColWidth () {
       if (this.anyValueCheckbox) {

@@ -137,16 +137,16 @@
                 stripedRows
               >
                 <Column field="aquiferId" header="Aquifer ID">
-                  <template #body="slotProps">
-                    <span :class="{ error: isUnknownAquifer(slotProps.data.aquiferId) }">
-                      {{slotProps.data.aquiferId}}
+                  <template #body="{ data }">
+                    <span :class="{ error: isUnknownAquifer(data.aquiferId) }">
+                      {{data.aquiferId}}
                     </span>
                   </template>
                 </Column>
                 <Column field="wellTagNumber" header="Well Tag Number">
-                  <template #body="slotProps">
-                    <span :class="{ error: isUnknownWell(slotProps.data.wellTagNumber) }">
-                      {{slotProps.data.wellTagNumber}}
+                  <template #body="{ data }">
+                    <span :class="{ error: isUnknownWell(data.wellTagNumber) }">
+                      {{data.wellTagNumber}}
                     </span>
                   </template>
                 </Column>
@@ -177,23 +177,23 @@
                 stripedRows
               >
                 <Column field="aquiferId" header="Aquifer ID">
-                  <template #body="slotProps">
+                  <template #body="{ data }">
                     <span>
-                      {{slotProps.data.aquiferId}}
+                      {{data.aquiferId}}
                     </span>
                   </template>
                 </Column>
                 <Column field="wellTagNumber" header="Well Tag Number">
-                  <template #body="slotProps">
+                  <template #body="{ data }">
                     <span>
-                      {{slotProps.data.wellTagNumber}}
+                      {{data.wellTagNumber}}
                     </span>
                   </template>
                 </Column>
                 <Column field="warnings" header="Warnings">
-                  <template #body="slotProps">
-                    <ul v-if="slotProps.data.warnings.length > 0">
-                      <li v-for="(warning, index) in slotProps.data.warnings" :key="index">
+                  <template #body="{ data }">
+                    <ul v-if="data.warnings.length > 0">
+                      <li v-for="(warning, index) in data.warnings" :key="index">
                         {{ warning }}
                       </li>
                     </ul>

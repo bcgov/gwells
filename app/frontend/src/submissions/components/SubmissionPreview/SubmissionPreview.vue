@@ -167,16 +167,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <Column field="end" header="To"/>
           <Column field="lithology_raw_data" header="Description"/>
           <Column field="lithology_colour" header="Colour">
-            <template #body="slotProps">{{ codeToDescription('lithology_colours', slotProps.data.lithology_colour) }}</template>
+            <template #body="{ data }">{{ codeToDescription('lithology_colours', data.lithology_colour) }}</template>
           </Column>
           <Column field="lithology_hardness" header="Hardness">
-            <template #body="slotProps">{{ codeToDescription('lithology_hardness_codes', slotProps.data.lithology_hardness) }}</template>
+            <template #body="{ data }">{{ codeToDescription('lithology_hardness_codes', data.lithology_hardness) }}</template>
           </Column>
           <Column field="lithology_moisture" header="Moisture">
-            <template #body="slotProps">{{ codeToDescription('lithology_moisture_codes', slotProps.data.lithology_moisture) }}</template>
+            <template #body="{ data }">{{ codeToDescription('lithology_moisture_codes', data.lithology_moisture) }}</template>
           </Column>
           <Column field="lithology_description" header="Descriptor">
-            <template #body="slotProps">{{ codeToDescription('lithology_descriptors', slotProps.data.lithology_description) }}</template>
+            <template #body="{ data }">{{ codeToDescription('lithology_descriptors', data.lithology_description) }}</template>
           </Column>
           <Column field="water_bearing_estimated_flow"/>
           <Column field="lithology_observation" header="Observations"/>
@@ -191,10 +191,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <Column field="start"/>
           <Column field="end"/>
           <Column field="material">
-            <template #body="slotProps">{{ codeToDescription('decommission_materials', slotProps.data.material) }}</template>
+            <template #body="{ data }">{{ codeToDescription('decommission_materials', data.material) }}</template>
           </Column>
           <Column field="observations">
-            <template #body="slotProps">{{ codeToDescription('decommission_materials', slotProps.data.observations) }}</template>
+            <template #body="{ data }">{{ codeToDescription('decommission_materials', data.observations) }}</template>
           </Column>
         </DataTable>
       </div>
@@ -205,21 +205,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <div class="table-responsive">
         <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.casing_set)">
           <Column field="start" header="From">
-            <template #body="slotProps">{{slotProps.data.start}}{{slotProps.data.start ? ' ft' : '' }}</template>
+            <template #body="{ data }">{{data.start}}{{data.start ? ' ft' : '' }}</template>
           </Column>
           <Column field="end" header="To">
-            <template #body="slotProps">{{slotProps.data.end}}{{slotProps.data.end ? ' ft' : '' }}</template>
+            <template #body="{ data }">{{data.end}}{{data.end ? ' ft' : '' }}</template>
           </Column>
           <Column field="casing_code" header="Casing Type">
-            <template #body="slotProps">{{codeToDescription('casing_codes', slotProps.data.casing_code)}}</template>
+            <template #body="{ data }">{{codeToDescription('casing_codes', data.casing_code)}}</template>
           </Column>
           <Column field="casing_material">
-            <template #body="slotProps">{{codeToDescription('casing_materials', slotProps.data.casing_material)}}</template>
+            <template #body="{ data }">{{codeToDescription('casing_materials', data.casing_material)}}</template>
           </Column>
           <Column field="diameter"/>
           <Column field="wall_thickness"/>
           <Column field="drive_shoe_status">
-            <template #body="slotProps">{{codeToDescription('drive_shoe_status', slotProps.data.drive_shoe_status)}}</template>
+            <template #body="{ data }">{{codeToDescription('drive_shoe_status', data.drive_shoe_status)}}</template>
           </Column>
         </DataTable>
       </div>
@@ -263,10 +263,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div class="font-weight-bold">Liner perforations</div>
           <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.linerperforation_set)">
             <Column field="start" header="From">
-              <template #body="slotProps">{{slotProps.data.start}} ft</template>
+              <template #body="{ data }">{{data.start}} ft</template>
             </Column>
             <Column field="end" header="To">
-              <template #body="slotProps">{{slotProps.data.end}} ft</template>
+              <template #body="{ data }">{{data.end}} ft</template>
             </Column>
           </DataTable>
         </div>
@@ -303,14 +303,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div class="font-weight-bold">Installed Screens</div>
           <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.screen_set)">
             <Column field="start" header="From">
-              <template #body="slotProps">{{slotProps.data.start}} ft</template>
+              <template #body="{ data }">{{data.start}} ft</template>
             </Column>
             <Column field="end" header="To">
-              <template #body="slotProps">{{slotProps.data.end}} ft</template>
+              <template #body="{ data }">{{data.end}} ft</template>
             </Column>
             <Column field="diameter"/>
             <Column field="assembly_type">
-              <template #body="slotProps">{{codeToDescription('screen_assemblies', slotProps.data.assembly_type)}}</template>
+              <template #body="{ data }">{{codeToDescription('screen_assemblies', data.assembly_type)}}</template>
             </Column>
             <Column field="slot_size"/>
           </DataTable>
@@ -411,11 +411,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <DataTable stripedRows size="small" showGridlines :value="filterBlankRows(form.aquifer_parameters_set)">
           <Column field="start_date_pumping_test"/>
           <Column field="pumping_test_description">
-            <template #body="slotProps">{{codeToDescription('pumping_test_description_codes', slotProps.data.pumping_test_description)}}</template>
+            <template #body="{ data }">{{codeToDescription('pumping_test_description_codes', data.pumping_test_description)}}</template>
           </Column>
           <Column field="test_duration" header="Test Duration (min)"/>
           <Column field="boundary_effect">
-            <template #body="slotProps">{{codeToDescription('boundary_effect_codes', slotProps.data.boundary_effect)}}</template>
+            <template #body="{ data }">{{codeToDescription('boundary_effect_codes', data.boundary_effect)}}</template>
           </Column>
           <Column field="storativity"/>
           <Column field="transmissivity" header="Transmissivity (m²/day)"/>
@@ -423,7 +423,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <Column field="specific_yield"/>
           <Column field="specific_capacity" header="Specific Capacity (L/s/m)"/>
           <Column field="analysis_method">
-            <template #body="slotProps">{{codeToDescription('analysis_method_codes', slotProps.data.analysis_method)}}</template>
+            <template #body="{ data }">{{codeToDescription('analysis_method_codes', data.analysis_method)}}</template>
           </Column>
           <Column field="comments"/>
         </DataTable>

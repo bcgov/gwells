@@ -27,12 +27,13 @@
           <tr v-for="column in columns" :key="column.id">
             <td>{{ column.label }}</td>
             <td>
-              <!-- MAKE A NEW PROP FOR THIS V-MODEL -->
+              <!-- MAKE A NEW PROP FOR THIS V-MODEL
               <Checkbox
                 :id="`${column.id}ColumnSelect`"
                 binary
                 v-model="localSelectedColumnIds.includes(column.id)"
                 @input="$event ? selectColumn(column.id) : deselectColumn(column.id)"/>
+              -->
             </td>
             <td>
               <Select

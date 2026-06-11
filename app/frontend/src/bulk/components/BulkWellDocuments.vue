@@ -103,11 +103,11 @@
                 stripedRows
               >
                 <Column header="" class="max-w-16">
-                  <template #body="slotProps">
+                  <template #body="{ data }">
                     <Button
                       size="small"
                       severity="danger"
-                      @click="commonStore.removeFile(slotProps.data)"
+                      @click="commonStore.removeFile(data)"
                       :disabled="isSaving">
                       Remove
                     </Button>
@@ -115,8 +115,8 @@
                 </Column>
                 <Column field="name" header="File name"></Column>
                 <Column field="size" header="Size">
-                  <template #body="slotProps">
-                    {{ formatFileSize(slotProps.data.size) }}
+                  <template #body="{ data }">
+                    {{ formatFileSize(data.size) }}
                   </template>
                 </Column>
               </DataTable>
@@ -148,16 +148,16 @@
               >
                 <template #empty>No documents with well tag numbers</template>
                 <Column field="wellTagNumber" header="Well">
-                  <template #body="slotProps">
-                    <span :class="{ unknown: checkWellIsUnknown(slotProps.data.wellTagNumber) }">
-                      {{slotProps.data.wellTagNumber}}
+                  <template #body="{ data }">
+                    <span :class="{ unknown: checkWellIsUnknown(data.wellTagNumber) }">
+                      {{data.wellTagNumber}}
                     </span>
                   </template>
                 </Column>
                 <Column field="documents" header="Documents">
-                  <template #body="slotProps">
+                  <template #body="{ data }">
                     <ul class="list-disc m-4">
-                      <li v-for="(doc, index) in slotProps.data.documents" :key="index" :class="{overwrite: doc.exists}">
+                      <li v-for="(doc, index) in data.documents" :key="index" :class="{overwrite: doc.exists}">
                         {{ doc.name }}
                       </li>
                     </ul>

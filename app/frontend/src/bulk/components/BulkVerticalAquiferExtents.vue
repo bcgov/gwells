@@ -163,16 +163,16 @@
             stripedRows
           >
             <Column field="aquiferId" header="Aquifer ID">
-              <template #body="slotProps">
-                <span :class="{ error: isUnknownAquifer(slotProps.data.aquiferId) }">
-                  {{slotProps.data.aquiferId}}
+              <template #body="{ data }">
+                <span :class="{ error: isUnknownAquifer(data.aquiferId) }">
+                  {{data.aquiferId}}
                 </span>
               </template>
             </Column>
             <Column field="wellTagNumber" header="Well Tag Number">
-              <template #body="slotProps">
-                <span :class="{ error: isUnknownWell(slotProps.data.wellTagNumber) }">
-                  {{slotProps.data.wellTagNumber}}
+              <template #body="{ data }">
+                <span :class="{ error: isUnknownWell(data.wellTagNumber) }">
+                  {{data.wellTagNumber}}
                 </span>
               </template>
             </Column>
@@ -201,37 +201,37 @@
             stripedRows
           >
             <Column field="rowNum" header="Row Number">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.rowNum}}
+                  {{data.rowNum}}
                 </span>
               </template>
             </Column>
             <Column field="wellTagNumber" header="Well Tag Number">
-              <template #body="slotProps">
-                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: slotProps.data.wellTagNumber} }" target="_blank">
-                  {{slotProps.data.wellTagNumber}}
+              <template #body="{ data }">
+                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: data.wellTagNumber} }" target="_blank">
+                  {{data.wellTagNumber}}
                 </router-link>
               </template>
             </Column>
             <Column field="aquiferId" header="Aquifer ID">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.aquiferId}}
+                  {{data.aquiferId}}
                 </span>
               </template>
             </Column>
             <Column field="fromDepth" header="From Depth">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.fromDepth.toFixed(2)}}
+                  {{data.fromDepth.toFixed(2)}}
                 </span>
               </template>
             </Column>
             <Column field="toDepth" header="To Depth">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.toDepth === null ? '\u2014' : slotProps.data.toDepth.toFixed(2)}}
+                  {{data.toDepth === null ? '\u2014' : data.toDepth.toFixed(2)}}
                 </span>
               </template>
             </Column>
@@ -243,44 +243,44 @@
             stripedRows
           >
             <Column field="rowNum" header="Row Number">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.rowNum}}
+                  {{data.rowNum}}
                 </span>
               </template>
             </Column>
             <Column field="wellTagNumber" header="Well Tag Number">
-              <template #body="slotProps">
-                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: slotProps.data.wellTagNumber} }" target="_blank">
-                  {{slotProps.data.wellTagNumber}}
+              <template #body="{ data }">
+                <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber: data.wellTagNumber} }" target="_blank">
+                  {{data.wellTagNumber}}
                 </router-link>
               </template>
             </Column>
             <Column field="aquiferId" header="Aquifer ID">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.aquiferId}}
+                  {{data.aquiferId}}
                 </span>
               </template>
             </Column>
             <Column field="fromDepth" header="From Depth">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.fromDepth.toFixed(2)}}
+                  {{data.fromDepth.toFixed(2)}}
                 </span>
               </template>
             </Column>
             <Column field="toDepth" header="To Depth">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.toDepth === null ? '\u2014' : slotProps.data.toDepth.toFixed(2)}}
+                  {{data.toDepth === null ? '\u2014' : data.toDepth.toFixed(2)}}
                 </span>
               </template>
             </Column>
             <Column field="conflictMessage" header="Error">
-              <template #body="slotProps">
+              <template #body="{ data }">
                 <span>
-                  {{slotProps.data.conflictMessage}}
+                  {{data.conflictMessage}}
                 </span>
               </template>
             </Column>

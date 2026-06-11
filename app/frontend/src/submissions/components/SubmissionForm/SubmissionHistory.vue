@@ -23,13 +23,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
             There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment.
           </template>
           <Column header="Report">
-            <template #body="slotProps">
-              <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: slotProps.data.filing_number }}">{{ slotProps.data.well_activity_description }}</router-link>
+            <template #body="{ data }">
+              <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.filing_number }}">{{ data.well_activity_description }}</router-link>
             </template>
           </Column>
           <Column header="Date Entered">
-            <template #body="slotProps">
-              <span v-if="slotProps.data.create_date">{{ moment(slotProps.data.create_date, "MMMM Do YYYY [at] LT") }}</span>
+            <template #body="{ data }">
+              <span v-if="data.create_date">{{ moment(data.create_date, "MMMM Do YYYY [at] LT") }}</span>
             </template>
           </Column>
           <Column field="create_user" header="Entered By"/>
