@@ -15,8 +15,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <form-subsection title="Well Location" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="flex flex-col">
       <p>Please provide as much information as possible.</p> <p class="bg-amber-300 p-2">A minimum of one type of well location information is required below:</p>
-      <p class="d-inline font-weight-bold">1) Well Location Address</p>
-      <div class="d-inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary/> Same as owner address</div>
+      <p class="inline font-weight-bold">1) Well Location Address</p>
+      <div class="inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary/> Same as owner address</div>
     </div>
     <div class="grid grid-cols-12">
       <div class="col-span-12 md:col-span-6">
@@ -59,7 +59,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         2) Legal Description
         <i
           tabindex="0"
-          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
           @mouseenter="showPopover"
           @mouseleave="hidePopover"
           @focus="showPopover"

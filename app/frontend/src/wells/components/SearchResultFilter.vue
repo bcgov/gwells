@@ -12,37 +12,37 @@
     limitations under the License.
 */
 <template>
-  <b-form-row class="search-result-filter" :class="`search-result-filter-${type}`">
-    <b-col v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio'">
-      <b-form-input
+  <div class="search-result-filter" :class="`search-result-filter-${type}`">
+    <div v-if="type === 'text' || type === 'number' || type === 'select' || type === 'radio'">
+      <InputText
         v-if="type === 'text'"
         type="text"
         :id="`${id}Input`"
-        :state="validation"
+        :invalid="isInvalid"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="placeholder || 'Filter...'"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-      <b-form-input
+      <InputText
         v-else-if="type === 'number'"
         type="text"
         :id="`${id}Input`"
-        :state="validation"
+        :invalid="isInvalid"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="placeholder || 'Filter...'"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-      <b-form-select
+      <Select
         v-else-if="type === 'select' || type === 'radio'"
         :id="`${id}Input`"
-        :state="validation"
+        :invalid="isInvalid"
         :aria-describedby="`${id}InvalidFeedback`"
         :disabled="isActive"
         :options="selectOptions"
-        :value-field="valueField"
-        :text-field="textField"
+        :optionValue="valueField"
+        :optionLabel="textField"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
       <div :id="`${id}InvalidFeedback`">
@@ -50,40 +50,40 @@
           {{ error }}
         </div>
       </div>
-    </b-col>
-    <b-col sm="5" v-if="type === 'range' || type === 'dateRange'">
-      <b-form-input
+    </div>
+    <div class="sm:col-span-5" v-if="type === 'range' || type === 'dateRange'">
+      <InputText
         :type="`${ type === 'range' ? 'number' : 'date'}`"
         :id="`${id}StartInput`"
-        :state="validation"
+        :invalid="isInvalid"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="`${ type === 'range' ? 'From' : 'YYYY/MM/DD'}`"
         :disabled="isActive"
         v-model="localValue[paramNames[0]]"
         @keyup.enter="applyFilter()" />
-    </b-col>
-    <b-col sm="5" v-if="type === 'range' || type === 'dateRange'">
-      <b-form-input
+    </div>
+    <div class="sm:col-span-5" v-if="type === 'range' || type === 'dateRange'">
+      <InputText
         :type="`${ type === 'range' ? 'number' : 'date'}`"
         :id="`${id}EndInput`"
-        :state="validation"
+        :invalid="isInvalid"
         :aria-describedby="`${id}InvalidFeedback`"
         :placeholder="`${ type === 'range' ? 'To' : 'YYYY/MM/DD'}`"
         :disabled="isActive"
         v-model="localValue[paramNames[1]]"
         @keyup.enter="applyFilter()" />
-    </b-col>
-    <b-col :sm="(type === 'text') ? 3 : 2">
-      <b-button
+    </div>
+    <div :class="`sm:col-span-${(type === 'text') ? 3 : 2}`">
+      <Button
         variant="link"
         class="py-2 px-0"
         :class="{'apply-filter': !isActive, 'clear-filter': isActive}"
         :disabled="!hasLocalValue"
-        @click.prevent="isActive ? clearFilter() : applyFilter()">
-          <span class="fa fa-lg" :class="{'fa-check': !isActive, 'fa-times': isActive}" :aria-label="isActive ? 'Clear' : 'Apply'" />
-      </b-button>
-    </b-col>
-  </b-form-row>
+        @click="isActive ? clearFilter() : applyFilter()"
+        :icon="`fa fa-lg ${isActive ? 'fa-times' : 'fa-check'}`"
+        :aria-label="isActive ? 'Clear' : 'Apply'"/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -137,8 +137,8 @@ export default {
     hasLocalValue () {
       return this.paramNames.some(param => this.localValue[param])
     },
-    validation () {
-      return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? false : null
+    isInvalid () {
+      return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? true : false
     },
     selectOptions () {
       if (this.options === undefined) {

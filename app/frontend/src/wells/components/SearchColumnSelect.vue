@@ -12,17 +12,9 @@
     limitations under the License.
 */
 <template>
-  <b-form @submit.prevent>
-    <b-button
-      variant="dark"
-      @click="showModal">
-      Add/remove columns
-    </b-button>
-    <b-modal
-      ref="column-select-modal"
-      id="columnSelectModal"
-      title="Column Display"
-      footer-class="justify-content-start">
+  <Form @submit.prevent>
+    <Button label="Add/remove columns" severity="contrast" @click="showModal"/>
+    <Dialog header="Column Display" ref="column-select-modal" id="columnSelectModal" centered modal>
       <table class="table">
         <thead>
           <tr>
@@ -35,30 +27,32 @@
           <tr v-for="column in columns" :key="column.id">
             <td>{{ column.label }}</td>
             <td>
-              <b-form-checkbox
+              <!-- MAKE A NEW PROP FOR THIS V-MODEL
+              <Checkbox
                 :id="`${column.id}ColumnSelect`"
-                :checked="localSelectedColumnIds.includes(column.id)"
-                @input="$event ? selectColumn(column.id) : deselectColumn(column.id)"
-              />
+                binary
+                v-model="localSelectedColumnIds.includes(column.id)"
+                @input="$event ? selectColumn(column.id) : deselectColumn(column.id)"/>
+              -->
             </td>
             <td>
-              <b-form-select
+              <Select
                 :id="`${column.id}ColumnOrder`"
                 :options="columnOrderRange"
-                :value="columnOrders[column.id]"
-                @input="setColumnOrder(column.id, $event)" />
+                v-model="columnOrders[column.id]"
+                @input="setColumnOrder(column.id, $event)"/>
             </td>
           </tr>
         </tbody>
       </table>
-      <div slot="modal-footer">
-        <div class="d-flex justify-content-start">
-          <b-button variant="primary" @click="applyChanges()" :disabled="!validation" class="mr-2">Apply</b-button>
-          <b-button variant="dark" @click="cancelChanges()">Cancel</b-button>
+      <template #footer>
+        <div class="flex justify-start">
+          <Button label="Apply" @click="applyChanges()" :disabled="!validation" class="mr-2"/>
+          <Button label="Cancel" severity="contrast" @click="cancelChanges()"/>
         </div>
-      </div>
-    </b-modal>
-  </b-form>
+      </template>
+    </Dialog>
+  </Form>
 </template>
 
 <script>

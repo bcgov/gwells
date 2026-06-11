@@ -53,11 +53,6 @@ export default {
     }
   }
 
-  // remove cursor CSS from bootstrap tables
-  table.b-table tr {
-    cursor: default !important;
-  }
-
   .buorg {
     background-color: #FFEAEA !important;
     border-bottom-color: #FFB8B8 !important;

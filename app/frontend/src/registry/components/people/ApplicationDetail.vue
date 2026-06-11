@@ -38,7 +38,7 @@
             </div>
           </div>
           <div v-if="editClassification">
-            <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+            <Form @submit="saveApplication()" @reset="applicationReset()">
               <Dialog
                   v-model="confirmCancelModal"
                   v-model:visible="visible"
@@ -110,7 +110,7 @@
                                 <Checkbox
                                   inputId="qualifications"
                                   name="qualifications"
-                                  value="q.value"
+                                  :value="q.value"
                                   class="fixed-width font-weight-normal"
                                   disabled
                                   />

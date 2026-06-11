@@ -50,7 +50,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <div>{{ personNameReg (option) }}</div>
             </template>
           </v-select>
-          <!-- TODO: Copy over the bootstrap form-text class to one of the css files -->
           <small id="personResponsibleSelectHint" class="form-text text-muted">
             *displays a maximum of {{MAX_RESULTS}} results
           </small>

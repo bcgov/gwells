@@ -15,37 +15,33 @@
   <Form @submit="handleSubmit()" @reset="handleReset()">
     <div>
       <div>
-        <b-form-group>
-          <form-input id="id_search" group-class="font-weight-bold" v-model="searchString">
-            <label>
-              Search by well tag or ID plate number, street address, city or owner name
-              <b-badge pill variant="primary" id="basicSearchInfo" tabindex="0"><i class="fa fa-question fa-lg"></i></b-badge>
-              <b-popover target="basicSearchInfo" triggers="hover focus" content="Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name."></b-popover>
-            </label>
-          </form-input>
-        </b-form-group>
+        <form-input id="id_search" group-class="font-weight-bold" v-model="searchString">
+          <label>
+            Search by well tag or ID plate number, street address, city or owner name
+            <Badge id="basicSearchInfo" tabindex="0" icon="fa fa-question fa-lg" @mouseenter="show" @mouseleave="hide" @focus="show" @blur="hide"/>
+            <Popover :ref="basicSearchInfo">
+              <p>Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.</p>
+            </Popover>
+          </label>
+        </form-input>
       </div>
     </div>
     <div class="my-4">
       <div>
-        <Button type="submit" :disabled="searchInProgress">Search</Button>
-        <b-btn variant="dark" type="reset" :disabled="searchInProgress" class="mx-2">Reset</b-btn>
+        <Button label="Search" type="submit" :disabled="searchInProgress"/>
+        <Button label="Reset" severity="contrast" type="reset" :disabled="searchInProgress" class="mx-2"/>
       </div>
     </div>
-    <b-row>
-      <b-col>
-        <well-exports/>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <p>For additional search options, try:</p>
-        <ul>
-          <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas" target="_blank">B.C. Water Resource Atlas</a></li>
-          <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC" target="_blank">iMapBC</a></li>
-        </ul>
-      </b-col>
-    </b-row>
+    <div class="flex flex-col">
+      <well-exports/>
+    </div>
+    <div class="flex flex-col">
+      <p>For additional search options, try:</p>
+      <ul>
+        <li><a href="http://maps.gov.bc.ca/ess/hm/wrbc/" id="BCWRAtlas" target="_blank">B.C. Water Resource Atlas</a></li>
+        <li><a href="http://maps.gov.bc.ca/ess/hm/imap4m/" id="iMapBC" target="_blank">iMapBC</a></li>
+      </ul>
+    </div>
   </Form>
 </template>
 
@@ -89,6 +85,12 @@ export default {
     updateSearchString () {
       const searchString = this.searchParams?.search
       this.searchString = searchString || null
+    },
+    show () {
+      this.$refs.basicSearchInfo.show()
+    },
+    hide () {
+      this.$refs.basicSearchInfo.hide()
     }
   },
   watch: {

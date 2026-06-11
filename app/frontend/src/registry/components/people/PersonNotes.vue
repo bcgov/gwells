@@ -3,61 +3,46 @@
     <div class="card-body p-2 p-md-3">
       <h6 class="card-title" id="notesSectionTitle">Notes</h6>
       <div class="mt-4 mb-6" v-if="commonStore.userRoles.registry.edit">
-        <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
-          <div
-            class="flex flex-col gap-2"
-            id="noteInputGroup"
-            label="Add a note:"
-            label-for="noteInput">
-            <Textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"></Textarea>
+        <Form @submit="noteSubmitHandler" @reset="noteCancelHandler">
+          <div class="flex flex-col gap-2" id="noteInputGroup" label="Add a note:" label-for="noteInput">
+            <Textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"/>
           </div>
           <div class="flex-row">
-            <Button type="submit" variant="primary" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn">Save</Button>
-            <Button type="reset" variant="light" :disabled="!noteInput" ref="noteInputCancelBtn">Cancel</Button>
-            <p
-              class="font-weight-bold text-count"
-              :class="[invalidNewNoteLength ? 'error': '']"
-            >
+            <Button label="Save" type="submit" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn"/>
+            <Button label="Cancel" type="reset" severity="secondary" :disabled="!noteInput" ref="noteInputCancelBtn"/>
+            <p class="font-weight-bold text-count" :class="[invalidNewNoteLength ? 'error': '']">
               {{ noteInput.length }}/{{ maxNoteLength }}
             </p>
           </div>
           <Message
-              class="mt-4"
-              severity="success"
-              dismissible
-              :show="submitSuccess"
-              @dismissed="submitSuccess=false">Note added.</Message>
+            class="mt-4"
+            severity="success"
+            dismissible
+            :show="submitSuccess"
+            @dismissed="submitSuccess=false">Note added.</Message>
           <Dialog
-              v-model="confirmSubmitModal"
-              centered
-              title="Confirm save"
-              @shown="focusSubmitModal"
-              :return-focus="$refs.noteInputSaveBtn">
+            v-model="confirmSubmitModal"
+            centered
+            title="Confirm save"
+            @shown="focusSubmitModal"
+            :return-focus="$refs.noteInputSaveBtn">
             Are you sure you want to save this note?
-            <div slot="modal-footer">
-              <b-btn variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </b-btn>
-              <b-btn variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </b-btn>
-            </div>
+            <template #footer>
+              <Button label="Save" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn"/>
+              <Button label="Cancel" severity="secondary" @click="confirmSubmitModal=false"/>
+            </template>
           </Dialog>
           <Dialog
-              v-model="confirmCancelModal"
-              centered
-              title="Confirm cancel"
-              @shown="focusCancelModal"
-              :return-focus="$refs.noteInputCancelBtn">
+            v-model="confirmCancelModal"
+            centered
+            title="Confirm cancel"
+            @shown="focusCancelModal"
+            :return-focus="$refs.noteInputCancelBtn">
             Your note is not saved. Are you sure you want to discard your changes?
-            <div slot="modal-footer">
-              <b-btn variant="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
-                Cancel
-              </b-btn>
-              <b-btn variant="danger" @click="confirmCancelModal=false;noteReset()">
-                Discard
-              </b-btn>
-            </div>
+            <template #footer>
+              <Button label="Cancel" severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn"/>
+              <Button label="Discard" severity="danger" @click="confirmCancelModal=false;noteReset()"/>
+            </template>
           </Dialog>
           <!-- Delete Note Modal  -->
           <Dialog
@@ -71,21 +56,12 @@
             <div v-if="activeNote" class="">
               <p class="font-weight-bold wb">"{{activeNote.note}}"</p>
             </div>
-            <div slot="modal-footer" class="buttons">
-              <b-btn
-                variant="light"
-                @click="confirmDeleteModal=false"
-                ref="cancelDeleteBtn"
-              >
-                Cancel
-              </b-btn>
-              <b-btn
-                variant="danger"
-                @click="confirmDeleteModal=false;deleteNote()"
-              >
-                Delete
-              </b-btn>
-            </div>
+            <template #footer>
+              <div class="buttons">
+                <Button label="Cancel" severity="secondary" @click="confirmDeleteModal=false" ref="cancelDeleteBtn"/>
+                <Button label="Delete" severity="danger" @click="confirmDeleteModal=false;deleteNote()"/>
+              </div>
+            </template>
           </Dialog>
           <!-- Edit Modal -->
           <Dialog
@@ -96,56 +72,45 @@
               :return-focus="$refs.noteInputCancelBtn"
             >
             <div>
-              <b-form-textarea
-                id="editNoteTextArea"
-                v-model="noteContentEdit"
-                placeholder="Edit Note..."
-                rows="4"
-                max-rows="6"
-              />
+              <Textarea id="editNoteTextArea" v-model="noteContentEdit" placeholder="Edit Note..." :rows="4" autoResize/>
               <p class="font-weight-bold text-count" :class="[invalidEditNoteLength ? 'error': '']">
               {{ noteContentEdit.length }}/{{ maxNoteLength }}
               </p>
             </div>
-            <div slot="modal-footer" class="buttons">
-              <b-btn variant="light" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn">
-                Cancel
-              </b-btn>
-              <b-btn variant="primary" :disabled="invalidEditNoteLength || !noteContentEdit" @click="notePatchHandle()">
-                Submit
-              </b-btn>
-            </div>
+            <template #footer>
+              <div class="buttons">
+                <Button label="Cancel" severity="secondary" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn"/>
+                <Button label="Submit" :disabled="invalidEditNoteLength || !noteContentEdit" @click="notePatchHandle()"/>
+              </div>
+            </template>
           </Dialog>
         </Form>
       </div>
       <div id="notesList" ref="notes">
         <div v-if="!notes || !notes.length">
-          <b-row><b-col>No notes for this person.</b-col></b-row>
+          <div>No notes for this person.</div>
         </div>
         <div class="mt-12 p-6 border border-gray-200 rounded-lg" v-if="notes && notes.length">
-          <div class="flex flex-row items-center justify-between w-full p-[0.5em] rounded-[4pt] transition-colors duration-200 hover:bg-[#F8F8F8]" v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
+          <div
+            class="flex flex-row items-center justify-between w-full p-[0.5em] rounded-[4pt] transition-colors duration-200 hover:bg-[#F8F8F8]"
+            v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
             <p>
               <span class="font-weight-bold">{{ note.author }}</span> ({{ moment(note.date, "MMMM Do YYYY [at] LT") }}):
               {{ note.note }}
             </p>
             <div class="flex ml-[0.5em] w-auto">
-              <b-btn
+              <Button
+                icon="fa fa-edit"
+                label="Edit"
                 :disabled="commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteEditHandler(note)"
-                size="sm"
-                variant="primary"
-              >
-                <i class="fa fa-edit"></i>
-                Edit
-              </b-btn>
-              <b-btn
+                size="small"/>
+              <Button
+                label="&#x2715;"
                 :disabled="!commonStore.userRoles.registry.admin && commonStore.keycloak.idTokenParsed.display_name !== note.author"
                 @click="noteDeleteHandler(note)"
-                size="sm"
-                variant="danger"
-              >
-                &#x2715;
-              </b-btn>
+                size="small"
+                severity="danger"/>
             </div>
           </div>
         </div>

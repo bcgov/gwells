@@ -107,7 +107,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </fieldset>
 
         <!-- LINKS -->
-        <fieldset id="jump_links_fieldset" class="d-print-none detail-section my-4">
+        <fieldset id="jump_links_fieldset" class="print:hidden detail-section my-4">
           <legend class="w-full mb-2">Sections</legend>
           <responsive-grid :cols="12" :md="4">
             <a class="jump_link" href="#location_information_fieldset">Location Information</a>
@@ -253,6 +253,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :header="field.label"
               sortable
             >
+              <!-- TODO: Check on this. I'm 90% sure this isn't the correct implementation. -->
               <template v-if="create_date" v-slot:cell(create_date)="data">
                 <div>
                   {{ formatDate(data.item.create_date, "MMMM Do YYYY [at] LT") }}
@@ -533,7 +534,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <template #header>
                 <span>{{ field.label }}</span>&nbsp;
                 <i v-if="TOOLTIP_TEXT.pumping_test_information[field.key]"
-                  class="fa fa-question-circle color-info d-print-none"
+                  class="fa fa-question-circle color-info print:hidden"
                   v-tooltip="TOOLTIP_TEXT.pumping_test_information[field.key]">
                 </i>
               </template>

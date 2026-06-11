@@ -18,34 +18,34 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <DataTable rowHover stripedRows :value="[...uploadedFiles.public, ...uploadedFiles.private]">
           <Column field="well_number"/>
           <Column field="document_type">
-            <template #body="slotProps">
-              {{ callLongFormLabel(slotProps.data.document_type) }}
+            <template #body="{ data }">
+              {{ callLongFormLabel(data.document_type) }}
             </template>
           </Column>
           <Column field="date_of_upload">
-            <template #body="slotProps">
-              {{ slotProps.data.date_of_upload !== -1 ? new Date(slotProps.data.date_of_upload).toLocaleDateString() : "Date Unknown" }}
+            <template #body="{ data }">
+              {{ data.date_of_upload !== -1 ? new Date(data.date_of_upload).toLocaleDateString() : "Date Unknown" }}
             </template>
           </Column>
           <Column field="uploaded_document">
-            <template #body="slotProps">
-              <a :href="slotProps.data.url" :download="slotProps.data.name" target="_blank">{{ slotProps.data.name }}</a>
+            <template #body="{ data }">
+              <a :href="data.url" :download="data.name" target="_blank">{{ data.name }}</a>
             </template>
           </Column>
           <Column field="document_status">
-            <template #body="slotProps">
-              <p v-if="slotProps.data.document_status">Private Document</p>
+            <template #body="{ data }">
+              <p v-if="data.document_status">Private Document</p>
               <p v-else>Public Document</p>
             </template>
           </Column>
           <Column>
-            <template #body="slotProps">
+            <template #body="{ data }">
               <a
                 class="fa fa-trash fa-lg"
                 variant="primary"
                 style="margin-left: .5em"
                 href="#"
-                @click="handleFileDelete(slotProps.data.name, slotProps.data.document_status, $event)"/>
+                @click="handleFileDelete(data.name, data.document_status, $event)"/>
             </template>
           </Column>
         </DataTable>

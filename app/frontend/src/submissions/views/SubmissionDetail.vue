@@ -24,6 +24,7 @@
             <div
               class="row record"
               v-if="showRow(key, value)">
+              <!-- TODO: Look into these old bootstrap classes -->
               <dt class="col-12 col-md-6 col-xl-2">{{ readable(key) }}</dt>
               <dd class="col-12 col-md-6 col-xl-10">{{value}}</dd>
             </div>
