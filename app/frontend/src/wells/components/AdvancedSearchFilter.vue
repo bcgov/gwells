@@ -12,7 +12,7 @@
     limitations under the License.
 */
 <template>
-  <div class="grid grid-cols-12 advanced-search-filter mb-2" :class="`advanced-search-filter-${type}`">
+  <div class="grid grid-cols-12 !gap-x-0 advanced-search-filter mb-2" :class="`advanced-search-filter-${type}`">
     <div v-if="label" :class="`col-span-12 sm:col-span-${labelColWidth}`">
       <label v-if="(type === 'text' || type === 'number' || type === 'select') && !anyValueCheckbox" :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
       <legend v-else tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!anyValueCheckbox" :class="`col-span-12 sm:col-start-${labelColWidth + 1} sm:col-end-${removable ? 11 : 12}`">
+    <div v-if="!anyValueCheckbox" :class="`col-span-${removable ? 11 : 12} sm:col-start-${labelColWidth + 1} sm:col-end-${removable ? 12 : 13}`">
       <InputText
         v-if="type === 'text' || type === 'number'"
         :type="type"
@@ -52,29 +52,23 @@
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)"
         :placeholder="placeholder || '----------'"/>
-      <!--
-      <RadioButtonGroup v-else-if="type === 'radio'" :id="`${id}Input`">
-        <div v-for="option in options" class="flex align-items-center">
-
-        </div>
-      </RadioButtonGroup>
-      <b-form-radio-group
+      <RadioButtonGroup
         v-else-if="type === 'radio'"
         :id="`${id}Input`"
-        :checked="modelValue[paramNames[0]]"
-        :state="validation"
-        :disabled="inputDisabled"
-        :aria-describedby="`${id}InvalidFeedback`"
-        :options="options"
-        @input="updateParamValue(paramNames[0], $event)"
+        :modelValue="modelValue[paramNames[0]]"
+        :invalid="isInvalid"
         @focus="$emit('focus', true)"
-        @blur="$emit('blur', true)" />
-      -->
-      <div v-else-if="type === 'range' || type === 'dateRange'">
+        @blur="$emit('blur', true)">
+        <div v-for="option in options" class="flex align-items-center gap-2">
+          <RadioButton :inputId="option.value" :value="option.value"/>
+          <label :for="option.value">{{ option.text }}</label>
+        </div>
+      </RadioButtonGroup>
+      <div v-else-if="type === 'range' || type === 'dateRange'" class="grid grid-cols-2 !gap-x-1">
         <div class="mb-1">
-          <div class="grid grid-cols-12">
-            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="sm:col-span-4 col-form-label sm:text-right">From</label>
-            <div class="sm:col-span-8">
+          <div class="grid grid-cols-12 !gap-x-2">
+            <label :id="`${id}StartLabel`" :label-for="`${id}StartInput`" class="col-span-12 sm:col-span-4 col-form-label sm:text-right">From</label>
+            <div class="col-span-12 sm:col-span-8">
               <InputText
                 v-if="type === 'range'"
                 type="number"
@@ -104,9 +98,9 @@
           </div>
         </div>
         <div class="mb-1">
-          <div class="grid grid-cols-12">
-            <label :id="`${id}EndLabel`" :for="`${id}EndInput`" class="sm:col-span-4 col-form-label sm:text-right">To</label>
-            <div class="col-span-8">
+          <div class="grid grid-cols-12 !gap-x-2">
+            <label :id="`${id}EndLabel`" :for="`${id}EndInput`" class="col-span-12 sm:col-span-4 col-form-label sm:text-right">To</label>
+            <div class="col-span-12 sm:col-span-8">
               <InputText
                 v-if="type === 'range'"
                 type="number"

@@ -38,7 +38,7 @@
             </div>
           </div>
           <div v-if="editClassification">
-            <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+            <Form @submit="saveApplication()" @reset="applicationReset()">
               <Dialog
                   v-model="confirmCancelModal"
                   v-model:visible="visible"

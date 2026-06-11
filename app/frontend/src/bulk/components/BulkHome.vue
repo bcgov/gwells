@@ -16,9 +16,9 @@
   <Card id="bulk-home-screen" class="mx-8">
     <template #content>
       <div v-if="noPerm">
-        <b-alert show variant="danger" >
+        <Message severity="error">
           You do not have permission to make any bulk changes to Gwells.
-        </b-alert>
+        </Message>
         Return <router-link to="/">home</router-link>
       </div>
       <div v-else>

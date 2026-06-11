@@ -58,19 +58,15 @@
           </Form>
         </Fieldset>
         <Dialog
-            v-model="removeSurveyModal"
-            centered
-            title="Confirm remove"
-            @shown="focusRemoveModal">
+          v-model="removeSurveyModal"
+          centered
+          title="Confirm remove"
+          @shown="focusRemoveModal">
           Are you sure you want to remove this survey?
-          <div slot="modal-footer">
-            <Button severity="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn">
-              Cancel
-            </Button>
-            <Button severity="danger" @click="removeSurveyModal=false;removeSurvey(surveyToRemove)">
-              Remove
-            </Button>
-          </div>
+          <template #footer>
+            <Button label="Cancel" severity="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn"/>
+            <Button label="Remove" severity="danger" @click="removeSurveyModal=false;removeSurvey(surveyToRemove)"/>
+          </template>
         </Dialog>
       </template>
     </Card>

@@ -253,6 +253,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :header="field.label"
               sortable
             >
+              <!-- TODO: Check on this. I'm 90% sure this isn't the correct implementation. -->
               <template v-if="create_date" v-slot:cell(create_date)="data">
                 <div>
                   {{ formatDate(data.item.create_date, "MMMM Do YYYY [at] LT") }}

@@ -415,6 +415,11 @@ legend {
     column-gap: 30px;
 }
 
+.form-text {
+    display: block;
+    margin-top: .25rem
+}
+
 .form-group {
     margin-bottom: 1rem;
 }

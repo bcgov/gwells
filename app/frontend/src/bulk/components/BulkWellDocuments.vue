@@ -173,7 +173,7 @@
               @click="save"
               class="mr-4"
             >
-              <b-spinner v-if="isSaving" small label="Loading…"/>
+              <ProgressSpinner v-if="isSaving"/>
               Submit
             </Button>
             <Button

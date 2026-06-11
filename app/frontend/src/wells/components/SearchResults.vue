@@ -121,14 +121,7 @@
       <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
       <search-result-exports class="my-4" :field-data="searchFields" />
     </div>
-    <b-pagination
-      class="mt-4"
-      size="md"
-      :disabled="isBusy"
-      :total-rows="resultCount"
-      :value="currentPage"
-      :per-page="limit"
-      @input="changePage($event)"/>
+    <Paginator class="mt-4" :disabled="isBusy" :totalRecords="resultCount" :rows="limit" @page="changePage($event)"/>
   </div>
 </template>
 
@@ -139,13 +132,15 @@ import SearchResultExports from '@/wells/components/SearchResultExports.vue'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
 import SearchColumnSelect from '@/wells/components/SearchColumnSelect.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
+import { Paginator } from 'primevue'
 
 export default {
   mixins: [filterMixin],
   components: {
     'search-column-select': SearchColumnSelect,
     'search-result-filter': SearchResultFilter,
-    'search-result-exports': SearchResultExports
+    'search-result-exports': SearchResultExports,
+    Paginator
   },
   data () {
     return {
@@ -224,7 +219,7 @@ export default {
       this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
     },
     changePage (page) {
-      const offset = this.limit * (page - 1)
+      const offset = this.limit * (page.page - 1)
       this.wellsStore.searchOffset = offset
       this.$emit('page-changed', page)
       this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
@@ -351,7 +346,7 @@ export default {
   }
 }
 
-/* Spinner styles — these can be removed when moving to bootstrap 4.3 */
+/* Spinner styles */
 
 $spinner-width:         2rem !default;
 $spinner-height:        $spinner-width !default;

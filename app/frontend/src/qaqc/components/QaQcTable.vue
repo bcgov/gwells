@@ -467,7 +467,7 @@ td.data {
   white-space: normal; // Overrides the existing nowrap to allow text wrapping
 }
 
-/* Spinner styles — these can be removed when moving to bootstrap 4.3 */
+/* Spinner styles */
 
 $spinner-width:         2rem !default;
 $spinner-height:        $spinner-width !default;
