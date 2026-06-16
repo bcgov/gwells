@@ -1,0 +1,24 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: matomo
+  namespace: 26e83e-prod
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app: matomo
+    name: matomo
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: netapp-file-standard
+  volumeMode: Filesystem
+status:
+  phase: Bound
+  accessModes:
+    - ReadWriteOnce
+  capacity:
+    storage: 1Gi
