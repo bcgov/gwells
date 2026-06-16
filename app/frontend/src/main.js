@@ -49,7 +49,7 @@ const STAGING_GWELLS_URLS = [
 ];
 const BASE_PATH = "/gwells/";
 const PRODUCTION_MATOMO_HOST =
-  "https://water-matomo.apps.silver.devops.gov.bc.ca";
+  "https://matomo-26e83e-prod.apps.silver.devops.gov.bc.ca";
 const TEST_MATOMO_HOST =
   "https://water-matomo-staging.apps.silver.devops.gov.bc.ca";
 
@@ -133,7 +133,7 @@ app.use(pinia);
 if (isProduction()) {
   app.use(VueMatomo, {
     host: PRODUCTION_MATOMO_HOST,
-    siteId: 2,
+    siteId: 1,
     router: router,
     domains: "apps.nrs.gov.bc.ca",
   });
