@@ -30,7 +30,7 @@ import {
 import { Form } from '@primevue/forms';
 import Chart from 'primevue/chart';
 import ConfirmationService from 'primevue/confirmationservice';
-import VueMatomo from "vue-matomo";
+import { initMatomo } from '@certible/use-matomo';
 import App from "./App.vue";
 import router from "./router.js";
 import vSelect from "vue-select";
@@ -42,10 +42,9 @@ import * as filters from "./common/filters";
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
 
-const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
+const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells/";
 const STAGING_GWELLS_URLS = [
-  "testapps.nrs.gov.bc.ca",
-  "gwells-staging.apps.silver.devops.gov.bc.ca",
+  "gwells-frontend-26e83e-test.apps.silver.devops.gov.bc.ca",
 ];
 const BASE_PATH = "/gwells/";
 const PRODUCTION_MATOMO_HOST =
@@ -130,15 +129,17 @@ app.component("Chart", Chart)
 const pinia = createPinia();
 app.use(pinia);
 
+let matomo;
+
 if (isProduction()) {
-  app.use(VueMatomo, {
+  matomo = initMatomo({
     host: PRODUCTION_MATOMO_HOST,
     siteId: 1,
     router: router,
     domains: "apps.nrs.gov.bc.ca",
   });
 } else if (isStaging()) {
-  app.use(VueMatomo, {
+  matomo = initMatomo({
     host: TEST_MATOMO_HOST,
     siteId: 1,
     router: router,
@@ -146,12 +147,14 @@ if (isProduction()) {
   });
 } else {
   // Local & DEV and anything else
-  app.use(VueMatomo, {
+  matomo = initMatomo({
     host: TEST_MATOMO_HOST,
     siteId: 3,
     router: router,
   });
 }
+
+app.provide('matomo', matomo);
 
 app.config.productionTip = false;
 app.config.devtools = import.meta.env.MODE !== "production";

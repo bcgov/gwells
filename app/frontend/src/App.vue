@@ -27,8 +27,6 @@ export default {
   created () {
     console.log('New deploy of Gwells')
     this.commonStore.fetchConfig()
-    window._paq = window._paq || []
-    window._paq.push(['trackPageView']) // To track pageview -
   }
 }
 </script>
