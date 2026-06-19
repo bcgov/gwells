@@ -18,10 +18,13 @@
         <form-input id="id_search" group-class="font-weight-bold" v-model="searchString">
           <label>
             Search by well tag or ID plate number, street address, city or owner name
-            <Badge id="basicSearchInfo" tabindex="0" icon="fa fa-question fa-lg" @mouseenter="show" @mouseleave="hide" @focus="show" @blur="hide"/>
-            <Popover :ref="basicSearchInfo">
-              <p>Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.</p>
-            </Popover>
+            <Badge
+              id="basicSearchInfo"
+              tabindex="0"
+              class="fa fa-question fa-lg"
+              v-tooltip.top="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"
+              @focus="show"
+              @blur="hide"/>
           </label>
         </form-input>
       </div>

@@ -25,7 +25,7 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab
+  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip
 } from 'primevue';
 import { Form } from '@primevue/forms';
 import Chart from 'primevue/chart';
@@ -102,30 +102,31 @@ app.component("form-input", FormInput);
 // PrimeVue components
 app.component("Button", Button);
 app.component("InputText", InputText);
-app.component("InputMask", InputMask)
+app.component("InputMask", InputMask);
 app.component("Card", Card);
 app.component("Message", Message);
 app.component("Select", Select);
-app.component("MultiSelect", MultiSelect)
+app.component("MultiSelect", MultiSelect);
 app.component("RadioButton", RadioButton);
 app.component("RadioButtonGroup", RadioButtonGroup);
 app.component("Checkbox", Checkbox);
 app.component("CheckboxGroup", CheckboxGroup);
 app.component("Form", Form);
 app.component("Listbox", Listbox);
-app.component("ProgressSpinner", ProgressSpinner)
-app.component("Breadcrumb", Breadcrumb)
-app.component("Dialog", Dialog)
-app.component("DataTable", DataTable)
-app.component("Column", Column)
-app.component("FileUpload", FileUpload)
-app.component("Textarea", Textarea)
+app.component("ProgressSpinner", ProgressSpinner);
+app.component("Breadcrumb", Breadcrumb);
+app.component("Dialog", Dialog);
+app.component("DataTable", DataTable);
+app.component("Column", Column);
+app.component("FileUpload", FileUpload);
+app.component("Textarea", Textarea);
 app.component("Menubar", Menubar);
 app.component("ScrollTop", ScrollTop);
 app.component("Tabs", Tabs);
 app.component("TabList", TabList);
 app.component("Tab", Tab);
-app.component("Chart", Chart)
+app.component("Chart", Chart);
+app.directive('tooltip', Tooltip);
 
 const pinia = createPinia();
 app.use(pinia);
