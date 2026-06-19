@@ -38,15 +38,15 @@
             </div>
           </div>
           <div v-if="editClassification">
-            <Form @submit.prevent="saveApplication()" @reset.prevent="applicationReset()">
+            <Form @submit="saveApplication()" @reset="applicationReset()">
               <Dialog
-                  v-model="confirmCancelModal"
-                  v-model:visible="visible"
-                  centered
-                  modal
-                  header="Confirm cancel"
-                  @shown="focusCancelModal"
-                  :return-focus="$refs.cancelClassification">
+                v-model:visible="confirmCancelModal"
+                centered
+                modal
+                header="Confirm cancel"
+                @shown="focusCancelModal"
+                :return-focus="$refs.cancelClassification"
+              >
                 Your changes are not saved. Are you sure you want to discard your changes?
                 <template #footer>
                   <Button severity="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
@@ -110,7 +110,7 @@
                                 <Checkbox
                                   inputId="qualifications"
                                   name="qualifications"
-                                  value="q.value"
+                                  :value="q.value"
                                   class="fixed-width font-weight-normal"
                                   disabled
                                   />
@@ -276,7 +276,7 @@ export default {
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus()
+      this.$refs.cancelSubmitCancelBtn.$el.focus()
     },
     saveApplication () {
       if (this.formValid) {

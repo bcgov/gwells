@@ -17,24 +17,20 @@
     <div>
       <ul>
         <li>
-          <b-button
-            variant="outline-primary"
+          <Button 
+            label="Excel"
+            outlined
             type="download"
             download="search-results.xlsx"
-            @click="exportHandler('xlsx')"
-          >
-            Excel
-          </b-button>
+            @click="exportHandler('xlsx')"/>
         </li>
         <li>
-          <b-button
-            variant="outline-primary"
+          <Button 
+            label="CSV"
+            outlined
             type="download"
             download="search-results.csv"
-            @click="exportHandler('csv')"
-          >
-            CSV
-          </b-button>
+            @click="exportHandler('csv')"/>
         </li>
       </ul>
     </div>

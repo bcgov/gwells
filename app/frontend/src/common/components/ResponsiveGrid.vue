@@ -17,7 +17,10 @@ export default {
       default: 0
     },
     // Default col span
-    cols: [Number, Array],
+    cols: {
+      type: [Number, Array],
+      default: 12
+    },
     // Col span for specific screen widths
     xs: [Number, Array],
     sm: [Number, Array],

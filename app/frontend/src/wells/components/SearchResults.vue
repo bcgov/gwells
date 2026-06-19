@@ -13,17 +13,17 @@
 */
 <template>
   <div id="searchResults">
-    <b-row align-h="between" class="mb-2">
-      <b-col sm="4" class="form-inline">
-        Show <b-form-select class="mx-1" :value="limit" @input="setLimit($event)" :options="limitOptions" /> results
-      </b-col>
-      <b-col sm="4">
+    <div class="grid grid-cols-12 mb-2">
+      <div class="col-span-12 sm:col-span-4 form-inline">
+        Show <Select class="mx-1 inline-block w-full" v-model="limit" @input="setLimit($event)" :options="limitOptions" optionLabel="text" optionValue="value"/> results
+      </div>
+      <div class="col-span-12 sm:col-span-4 sm:col-start-9 flex flex-col justify-center items-end">
         <search-column-select
           id="searchColumnSelect"
           class="float-right"
           :column-data="searchFields" />
-      </b-col>
-    </b-row>
+      </div>
+    </div>
     <div class="table-responsive">
       <table id="searchResultsTable" class="table table-striped">
         <thead class="sticky-header">
@@ -34,13 +34,12 @@
               class="text-nowrap vertical-align-middle"
               scope="col">
               {{ column.resultLabel ? column.resultLabel : column.label }}
-              <b-button v-if="column.sortable"
+              <Button v-if="column.sortable"
                 class="sort-button px-0"
                 :class="{active: column.sortParam === orderingParam}"
                 variant="link"
-                @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })">
-                {{ (column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;' }}
-              </b-button>
+                @click="sortResults({ param: column.sortParam || column.sortParam, desc: (column.sortParam === orderingParam) ? !orderingDesc : false })"
+                :label="(column.sortParam === orderingParam) ? orderingDesc ? '&#x2191;' : '&#x2193;' : '&#x2195;'"/>
             </th>
           </tr>
           <tr class="filters">
@@ -61,8 +60,8 @@
         <tbody role="rowgroup" v-if="(isBusy || isEmpty || isReset)">
           <tr :class="{loading: isBusy}">
             <td :colspan="columnCount">
-              <div class="position-relative my-1 mx-1">
-                <div v-if="isBusy" class="d-flex">
+              <div class="relative my-1 mx-1">
+                <div v-if="isBusy" class="flex">
                   <div class="spinner-border m-4" role="status" aria-hidden="true"></div>
                   <strong class="align-middle my-4 pt-1">
                     Loading...
@@ -122,14 +121,7 @@
       <div>Showing {{ currentRecordsCountStart }} to {{ currentRecordsCountEnd }} of {{ resultCount }} {{ resultCount === 1 ? 'record' : 'records'}}.</div>
       <search-result-exports class="my-4" :field-data="searchFields" />
     </div>
-    <b-pagination
-      class="mt-4"
-      size="md"
-      :disabled="isBusy"
-      :total-rows="resultCount"
-      :value="currentPage"
-      :per-page="limit"
-      @input="changePage($event)"/>
+    <Paginator class="mt-4" :disabled="isBusy" :totalRecords="resultCount" :rows="limit" @page="changePage($event)"/>
   </div>
 </template>
 
@@ -140,13 +132,15 @@ import SearchResultExports from '@/wells/components/SearchResultExports.vue'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
 import SearchColumnSelect from '@/wells/components/SearchColumnSelect.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
+import { Paginator } from 'primevue'
 
 export default {
   mixins: [filterMixin],
   components: {
     'search-column-select': SearchColumnSelect,
     'search-result-filter': SearchResultFilter,
-    'search-result-exports': SearchResultExports
+    'search-result-exports': SearchResultExports,
+    Paginator
   },
   data () {
     return {
@@ -225,7 +219,7 @@ export default {
       this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
     },
     changePage (page) {
-      const offset = this.limit * (page - 1)
+      const offset = this.limit * (page.page - 1)
       this.wellsStore.searchOffset = offset
       this.$emit('page-changed', page)
       this.wellsStore.searchWells({ trigger: FILTER_TRIGGER })
@@ -352,7 +346,7 @@ export default {
   }
 }
 
-/* Spinner styles — these can be removed when moving to bootstrap 4.3 */
+/* Spinner styles */
 
 $spinner-width:         2rem !default;
 $spinner-height:        $spinner-width !default;

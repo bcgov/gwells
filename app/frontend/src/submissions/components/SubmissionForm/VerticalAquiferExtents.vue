@@ -29,13 +29,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <Column field="aquifer_id" header="Aquifer Id"/>
         <Column field="aquifer_name" header="Aquifer Name"/>
         <Column field="start" header="Start">
-          <template #body="slotProps">{{parseFloat(slotProps.data.start).toFixed(2)}} m</template>
+          <template #body="{ data }">{{parseFloat(data.start).toFixed(2)}} m</template>
         </Column>
         <Column field="end" header="End">
-          <template #body="slotProps">{{parseFloat(slotProps.data.end).toFixed(2)}} m</template>
+          <template #body="{ data }">{{parseFloat(data.end).toFixed(2)}} m</template>
         </Column>
         <Column field="height" header="Height">
-          <template #body="slotProps">{{parseFloat(slotProps.data.height).toFixed(2)}} m</template>
+          <template #body="{ data }">{{parseFloat(data.height).toFixed(2)}} m</template>
         </Column>
       </DataTable>
 

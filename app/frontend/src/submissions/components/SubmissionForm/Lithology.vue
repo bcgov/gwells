@@ -218,9 +218,8 @@ export default {
     }
   },
   computed: {
-    submissionStore () { return useSubmissionStore() },
     codes () {
-      return this.submissionStore?.codes
+      return this.submissionStore.codes
     },
     computedLithology () {
       return [...this.lithologyData]
@@ -271,7 +270,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     parseDescription (index, value) {
       const lithology = new Lithology(value)
@@ -279,10 +278,10 @@ export default {
     },
     lithologyIsEmpty (lithology) {
       return Object.values(lithology).every((x) => !x)
-    this.submissionStore = useSubmissionStore()
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // When component created, add an initial row of lithology.
     if (!this.lithology.length) {
       for (let i = 0; i < 10; i++) {

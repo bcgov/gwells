@@ -13,7 +13,7 @@
   <Card class="container">
     <template #title>Add new applicant</template>
     <template #content>
-      <Form @submit.prevent="onFormSubmit()" @reset.prevent="onFormReset()">
+      <Form @submit="onFormSubmit()" @reset="onFormReset()">
         <h6 class="font-weight-bold mb-2">Personal Information</h6>
         <div class="mb-4 grid md:grid-cols-2 gap-4">
           <div class="grid grid-flow-col grid-rows-3">

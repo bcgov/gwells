@@ -124,9 +124,8 @@ export default {
     }
   },
   computed: {
-    codes () {
-      return this.submissionStore.codes
-    }
+    submissionStore() { return useSubmissionStore() },
+    codes () { return this.submissionStore.codes }
   },
   methods: {
     aquiferSearch: debounce((loading, search, vm) => {

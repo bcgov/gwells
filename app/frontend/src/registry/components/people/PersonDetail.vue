@@ -127,7 +127,7 @@
               </table>
             </div>
             <div v-if="show(registration.registries_activity)">
-              <Form @submit.prevent="saveApplication(registration.registries_activity)">
+              <Form @submit="saveApplication(registration.registries_activity)">
                 <application-add
                     class="mb-4"
                     v-on:close="closeApplication(registration.registries_activity)"
@@ -292,15 +292,15 @@
               @click="confirmRegisterModal[item.code]=true"
             />
             <Dialog
-                v-model="confirmRegisterModal[item.code]"
-                v-model:visible="visible"
-                centered
-                modal
-                header="`Confirm register as ${item.desc}`"
-                @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].focus()"
-                :return-focus="$refs[`registerButton${item.code}`]">
+              v-model:visible="confirmRegisterModal[item.code]"
+              centered
+              modal
+              header="`Confirm register as ${item.desc}`"
+              @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].$el.focus()"
+              :return-focus="$refs[`registerButton${item.code}`]"
+            >
               Are you sure you want to register {{ currentDriller.first_name }} {{ currentDriller.surname }} as a {{ item.desc }}?
-              <div slot="modal-footer">
+              <template #footer>
                 <Button
                   label="Confirm"
                   variant="primary"
@@ -308,7 +308,7 @@
                   :ref="`confirmRegisterConfirmBtn${item.code}`"
                   id="register-confirm"/>
                 <Button label="Cancel" variant="light" @click="confirmRegisterModal[item.code]=false" id="register-cancel"/>
-              </div>
+              </template>
             </Dialog>
           </div>
         </div>
@@ -379,7 +379,7 @@
               v-on:fetchFiles="fetchFiles"
               :guid="currentDriller.person_guid"></person-documents>
           </div>
-          <div slot="modal-footer">
+          <div>
             <Button label="Save" variant="primary" @click="uploadAttachments()" :disabled="variant.uploadFiles.length === 0" />
             <Button label="Cancel" variant="light" @click="cancelUploadAttachments" />
           </div>

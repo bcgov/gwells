@@ -234,7 +234,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     casingIsEmpty (casing) {
       const fieldsToTest = omit(casing, 'length_not_required')
