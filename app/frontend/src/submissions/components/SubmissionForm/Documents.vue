@@ -339,7 +339,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     attachmentIsEmpty (attachment) {
       const fieldsToTest = omit(attachment, 'length_required')

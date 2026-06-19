@@ -84,8 +84,8 @@ export default {
     }
   },
   computed: {
-    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
-    commonStore () { return useSubmissionStore() },
+    codes () { return this.submissionStore.codes },
+    commonStore () { return useCommonStore() },
   },
   methods: {
     fetchSubmission () {

@@ -78,6 +78,7 @@ import AdvancedSearchFilter from '@/wells/components/AdvancedSearchFilter.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import { useWellsStore } from '@/stores/wells'
+import { useSubmissionStore } from '@/stores/submission'
 
 const ADDITIONAL_FILTER_SECTIONS = [
   { header: 'Well Class',
@@ -220,6 +221,7 @@ export default {
     }
   },
   computed: {
+    submissionStore() { return useSubmissionStore() },
     wellsStore () {
       return useWellsStore()
     },

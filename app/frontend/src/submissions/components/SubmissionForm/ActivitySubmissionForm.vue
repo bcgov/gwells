@@ -522,8 +522,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:visible="confirmLoadModal"
         modal
         header="Confirm load submission data"
-        @show="$refs.confirmLoadConfirmBtn.focus()"
-        @after-hide="$refs.loadFormBtn.focus()">
+        @show="$refs.confirmLoadConfirmBtn.$el.focus()"
+        @after-hide="$refs.loadFormBtn.$el.focus()">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
         <template #footer>
           <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>
@@ -916,7 +916,7 @@ export default {
     // switch to using computed properties, which would be faster. We'd have to add a getter and setter
     // for every single form field!
     if (this.$route.name === 'SubmissionsEdit') {
-      Object.keys(this.$options.propsData.form).forEach((key) => {
+      Object.keys(this.$options.props.form).forEach((key) => {
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {

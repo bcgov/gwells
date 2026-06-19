@@ -292,13 +292,13 @@
               @click="confirmRegisterModal[item.code]=true"
             />
             <Dialog
-                v-model="confirmRegisterModal[item.code]"
-                v-model:visible="visible"
-                centered
-                modal
-                header="`Confirm register as ${item.desc}`"
-                @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].focus()"
-                :return-focus="$refs[`registerButton${item.code}`]">
+              v-model:visible="confirmRegisterModal[item.code]"
+              centered
+              modal
+              header="`Confirm register as ${item.desc}`"
+              @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].$el.focus()"
+              :return-focus="$refs[`registerButton${item.code}`]"
+            >
               Are you sure you want to register {{ currentDriller.first_name }} {{ currentDriller.surname }} as a {{ item.desc }}?
               <template #footer>
                 <Button

@@ -58,7 +58,7 @@
           </Form>
         </Fieldset>
         <Dialog
-          v-model="removeSurveyModal"
+          v-model:visible="removeSurveyModal"
           centered
           title="Confirm remove"
           @shown="focusRemoveModal">
@@ -198,7 +198,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     toggleSurveyEnabled (id, currentVal) {
       ApiService.patch('surveys', id, {

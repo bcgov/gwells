@@ -44,8 +44,7 @@
           </Message>
           <!-- Submit Modal -->
           <Dialog
-            v-model="confirmSubmitModal"
-            v-model:visible="visible"
+            v-model:visible="confirmSubmitModal"
             centered
             modal
             header="Confirm save"
@@ -62,8 +61,7 @@
           </Dialog>
           <!-- Cancellation Modal -->
           <Dialog
-            v-model="confirmCancelModal"
-            v-model:visible="visible"
+            v-model:visible="confirmCancelModal"
             centered
             modal
             header="Confirm cancel"
@@ -80,8 +78,7 @@
           </Dialog>
           <!-- Delete Note Modal  -->
           <Dialog
-            v-model="confirmDeleteModal"
-            v-model:visible="visible"
+            v-model:visible="confirmDeleteModal"
             centered
             modal
             header="Confirm Deletion"
@@ -101,14 +98,13 @@
           </Dialog>
           <!-- Edit Modal -->
           <Dialog
-              v-model="confirmEditNoteModal"
-              v-model:visible="visible"
-              centered
-              modal
-              header="Editing Note"
-              @shown="focusEditNoteModal"
-              :return-focus="$refs.noteInputCancelBtn"
-            >
+            v-model:visible="confirmEditNoteModal"
+            centered
+            modal
+            header="Editing Note"
+            @shown="focusEditNoteModal"
+            :return-focus="$refs.noteInputCancelBtn"
+          >
             <div>
               <InputText
                 id="editNoteTextArea"
@@ -321,17 +317,17 @@ export default {
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus()
+      this.$refs.cancelSubmitCancelBtn.$el.focus()
     },
     focusDeleteModal () {
-      this.$refs.cancelDeleteBtn.focus()
+      this.$refs.cancelDeleteBtn.$el.focus()
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup
-      this.$refs.confirmSubmitConfirmBtn.focus()
+      this.$refs.confirmSubmitConfirmBtn.$el.focus()
     },
     focusEditNoteModal () {
-      this.$refs.cancelEditNoteCancelBtn.focus()
+      this.$refs.cancelEditNoteCancelBtn.$el.focus()
     }
   }
 }

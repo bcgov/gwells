@@ -14,7 +14,7 @@
 <template>
   <Form @submit.prevent>
     <Button label="Add/remove columns" severity="contrast" @click="showModal"/>
-    <Dialog header="Column Display" ref="column-select-modal" id="columnSelectModal" centered modal>
+    <Dialog v-model:visible="modalShown" header="Column Display" id="columnSelectModal" centered modal>
       <table class="table">
         <thead>
           <tr>
@@ -27,13 +27,11 @@
           <tr v-for="column in columns" :key="column.id">
             <td>{{ column.label }}</td>
             <td>
-              <!-- MAKE A NEW PROP FOR THIS V-MODEL
               <Checkbox
                 :id="`${column.id}ColumnSelect`"
                 binary
-                v-model="localSelectedColumnIds.includes(column.id)"
+                v-model="localSelectedColumnIdsDict[column.id]"
                 @input="$event ? selectColumn(column.id) : deselectColumn(column.id)"/>
-              -->
             </td>
             <td>
               <Select
@@ -187,7 +185,8 @@ export default {
   data () {
     return {
       localSelectedColumnIds: [],
-      columnOrders: {}
+      columnOrders: {},
+      modalShown: false,
     }
   },
   computed: {
@@ -217,6 +216,12 @@ export default {
     },
     validation () {
       return this.localSelectedColumnIds.length > 0
+    },
+    localSelectedColumnIdsDict () {
+      return this.columns.reduce((dict, column) => {
+        dict[column.id] = this.localSelectedColumnIds.includes(column.id)
+        return dict
+      }, {})
     }
   },
   methods: {
@@ -224,10 +229,10 @@ export default {
       this.$emit('reset')
     },
     showModal () {
-      this.$refs['column-select-modal'].show()
+      this.modalShown = true
     },
     hideModal () {
-      this.$refs['column-select-modal'].hide()
+      this.modalShown = false
     },
     selectColumn (columnId) {
       this.localSelectedColumnIds.push(columnId)

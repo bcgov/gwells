@@ -141,9 +141,8 @@ export default {
     ResponsiveGrid
   },
   computed: {
-    codes () {
-      return this.submissionStore?.codes
-    }
+    submissionStore() { return useSubmissionStore() },
+    codes () { return this.submissionStore.codes }
   }
 }
 </script>

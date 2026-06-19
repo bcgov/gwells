@@ -200,12 +200,13 @@
               </div>
 
               <!-- Modals for confirming update/cancel editing -->
-                <Dialog
-                  id="orgUpdateModal"
-                  v-model="confirmSubmitModal"
-                  modal
-                  header="Confirm update"
-                  @shown="focusSubmitModal">
+              <Dialog
+                id="orgUpdateModal"
+                v-model:visible="confirmSubmitModal"
+                modal
+                header="Confirm update"
+                @shown="focusSubmitModal"
+              >
                 Are you sure you want to save these changes?
                 <template #footer>
                   <Button label="Save" @click="confirmSubmitModal=false;submitForm()" ref="confirmSubmitConfirmBtn" />
@@ -213,10 +214,11 @@
                 </template>
               </Dialog>
               <Dialog
-                  v-model="confirmCancelModal"
-                  modal
-                  header="Confirm cancel"
-                  @shown="focusCancelModal">
+                v-model:visible="confirmCancelModal"
+                modal
+                header="Confirm cancel"
+                @shown="focusCancelModal"
+              >
                 Are you sure you want to discard your changes?
                 <template #footer>
                   <Button label="Cancel" severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn" />
@@ -294,11 +296,12 @@
         <p v-if="companyDetails.registrations_count > 0" class="delete-company">You must remove all registrants from this company before deleting.</p>
       </div>
       <Dialog
-          id="orgDeleteModal"
-          v-model="companyDeleteModal"
-          modal
-          header="Confirm delete"
-          @shown="focusDeleteModal">
+        id="orgDeleteModal"
+        v-model:visible="companyDeleteModal"
+        modal
+        header="Confirm delete"
+        @shown="focusDeleteModal"
+      >
         Are you sure you want to delete this company?
         <template #footer>
           <Button label="Cancel" severity="secondary" @click="companyDeleteModal=false" ref="companyDeleteCancelBtn" />
@@ -470,14 +473,14 @@ export default {
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup
-      this.$refs.confirmSubmitConfirmBtn.focus()
+      this.$refs.confirmSubmitConfirmBtn.$el.focus()
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus()
+      this.$refs.cancelSubmitCancelBtn.$el.focus()
     },
     focusDeleteModal () {
-      this.$refs.companyDeleteCancelBtn.focus()
+      this.$refs.companyDeleteCancelBtn.$el.focus()
     },
     formReset () {
       // reset all company edit form fields (with default values)

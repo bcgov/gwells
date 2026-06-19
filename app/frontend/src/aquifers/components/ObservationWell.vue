@@ -65,12 +65,16 @@
 </style>
 
 <script>
+import { Popover } from 'primevue'
 export default {
   props: ['observationWell'],
   data () {
     return {
 
     }
+  },
+  components: {
+    Popover
   },
   computed: {
     owell () {

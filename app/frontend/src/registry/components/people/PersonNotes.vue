@@ -21,11 +21,13 @@
             :show="submitSuccess"
             @dismissed="submitSuccess=false">Note added.</Message>
           <Dialog
-            v-model="confirmSubmitModal"
+            v-model:visible="confirmSubmitModal"
             centered
+            modal
             title="Confirm save"
             @shown="focusSubmitModal"
-            :return-focus="$refs.noteInputSaveBtn">
+            :return-focus="$refs.noteInputSaveBtn"
+        >
             Are you sure you want to save this note?
             <template #footer>
               <Button label="Save" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn"/>
@@ -33,11 +35,13 @@
             </template>
           </Dialog>
           <Dialog
-            v-model="confirmCancelModal"
+            v-model:visible="confirmCancelModal"
             centered
+            modal
             title="Confirm cancel"
             @shown="focusCancelModal"
-            :return-focus="$refs.noteInputCancelBtn">
+            :return-focus="$refs.noteInputCancelBtn"
+          >
             Your note is not saved. Are you sure you want to discard your changes?
             <template #footer>
               <Button label="Cancel" severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn"/>
@@ -46,8 +50,9 @@
           </Dialog>
           <!-- Delete Note Modal  -->
           <Dialog
-            v-model="confirmDeleteModal"
+            v-model:visible="confirmDeleteModal"
             centered
+            modal
             title="Confirm Deletion"
             @shown="focusDeleteModal"
             :return-focus="$refs.noteInputCancelBtn"
@@ -65,12 +70,13 @@
           </Dialog>
           <!-- Edit Modal -->
           <Dialog
-              v-model="confirmEditNoteModal"
-              centered
-              title="Editing Note"
-              @shown="focusEditNoteModal"
-              :return-focus="$refs.noteInputCancelBtn"
-            >
+            v-model="confirmEditNoteModal"
+            centered
+            modal
+            title="Editing Note"
+            @shown="focusEditNoteModal"
+            :return-focus="$refs.noteInputCancelBtn"
+          >
             <div>
               <Textarea id="editNoteTextArea" v-model="noteContentEdit" placeholder="Edit Note..." :rows="4" autoResize/>
               <p class="font-weight-bold text-count" :class="[invalidEditNoteLength ? 'error': '']">
@@ -191,10 +197,10 @@ export default {
       this.activeNote = null
     },
     focusEditNoteModal () {
-      this.$refs.cancelEditNoteCancelBtn.focus()
+      this.$refs.cancelEditNoteCancelBtn.$el.focus()
     },
     focusDeleteModal () {
-      this.$refs.cancelDeleteBtn.focus()
+      this.$refs.cancelDeleteBtn.$el.focus()
     },
     deleteNote () {
       ApiService.delete(`drillers/${this.currentDriller.person_guid}/notes`, this.activeNote.person_note_guid)
@@ -245,11 +251,11 @@ export default {
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus()
+      this.$refs.cancelSubmitCancelBtn.$el.focus()
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup
-      this.$refs.confirmSubmitConfirmBtn.focus()
+      this.$refs.confirmSubmitConfirmBtn.$el.focus()
     }
 }
 }

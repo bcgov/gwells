@@ -93,8 +93,8 @@ governing permissions and limitations under the License. */
               v-model:visible="confirmSubmitModal"
               modal
               header="Confirm submission"
-              @show="$refs.confirmSubmitConfirmBtn.focus()"
-              @after-hide="$refs.activitySubmitBtn.focus()"
+              @show="$refs.confirmSubmitConfirmBtn.$el.focus()"
+              @after-hide="$refs.activitySubmitBtn.$el.focus()"
             >
               Are you sure you want to submit this activity report?
               <template #footer>
@@ -207,7 +207,7 @@ export default {
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;
     },
-    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
+    codes () { return this.submissionStore.codes },
   },
   methods: {
     editWater(coords) {

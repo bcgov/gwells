@@ -292,9 +292,8 @@ export default {
     this.initialLongitude = this.longitude
   },
   computed: {
-    codes () {
-      return this.submissionStore.codes
-    },
+    submissionStore() { return useSubmissionStore() },
+    codes () { return this.submissionStore.codes },
     // BC is covered by UTM zones 7 through 11
     utmZones () {
       const zones = [{
@@ -471,7 +470,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     revertCoords () {
       // Revert the coordinates to the initial values, hide modal
