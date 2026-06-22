@@ -27,7 +27,7 @@ governing permissions and limitations under the License. */
       >
         <div class="card-body">
           <Message
-            variant="info"
+            severity="info"
             class="mb-4"
             v-for="(survey, index) in surveys[
               isStaffEdit ? 'edit' : 'submissions'
@@ -41,7 +41,7 @@ governing permissions and limitations under the License. */
             </p>
           </Message>
 
-          <b-form @submit.prevent="confirmSubmit">
+          <Form @submit="confirmSubmit">
             <!-- if preview === true : Preview -->
             <submission-preview
               v-if="preview"
@@ -89,32 +89,20 @@ governing permissions and limitations under the License. */
             </div>
 
             <!-- Form submission confirmation -->
-            <b-modal
-              v-model="confirmSubmitModal"
-              id="confirmSubmitModal"
-              centered
-              title="Confirm submission"
-              @shown="$refs.confirmSubmitConfirmBtn.focus()"
-              :return-focus="$refs.activitySubmitBtn"
+            <Dialog
+              v-model:visible="confirmSubmitModal"
+              modal
+              header="Confirm submission"
+              @show="$refs.confirmSubmitConfirmBtn.$el.focus()"
+              @after-hide="$refs.activitySubmitBtn.$el.focus()"
             >
               Are you sure you want to submit this activity report?
-              <div slot="modal-footer">
-                <b-btn
-                  variant="primary"
-                  @click="
-                    confirmSubmitModal = false;
-                    formSubmit();
-                  "
-                  ref="confirmSubmitConfirmBtn"
-                >
-                  Save
-                </b-btn>
-                <b-btn variant="light" @click="confirmSubmitModal = false">
-                  Cancel
-                </b-btn>
-              </div>
-            </b-modal>
-          </b-form>
+              <template #footer>
+                <Button label="Save" @click="confirmSubmitModal = false;formSubmit();" ref="confirmSubmitConfirmBtn"/>
+                <Button label="Cancel" severity="secondary" @click="confirmSubmitModal = false"/>
+              </template>
+            </Dialog>
+          </Form>
         </div>
       </div>
       <div class="card" v-else-if="!commonStore.keycloak.authenticated">
@@ -219,7 +207,7 @@ export default {
     errorWellNotFound() {
       return this.wellFetchError && this.wellFetchError.status === 404;
     },
-    codes () { return this.submissionStore ? this.submissionStore.codes : {} },
+    codes () { return this.submissionStore.codes },
   },
   methods: {
     editWater(coords) {
@@ -419,7 +407,7 @@ export default {
           this.formSubmitSuccess = true;
           this.formSubmitSuccessWellTag = response.data.well;
 
-          this.$emit("formSaved");
+          this.$refs.activitySubmissionForm.onFormSave();
           // Save completed notification
 
           if (this.isStaffEdit) {

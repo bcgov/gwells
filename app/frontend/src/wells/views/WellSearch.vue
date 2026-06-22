@@ -134,6 +134,7 @@ import axios from 'axios'
 import { isEqual } from 'lodash'
 import smoothScroll from 'smoothscroll'
 import { mapStores } from 'pinia'
+import { TabPanels, TabPanel } from 'primevue'
 
 import ApiService from '@/common/services/ApiService.js'
 
@@ -154,6 +155,8 @@ export default {
     'basic-search-form': BasicSearchForm,
     'search-map': SearchMap,
     'search-results': SearchResults,
+    TabPanels,
+    TabPanel,
   },
   data () {
     return {

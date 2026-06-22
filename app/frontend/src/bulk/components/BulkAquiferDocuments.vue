@@ -26,7 +26,7 @@
       <api-error v-if="apiError" :error="apiError"/>
 
       <div>
-        <div class="border-bottom mb-4 pb-2 pt-2">
+        <div class="border-b mb-4 pb-2 pt-2">
           <h3>Aquifer Documents Bulk Upload</h3>
         </div>
         <div class="w-full border-gray-300 border-1 border-solid h-0 mb-5" >&nbsp;</div>
@@ -180,11 +180,11 @@
                     class="mb-4"
                   >
                     <Column header="" class="max-w-22">
-                      <template #body="slotProps">
+                      <template #body="{ data }">
                         <Button
                           size="small"
                           severity="danger"
-                          @click="commonStore.removeFile(slotProps.data)"
+                          @click="commonStore.removeFile(data)"
                           :disabled="isSaving">
                           Remove
                         </Button>
@@ -192,8 +192,8 @@
                     </Column>
                     <Column field="name" header="File name"></Column>
                     <Column field="size" header="Size">
-                      <template #body="slotProps">
-                        {{ formatFileSize(slotProps.data.size) }}
+                      <template #body="{ data }">
+                        {{ formatFileSize(data.size) }}
                       </template>
                     </Column>
                   </DataTable>
@@ -260,16 +260,16 @@
                 >
                   <template #empty>No documents with keyed aquifer IDs</template>
                   <Column field="aquiferId" header="Aquifer">
-                    <template #body="slotProps">
-                      <span :class="{ unknown: checkAquiferIsUnknown(slotProps.data.aquiferId) }">
-                        {{slotProps.data.aquiferId}}
+                    <template #body="{ data }">
+                      <span :class="{ unknown: checkAquiferIsUnknown(data.aquiferId) }">
+                        {{data.aquiferId}}
                       </span>
                     </template>
                   </Column>
                   <Column field="documents" header="Documents">
-                    <template #body="slotProps">
+                    <template #body="{ data }">
                       <ul class="list-disc m-4">
-                        <li v-for="(doc, index) in slotProps.data.documents" :key="index" :class="{overwrite: doc.exists}">
+                        <li v-for="(doc, index) in data.documents" :key="index" :class="{overwrite: doc.exists}">
                           {{ doc.name }}
                         </li>
                       </ul>

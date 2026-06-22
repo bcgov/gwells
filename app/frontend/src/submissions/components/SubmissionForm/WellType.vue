@@ -12,107 +12,77 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-    <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Well Class</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
+    <form-subsection title="Well Class" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+      <responsive-grid v-if="isStaffEdit" :cols="12" :md="[3, 4]" :xl="[2, undefined]">
+        <form-input
+          id="wellTagNumberStaff"
+          label="Well Tag Number"
+          type="text"
+          :value="$route.params.id"
+          disabled/>
+        <form-input
+          select
+          v-model="wellStatusCodeInput"
+          :options="codes?.well_status_codes"
+          value-field="well_status_code"
+          text-field="description"
+          label="Well Status"
+          placeholder="Select status"
+          :errors="errors['well_status']"
+          :loaded="fieldsLoaded['well_status']"
+          id="wellStatusCodeInput"/>
+      </responsive-grid>
+      <responsive-grid :cols="12" :md="4">
+        <div class="flex flex-col form-group" aria-describedby="wellClassInvalidFeedback">
+          <label for="wellClass">Class of Well *</label>
+          <Select
+            id="wellClass"
+            v-model="wellClassInput"
+            :options="codes?.well_classes"
+            optionValue="well_class_code"
+            optionLabel="description"
+            :invalid="errors['well_class'] ? true : false"
+            placeholder="Select class"/>
+          <div id="wellClassInvalidFeedback">
+            <div v-for="(error, index) in errors['well_class']" class="mt-1 text-sm text-red-600" :key="`wellClass error ${index}`">
+              {{ error }}
+            </div>
           </div>
-        </b-col>
-      </b-row>
-      <b-row v-if="isStaffEdit">
-        <b-col cols="12" md="3" xl="2">
-          <form-input
-              id="wellTagNumberStaff"
-              label="Well Tag Number"
-              type="text"
-              :value="$route.params.id"
-              disabled
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4">
-          <form-input
-            select
-            v-model="wellStatusCodeInput"
-            :options="codes?.well_status_codes"
-            value-field="well_status_code"
-            text-field="description"
-            label="Well Status"
-            placeholder="Select status"
-            :errors="errors['well_status']"
-            :loaded="fieldsLoaded['well_status']"
-            id="wellStatusCodeInput"></form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="4">
-          <b-form-group
-              id="wellClass"
-              label="Class of Well *"
-              aria-describedby="wellClassInvalidFeedback">
-            <b-form-select
-                v-model="wellClassInput"
-                :options="codes?.well_classes"
-                value-field="well_class_code"
-                text-field="description"
-                :state="errors['well_class'] ? false : null">
-              <template v-slot:first>
-                <option :value="null">Select class</option>
-              </template>
-            </b-form-select>
-            <b-form-invalid-feedback id="wellClassInvalidFeedback">
-              <div v-for="(error, index) in errors['well_class']" :key="`wellClass error ${index}`">
-                {{ error }}
-              </div>
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="4">
-          <b-form-group
-              id="wellSubclass"
-              label="Well Subclass"
-              aria-describedby="wellSubclassInvalidFeedback">
-            <b-form-select
-                v-model="wellSubclassInput"
-                :options="subclasses"
-                value-field="well_subclass_guid"
-                text-field="description"
-                :disabled="wellSubclassDisabled"
-                :state="errors['well_subclass'] ? false : null">
-              <template v-slot:first>
-                <option :value="null">Select subclass</option>
-              </template>
-            </b-form-select>
-            <b-form-invalid-feedback id="wellSubclassInvalidFeedback">
-              <div v-for="(error, index) in errors['well_subclass']" :key="`wellSubclass error ${index}`">
-                {{ error }}
-              </div>
-            </b-form-invalid-feedback>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="4">
-          <form-input
-            select
-            v-model="intendedWaterUseInput"
-            :options="intendedWaterUseOptions"
-            value-field="intended_water_use_code"
-            text-field="description"
-            label="Intended Water Use *"
-            placeholder="Select intended use"
-            :errors="errors['intended_water_use']"
-            :loaded="fieldsLoaded['intended_water_use']"
-            :disabled="intendedWaterUseDisabled"
-            id="intendedWaterUse"></form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
-          <b-form-group>
-            <label>Well Tag Number (if known) <span class="font-weight-bold"></span></label>
+        </div>
+        <div class="flex flex-col form-group" aria-describedby="wellSubclassInvalidFeedback">
+          <label for="wellSubclass">Well Subclass</label>
+          <Select
+            id="wellSubclass"
+            v-model="wellSubclassInput"
+            :options="subclasses"
+            optionValue="well_subclass_guid"
+            optionLabel="description"
+            :disabled="wellSubclassDisabled"
+            :invalid="errors['well_subclass'] ? true : false"
+            placeholder="Select subclass"/>
+          <div id="wellSubclassInvalidFeedback">
+            <div v-for="(error, index) in errors['well_subclass']" class="mt-1 text-sm text-red-600" :key="`wellSubclass error ${index}`">
+              {{ error }}
+            </div>
+          </div>
+        </div>
+        <form-input
+          select
+          v-model="intendedWaterUseInput"
+          :options="intendedWaterUseOptions"
+          value-field="intended_water_use_code"
+          text-field="description"
+          label="Intended Water Use *"
+          placeholder="Select intended use"
+          :errors="errors['intended_water_use']"
+          :loaded="fieldsLoaded['intended_water_use']"
+          :disabled="intendedWaterUseDisabled"
+          id="intendedWaterUse"/>
+      </responsive-grid>
+      <div class="grid grid-cols-12">
+        <div class="col-span-12 md:col-span-4" v-if="!isStaffEdit && wellActivityType !== 'CON'">
+          <div class="flex flex-col form-group">
+            <label for="wellTagNumberSelect">Well Tag Number (if known)</label>
             <v-select
               v-model="wellTagNumberInput"
               :disabled="wells === null"
@@ -140,90 +110,73 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <small id="wellTagNumberSelectHint" class="form-text text-muted">
               *displays a maximum of {{MAX_RESULTS}} results
             </small>
-          </b-form-group>
-        </b-col>
-        <b-col cols="12" md="4">
+          </div>
+        </div>
+        <div class="col-span-12 md:col-span-4">
           <form-input
-              id="idPlateNumber"
-              :label="wellIdentificationPlateNumberLabel"
-              type="number"
-              v-model="idPlateNumberInput"
-              :errors="errors['identification_plate_number']"
-              :loaded="fieldsLoaded['identification_plate_number']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4">
+            id="idPlateNumber"
+            :label="wellIdentificationPlateNumberLabel"
+            type="number"
+            v-model="idPlateNumberInput"
+            :errors="errors['identification_plate_number']"
+            :loaded="fieldsLoaded['identification_plate_number']"/>
+        </div>
+        <div class="col-span-12 md:col-span-4">
           <form-input
-              id="wellPlateAttached"
-              :label="wellIdentificationPlateAttachedLabel"
-              type="text"
-              v-model="wellPlateAttachedInput"
-              :errors="errors['well_identification_plate_attached']"
-              :loaded="fieldsLoaded['well_identification_plate_attached']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4" v-if="isStaffEdit">
+            id="wellPlateAttached"
+            :label="wellIdentificationPlateAttachedLabel"
+            type="text"
+            v-model="wellPlateAttachedInput"
+            :errors="errors['well_identification_plate_attached']"
+            :loaded="fieldsLoaded['well_identification_plate_attached']"/>
+        </div>
+        <div class="col-span-12 md:col-span-4" v-if="isStaffEdit">
           <form-input
-              id="wellPlateAttachedBy"
-              label="Identification Plate Attached By"
-              type="text"
-              v-model="idPlateAttachedByInput"
-              :errors="errors['id_plate_attached_by']"
-              :loaded="fieldsLoaded['id_plate_attached_by']"
-          ></form-input>
-        </b-col>
-      </b-row>
-      <b-row v-if="isStaffEdit">
-        <b-col cols="12" md="4">
-          <form-input
-              id="waterSupplySystem"
-              label="Water Supply System Name"
-              type="text"
-              v-model="waterSupplySystemInput"
-              :errors="errors['water_supply_system_name']"
-              :loaded="fieldsLoaded['water_supply_system_name']"
-          ></form-input>
-        </b-col>
-        <b-col cols="12" md="4">
-          <form-input
-              id="waterSupplyWell"
-              label="Water Supply Well Name"
-              type="text"
-              v-model="waterSupplyWellInput"
-              :errors="errors['water_supply_system_well_name']"
-              :loaded="fieldsLoaded['water_supply_system_well_name']"
-          ></form-input>
-        </b-col>
-      </b-row>
-      <b-row v-if="!isStaffEdit">
-        <b-col cols="12" md="6">
-          <form-input
-              id="workStartDateInput"
-              type="date"
-              :label="startDateOfWorkLabel"
-              placeholder="YYYY-MM-DD"
-              v-model="workStartDateInput"
-              :errors="errors.work_start_date"
-              :loaded="fieldsLoaded['work_start_date']"
-              @input="handleDateInput($event, 'workStartDate')"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6">
-          <form-input
-              id="workEndDateInput"
-              type="date"
-              :label="endDateOfWorkLabel"
-              placeholder="YYYY-MM-DD"
-              v-model="workEndDateInput"
-              :errors="errors.work_end_date"
-              :loaded="fieldsLoaded['work_end_date']"
-              @input="handleDateInput($event, 'workEndDate')"
-              >
-          </form-input>
-        </b-col>
-      </b-row>
-    </fieldset>
+            id="wellPlateAttachedBy"
+            label="Identification Plate Attached By"
+            type="text"
+            v-model="idPlateAttachedByInput"
+            :errors="errors['id_plate_attached_by']"
+            :loaded="fieldsLoaded['id_plate_attached_by']"/>
+        </div>
+      </div>
+      <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
+        <form-input
+          id="waterSupplySystem"
+          label="Water Supply System Name"
+          type="text"
+          v-model="waterSupplySystemInput"
+          :errors="errors['water_supply_system_name']"
+          :loaded="fieldsLoaded['water_supply_system_name']"/>
+        <form-input
+          id="waterSupplyWell"
+          label="Water Supply Well Name"
+          type="text"
+          v-model="waterSupplyWellInput"
+          :errors="errors['water_supply_system_well_name']"
+          :loaded="fieldsLoaded['water_supply_system_well_name']"/>
+      </responsive-grid>
+      <responsive-grid v-if="!isStaffEdit" :cols="12" :md="6">
+        <form-input
+          id="workStartDateInput"
+          type="date"
+          :label="startDateOfWorkLabel"
+          placeholder="YYYY-MM-DD"
+          v-model="workStartDateInput"
+          :errors="errors.work_start_date"
+          :loaded="fieldsLoaded['work_start_date']"
+          @input="handleDateInput($event, 'workStartDate')"/>
+        <form-input
+          id="workEndDateInput"
+          type="date"
+          :label="endDateOfWorkLabel"
+          placeholder="YYYY-MM-DD"
+          v-model="workEndDateInput"
+          :errors="errors.work_end_date"
+          :loaded="fieldsLoaded['work_end_date']"
+          @input="handleDateInput($event, 'workEndDate')"/>
+      </responsive-grid>
+    </form-subsection>
 </template>
 
 <script>
@@ -231,6 +184,8 @@ import { useSubmissionStore } from '@/stores/submission'
 import { useCommonStore } from '@/stores/common'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -277,6 +232,10 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

@@ -29,11 +29,12 @@
         :id="popupId"
         class="fa fa-exclamation-circle fa-xs pt-0 mt-0 d-print-none"
         :class="{'fa-spin': owell.fetchingAnalysis}"
-        @click="$emit('reload', owell)"/>
-      <b-popover
-        :target="popupId"
-        triggers="hover"
-        content="Error retrieving water levels information. Click to retry."/>
+        @click="togglePopover($event)"
+        style="cursor: pointer;"
+      />
+      <Popover :ref="popupId">
+        <p>Error retrieving water levels information. Click to retry.</p>
+      </Popover>
     </span>
   </span>
 </template>
@@ -64,12 +65,16 @@
 </style>
 
 <script>
+import { Popover } from 'primevue'
 export default {
   props: ['observationWell'],
   data () {
     return {
 
     }
+  },
+  components: {
+    Popover
   },
   computed: {
     owell () {
@@ -83,6 +88,9 @@ export default {
     }
   },
   methods: {
+    togglePopover(e) {
+      this.$refs[this.popupId].toggle(e);
+    },
     waterAnalysisUrl () {
       if (this.owell.hasLevelAnalysis) {
         return 'http://www.env.gov.bc.ca/soe/indicators/water/groundwater-levels.html'

@@ -3,7 +3,7 @@
 
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
-      <Form @submit.prevent="submitPersonForm" @reset.prevent="formReset">
+      <Form @submit="submitPersonForm" @reset="formReset">
         <div class="grid grid-cols-12 md-12 gap-6">
           <label
             id="surnameInputGroup"
@@ -57,7 +57,7 @@
 
     <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
-      <Form @submit.prevent="submitContactForm">
+      <Form @submit="submitContactForm">
         <div>
           <div class="grid grid-cols-12 md-6 gap-6">
             <label
@@ -106,7 +106,7 @@
 
     <!-- Company -->
     <div v-if="(section === 'company' || section === 'all') && !!record">
-      <Form @submit.prevent="submitCompanyForm">
+      <Form @submit="submitCompanyForm">
         <label
           id="companyInputGroup"
           for="companyInput"
@@ -126,7 +126,7 @@
 
     <!-- Registration -->
     <div v-if="(section === 'registration' || section === 'all') && !!record">
-      <Form @submit.prevent="submitRegistrationForm">
+      <Form @submit="submitRegistrationForm">
         <label
           id="registrationInputGroup"
           for="registrationInput"

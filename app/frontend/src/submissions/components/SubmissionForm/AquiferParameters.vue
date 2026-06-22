@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Pumping Test Information and Aquifer Parameters</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
+  <form-subsection title="Pumping Test Information and Aquifer Parameters" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="table-responsive" id="aquiferParametersTable">
       <table class="table" aria-describedby="aquiferParameters">
         <thead>
@@ -172,30 +161,22 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </tr>
               <tr>
                 <td class="pt-2 pb-4">
-                  <b-btn size="sm" variant="primary" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                  <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeAquiferParameterRowBtn${index}`" @click="removeRowIfOk(aquiferParameter)" class="mt-2"/>
                 </td>
               </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" id="addAquiferParameterRowBtn" variant="primary" @click="addRow"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <b-modal
-        v-model="confirmRemoveModal"
-        centered
-        title="Confirm remove"
-        @shown="focusRemoveModal">
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" id="addAquiferParameterRowBtn" @click="addRow"/>
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
-      </div>
-    </b-modal>
-  </fieldset>
+      <template #footer>
+        <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+        <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
+      </template>
+    </Dialog>
+  </form-subsection>
 </template>
 
 <script>
@@ -203,6 +184,7 @@ import { useSubmissionStore } from '@/stores/submission'
 import { omit } from 'lodash'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'AquiferParameters',
@@ -229,6 +211,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {
@@ -295,7 +280,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     aquiferParametersIsEmpty (aquiferParameters) {
       const fieldsToTest = omit(aquiferParameters, 'length_required')

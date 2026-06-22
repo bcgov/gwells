@@ -5,7 +5,7 @@
 
       <!-- Add Note Form -->
       <div class="mt-4" v-if="commonStore.userRoles.registry.edit">
-        <Form @submit.prevent="noteSubmitHandler" @reset.prevent="noteCancelHandler">
+        <Form @submit="noteSubmitHandler" @reset="noteCancelHandler">
           <div class="flex flex-col gap-2 mb-4">
             <label for="noteInput">Add a note:</label>
             <Textarea
@@ -44,8 +44,7 @@
           </Message>
           <!-- Submit Modal -->
           <Dialog
-            v-model="confirmSubmitModal"
-            v-model:visible="visible"
+            v-model:visible="confirmSubmitModal"
             centered
             modal
             header="Confirm save"
@@ -53,39 +52,33 @@
             :return-focus="$refs.noteInputSaveBtn"
           >
             Are you sure you want to save this note?
-            <div slot="modal-footer" class="buttons">
-              <Button variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn">
-                Save
-              </Button>
-              <Button variant="light" @click="confirmSubmitModal=false">
-                Cancel
-              </Button>
-            </div>
+            <template #footer>
+              <div class="buttons">
+                <Button label="Save" variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn"/>
+                <Button label="Cancel" variant="light" @click="confirmSubmitModal=false"/>
+              </div>
+            </template>
           </Dialog>
           <!-- Cancellation Modal -->
           <Dialog
-              v-model="confirmCancelModal"
-              v-model:visible="visible"
-              centered
-              modal
-              header="Confirm cancel"
-              @shown="focusCancelModal"
-              :return-focus="$refs.noteInputCancelBtn"
-            >
+            v-model:visible="confirmCancelModal"
+            centered
+            modal
+            header="Confirm cancel"
+            @shown="focusCancelModal"
+            :return-focus="$refs.noteInputCancelBtn"
+          >
             Your note is not saved. Are you sure you want to discard your changes?
-            <div slot="modal-footer" class="buttons">
-              <Button severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
-                Cancel
-              </Button>
-              <Button severity="danger" @click="confirmCancelModal=false;noteReset()">
-                Discard
-              </Button>
-            </div>
+            <template #footer>
+              <div class="buttons">
+                <Button label="Cancel" severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn"/>
+                <Button label="Discard" severity="danger" @click="confirmCancelModal=false;noteReset()"/>
+              </div>
+            </template>
           </Dialog>
           <!-- Delete Note Modal  -->
           <Dialog
-            v-model="confirmDeleteModal"
-            v-model:visible="visible"
+            v-model:visible="confirmDeleteModal"
             centered
             modal
             header="Confirm Deletion"
@@ -96,32 +89,22 @@
             <div v-if="activeNote" class="">
               <p class="font-weight-bold wb">"{{activeNote.note}}"</p>
             </div>
-            <div slot="modal-footer" class="buttons">
-              <Button
-                variant="light"
-                @click="confirmDeleteModal=false"
-                ref="cancelDeleteBtn"
-              >
-                Cancel
-              </Button>
-              <Button
-                severity="danger"
-                @click="confirmDeleteModal=false;deleteNote()"
-              >
-                Delete
-              </Button>
-            </div>
+            <template #footer>
+              <div class="buttons">
+                <Button label="Cancel" severity="secondary" @click="confirmDeleteModal=false" ref="cancelDeleteBtn"/>
+                <Button label="Delete" severity="danger" @click="confirmDeleteModal=false;deleteNote()"/>
+              </div>
+            </template>
           </Dialog>
           <!-- Edit Modal -->
           <Dialog
-              v-model="confirmEditNoteModal"
-              v-model:visible="visible"
-              centered
-              modal
-              header="Editing Note"
-              @shown="focusEditNoteModal"
-              :return-focus="$refs.noteInputCancelBtn"
-            >
+            v-model:visible="confirmEditNoteModal"
+            centered
+            modal
+            header="Editing Note"
+            @shown="focusEditNoteModal"
+            :return-focus="$refs.noteInputCancelBtn"
+          >
             <div>
               <InputText
                 id="editNoteTextArea"
@@ -137,14 +120,12 @@
               {{ noteContentEdit.length }}/{{ maxNoteLength }}
             </p>
             </div>
-            <div slot="modal-footer" class="buttons">
-              <Button variant="light" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn">
-                Cancel
-              </Button>
-              <Button variant="primary" :disabled="invalidEditNoteLength || !noteContentEdit" @click="notePatchHandle()">
-                Submit
-              </Button>
-            </div>
+            <template #footer>
+              <div class="buttons">
+                <Button label="Cancel" severity="secondary" @click="confirmEditNoteModal=false" ref="cancelEditNoteCancelBtn"/>
+                <Button label="Submit" :disabled="invalidEditNoteLength || !noteContentEdit" @click="notePatchHandle()"/>
+              </div>
+            </template>
           </Dialog>
         </Form>
       </div>
@@ -336,17 +317,17 @@ export default {
     },
     focusCancelModal () {
       // focus the "cancel" button in the confirm discard popup
-      this.$refs.cancelSubmitCancelBtn.focus()
+      this.$refs.cancelSubmitCancelBtn.$el.focus()
     },
     focusDeleteModal () {
-      this.$refs.cancelDeleteBtn.focus()
+      this.$refs.cancelDeleteBtn.$el.focus()
     },
     focusSubmitModal () {
       // focus the "submit" button in the confirm save note popup
-      this.$refs.confirmSubmitConfirmBtn.focus()
+      this.$refs.confirmSubmitConfirmBtn.$el.focus()
     },
     focusEditNoteModal () {
-      this.$refs.cancelEditNoteCancelBtn.focus()
+      this.$refs.cancelEditNoteCancelBtn.$el.focus()
     }
   }
 }

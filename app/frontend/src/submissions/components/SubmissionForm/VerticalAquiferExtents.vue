@@ -24,15 +24,20 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <div v-else>
       <api-error v-if="error" :error="error"/>
 
-      <b-table
-        :fields="tableFields"
-        :items="tableData"
-        show-empty
-        empty-text="There are currently no vertical aquifer extents for this well.">
-        <template v-slot:cell(start)="data">{{parseFloat(data.item.start).toFixed(2)}} m</template>
-        <template v-slot:cell(end)="data">{{parseFloat(data.item.end).toFixed(2)}} m</template>
-        <template v-slot:cell(height)="data">{{data.item.height.toFixed(2)}} m</template>
-      </b-table>
+      <DataTable :value="tableData">
+        <template #empty>There are currently no vertical aquifer extents for this well.</template>
+        <Column field="aquifer_id" header="Aquifer Id"/>
+        <Column field="aquifer_name" header="Aquifer Name"/>
+        <Column field="start" header="Start">
+          <template #body="{ data }">{{parseFloat(data.start).toFixed(2)}} m</template>
+        </Column>
+        <Column field="end" header="End">
+          <template #body="{ data }">{{parseFloat(data.end).toFixed(2)}} m</template>
+        </Column>
+        <Column field="height" header="Height">
+          <template #body="{ data }">{{parseFloat(data.height).toFixed(2)}} m</template>
+        </Column>
+      </DataTable>
 
       <div>
         <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber} }" class="btn btn-primary" role="button">
@@ -64,29 +69,7 @@ export default {
     return {
       error: null,
       loading: false,
-      aquifers: [],
-      tableFields: [
-        {
-          key: 'aquifer_id',
-          label: 'Aquifer Id'
-        },
-        {
-          key: 'aquifer_name',
-          label: 'Aquifer Name'
-        },
-        {
-          key: 'start',
-          label: 'Start'
-        },
-        {
-          key: 'end',
-          label: 'End'
-        },
-        {
-          key: 'height',
-          label: 'Height'
-        }
-      ]
+      aquifers: []
     }
   },
   computed: {

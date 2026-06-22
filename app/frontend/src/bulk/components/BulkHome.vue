@@ -16,13 +16,13 @@
   <Card id="bulk-home-screen" class="mx-8">
     <template #content>
       <div v-if="noPerm">
-        <b-alert show variant="danger" >
+        <Message severity="error">
           You do not have permission to make any bulk changes to Gwells.
-        </b-alert>
+        </Message>
         Return <router-link to="/">home</router-link>
       </div>
       <div v-else>
-        <h2 class="border-bottom pb-1 mb-4">Bulk Operations</h2>
+        <h2 class="border-b pb-1 mb-4">Bulk Operations</h2>
         <p>
           Update multiple wells or aquifers at the same time with the following bulk operation utilities.
         </p>

@@ -12,53 +12,36 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset class="mt-12">
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Activity Reports</legend>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12">
+  <form-subsection class="mt-12" title="Activity Reports" :id="id" :hideSave="true">
+    <div class="flex">
+      <div>
         <p>
           There {{ filteredSubmissions.length !== 1 ? 'are' : 'is' }} {{ filteredSubmissions.length }} activity {{ filteredSubmissions.length !== 1 ? 'reports' : 'report' }} for well {{ $route.params.id }}.
         </p>
-        <b-table
-            id="submissionHistoryTable"
-            ref="submissionHistoryTable"
-            v-model:busy="submissionsBusy"
-            :items="filteredSubmissions"
-            :fields="tableHeaders"
-            responsive
-            show-empty
-            empty-text="There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment."
-            :per-page="submissionsPerPage"
-            :current-page="submissionsPage"
-          >
-          <template v-slot:cell(report)="data">
-            <div>
-              <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.item.filing_number }}">{{ data.item.well_activity_description }}</router-link>
-            </div>
+        <DataTable :value="filteredSubmissions" ref="submissionHistoryTable" scrollable paginator :rows="submissionsPerPage">
+          <template #empty>
+            There is currently no submission report history for this well. Scanned copies of paper reports may be available as an attachment.
           </template>
-          <template v-slot:cell(date_entered)="data">
-            <div>
-              <span v-if="data.item.create_date">{{ moment(data.item.create_date, "MMMM Do YYYY [at] LT") }}</span>
-            </div>
-          </template>
-          <template v-slot:cell(entered_by)="data">
-            <div>
-              {{ data.item.create_user }}
-            </div>
-          </template>
-        </b-table>
-        <b-pagination v-if="!!filteredSubmissions.length && filteredSubmissions.length > submissionsPerPage" size="md" :total-rows="filteredSubmissions.length" v-model="submissionsPage" :per-page="submissionsPerPage" :disabled="submissionsBusy" />
-      </b-col>
-    </b-row>
-  </fieldset>
+          <Column header="Report">
+            <template #body="{ data }">
+              <router-link :to="{ name: 'SubmissionDetail', params: { id: $route.params.id, submissionId: data.filing_number }}">{{ data.well_activity_description }}</router-link>
+            </template>
+          </Column>
+          <Column header="Date Entered">
+            <template #body="{ data }">
+              <span v-if="data.create_date">{{ moment(data.create_date, "MMMM Do YYYY [at] LT") }}</span>
+            </template>
+          </Column>
+          <Column field="create_user" header="Entered By"/>
+        </DataTable>
+      </div>
+    </div>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   props: {
@@ -78,6 +61,9 @@ export default {
       type: Array,
       default: () => ([])
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {

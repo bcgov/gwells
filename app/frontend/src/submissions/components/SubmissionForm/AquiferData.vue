@@ -12,66 +12,47 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Aquifer Information</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-
-    <b-row>
-      <b-col cols="12" md="6" xl="3">
-        <b-form-group label="Associated Aquifer">
-          <v-select
-            v-model="aquiferInput"
-            id="aquiferSelect"
-            :filterable="false"
-            :options="aquiferList"
-            :reduce="aquifer => aquifer.aquifer_id"
-            label="description"
-            index="aquifer_id"
-            @search="onAquiferSearch">
-            <template v-slot:no-options>
-                Search for an aquifer by name or id number
-            </template>
-            <template v-slot:cell(option)="option">
-              <div>
-                {{ option.description }}
-              </div>
-            </template>
-            <template v-slot:cell(selected-option)="option">
-              <div>
-                {{ option.description }}
-              </div>
-            </template>
-          </v-select>
-        </b-form-group>
-      </b-col>
-      <b-col cols="12" md="4">
-        <b-form-group
+  <form-subsection title="Aquifer Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <responsive-grid :cols="12" :md="[6, 4]" :xl="[3, undefined]">
+      <div class="flex flex-col form-group">
+        <label for="aquiferSelect">Associated Aquifer</label>
+        <v-select
+          v-model="aquiferInput"
+          id="aquiferSelect"
+          :filterable="false"
+          :options="aquiferList"
+          :reduce="aquifer => aquifer.aquifer_id"
+          label="description"
+          index="aquifer_id"
+          @search="onAquiferSearch">
+          <template v-slot:no-options>
+              Search for an aquifer by name or id number
+          </template>
+          <template v-slot:cell(option)="option">
+            <div>
+              {{ option.description }}
+            </div>
+          </template>
+          <template v-slot:cell(selected-option)="option">
+            <div>
+              {{ option.description }}
+            </div>
+          </template>
+        </v-select>
+      </div>
+      <div class="flex flex-col form-group">
+        <label for="aquiferLithology">Aquifer Material</label>
+        <Select
           id="aquiferLithology"
-          label="Aquifer Material">
-          <b-form-select
-            v-model="aquiferLithologyInput"
-            value-field="aquifer_lithology_code"
-            :options="codes?.aquifer_lithology_codes"
-            :errors="errors['aquifer_lithology']"
-            :loaded="fieldsLoaded['aquifer_lithology']"
-            text-field="description">
-            <template v-slot:first>
-              <option :value="null" disabled>Select Lithology</option>
-            </template>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-    </b-row>
-  </fieldset>
+          v-model="aquiferLithologyInput"
+          optionValue="aquifer_lithology_code"
+          :options="codes?.aquifer_lithology_codes"
+          :loading="!fieldsLoaded['aquifer_lithology']"
+          optionLabel="description"
+          placeholder="Select Lithology"/>
+      </div>
+    </responsive-grid>
+  </form-subsection>
 </template>
 
 <script>
@@ -80,6 +61,8 @@ import { useSubmissionStore } from '@/stores/submission'
 
 import ApiService from '@/common/services/ApiService.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -117,6 +100,10 @@ export default {
       isInput: false
     }
   },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
+  },
   fields: {
     aquiferInput: 'aquifer',
     aquiferVulnerabilityIndexInput: 'aquiferVulnerabilityIndex',
@@ -137,9 +124,8 @@ export default {
     }
   },
   computed: {
-    codes () {
-      return this.submissionStore.codes
-    }
+    submissionStore() { return useSubmissionStore() },
+    codes () { return this.submissionStore.codes }
   },
   methods: {
     aquiferSearch: debounce((loading, search, vm) => {

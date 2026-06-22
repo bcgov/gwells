@@ -12,113 +12,96 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset :id="id">
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Yield</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row class="mt-4">
-      <b-col cols="12" md="4" lg="3">
+  <form-subsection title="Yield" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <responsive-grid class="mt-4" :cols="12" :md="4" :lg="3">
+      <form-input
+        id="yieldEstimationMethod"
+        label="Yield Estimation Method"
+        select
+        :options="codes?.yield_estimation_methods"
+        text-field="description"
+        value-field="yield_estimation_method_code"
+        v-model="yieldEstimationMethodInput"
+        placeholder="Select method"/>
+      <form-input
+        id="yieldEstimationRate"
+        label="Yield Estimation Rate"
+        type="number"
+        hint="USgpm"
+        v-model="yieldEstimationRateInput"/>
+      <form-input
+        id="yieldEstimationRate"
+        label="Yield Estimation Rate"
+        type="number"
+        hint="USgpm"
+        v-model="yieldEstimationRateInput"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="4" :lg="3">
+      <form-input
+        id="staticWaterLevelTest"
+        label="SWL Before Test"
+        type="number"
+        v-model="staticLevelInput"
+        hint="ft (btoc)"/>
+      <div class="flex flex-col form-group">
+        <label for="hydroFracturingPerformed">Hydro-fracturing Performed</label>
+        <RadioButtonGroup 
+          class="mt-1" 
+          v-model="hydroFracturingPerformedInput"
+          id="hydroFracturingPerformed"
+          name="hydroFracturingPerformed">
+          <div>
+            <RadioButton inputId="hydroFracturingPerformedInput.false" :value="false"/>
+            <label for="hydroFracturingPerformedInput.false" class="ml-2">No</label>
+          </div>
+          <div>
+            <RadioButton inputId="hydroFracturingPerformedInput.true" :value="true"/>
+            <label for="hydroFracturingPerformedInput.true" class="ml-2">Yes</label>
+          </div>
+        </RadioButtonGroup>
+      </div>
+      <form-input
+        id="hydroFracturingYieldIncrease"
+        label="Increase in Well Yield Due to Hydro-fracturing"
+        type="number"
+        v-model="hydroFracturingYieldIncreaseInput"
+        hint="USgpm"/>
+    </responsive-grid>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
-            id="yieldEstimationMethod"
-            label="Yield Estimation Method"
-            select
-            :options="codes?.yield_estimation_methods"
-            text-field="description"
-            value-field="yield_estimation_method_code"
-            v-model="yieldEstimationMethodInput"
-            placeholder="Select method"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-            id="yieldEstimationRate"
-            label="Yield Estimation Rate"
-            type="number"
-            hint="USgpm"
-            v-model="yieldEstimationRateInput"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-            id="yieldEstimationDuration"
-            label="Yield Estimation Duration"
-            type="number"
-            hint="Hours"
-            v-model="yieldEstimationDurationInput"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-            id="staticWaterLevelTest"
-            label="SWL Before Test"
-            type="number"
-            v-model="staticLevelInput"
-            hint="ft (btoc)"></form-input>
-      </b-col>
-      <b-col cols="12" md="4" lg="3">
-        <b-form-group label="Hydro-fracturing Performed">
-          <b-form-radio-group v-model="hydroFracturingPerformedInput"
-            id="hydroFracPerformedOptions"
-            name="hydroFracturingPerformed"
-          >
-            <b-form-radio :value="false">No</b-form-radio>
-            <b-form-radio :value="true">Yes</b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-      </b-col>
-      <b-col cols="12" md="4" lg="4">
-        <form-input
-          id="hydroFracturingYieldIncrease"
-          label="Increase in Well Yield Due to Hydro-fracturing"
+          id="drawdown"
+          label="Drawdown"
           type="number"
-          v-model="hydroFracturingYieldIncreaseInput"
-          hint="USgpm"
-        ></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="4" lg="3">
-        <form-input
-            id="drawdown"
-            label="Drawdown"
-            type="number"
-            v-model="drawdownInput"
-            hint="ft (btoc)"
-            ></form-input>
-      </b-col>
-      <b-col v-if="isStaffEdit" cols="12" md="4" lg="3">
+          v-model="drawdownInput"
+          hint="ft (btoc)"/>
+      </div>
+      <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
           id="recommendedPumpDepth"
           label="Recommended Pump Depth"
           type="number"
           v-model="recommendedPumpDepthInput"
-          hint="ft (btoc)"
-        />
-      </b-col>
-      <b-col v-if="isStaffEdit" cols="12" md="4" lg="3">
+          hint="ft (btoc)"/>
+      </div>
+      <div v-if="isStaffEdit" class="col-span-12 md:col-span-4 lg:col-span-3">
         <form-input
           id="recommendedPumpRate"
           label="Recommended Pump Rate"
           type="number"
           v-model="recommendedPumpRateInput"
-          hint="USgpm"
-        />
-      </b-col>
-    </b-row>
-  </fieldset>
+          hint="USgpm"/>
+      </div>
+    </div>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -153,10 +136,13 @@ export default {
       isInput: false
     }
   },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
+  },
   computed: {
-    codes () {
-      return this.submissionStore?.codes
-    }
+    submissionStore() { return useSubmissionStore() },
+    codes () { return this.submissionStore.codes }
   }
 }
 </script>

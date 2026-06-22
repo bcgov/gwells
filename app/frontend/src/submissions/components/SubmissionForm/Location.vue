@@ -12,40 +12,26 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-    <fieldset>
-      <b-row>
-        <b-col cols="12" lg="6">
-          <legend :id="id">Well Location</legend>
-        </b-col>
-        <b-col cols="12" lg="6">
-          <div class="float-right">
-            <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-            <back-to-top-link v-if="isStaffEdit"/>
-          </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <p>Please provide as much information as possible.</p> <p class="bg-warning p-2">A minimum of one type of well location information is required below:</p>
-          <p class="d-inline font-weight-bold">1) Well Location Address</p>
-          <div class="d-inline pl-2"><b-form-checkbox v-model="sameAsOwnerAddress">Same as owner address</b-form-checkbox></div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="6">
-          <form-input
-            v-model="streetAddressInput"
-            id="wellStreetAddress"
-            type="text"
-            label="Street address"
-            @input="fetchAddressSuggestions"
-            v-on:focus="showList(true)"
-            v-on:blur="showList(false)"
-            :errors="errors['street_address']"
-            :loaded="fieldsLoaded['street_address']"
-            :disabled="sameAsOwnerAddress"
-          ></form-input>
-           <!-- Display the address suggestions -->
+  <form-subsection title="Well Location" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <div class="flex flex-col">
+      <p>Please provide as much information as possible.</p> <p class="bg-amber-300 p-2">A minimum of one type of well location information is required below:</p>
+      <p class="inline font-weight-bold">1) Well Location Address</p>
+      <div class="inline pl-2"><Checkbox v-model="sameAsOwnerAddress" binary/> Same as owner address</div>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6">
+        <form-input
+          v-model="streetAddressInput"
+          id="wellStreetAddress"
+          type="text"
+          label="Street address"
+          @input="fetchAddressSuggestions"
+          v-on:focus="showList(true)"
+          v-on:blur="showList(false)"
+          :errors="errors['street_address']"
+          :loaded="fieldsLoaded['street_address']"
+          :disabled="sameAsOwnerAddress"/>
+        <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
             <button @mousedown="selectAddressSuggestion(suggestion)" class="list-group-item list-group-item-action border-0">{{ suggestion }}</button>
@@ -55,181 +41,141 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div v-if="isLoadingSuggestions" class="loading-indicator">
           Loading...
         </div>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="5">
-          <form-input
-              id="wellCity"
-              label="City"
-              type="text"
-              v-model="cityInput"
-              :errors="errors['city']"
-              :loaded="fieldsLoaded['city']"
-              :disabled="sameAsOwnerAddress"
-              >
-          </form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <p class="mb-1">OR</p>
-          <p class="font-weight-bold">
-            2) Legal Description
-            <i id="legal_description_fields" tabindex="0" class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"></i>
-            <b-popover
-              target="legal_description_fields"
-              triggers="hover focus"
-              :content="TOOLTIP_TEXT.location_vue.legal_description_fields"
-            />
-          </p>
-        </b-col>
-      </b-row>
+      </div>
+    </div>
+    <responsive-grid :cols="12" :md="5">
+      <form-input
+        id="wellCity"
+        label="City"
+        type="text"
+        v-model="cityInput"
+        :errors="errors['city']"
+        :loaded="fieldsLoaded['city']"
+        :disabled="sameAsOwnerAddress"/>
+    </responsive-grid>
+    <div class="flex flex-col">
+      <p class="mb-1">OR</p>
+      <p class="font-weight-bold">
+        2) Legal Description
+        <i
+          tabindex="0"
+          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
+          @mouseenter="showPopover"
+          @mouseleave="hidePopover"
+          @focus="showPopover"
+          @blur="hidePopover"/>
+        <Popover ref="op">{{ TOOLTIP_TEXT.location_vue.legal_description_fields }}</Popover>
+      </p>
+    </div>
 
-      <b-row>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalLot"
-              label="Lot"
-              type="text"
-              v-model="legalLotInput"
-              :errors="errors['legal_lot']"
-              :loaded="fieldsLoaded['legal_lot']"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalPlan"
-              label="Plan"
-              type="text"
-              v-model="legalPlanInput"
-              :errors="errors['legal_plan']"
-              :loaded="fieldsLoaded['legal_plan']"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalDistrictLot"
-              label="District Lot"
-              type="text"
-              v-model="legalDistrictLotInput"
-              :errors="errors['legal_district_lot']"
-              :loaded="fieldsLoaded['legal_district_lot']"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalBlock"
-              label="Block"
-              type="text"
-              v-model="legalBlockInput"
-              :errors="errors['legal_block']"
-              :loaded="fieldsLoaded['legal_block']"
-              >
-          </form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalSection"
-              label="Section"
-              type="text"
-              v-model="legalSectionInput"
-              :errors="errors['legal_section']"
-              :loaded="fieldsLoaded['legal_section']"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalTownship"
-              label="Township"
-              type="text"
-              v-model="legalTownshipInput"
-              :errors="errors['legal_township']"
-              :loaded="fieldsLoaded['legal_township']"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="legalRange"
-              label="Range"
-              type="text"
-              v-model="legalRangeInput"
-              :errors="errors['legal_range']"
-              :loaded="fieldsLoaded['legal_range']"
-              >
-          </form-input>
-        </b-col>
-        <b-col cols="12" md="6" lg="3">
-          <form-input
-              id="landDistrict"
-              label="Land District"
-              select
-              :options="districtCodes"
-              text-field="name"
-              value-field="land_district_code"
-              v-model="landDistrictInput"
-              :errors="errors['land_district']"
-              :loaded="fieldsLoaded['land_district']"
-              >
-          </form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col>
-          <p class="mb-1">OR</p>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="6" lg="3">
-          <p class="font-weight-bold">3) Parcel Identifier (PID)</p>
-          <form-input
-              id="legalPID"
-              type="text"
-              hint="*Input a 9 digit number (including leading zeroes, if necessary)"
-              v-model="legalPIDInput"
-              :errors="errors['legal_pid']"
-              :loaded="fieldsLoaded['legal_pid']"
-              >
-          </form-input>
-        </b-col>
-      </b-row>
-      <b-row>
-        <b-col cols="12" md="8">
-          <form-input
-              id="wellLocationDescription"
-              label="Description of Well Location"
-              type="text"
-              v-model="wellLocationDescriptionInput"
-              :errors="errors['well_location_description']"
-              :loaded="fieldsLoaded['well_location_description']"
-              >
-          </form-input>
-        </b-col>
-      </b-row>
+    <responsive-grid :cols="12" :md="6" :lg="3">
+      <form-input
+        id="legalLot"
+        label="Lot"
+        type="text"
+        v-model="legalLotInput"
+        :errors="errors['legal_lot']"
+        :loaded="fieldsLoaded['legal_lot']"/>
+      <form-input
+        id="legalPlan"
+        label="Plan"
+        type="text"
+        v-model="legalPlanInput"
+        :errors="errors['legal_plan']"
+        :loaded="fieldsLoaded['legal_plan']"/>
+      <form-input
+        id="legalDistrictLot"
+        label="District Lot"
+        type="text"
+        v-model="legalDistrictLotInput"
+        :errors="errors['legal_district_lot']"
+        :loaded="fieldsLoaded['legal_district_lot']"/>
+      <form-input
+        id="legalBlock"
+        label="Block"
+        type="text"
+        v-model="legalBlockInput"
+        :errors="errors['legal_block']"
+        :loaded="fieldsLoaded['legal_block']"/>
+      <form-input
+        id="legalSection"
+        label="Section"
+        type="text"
+        v-model="legalSectionInput"
+        :errors="errors['legal_section']"
+        :loaded="fieldsLoaded['legal_section']"/>
+      <form-input
+        id="legalTownship"
+        label="Township"
+        type="text"
+        v-model="legalTownshipInput"
+        :errors="errors['legal_township']"
+        :loaded="fieldsLoaded['legal_township']"/>
+      <form-input
+        id="legalRange"
+        label="Range"
+        type="text"
+        v-model="legalRangeInput"
+        :errors="errors['legal_range']"
+        :loaded="fieldsLoaded['legal_range']"/>
+      <form-input
+        id="landDistrict"
+        label="Land District"
+        select
+        :options="districtCodes"
+        text-field="name"
+        value-field="land_district_code"
+        v-model="landDistrictInput"
+        :errors="errors['land_district']"
+        :loaded="fieldsLoaded['land_district']"/>
+    </responsive-grid>
+    <div class="flex">
+      <p class="mb-1">OR</p>
+    </div>
+    <div class="grid grid-cols-12">
+      <div class="col-span-12 md:col-span-6 lg:col-span-3">
+        <p class="font-weight-bold">3) Parcel Identifier (PID)</p>
+        <form-input
+          id="legalPID"
+          type="text"
+          hint="*Input a 9 digit number (including leading zeroes, if necessary)"
+          v-model="legalPIDInput"
+          :errors="errors['legal_pid']"
+          :loaded="fieldsLoaded['legal_pid']"/>
+      </div>
+    </div>
+    <responsive-grid :cols="12" :md="8">
+      <form-input
+        id="wellLocationDescription"
+        label="Description of Well Location"
+        type="text"
+        v-model="wellLocationDescriptionInput"
+        :errors="errors['well_location_description']"
+        :loaded="fieldsLoaded['well_location_description']"/>
+    </responsive-grid>
 
-      <!-- Error message when location not given -->
-      <b-alert class="mt-4" variant="danger" :show="errors.well_location_section && errors.well_location_section.length > 0">
-        Must provide well location as either an address, legal description, or parcel identifier.
-      </b-alert>
-
-    </fieldset>
+    <!-- Error message when location not given -->
+    <Message class="mt-4" severity="error" v-if="errors.well_location_section && errors.well_location_section.length > 0">
+      Must provide well location as either an address, legal description, or parcel identifier.
+    </Message>
+  </form-subsection>
 </template>
 <script>
+import querystring from 'querystring'
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '../../../common/services/ApiService'
 import { TOOLTIP_TEXT } from '@/common/constants'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import { Popover } from 'primevue'
 
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
+  components: {
+    Popover
+  },
   props: {
     id: {
       type: String,
@@ -268,6 +214,10 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {
@@ -338,7 +288,6 @@ export default {
         addressString: this.streetAddressInput
       }
 
-      const querystring = require('querystring')
       const searchParams = querystring.stringify(params)
       try {
         ApiService.getAddresses(searchParams).then((response) => {
@@ -387,6 +336,14 @@ export default {
       if (document.getElementById('location-address-suggestions-list')) {
         document.getElementById('location-address-suggestions-list').style.display = show ? 'block' : 'none'
       }
+    },
+
+    // Show and hide popover
+    showPopover() {
+      this.$refs.op.show()
+    },
+    hidePopover() {
+      this.$refs.op.hide()
     }
   }
 }

@@ -12,18 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Lithology</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
+  <form-subsection title="Lithology" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <div class="table-responsive">
       <table class="table table-sm" aria-describedby="lithologyDetails">
         <thead>
@@ -82,68 +71,66 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </td>
               <td>
                 <form-input
-                    :id="`lithologyDescription${index}`"
-                    aria-label="Soil or Bedrock Description"
-                    v-model="lithologyData[index].lithology_raw_data"
-                    group-class="mt-1 mb-0"
-                    @input="parseDescription(index, $event)"
-                ></form-input>
+                  :id="`lithologyDescription${index}`"
+                  aria-label="Soil or Bedrock Description"
+                  v-model="lithologyData[index].lithology_raw_data"
+                  group-class="mt-1 mb-0"
+                  @input="parseDescription(index, $event)"/>
               </td>
               <td class="input-width-medium">
                 <div class="material-badges">
-                  <b-badge v-for="(soil, j) in lithSoils[index]" variant="light" class="font-weight-normal" :key="`soilTerm-${index}-${j}`">
+                  <Badge v-for="(soil, j) in lithSoils[index]" severity="secondary" class="font-weight-normal" :key="`soilTerm-${index}-${j}`">
                     {{ soil }}
-                  </b-badge>
+                  </Badge>
                 </div>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyDescriptor${index}`"
-                    aria-label="Descriptor"
-                    select
-                    :options="codes?.lithology_descriptors"
-                    text-field="description"
-                    value-field="lithology_description_code"
-                    placeholder="Select descriptor"
-                    v-model="lithologyData[index].lithology_description"
-                    group-class="mt-1 mb-0"
-                />
+                  :id="`lithologyDescriptor${index}`"
+                  aria-label="Descriptor"
+                  select
+                  :options="codes?.lithology_descriptors"
+                  text-field="description"
+                  value-field="lithology_description_code"
+                  placeholder="Select descriptor"
+                  v-model="lithologyData[index].lithology_description"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyMoisture${index}`"
-                    aria-label="Moisture"
-                    select
-                    :options="codes?.lithology_moisture_codes"
-                    text-field="description"
-                    value-field="lithology_moisture_code"
-                    placeholder="Select moisture"
-                    v-model="lithologyData[index].lithology_moisture"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyMoisture${index}`"
+                  aria-label="Moisture"
+                  select
+                  :options="codes?.lithology_moisture_codes"
+                  text-field="description"
+                  value-field="lithology_moisture_code"
+                  placeholder="Select moisture"
+                  v-model="lithologyData[index].lithology_moisture"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyColour${index}`"
-                    aria-label="Colour"
-                    select
-                    :options="codes?.lithology_colours"
-                    text-field="description"
-                    placeholder="Select colour"
-                    value-field="lithology_colour_code"
-                    v-model="lithologyData[index].lithology_colour"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyColour${index}`"
+                  aria-label="Colour"
+                  select
+                  :options="codes?.lithology_colours"
+                  text-field="description"
+                  placeholder="Select colour"
+                  value-field="lithology_colour_code"
+                  v-model="lithologyData[index].lithology_colour"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyHardness${index}`"
-                    aria-label="Hardness"
-                    select
-                    :options="codes?.lithology_hardness_codes"
-                    text-field="description"
-                    placeholder="Select hardness"
-                    value-field="lithology_hardness_code"
-                    v-model="lithologyData[index].lithology_hardness"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyHardness${index}`"
+                  aria-label="Hardness"
+                  select
+                  :options="codes?.lithology_hardness_codes"
+                  text-field="description"
+                  placeholder="Select hardness"
+                  value-field="lithology_hardness_code"
+                  v-model="lithologyData[index].lithology_hardness"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
@@ -151,47 +138,40 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Water bearing flow"
                   type="number"
                   v-model="lithologyData[index].water_bearing_estimated_flow"
-                  group-class="mt-1 mb-0"
-                ></form-input>
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="input-width-medium">
                 <form-input
-                    :id="`lithologyObservations${index}`"
-                    aria-label="Observations"
-                    v-model="lithologyData[index].lithology_observation"
-                    group-class="mt-1 mb-0"></form-input>
+                  :id="`lithologyObservations${index}`"
+                  aria-label="Observations"
+                  v-model="lithologyData[index].lithology_observation"
+                  group-class="mt-1 mb-0"/>
               </td>
               <td class="pt-1">
-                <b-btn size="sm" variant="primary" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" @click="removeRowIfOk(index)" :id="`removeRowButton${index}`" class="mt-2 float-right"/>
               </td>
             </tr>
           </template>
         </tbody>
       </table>
     </div>
-    <b-btn size="sm" variant="primary" @click="addLithologyRow" id="addLithologyRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-    <b-modal
-        v-model="confirmRemoveModal"
-        centered
-        title="Confirm remove"
-        @shown="focusRemoveModal">
+    <Button label="Add row" icon="fa fa-plus-square-o" size="small" @click="addLithologyRow" id="addLithologyRowButton"/>
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
       Are you sure you want to remove this row?
-      <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
-      </div>
-    </b-modal>
-  </fieldset>
+      <template #footer>
+        <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+        <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
+      </template>
+    </Dialog>
+  </form-subsection>
 </template>
 
 <script>
+import { Badge } from 'primevue'
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 import Lithology from '@/submissions/components/lithology.js'
 
@@ -224,6 +204,10 @@ export default {
       isInput: false
     }
   },
+  components: {
+    FormSubsection,
+    Badge
+  },
   data () {
     return {
       submissionStore: null,
@@ -234,9 +218,8 @@ export default {
     }
   },
   computed: {
-    submissionStore () { return useSubmissionStore() },
     codes () {
-      return this.submissionStore?.codes
+      return this.submissionStore.codes
     },
     computedLithology () {
       return [...this.lithologyData]
@@ -287,7 +270,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     parseDescription (index, value) {
       const lithology = new Lithology(value)
@@ -295,10 +278,10 @@ export default {
     },
     lithologyIsEmpty (lithology) {
       return Object.values(lithology).every((x) => !x)
-    this.submissionStore = useSubmissionStore()
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // When component created, add an initial row of lithology.
     if (!this.lithology.length) {
       for (let i = 0; i < 10; i++) {

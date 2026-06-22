@@ -82,8 +82,8 @@
         <tbody role="rowgroup" v-if="(isBusy || isEmpty || isReset)">
           <tr :class="{loading: isBusy}">
             <td :colspan="columnCount">
-              <div class="position-relative my-1 mx-1">
-                <div v-if="isBusy" class="d-flex">
+              <div class="relative my-1 mx-1">
+                <div v-if="isBusy" class="flex">
                   <div class="spinner-border m-4" role="status" aria-hidden="true"></div>
                   <strong class="align-middle my-4 pt-1">
                     Loading...
@@ -160,7 +160,9 @@ export default {
   mixins: [filterMixin],
   components: {
     'qaqc-filters': QaQcFilters,
-    'qaqc-exports': QaQcExports
+    'qaqc-exports': QaQcExports,
+    Badge,
+    Popover
   },
   data () {
     return {
@@ -465,7 +467,7 @@ td.data {
   white-space: normal; // Overrides the existing nowrap to allow text wrapping
 }
 
-/* Spinner styles — these can be removed when moving to bootstrap 4.3 */
+/* Spinner styles */
 
 $spinner-width:         2rem !default;
 $spinner-height:        $spinner-width !default;

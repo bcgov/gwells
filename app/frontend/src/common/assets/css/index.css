@@ -1,2 +1,5 @@
 @import "tailwindcss";
 @import "tailwindcss-primeui";
+@source inline('{sm:,md:,lg:,xl:,}col-span-{{1..12}}');
+@source inline('{sm:,md:,lg:,xl:,}col-start-{{1..12}}');
+@source inline('{sm:,md:,lg:,xl:,}col-end-{{1..13}}');

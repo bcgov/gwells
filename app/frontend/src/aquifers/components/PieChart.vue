@@ -13,34 +13,44 @@
 */
 
 <template>
-  <Pie :data="dataValues" :options="options" />
+    <div class="card flex justify-center">
+        <Chart type="pie" :data="dataValues" :options="options" class="w-full md:w-[30rem]" />
+    </div>
 </template>
 
 <script>
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js'
-import { Pie } from 'vue-chartjs'
-
-ChartJS.register(ArcElement, Tooltip, Legend)
-
 export default {
   name: 'PieChart',
-  components: {
-    Pie
+  props: {
+    data: {
+      type: Array,
+      default: () => []
+    },
+    labels: {
+      type: Array,
+      default: () => []
+    },
+    chartOptions: {
+      type: Object,
+      default: () => ({})
+    }
   },
-  props: ['data', 'labels', 'chartOptions'],
-  data () {
-    return {
-      dataValues: {
-        labels: this.$props.labels,
-        datasets: [{
+  computed: {
+    dataValues() {
+      return {
+        labels: this.labels,
+        datasets: [
+          {
             backgroundColor: [
               '#E69F00', '#56B4E9', '#2B9F78', '#F0E442', '#CC79A7'
               , '#D55E00', '#0072B2', '#EE442F', '#9C9EB5', '#8B7F47'
             ],
-            data: this.$props.data
-        }]
-      }
+            data: this.data
+          }
+        ]
+      };
     }
   }
 }
 </script>
+

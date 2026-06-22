@@ -12,85 +12,65 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Well Decommission Information</legend>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="3" lg="2">
-        <form-input
-            id="finishedWellDepth"
-            label="Finished Well Depth"
-            type="number"
-            v-model="finishedWellDepthInput"
-            hint="feet (below ground level)"
-            :errors="errors['finished_well_depth']"
-            :loaded="fieldsLoaded['finished_well_depth']"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
-        <form-input
-            id="decommissionReason"
-            label="Reason for Well Decommission"
-            v-model="decommissionReasonInput"
-            :errors="errors['decommission_reason']"
-            :loaded="fieldsLoaded['decommission_reason']"></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
-        <b-form-group label="Decommission Method">
-          <b-form-radio-group id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
-            <b-form-radio
-                v-for="(method, index) in codes.decommission_methods"
-                :key="`decommissionMethodOption${index}`"
-                :value="method.decommission_method_code">{{method.description}}</b-form-radio>
-          </b-form-radio-group>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" md="6" lg="4">
-        <form-input
-            id="sealantMaterial"
-            label="Sealant Material"
-            v-model="sealantMaterialInput"
-            :errors="errors['decommission_sealant_material']"
-            :loaded="fieldsLoaded['decommission_sealant_material']"></form-input>
-      </b-col>
-      <b-col cols="12" md="6" lg="4">
-        <form-input
-            id="backfillMaterial"
-            label="Backfill Material"
-            v-model="backfillMaterialInput"
-            :errors="errors['decommission_backfill_material']"
-            :loaded="fieldsLoaded['decommission_backfill_material']"></form-input>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12" lg="8">
-        <form-input
-            id="decommissionDetails"
-            label="Decommission Details"
-            v-model="decommissionDetailsInput"
-            :errors="errors['decommission_details']"
-            :loaded="fieldsLoaded['decommission_details']"></form-input>
-      </b-col>
-    </b-row>
-  </fieldset>
+  <form-subsection title="Well Decommission Information" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+    <responsive-grid :cols="12" :md="3" :lg="2">
+      <form-input
+        id="finishedWellDepth"
+        label="Finished Well Depth"
+        type="number"
+        v-model="finishedWellDepthInput"
+        hint="feet (below ground level)"
+        :errors="errors['finished_well_depth']"
+        :loaded="fieldsLoaded['finished_well_depth']"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="decommissionReason"
+        label="Reason for Well Decommission"
+        v-model="decommissionReasonInput"
+        :errors="errors['decommission_reason']"
+        :loaded="fieldsLoaded['decommission_reason']"/>
+      <div class="flex flex-col form-group">
+        <label>Decommission Method</label>
+        <RadioButtonGroup id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
+          <div v-for="(method, index) in codes.decommission_methods" class="flex align-items-center" :key="`decommissionMethodOption${index}`">
+            <RadioButton :inputId="`decommissionMethodInput.${method.decommission_method_code}`" :value="method.decommission_method_code"/>
+            <label :for="`decommissionMethodInput.${method.decommission_method_code}`" class="ml-2">{{method.description}}</label>
+          </div>
+        </RadioButtonGroup>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="12" :md="6" :lg="4">
+      <form-input
+        id="sealantMaterial"
+        label="Sealant Material"
+        v-model="sealantMaterialInput"
+        :errors="errors['decommission_sealant_material']"
+        :loaded="fieldsLoaded['decommission_sealant_material']"/>
+      <form-input
+        id="backfillMaterial"
+        label="Backfill Material"
+        v-model="backfillMaterialInput"
+        :errors="errors['decommission_backfill_material']"
+        :loaded="fieldsLoaded['decommission_backfill_material']"/>
+    </responsive-grid>
+    <responsive-grid :cols="12" :lg="8">
+      <form-input
+        id="decommissionDetails"
+        label="Decommission Details"
+        v-model="decommissionDetailsInput"
+        :errors="errors['decommission_details']"
+        :loaded="fieldsLoaded['decommission_details']"/>
+    </responsive-grid>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -121,6 +101,10 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection,
+    ResponsiveGrid
   },
   data () {
     return {

@@ -14,339 +14,330 @@
 
 <template>
   <div class="container p-1">
-    <b-alert show v-if="statusMessage" variant="info">
+    <Message v-if="statusMessage" severity="info">
       {{statusMessage}}
-    </b-alert>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Aquifer Status"
-          label-for="aquifer-status">
-          <b-form-select
-            :options="aquiferStatusOptions"
-            :disabled="fieldDisabled"
-            id="aquifer-status"
-            v-model="status"
-            @change="statusChanged"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Year of mapping"
-          label-for="mapping_year"
-          :invalid-feedback="fieldErrorMessages.mapping_year"
-          :state="fieldHasError.mapping_year">
-            <b-form-input
-              id="aquifer-mapping-year"
-              type="text"
-              :disabled="fieldDisabled"
-              v-model="record.mapping_year"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Aquifer name"
-          label-for="aquifer_name"
-          :invalid-feedback="fieldErrorMessages.aquifer_name"
-          :state="fieldHasError.aquifer_name">
-            <b-form-input
-              id="aquifer-name"
-              type="text"
-              :disabled="fieldDisabled"
-              v-model="record.aquifer_name"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Litho stratigraphic unit"
-          label-for="litho_stratographic_unit"
-          :invalid-feedback="fieldErrorMessages.litho_stratographic_unit"
-          :state="fieldHasError.litho_stratographic_unit">
-            <b-form-input
-              id="aquifer-litho-stratigraphic-unit"
-              type="text"
-              :disabled="fieldDisabled"
-              v-model="record.litho_stratographic_unit"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Descriptive location"
-          label-for="location_description"
-          :invalid-feedback="fieldErrorMessages.location_description"
-          :state="fieldHasError.location_description">
-            <b-form-input
-              id="aquifer-location-description"
-              type="text"
-              :disabled="fieldDisabled"
-              v-model="record.location_description"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Vulnerability"
-          label-for="vulnerability"
-          :invalid-feedback="fieldErrorMessages.vulnerability"
-          :state="fieldHasError.vulnerability">
-          <b-form-select
-            :options="[''].concat(vulnerability_codes)"
-            :disabled="fieldDisabled"
-            id="aquifer-vulnerability"
-            text-field="description"
-            v-model="record.vulnerability"
-            value-field="code"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Material type"
-          label-for="material"
-          :invalid-feedback="fieldErrorMessages.material"
-          :state="fieldHasError.material">
-          <b-form-select
-            :options="[''].concat(material_codes)"
-            :disabled="fieldDisabled"
+    </Message>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="aquifer-status" class="col-span-2">Aquifer Status</label>
+      <Select
+        inputId="aquifer-status"
+        v-model="status"
+        :options="aquiferStatusOptions"
+        optionLabel="text"
+        optionValue="value"
+        :disabled="fieldDisabled"
+        @change="statusChanged"
+        class="w-full col-span-4"/>
+      <label for="aquifer-mapping-year">Year of mapping</label>
+      <div>
+        <InputText
+          id="aquifer-mapping-year"
+          type="text"
+          :disabled="fieldDisabled"
+          :invalid="fieldErrorMessages.mapping_year"
+          v-model="record.mapping_year"/>
+        <Message v-if="fieldHasError.mapping_year" severity="error">
+          {{  fieldErrorMessages.mapping_year }}
+        </Message>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="aquifer_name">Aquifer name</label>
+      <div>
+        <InputText
+          id="aquifer_name"
+          type="text"
+          :disabled="fieldDisabled"
+          :invalid="fieldErrorMessages.aquifer_name"
+          v-model="record.aquifer_name"/>
+        <Message v-if="fieldHasError.aquifer_name" severity="error">
+          {{  fieldErrorMessages.aquifer_name }}
+        </Message>
+      </div>
+      <label for="aquifer-litho-stratigraphic-unit">Litho stratigraphic unit</label>
+      <div>
+        <InputText
+          id="aquifer-litho-stratigraphic-unit"
+          type="text"
+          :disabled="fieldDisabled"
+          :invalid="fieldErrorMessages.litho_stratographic_unit"
+          v-model="record.litho_stratographic_unit"/>
+        <Message v-if="fieldHasError.litho_stratographic_unit" severity="error">
+          {{  fieldErrorMessages.litho_stratographic_unit }}
+        </Message>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="aquifer-location-description">Descriptive location</label>
+      <div>
+        <InputText
+          id="aquifer-location-description"
+          type="text"
+          :disabled="fieldDisabled"
+          :invalid="fieldErrorMessages.location_description"
+          v-model="record.location_description"/>
+        <Message v-if="fieldHasError.location_description" severity="error">
+          {{  fieldErrorMessages.location_description }}
+        </Message>
+      </div>
+      <label for="aquifer-vulnerability">Vulnerability</label>
+      <div>
+        <Select
+          id="aquifer-vulnerability"
+          v-model="record.vulnerability"
+          :options="vulnerability_codes"
+          optionLabel="description"
+          optionValue="code"
+          :disabled="fieldDisabled"
+          :invalid="fieldErrorMessages.vulnerability"
+          showClear
+          class="w-full"/>
+        <Message v-if="fieldHasError.vulnerability" severity="error">
+          {{  fieldErrorMessages.vulnerability }}
+        </Message>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+        <label for="material">Material type</label>
+        <div>
+          <Select
             id="aquifer-material"
-            text-field="description"
+            :options="material_codes"
+            optionLabel="description"
+            optionValue="code"
+            :disabled="fieldDisabled"
             v-model="record.material"
-            value-field="code"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Subtype"
-          label-for="subtype"
-          :invalid-feedback="fieldErrorMessages.subtype"
-          :state="fieldHasError.subtype">
-          <b-form-select
+            showClear
+            class="w-full"/>
+          <Message v-if="fieldHasError.material" severity="error">
+            {{  fieldErrorMessages.material }}
+          </Message>
+        </div>
+        <label for="subtype">Subtype</label>
+        <div>
+          <Select
             id="aquifer-subtype"
             v-model="record.subtype"
-            :options="[''].concat(subtype_codes)"
+            :options="subtype_codes"
             :disabled="fieldDisabled"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Quality concerns"
-          label-for="quality_concern"
-          :invalid-feedback="fieldErrorMessages.quality_concern"
-          :state="fieldHasError.quality_concern">
-          <b-form-select
-            id="aquifer-quality-concern"
-            v-model="record.quality_concern"
-            :options="[''].concat(quality_concern_codes)"
-            :disabled="fieldDisabled"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Productivity"
-          label-for="productivity"
-          :invalid-feedback="fieldErrorMessages.productivity"
-          :state="fieldHasError.productivity">
-          <b-form-select
-            id="aquifer-productivity"
-            v-model="record.productivity"
-            :options="[''].concat(productivity_codes)"
-            :disabled="fieldDisabled"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Type of known water use"
-          label-for="known_water_use"
-          :invalid-feedback="fieldErrorMessages.known_water_use"
-          :state="fieldHasError.known_water_use">
-          <b-form-select
-            id="aquifer-known-water-use"
-            v-model="record.known_water_use"
-            :options="[''].concat(known_water_use_codes)"
-            :disabled="fieldDisabled"
-            value-field="code"
-            text-field="description"/>
-        </b-form-group>
-      </b-col>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          description="Please upload a shapefile containing only this aqufier in ZIP format."
-          label="Shapefile">
-          <b-form-file
-            :disabled="fieldDisabled"
-            v-model="shape"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Comments"
-          label-for="notes"
-          :invalid-feedback="fieldErrorMessages.notes"
-          :state="fieldHasError.notes">
-          <b-form-textarea
-            rows="4"
-            id="aquifer-notes"
-            :disabled="fieldDisabled"
-            v-model="record.notes"/>
-        </b-form-group>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col md="6">
-        <b-form-group
-          horizontal
-          label-cols="4"
-          label="Documents">
-          <b-form-file
-            v-model="uploadFiles"
-            multiple
-            plain/>
-          <div class="mt-4">
-            <b-form-checkbox
-             id="isPrivateCheckbox"
-            :disabled="fieldDisabled"
-             v-model="privateDocument">Are these documents private?</b-form-checkbox>
-          </div>
-        </b-form-group>
-        <h5>Public documentation</h5>
-        <aquifer-documents :files="files"
-          :editMode="true"
-          :id="id"
-          :loading="loadingFiles"
-          v-on:fetchFiles="$emit('fetchFiles')">
-        </aquifer-documents>
-      </b-col>
-    </b-row>
-
-    <h4 class="mt-6">Resource Links</h4>
-    <b-row
-      v-for="(resource, index) in record.resources" :key="index">
-      <b-col cols="auto">
-        <b-form-group
-          label="Section"
-          label-for="section"
-          :invalid-feedback="resourceErrorMessages[index].section"
-          :state="!resourceErrorMessages[index].section">
-          <b-form-select
-            v-model="resource.section_code"
-            :options="['-- Section --'].concat(aquifer_resource_sections)"
-            :disabled="fieldDisabled"
-            value-field="code"
-            text-field="name"/>
-        </b-form-group>
-      </b-col>
-      <b-col cols="auto">
-        <b-form-group
-          label="Document Name"
-          label-for="name"
-          :invalid-feedback="resourceErrorMessages[index].name"
-          :state="!resourceErrorMessages[index].name">
-          <b-form-input
-            type="text"
-            :disabled="fieldDisabled"
-            v-model="resource.name"/>
-        </b-form-group>
-      </b-col>
-      <b-col cols="auto">
-        <b-form-group
-          label="Document URL"
-          label-for="url"
-          :invalid-feedback="resourceErrorMessages[index].url"
-          :state="!resourceErrorMessages[index].url">
-          <b-form-input
-            type="text"
-            :disabled="fieldDisabled"
-            v-model="resource.url"/>
-        </b-form-group>
-      </b-col>
-      <b-col cols="auto">
-        <br>
-        <b-button variant="primary" @click="handleDeleteResource(index)">Remove</b-button>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="auto">
-        <b-button
-          variant="primary"
+            optionLabel="description"
+            optionValue="code"
+            showClear
+            class="w-full"/>
+          <Message v-if="fieldHasError.material" severity="error">
+            {{  fieldErrorMessages.material }}
+          </Message>
+        </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="aquifer-quality-concern">Quality concerns</label>
+      <div>
+        <Select
+          id="aquifer-quality-concern"
+          v-model="record.quality_concern"
+          :options="quality_concern_codes"
+          optionLabel="description"
+          optionValue="code"
           :disabled="fieldDisabled"
-          v-on:click="handleAddResource">
-          Add additional link
-        </b-button>
-      </b-col>
-    </b-row>
-
-    <div class="mt-6">
-      <b-button
-        variant="primary"
-        :disabled="loadingData"
-        v-b-modal.confirmSave>
-        Save
-      </b-button>
-
-      <b-button
-        variant="default"
-        v-b-modal.confirmCancel>
-        Cancel
-      </b-button>
+          showClear
+          class="w-full"/>
+        <Message v-if="fieldHasError.material" severity="error">
+          {{  fieldErrorMessages.material }}
+        </Message>
+      </div>
+      <label for="productivity">Productivity</label>
+      <div>
+        <Select
+          id="aquifer-productivity"
+          v-model="record.productivity"
+          :options="productivity_codes"
+          optionLabel="description"
+          optionValue="code"
+          :disabled="fieldDisabled"
+          showClear
+          class="w-full"/>
+        <Message v-if="fieldHasError.productivity" severity="error">
+          {{  fieldErrorMessages.productivity }}
+        </Message>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="known_water_use">Type of known water use</label>
+      <div>
+        <Select
+          id="aquifer-known-water-use"
+          v-model="record.known_water_use"
+          :options="known_water_use_codes"
+          :disabled="fieldDisabled"
+          optionValue="code"
+          optionLabel="description"
+          showClear
+          class="w-full"/>
+        <Message v-if="fieldHasError.known_water_use" severity="error">
+          {{  fieldErrorMessages.known_water_use }}
+        </Message>
+      </div>
+      <label for="shapefile-upload">Shapefile</label>
+      <div>
+        <FileUpload
+          id="shapefile-upload"
+          mode="basic"
+          accept=".zip"
+          :disabled="fieldDisabled"
+          auto
+          customUpload
+          @uploader="onFileSelect"
+          class="w-full"/>
+        <small>
+          Please upload a shapefile containing only this aquifer in ZIP format.
+        </small>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="notes">Comments</label>
+      <div>
+        <Textarea
+        id="aquifer-notes"
+        rows="5"
+        cols="30"
+        :disabled="fieldDisabled"
+        v-model="record.notes"
+        class="w-full"/>
+        <Message v-if="fieldHasError.notes" severity="error">
+          {{  fieldErrorMessages.notes }}
+        </Message>
+      </div>
+    </responsive-grid>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
+      <label for="isPrivateCheckbox">Documents</label>
+      <div>
+        <FileUpload
+          id="document-upload"
+          mode="basic"
+          name="documents"
+          :multiple="true"
+          :auto="false"
+          chooseLabel="Choose"
+          @select="onFileSelect"
+          class="w-full"/>
+          <Checkbox
+            v-model="privateDocument"
+            inputId="isPrivateCheckbox"
+            :binary="true"
+            :disabled="fieldDisabled"/>
+          <label for="isPrivateCheckbox" class="ml-2">Are these documents private?</label>
+      </div>
+    </responsive-grid>
+    <div class="mt-4">
+      <h5 class="w-full">Public documentation</h5>
+      <aquifer-documents :files="files"
+        :editMode="true"
+        :id="id"
+        :loading="loadingFiles"
+        v-on:fetchFiles="$emit('fetchFiles')">
+      </aquifer-documents>
     </div>
 
-    <b-modal
-      ok-variant="primary"
-      cancel-variant="default"
-      v-on:ok="$emit('save')"
-      id="confirmSave">
-      <p>Are you sure you would like to save this record?</p>
-    </b-modal>
+    <h4 class="mt-6">Resource Links</h4>
+    <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4"
+      v-for="(resource, index) in record.resources" :key="index">
+      <div>
+        <label for="section">Section</label>
+        <Select
+          v-model="resource.section_code"
+          inputId="section"
+          :options="aquifer_resource_sections"
+          :disabled="fieldDisabled"
+          optionLabel="name"
+          optionValue="code"
+          showClear
+          class="w-full"/>
+        <Message v-if="resourceErrorMessages[index].section" severity="error">
+          {{  resourceErrorMessages[index].section }}
+        </Message>
+      </div>
+      <div>
+        <label for="name">Document Name</label>
+        <InputText
+          type="text"
+          :disabled="fieldDisabled"
+          v-model="resource.name"
+          class="w-full"/>
+        <Message v-if="resourceErrorMessages[index].name" severity="error">
+          {{  resourceErrorMessages[index].name }}
+        </Message>
+      </div>
+      <div>
+        <label for="url">Document URL</label>
+        <InputText
+          type="text"
+          :disabled="fieldDisabled"
+          v-model="resource.url"
+          class="w-full"/>
+        <Message v-if="resourceErrorMessages[index].url" severity="error">
+          {{  resourceErrorMessages[index].url }}
+        </Message>
+      </div>
+      <div cols="auto">
+        <br>
+        <Button label="Remove" @click="handleDeleteResource(index)"/>
+      </div>
+    </responsive-grid>
+    <div class="mt-4">
+        <Button label="Add additional link" :disabled="fieldDisabled" @click="handleAddResource()"/>
+    </div>
 
-    <b-modal
-      ok-variant="primary"
-      cancel-variant="default"
-      v-on:ok="$emit('cancel')"
-      id="confirmCancel">
-      <p>Are you sure you want to quit editing this record?</p>
-    </b-modal>
+    <div class="mt-6">
+      <Button
+        label="Save"
+        :loading="loadingData"
+        @click="showConfirmSave = true"
+        class="mr-2"/>
+      <Button
+        label="Cancel"
+        @click="showConfirmCancel = true"/>
+
+      <Dialog
+        v-model:visible="showConfirmSave"
+        modal
+        header="Confirm Save"
+        :style="{ width: '25rem' }">
+        <p>Are you sure you would like to save this record?</p>
+        <template #footer>
+          <Button
+            label="Cancel"
+            severity="secondary"
+            text
+            @click="showConfirmSave = false"
+          />
+          <Button
+            label="OK"
+            severity="primary"
+            @click="handleSave"
+          />
+        </template>
+      </Dialog>
+      <Dialog
+        v-model:visible="showConfirmCancel"
+        modal
+        header="Confirm Cancel"
+        :style="{ width: '25rem' }">
+        <p>Are you sure you want to quit editing this record?</p>
+        <template #footer>
+          <Button
+            label="Cancel"
+            severity="secondary"
+            text
+            @click="showConfirmCancel = false"
+          />
+          <Button
+            label="OK"
+            severity="primary"
+            @click="handleCancel"
+          />
+        </template>
+      </Dialog>
+    </div>
   </div>
 </template>
 
@@ -355,6 +346,7 @@
 import { isEmpty, mapValues, cloneDeep } from 'lodash-es'
 import { useAquiferStore } from '@/stores/aquifers.js'
 import { useCommonStore } from '@/stores/common.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 import ApiService from '@/common/services/ApiService.js'
 import { END_OF_TIME_ISO_8601 } from '@/common/helpers/dates.js'
@@ -363,7 +355,8 @@ import Documents from './Documents.vue'
 
 export default {
   components: {
-    'aquifer-documents': Documents
+    'aquifer-documents': Documents,
+    ResponsiveGrid
   },
   props: {
     isNew: Boolean,
@@ -391,12 +384,17 @@ export default {
     return {
       recordCopy: this.hasFormData ? cloneDeep(this.record) : {}, // keep a copy of the record
       status: this.isNew ? 'unpublished' : null,
-      aquiferStatusOptions
+      aquiferStatusOptions,
+      showConfirmSave: false,
+      showConfirmCancel: false
     }
   },
   computed: {
     id () { return this.$route.params.id },
     hasFormData () {
+      if(!this.record) {
+        return false
+      }
       return Object.keys(this.record).length > 0
     },
     resourceErrorMessages () {
@@ -474,14 +472,30 @@ export default {
   methods: {
     addCodes (payload) { this.aquiferStore.addCodes(payload) },
     handleAddResource () {
-      this.record.resources.push({
-        name: '',
-        url: '',
-        section_id: '1'
+      this.$nextTick(() => {
+        if (!this.record) {
+          this.record = {}
+        }
+        if (!this.record.resources) {
+          this.record.resources = []
+        }
+          this.record.resources.push({
+            name: '',
+            url: '',
+            section_id: '1'
+          })
       })
     },
     handleDeleteResource (i) {
       this.record.resources.splice(i, 1)
+    },
+    handleSave() {
+      this.showConfirmSave = false;
+      this.$emit('save');
+    },
+    handleCancel() {
+      this.showConfirmCancel = false;
+      this.$emit('cancel');
     },
     fetchCode (codePath, key) {
       ApiService.query(codePath).then((response) => {

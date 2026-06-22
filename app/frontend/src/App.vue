@@ -27,8 +27,6 @@ export default {
   created () {
     console.log('New deploy of Gwells')
     this.commonStore.fetchConfig()
-    window._paq = window._paq || []
-    window._paq.push(['trackPageView']) // To track pageview -
   }
 }
 </script>
@@ -51,11 +49,6 @@ export default {
     .registries-action-button {
       display: none!important;
     }
-  }
-
-  // remove cursor CSS from bootstrap tables
-  table.b-table tr {
-    cursor: default !important;
   }
 
   .buorg {

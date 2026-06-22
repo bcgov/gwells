@@ -12,113 +12,93 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <fieldset>
-    <b-row>
-      <b-col cols="12" lg="6">
-        <legend :id="id">Decommission Description</legend>
-        <p>Enter depth intervals from the top of the hole to the bottom.</p>
-      </b-col>
-      <b-col cols="12" lg="6">
-        <div class="float-right">
-          <b-btn v-if="isStaffEdit" variant="primary" class="ml-2" @click="$emit('save')" :disabled="saveDisabled">Save</b-btn>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col cols="12">
-        <div class="table-responsive">
-          <table class="table table-sm" aria-describedby="decommissionDescriptions">
-            <thead>
-              <tr>
-                <th>From</th>
-                <th>To</th>
-                <th>Decommission Material</th>
-                <th>Observations</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                  v-for="(item, index) in closureDescriptionSetData"
-                  :key="`closureDescription${index}`"
-                  :id="`closureDescription${index}`">
-                <td class="input-width-small">
-                  <form-input
-                      group-class="mt-1 mb-0"
-                      :id="`closureFrom${index}`"
-                      type="number"
-                      v-model="item.start"
-                      :errors="getClosureError(index).start"
-                      :loaded="getFieldsLoaded(index).start"
-                  />
-                </td>
-                <td class="input-width-small">
-                  <form-input
-                      group-class="mt-1 mb-0"
-                      :id="`closureTo${index}`"
-                      v-model="item.end"
-                      type="number"
-                      :errors="getClosureError(index).end"
-                      :loaded="getFieldsLoaded(index).end"
-                  />
-                </td>
-                <td>
-                  <form-input
-                      group-class="mt-1 mb-0"
-                      select
-                      :id="`decommissionMaterial${index}`"
-                      :options="codes?.decommission_materials"
-                      text-field="description"
-                      value-field="code"
-                      placeholder="Select material"
-                      value="Select material"
-                      v-model="item.material"
-                      :errors="getClosureError(index).material"
-                      :loaded="getFieldsLoaded(index).material"
-                  />
-                </td>
-                <td>
-                  <form-input
-                      group-class="mt-1 mb-0"
-                      :id="`closureObservations${index}`"
-                      v-model="item.observations"
-                      :errors="getClosureError(index).observations"
-                      :loaded="getFieldsLoaded(index).observations"
-                  />
-                </td>
-                <td class="pt-1 py-0">
-                  <b-btn size="sm" variant="primary" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"><i class="fa fa-minus-square-o"></i> Remove</b-btn>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <b-btn size="sm" variant="primary" @click="addClosureRow" id="addClosureRowButton"><i class="fa fa-plus-square-o"></i> Add row</b-btn>
-      </b-col>
-    </b-row>
-    <b-modal
-        v-model="confirmRemoveModal"
-        centered
-        title="Confirm remove"
-        @shown="focusRemoveModal">
-      Are you sure you want to remove this row?
-      <div slot="modal-footer">
-        <b-btn variant="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn">
-          Cancel
-        </b-btn>
-        <b-btn variant="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)">
-          Remove
-        </b-btn>
+  <form-subsection
+    title="Decommission Description"
+    subtitle="Enter depth intervals from the top of the hole to the bottom."
+    :id="id"
+    :isStaffEdit="isStaffEdit"
+    :saveDisabled="saveDisabled">
+    <div class="flex">
+      <div class="table-responsive">
+        <table class="table table-sm" aria-describedby="decommissionDescriptions">
+          <thead>
+            <tr>
+              <th>From</th>
+              <th>To</th>
+              <th>Decommission Material</th>
+              <th>Observations</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(item, index) in closureDescriptionSetData"
+              :key="`closureDescription${index}`"
+              :id="`closureDescription${index}`">
+              <td class="input-width-small">
+                <form-input
+                  group-class="mt-1 mb-0"
+                  :id="`closureFrom${index}`"
+                  type="number"
+                  v-model="item.start"
+                  :errors="getClosureError(index).start"
+                  :loaded="getFieldsLoaded(index).start"/>
+              </td>
+              <td class="input-width-small">
+                <form-input
+                  group-class="mt-1 mb-0"
+                  :id="`closureTo${index}`"
+                  v-model="item.end"
+                  type="number"
+                  :errors="getClosureError(index).end"
+                  :loaded="getFieldsLoaded(index).end"/>
+              </td>
+              <td>
+                <form-input
+                  group-class="mt-1 mb-0"
+                  select
+                  :id="`decommissionMaterial${index}`"
+                  :options="codes?.decommission_materials"
+                  text-field="description"
+                  value-field="code"
+                  placeholder="Select material"
+                  value="Select material"
+                  v-model="item.material"
+                  :errors="getClosureError(index).material"
+                  :loaded="getFieldsLoaded(index).material"/>
+              </td>
+              <td>
+                <form-input
+                  group-class="mt-1 mb-0"
+                  :id="`closureObservations${index}`"
+                  v-model="item.observations"
+                  :errors="getClosureError(index).observations"
+                  :loaded="getFieldsLoaded(index).observations"/>
+              </td>
+              <td class="pt-1 py-0">
+                <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"/>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </b-modal>
-  </fieldset>
+      <Button label="Add row" icon="fa fa-plus-square-o" size="small" @click="addClosureRow" id="addClosureRowButton"/>
+    </div>
+    <Dialog v-model:visible="confirmRemoveModal" modal header="Confirm remove" @show="focusRemoveModal">
+      Are you sure you want to remove this row?
+      <template #footer>
+        <Button label="Cancel" severity="secondary" @click="confirmRemoveModal=false;rowIndexToRemove=null" ref="cancelRemoveBtn"/>
+        <Button label="Remove" severity="danger" @click="confirmRemoveModal=false;removeRowByIndex(rowIndexToRemove)"/>
+      </template>
+    </Dialog>
+  </form-subsection>
 </template>
 
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   mixins: [inputBindingsMixin],
@@ -144,6 +124,9 @@ export default {
       type: Boolean,
       isInput: false
     }
+  },
+  components: {
+    FormSubsection
   },
   data () {
     return {
@@ -215,7 +198,7 @@ export default {
     },
     focusRemoveModal () {
       // Focus the "cancel" button in the confirm remove popup.
-      this.$refs.cancelRemoveBtn.focus()
+      this.$refs.cancelRemoveBtn.$el.focus()
     },
     closureDescriptionIsEmpty (closureDescription) {
       return Object.values(closureDescription).every((x) => !x)

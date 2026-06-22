@@ -17,13 +17,17 @@ export default {
       default: 0
     },
     // Default col span
-    cols: [Number, Array],
+    cols: {
+      type: [Number, Array],
+      default: 12
+    },
     // Col span for specific screen widths
     xs: [Number, Array],
     sm: [Number, Array],
     md: [Number, Array],
     lg: [Number, Array],
     xl: [Number, Array],
+    innerDivClass: [String, Array],
   },
   methods: {
     getClassNames (index) {
@@ -86,6 +90,16 @@ export default {
           }
         } else {
           classNames.push(`xl:col-span-${this.xl}`)
+        }
+      }
+      // Other styling classes
+      if (this.innerDivClass) {
+        if (Array.isArray(this.innerDivClass)) {
+          if (this.innerDivClass[index]) {
+            classNames.push(this.innerDivClass[index])
+          }
+        } else {
+          classNames.push(this.innerDivClass)
         }
       }
 

@@ -1,0 +1,110 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: matomo
+  generation: 5
+  namespace: 26e83e-prod
+  labels:
+    app: matomo
+    name: matomo
+    service: matomo
+    template: matomo-template
+spec:
+  strategy:
+    type: Rolling
+    rollingParams:
+      updatePeriodSeconds: 1
+      intervalSeconds: 1
+      timeoutSeconds: 600
+      maxUnavailable: 25%
+      maxSurge: 25%
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    app: matomo
+    deploymentconfig: matomo
+    template: matomo-template
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: matomo
+        deploymentconfig: matomo
+        name: matomo
+        template: matomo-template
+    spec:
+      volumes:
+        - name: matomo-source
+          emptyDir: {}
+        - name: matomo
+          persistentVolumeClaim:
+            claimName: matomo
+      containers:
+        - resources: {}
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 1
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: matomo
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 1
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          ports:
+            - containerPort: 9000
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: matomo-source
+              mountPath: /var/www/html
+            - name: matomo
+              mountPath: /var/www/html/config
+          terminationMessagePolicy: File
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo@sha256:61d87395a67d966c2af4636726071ff85328f6db6c6c6479f15cee337472dc9e'
+        - resources: {}
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 1
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: matomo-proxy
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 1
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: matomo-source
+              mountPath: /var/www/html
+          terminationMessagePolicy: File
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo-proxy@sha256:76d7f6f07975dca65818684a3362f91a39690b333ad346d549b11a3691dea59a'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler

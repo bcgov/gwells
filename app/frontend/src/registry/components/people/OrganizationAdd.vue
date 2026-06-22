@@ -223,6 +223,7 @@ export default {
       }
     },
     focusInput () {
+      // TODO: Check how to focus this
       this.$refs.orgAddNameInput.focus()
     },
     resetFieldErrors () {

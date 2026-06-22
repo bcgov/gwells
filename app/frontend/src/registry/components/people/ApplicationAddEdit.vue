@@ -20,7 +20,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </h5>
-        <p v-if="loading">
+        <div v-if="loading">
           <div class="grid">
             <div class="row-span-full">
               <div class="fa-2x text-center">
@@ -28,8 +28,8 @@
               </div>
             </div>
           </div>
-        </p>
-        <p v-else>
+        </div>
+        <div v-else>
           <div class="grid">
             <div class="row-span-full">
               <div style="font-weight: bold;">Certification</div>
@@ -47,7 +47,7 @@
           </div>
           <div class="grid grid-cols-3 gap-6">
             <label class="col-span-1">Select classification</label>
-              <RadioButtonGroup class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></RadioButtonGroup>
+            <RadioButtonGroup class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></RadioButtonGroup>
           </div>
           <div class="grid grid-cols-4 gap-6">
             <label class="col-span-1">Qualified{{activity === 'DRILL' ? ' to drill' : '' }}</label>
@@ -117,7 +117,7 @@
           </div>
           <!-- slot for child elements to be added by parent component -->
           <slot></slot>
-        </p>
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,111 @@
+kind: DeploymentConfig
+apiVersion: apps.openshift.io/v1
+metadata:
+  name: matomo-db
+  generation: 16
+  namespace: 26e83e-prod
+  labels:
+    app: matomo
+    name: matomo-db
+    service: matomo-db
+    template: matomo-template
+spec:
+  strategy:
+    type: Recreate
+    recreateParams:
+      timeoutSeconds: 600
+    resources: {}
+    activeDeadlineSeconds: 21600
+  triggers:
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - mariadb
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'mariadb:prod'
+        lastTriggeredImage: 'registry.redhat.io/rhel8/mariadb-103@sha256:363f7f7293cd7040ba610bbea830f3bc71e2d70d1f2540a0926dc683bfff79c9'
+    - type: ConfigChange
+  replicas: 1
+  revisionHistoryLimit: 10
+  test: false
+  selector:
+    name: matomo-db
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: matomo
+        name: matomo-db
+    spec:
+      volumes:
+        - name: matomo-db-data
+          persistentVolumeClaim:
+            claimName: matomo-db
+      containers:
+        - resources:
+            limits:
+              cpu: 250m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - '-i'
+                - '-c'
+                - MYSQL_PWD="$MYSQL_PASSWORD" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE -e 'SELECT 1'
+            initialDelaySeconds: 5
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          name: mariadb
+          livenessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: matomo-db
+                  key: database-user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matomo-db
+                  key: database-password
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: matomo-db
+                  key: database-root-password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: matomo-db
+                  key: database-name
+          ports:
+            - containerPort: 3306
+              protocol: TCP
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: matomo-db-data
+              mountPath: /var/lib/mysql/data
+          terminationMessagePolicy: File
+          image: 'registry.redhat.io/rhel8/mariadb-103@sha256:363f7f7293cd7040ba610bbea830f3bc71e2d70d1f2540a0926dc683bfff79c9'
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler

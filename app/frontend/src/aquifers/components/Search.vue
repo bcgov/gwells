@@ -15,9 +15,8 @@
 <template>
   <div id="aquifers-search" class="container p-1">
     <!-- Active surveys -->
-    <b-alert
-        show
-        variant="info"
+    <Message
+        severity="info"
         class="mb-4"
         v-for="(survey, index) in surveys"
         :key="`survey ${index}`">
@@ -26,159 +25,178 @@
           {{ survey.survey_introduction_text }}
         </a>
       </p>
-    </b-alert>
+    </Message>
 
-    <b-card no-body class="main-search-card mb-6">
-      <b-alert
-        :show="noSearchCriteriaError"
-        variant="danger">
-        <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
-      </b-alert>
-      <b-form
-        v-on:submit.prevent="triggerSearch()"
-        v-on:reset="triggerReset">
-        <b-form-row>
-          <b-col cols="12" md="12" lg="12" xl="4" class="p-6">
-            <b-button
-              id="aquifers-add"
-              class="pull-right"
-              v-on:click="navigateToNew"
-              v-if="commonStore.userRoles.aquifers.edit"
-              variant="primary">
-              Add new Aquifer
-            </b-button>
-            <h1 class="main-title ml-2 mt-2">Aquifer Search</h1>
+    <Card class="main-search-card mb-4">
+      <template #content>
+        <Message
+          v-if="noSearchCriteriaError"
+          severity="danger">
+          <i class="fa fa-exclamation-circle"/>&nbsp;&nbsp;At least one search field is required
+        </Message>
+        <Form
+          @submit="triggerSearch()"
+          @reset="triggerReset">
+          <responsive-grid :gap="4" :cols="12" :lg="[4, 8]">
+            <div>
+              <Button
+                id="aquifers-add"
+                class="pull-right"
+                @click="navigateToNew"
+                v-if="commonStore.userRoles.aquifers.edit"
+                label="Add new Aquifer"/>
+              <h1 class="main-title ml-2 mt-2">Aquifer Search</h1>
 
-            <div class="pl-2 pr-2 aquifer-search-column mt-4">
-              <h4>Basic Search</h4>
-              <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
-              <b-form-group class="search-title mt-4 mb-4">
-                <b-form-input
-                  type="text"
-                  id="aquifers-search-field"
-                  v-model="search"
-                  class="w-75"/>
-              </b-form-group>
-              <h4 class="pt-6">Advanced Search</h4>
-              <b-form-group>
-                <b-form-radio inline v-model="matchAny" name="match-any" value="true">Any field match</b-form-radio>
-                <b-form-radio inline v-model="matchAny" name="match-any" value="false">All field match</b-form-radio>
-              </b-form-group>
-              <b-form-checkbox-group
-                stacked
-                v-model="selectedSections"
-                :options="resourceSectionOptions"
-                class="aquifer-checkbox-group"
-              />
-              <b-form-row>
-                <b-button-group class="aquifer-search-actions">
-                  <b-button class="aquifer-buttons" variant="primary" type="submit" id="aquifers-search-button" :disabled="searchInProgress">
-                    Search
-                    <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
-                  </b-button>
-                  <b-button class="aquifer-buttons" variant="default" type="reset">Reset</b-button>
-                </b-button-group>
-              </b-form-row>
-              <h6 class="mt-4">Download all aquifers</h6>
-              <ul class="aquifer-download-list">
-                <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
-                <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
-              </ul>
-            </div>
-          </b-col>
-
-          <b-col cols="12" md="12" lg="12" xl="8" class="map-column">
-            <ProgressSpinner v-if="loadingMap"/>
-
-            <aquifer-map
-              ref="aquiferMap"
-              :initialCentre="searchMapCentre"
-              :initialZoom="searchMapZoom"
-              :highlightAquiferIds="searchedAquiferIds"
-              :selectedId="selectedAquiferId"
-              :viewBounds="mapViewBounds"
-              :searchText="search"
-              :showRetired="showRetiredAquifers"
-              @moved="mapMoved"
-              @zoomed="handleMapZoom"
-              @search="mapSearch"
-              @mapLoading="loadingMap = true"
-              @mapLoaded="loadingMap = false"/>
-          </b-col>
-        </b-form-row>
-      </b-form>
-
-      <b-row>
-        <b-col cols="12" class="p-12">
-          <b-container fluid v-if="searchPerformed && !searchInProgress" class="p-0">
-            <b-row class="mb-4">
-              <b-col md="6">
-                <div v-if="!emptyResults">
-                  Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
+              <div class="pl-2 pr-2 aquifer-search-column mt-4">
+                <h4>Basic Search</h4>
+                <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
+                <div class="search-title mt-4 mb-4">
+                  <InputText
+                    type="text"
+                    id="aquifers-search-field"
+                    v-model="search"
+                    class="w-75"/>
                 </div>
-              </b-col>
-              <b-col md="6" class="text-right">
-                <b-form-checkbox v-model="showRetiredAquifers" v-if="numRetiredAquifers > 0" class="d-inline-block">
-                  Show {{numRetiredAquifers}} retired aquifers
-                </b-form-checkbox>
-              </b-col>
-            </b-row>
-          </b-container>
-          <b-table
-            id="aquifers-results"
-            :current-page="currentPage"
-            :per-page="searchResultsPerPage"
-            :fields="aquiferListFields"
-            :items="resultsTableData"
-            :show-empty="emptyResults"
-            v-model:sort-by="sortBy"
-            v-model:sort-desc="sortDesc"
-            empty-text="No aquifers could be found"
-            striped
-            outlined
-            :busy="searchInProgress"
-            v-if="searchPerformed"
-            :tbody-tr-class="searchResultsRowClass"
-            responsive>
-            <template v-slot:cell(id)="row">
-              <router-link :to="{ name: 'aquifers-view', params: {id: row.item.aquifer_id} }">{{ row.item.aquifer_id }}</router-link>
-            </template>
-            <template v-slot:cell(name)="row">
-              {{row.item.name}}
-            </template>
-            <template v-slot:cell(retire_date)="row">
-              <span :title="row.item.retire_date">{{ moment(row.item.retire_date, "MMMM Do YYYY [at] LT") }}</span>
-            </template>
-            <template v-slot:table-busy>
-              <div class="text-center my-2">
-                <b-spinner class="align-middle"/>
-                <strong> Loading...</strong>
+                <h4 class="pt-6">Advanced Search</h4>
+                <div class="mb-4 flex flex-row gap-4">
+                  <RadioButton value="true" v-model="matchAny" inputId="matchTrue"/>
+                  <label for="matchTrue">Any field match</label>
+                  <RadioButton value="false" v-model="matchAny" inputId="matchFalse"/>
+                  <label for="matchFalse">All field match</label>
+                </div>
+                <CheckboxGroup
+                  v-model="selectedSections"
+                  class="aquifer-checkbox-group flex flex-col"
+                  >
+                  <div
+                    v-for="option of resourceSectionOptions"
+                    :key="option.value"
+                    class="flex items-center gap-2">
+                    <Checkbox
+                      v-model="selectedSections"
+                      :inputId="option.text"
+                      :name="option.text"
+                      :value="option.text"/>
+                    <label :for="option.text">{{ option.text }}</label>
+                  </div>
+                </CheckboxGroup>
+                <div class="aquifer-search-actions flex gap-2">
+                  <Button class="aquifer-buttons" type="submit" id="aquifers-search-button" :disabled="searchInProgress" label="Search"/>
+                  <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
+                  <Button class="aquifer-buttons" type="reset" label="Reset"/>
+                </div>
+                <h6 class="mt-4">Download all aquifers</h6>
+                <ul class="aquifer-download-list">
+                  <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
+                </ul>
               </div>
-            </template>
-          </b-table>
-          <b-pagination
-            v-if="searchResultCount > searchResultsPerPage"
-            class="pull-right"
-            :total-rows="searchResultCount"
-            :per-page="searchResultsPerPage"
-            v-model="currentPage"/>
-        </b-col>
-      </b-row>
-      <h6 class="pl-12 pb-12 mt-4" v-if="searchResultCount > 0">Download searched aquifers :
-        <a href="#" @click.prevent="downloadXLSX(true)">XLSX</a> |
-        <a href="#" @click.prevent="downloadCSV(true)">CSV</a>
-      </h6>
-    </b-card>
+            </div>
+
+            <div>
+              <ProgressSpinner v-if="loadingMap"/>
+
+              <aquifer-map
+                ref="aquiferMap"
+                :initialCentre="searchMapCentre"
+                :initialZoom="searchMapZoom"
+                :highlightAquiferIds="searchedAquiferIds"
+                :selectedId="selectedAquiferId"
+                :viewBounds="mapViewBounds"
+                :searchText="search"
+                :showRetired="showRetiredAquifers"
+                @moved="mapMoved"
+                @zoomed="handleMapZoom"
+                @search="mapSearch"
+                @mapLoading="loadingMap = true"
+                @mapLoaded="loadingMap = false"/>
+            </div>
+          </responsive-grid>
+        </Form>
+
+        <responsive-grid cols="12" class="p-12">
+          <div>
+            <div v-if="searchPerformed && !searchInProgress" class="w-full">
+              <responsive-grid md="6" class="mb-4">
+                <div>
+                  <div v-if="!emptyResults">
+                    Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
+                  </div>
+                </div>
+                <div v-if="numRetiredAquifers > 0" class="text-right gap-2 flex items-center justify-end">
+                  <Checkbox
+                    v-model="showRetiredAquifers"
+                    inputId="showRetired"
+                    :binary="true"
+                    class="d-inline-block"/>
+                  <label for="showRetired">Show {{numRetiredAquifers}} retired aquifers</label>
+                </div>
+              </responsive-grid>
+            </div>
+            <DataTable
+              id="aquifers-results"
+              :value="resultsTableData || []"
+              v-if="searchPerformed"
+              paginator
+              :rows="searchResultsPerPage"
+              v-model:sort-field="sortBy"
+              v-model:sort-order="sortDesc"
+              :loading="searchInProgress"
+              :row-class="searchResultsRowClass"
+              stripedRows
+              showGridlines
+              tableStyle="min-width: 50rem">
+              <Column
+                v-for="field of aquiferListFields"
+                :key="field.key"
+                :field="field.key"
+                :header="field.label"
+                sortable>
+                <template #body="{ data }">
+                  <template v-if="field.key === 'id'">
+                    <router-link :to="{ name: 'aquifers-view', params: {id: data.aquifer_id} }">{{ data.aquifer_id }}</router-link>
+                  </template>
+
+                  <template v-else-if="field.key === 'retire_date'"">
+                  <span :title="data.retire_date">{{ formatDate(data.retire_date) }}</span></template>
+
+                  <span v-else>
+                    {{ data[field.key] }}
+                  </span>
+                </template>
+              </Column>
+
+              <template #empty>
+                No aquifers could be found.
+              </template>
+
+              <template #loading>
+                <div class="text-center my-2">
+                  <ProgressSpinner class="align-middle"/>
+                  <strong> Loading...</strong>
+                </div>
+              </template>
+            </DataTable>
+          </div>
+        </responsive-grid>
+        <h6 class="pl-12 pb-12 mt-4" v-if="searchResultCount > 0">Download searched aquifers :
+          <a href="#" @click.prevent="downloadXLSX(true)">XLSX</a> |
+          <a href="#" @click.prevent="downloadCSV(true)">CSV</a>
+        </h6>
+      </template>
+    </Card>
   </div>
 </template>
 
 <script>
 import mapboxgl from 'mapbox-gl'
+import moment from 'moment'
 import querystring from 'querystring'
 import { isEqual, pick } from 'lodash-es'
 import { useCommonStore } from '@/stores/common.js'
 import smoothScroll from 'smoothscroll'
 import { useAquiferStore } from '@/stores/aquifers.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 import ApiService from '@/common/services/ApiService.js'
 
@@ -208,6 +226,7 @@ const RESULTS_TABLE_FIELDS = [
 export default {
   components: {
     'aquifer-map': AquiferMap,
+    ResponsiveGrid
   },
   data () {
     let query = this.$route.query
@@ -382,7 +401,7 @@ export default {
       this.selectedAquiferId = null
       this.showRetiredAquifers = false
       this.resetSearch()
-      this.$emit('resetLayers')
+      this.$refs.aquiferMap.onResetLayers()
     },
     triggerSearch (options = {}) {
       let constrainSearch = !!options.constrain
@@ -495,6 +514,13 @@ export default {
       }
 
       this.scrollToMap()
+    },
+    formatDate (value) {
+      if (!value) {
+        return ''
+      }
+      const m = moment(value)
+      return m.isValid() ? m.format("MMMM Do YYYY [at] LT") : ''
     }
   },
   watch: {

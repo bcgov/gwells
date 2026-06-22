@@ -14,61 +14,55 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <template>
   <div>
     <h1 class="card-title">
-      <b-row>
-        <b-col cols="12">
-          <div v-if="isStaffEdit" id="top">Update Well Information</div>
-          <div v-else>Well Activity Submission</div>
-          <b-form-group v-if="activityType !== 'STAFF_EDIT'">
-            <b-form-radio-group button-variant="outline-primary" size="sm" buttons v-model="formIsFlatInput" label="Form layout" class="float-right">
-              <b-form-radio v-bind:value="true" id="singleSubmissionPage">Single page</b-form-radio>
-              <b-form-radio v-bind:value="false" id="multiSubmissionPage">Multi page</b-form-radio>
-            </b-form-radio-group>
-          </b-form-group>
-        </b-col>
-      </b-row>
+      <div class="flex flex-col">
+        <div v-if="isStaffEdit" id="top">Update Well Information</div>
+        <div v-else>Well Activity Submission</div>
+        <div class="ml-auto">
+          <SelectButton  v-if="activityType !== 'STAFF_EDIT'" size="small" v-model="formIsFlatInput" :options="selectOptions" optionLabel="name"/>
+        </div>
+      </div>
     </h1>
 
     <div v-if="loading">
-      <b-row>
-        <b-col cols="12">
-          <div class="fa-2x text-center">
-            Loading...
-          </div>
-          <div class="fa-2x text-center">
-            <i class="fa fa-circle-o-notch fa-spin"></i>
-          </div>
-        </b-col>
-      </b-row>
+      <div class="flex">
+        <div class="fa-2x text-center">
+          Loading...
+        </div>
+        <div class="fa-2x text-center">
+          <i class="fa fa-circle-o-notch fa-spin"></i>
+        </div>
+      </div>
     </div>
     <div v-else>
-      <b-alert show v-if="isStaffEdit && isUnpublished" variant="info">
+      <Message v-if="isStaffEdit && isUnpublished" severity="info">
         This well is unpublished and will be hidden from DataBC, iMapBC, GWELLS Well Search, and the CSV/XLS export.
-      </b-alert>
-      <b-row v-if="isStaffEdit">
-          <b-col lg="3" v-for="step in stepCodes" :key='step'>
-            <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
-          </b-col>
-        </b-row>
+      </Message>
+      <div v-if="isStaffEdit" class="grid grid-cols-12">
+        <div class="lg:col-span-3" v-for="step in stepCodes" :key='step'>
+          <a :href="`#${step}`" @click.prevent="anchorLinkHandler(step)">{{formStepDescriptions[step] ? formStepDescriptions[step] : step}}</a>
+        </div>
+      </div>
       <p v-if="!isStaffEdit">Submit activity on a well. <a href="/gwells/" target="_blank">Try a search</a> to see if the well exists in the system before submitting a report.</p>
-      <p class="bg-warning p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
+      <p class="bg-amber-300 p-2">All form fields marked with a trailing asterisk are mandatory fields.</p>
 
       <!-- Form load/save -->
-      <b-row v-if="!isStaffEdit">
-        <b-col class="text-right">
-          <b-btn size="sm" variant="outline-primary" class="mr-2" @click="saveForm">
-            Save report progress
-            <transition name="bounce" mode="out-in">
-              <i v-show="saveFormSuccess" class="fa fa-check text-success"></i>
-            </transition>
-          </b-btn>
-          <b-btn size="sm" variant="outline-primary" @click="loadConfirmation" ref="confirmLoadBtn" :disabled="isLoadFormDisabled">
-            Load saved report
-            <transition name="bounce">
-              <i v-show="loadFormSuccess" class="fa fa-check text-success"></i>
-            </transition>
-          </b-btn>
-        </b-col>
-      </b-row>
+      <div v-if="!isStaffEdit" class="flex justify-end">
+        <Button
+          label="Save report progress"
+          :icon="saveFormSuccess ? 'fa fa-check text-success animate-bounce':''"
+          size="small"
+          variant="outlined"
+          class="mr-2"
+          @click="saveForm"/>
+        <Button
+          label="Load saved report"
+          :icon="loadFormSuccess ? 'fa fa-check text-success animate-bounce':''"
+          size="small"
+          variant="outlined"
+          @click="loadConfirmation"
+          ref="confirmLoadBtn"
+          :disabled="isLoadFormDisabled"/>
+      </div>
 
       <!-- Type of work performed -->
       <activity-type class="my-12"
@@ -511,40 +505,37 @@ Licensed under the Apache License, Version 2.0 (the "License");
       ></edit-history>
 
       <!-- Back / Next / Submit controls -->
-      <b-row v-else class="mt-12">
-        <b-col v-if="!formIsFlat">
-          <b-btn v-if="step > 1 && !formIsFlat" @click="gotoPrevStep" variant="primary">Back</b-btn>
-        </b-col>
-        <b-col class="pr-6 text-right">
-          <b-btn v-if="step < maxSteps && !formIsFlat" @click="gotoNextStep" variant="primary" id="nextSubmissionStep">Next</b-btn>
+      <div v-else class="flex mt-12">
+        <div v-if="!formIsFlat">
+          <Button v-if="step > 1 && !formIsFlat" label="Back" @click="gotoPrevStep"/>
+        </div>
+        <div class="pr-6 text-right">
+          <Button v-if="step < maxSteps && !formIsFlat" label="Next" @click="gotoNextStep" id="nextSubmissionStep"/>
           <span v-else>
-            <b-btn variant="primary" @click="$emit('preview')" id="formPreviewButton">Preview &amp; Submit</b-btn>
+            <Button label="Preview &amp; Submit" @click="$emit('preview')" id="formPreviewButton"/>
           </span>
-        </b-col>
-      </b-row>
+        </div>
+      </div>
 
       <!-- Form reload (load from save) confirmation -->
-      <b-modal
-        v-model="confirmLoadModal"
-        centered
-        title="Confirm load submission data"
-        @shown="$refs.confirmLoadConfirmBtn.focus()"
-        :return-focus="$refs.loadFormBtn">
+      <Dialog
+        v-model:visible="confirmLoadModal"
+        modal
+        header="Confirm load submission data"
+        @show="$refs.confirmLoadConfirmBtn.$el.focus()"
+        @after-hide="$refs.loadFormBtn.$el.focus()">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
-        <div slot="modal-footer">
-          <b-btn variant="primary" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn">
-            Load
-          </b-btn>
-          <b-btn variant="light" @click="confirmLoadModal=false">
-            Cancel
-          </b-btn>
-        </div>
-      </b-modal>
+        <template #footer>
+          <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>
+          <Button label="Cancel" severity="secondary" @click="confirmLoadModal=false"/>
+        </template>
+      </Dialog>
     </div>
   </div>
 </template>
 
 <script>
+import { SelectButton } from 'primevue'
 import smoothScroll from 'smoothscroll'
 
 import ActivityType from './ActivityType.vue'
@@ -674,7 +665,8 @@ export default {
     ObservationWellInfo,
     SubmissionHistory,
     EditHistory,
-    AquiferParameters
+    AquiferParameters,
+    SelectButton
   },
   data () {
     return {
@@ -731,7 +723,11 @@ export default {
       wellIdentificationPlateAttachedLabel: WELL_SUBMISSION_STRINGS.WELL_IDENTIFICATION_PLATE_ATTACHED,
       totalDepthDrilledLabel: WELL_SUBMISSION_STRINGS.TOTAL_DEPTH_DRILLED,
       finishedWellDepthLabel: WELL_SUBMISSION_STRINGS.FINISHED_WELL_DEPTH,
-      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS
+      drillingMethodsLabel: WELL_SUBMISSION_STRINGS.DRILLING_METHODS,
+      selectOptions: [
+        { name: "Single page", value: true},
+        { name: "Multi page", value: false },
+      ],
     }
   },
   watch: {
@@ -901,11 +897,13 @@ export default {
       const dateString = event
       const isNewWellConstruction = this.checkNewWellConstructionDates(dateString, dateInputType)
       this.handleNewWellConstruction(isNewWellConstruction)
+    },
+    onFormSave () {
+      // When the form is saved, reset the formValueChanged variable
+      this.formValueChanged = false
     }
   },
   created () {
-    // When the form is saved, reset the formValueChanged variable.
-    this.$parent.$on('formSaved', () => { this.formValueChanged = false })
     if (this.$route.hash) {
       this.step = 1
       this.changeRouteHash(this.step)
@@ -918,7 +916,7 @@ export default {
     // switch to using computed properties, which would be faster. We'd have to add a getter and setter
     // for every single form field!
     if (this.$route.name === 'SubmissionsEdit') {
-      Object.keys(this.$options.propsData.form).forEach((key) => {
+      Object.keys(this.$options.props.form).forEach((key) => {
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {

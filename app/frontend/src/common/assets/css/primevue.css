@@ -6,6 +6,10 @@
     word-wrap: break-word;
 }
 
+.p-card-title {
+    margin-bottom: 0.75rem;
+}
+
 .p-fieldset {
     border: none !important;
     min-width: none;
@@ -19,4 +23,25 @@
     font-size: 1.5rem;
     line-height: inherit;
     white-space: normal;
+}
+
+.p-radiobutton-group > div {
+    margin-right: 1rem;
+}
+
+.p-select {
+    width: 100%;
+}
+
+.p-multiselect {
+    width: 100%;
+}
+
+.p-button-outlined {
+    border-color: #003366 !important;
+}
+
+.p-button-outlined:not(:disabled):hover {
+    background-color: #003366 !important;
+    color: #ffffff !important;
 }

@@ -25,35 +25,35 @@
       <div v-if="error">
         {{error}}
       </div>
-        <b-table
-            hover
-            :fields="['well_number', 'document_type', 'date_of_upload', 'document_status', 'uploaded_document']"
-            striped
-            :items="files.private ? [...files.public, ...files.private] : [...files.public]"
-          >
-            <template v-slot:cell(document_type)="data">
-              {{ callLongFormLabel(data.item.document_type) }}
-            </template>
-            <template v-slot:cell(date_of_upload)="data">
-              {{ data.item.date_of_upload !== -1 ? new Date(data.item.date_of_upload).toLocaleDateString() : "Date Unknown" }}
-            </template>
-            <template v-slot:cell(uploaded_document)="data">
-              <a :href="data.item.url" :download="data.item.name" target="_blank">{{ data.item.name }}</a>
-            </template>
-            <template v-slot:cell(document_status)="data">
-              <p v-if="data.item.document_status">Private Document</p>
-              <p v-else>Public Document</p>
-            </template>
-        </b-table>
+      <DataTable rowHover stripedRows :value="files.private ? [...files.public, ...files.private] : [...files.public]">
+        <Column field="well_number"/>
+        <Column field="document_type">
+          <template #body="{ data }">{{ callLongFormLabel(data.document_type) }}</template>
+        </Column>
+        <Column field="date_of_upload">
+          <template #body="{ data }">{{ data.date_of_upload !== -1 ? new Date(data.date_of_upload).toLocaleDateString() : "Date Unknown" }}</template>
+        </Column>
+        <Column field="document_status">
+          <template #body="{ data }">
+            <a :href="data.url" :download="data.name" target="_blank">{{ data.item.name }}</a>
+          </template>
+        </Column>
+        <Column field="uploaded_document">
+          <template #body="{ data }">
+            <p v-if="data.document_status">Private Document</p>
+            <p v-else>Public Document</p>
+          </template>
+        </Column>
+      </DataTable>
     </div>
-    <b-modal
-      ok-variant="primary"
-      cancel-variant="default"
-      v-on:ok="deleteFile"
-      ref="deleteModal" >
+    <Dialog v-model:visible="isDeleteModalVisible" modal header="Confirmation">
       <p>Are you sure you would like to delete this file?</p>
-      <p>{{ file }}</p>
-    </b-modal>
+      <p>{{file}}</p>
+      <template #footer>
+        <Button label="Cancel" text @click="isDeleteModalVisible = false" />
+        <Button label="OK" severity="primary" @click="deleteFile" />
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -75,7 +75,8 @@ export default {
       error: null,
       file: '',
       fileType: '',
-      splitFiles: []
+      splitFiles: [],
+      isDeleteModalVisible: false
     }
   },
   watch: {
@@ -120,10 +121,10 @@ export default {
       return getLongFormLabel(shortFormLabel)
     },
     showModal () {
-      this.$refs.deleteModal.show()
+      this.isDeleteModalVisible = true
     },
     hideModal () {
-      this.$refs.deleteModal.hide()
+      this.isDeleteModalVisible = false
     },
     confirmDeleteFile (file, fileType, e) {
       e.preventDefault()

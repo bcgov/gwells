@@ -21,15 +21,16 @@ import PrimeVue from 'primevue/config';
 import { definePreset } from '@primeuix/themes';
 import Aura from '@primeuix/themes/aura';
 import {
-  Button, InputText, InputMask, Card, Message,Panel,
+  Button, InputText, InputMask, Card, Message,
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, InputGroupAddon, Tabs, TabList, Tab, TabPanels, TabPanel, ConfirmDialog
+  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip
 } from 'primevue';
 import { Form } from '@primevue/forms';
+import Chart from 'primevue/chart';
 import ConfirmationService from 'primevue/confirmationservice';
-import VueMatomo from "vue-matomo";
+import { initMatomo } from '@certible/use-matomo';
 import App from "./App.vue";
 import router from "./router.js";
 import vSelect from "vue-select";
@@ -41,14 +42,13 @@ import * as filters from "./common/filters";
 import ApiService from "@/common/services/ApiService.js";
 import authenticate from "@/common/authenticate.js";
 
-const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells";
+const PRODUCTION_GWELLS_URL = "https://apps.nrs.gov.bc.ca/gwells/";
 const STAGING_GWELLS_URLS = [
-  "testapps.nrs.gov.bc.ca",
-  "gwells-staging.apps.silver.devops.gov.bc.ca",
+  "gwells-frontend-26e83e-test.apps.silver.devops.gov.bc.ca",
 ];
 const BASE_PATH = "/gwells/";
 const PRODUCTION_MATOMO_HOST =
-  "https://water-matomo.apps.silver.devops.gov.bc.ca";
+  "https://matomo-26e83e-prod.apps.silver.devops.gov.bc.ca";
 const TEST_MATOMO_HOST =
   "https://water-matomo-staging.apps.silver.devops.gov.bc.ca";
 
@@ -101,47 +101,46 @@ app.component("form-input", FormInput);
 // PrimeVue components
 app.component("Button", Button);
 app.component("InputText", InputText);
-app.component("InputMask", InputMask)
+app.component("InputMask", InputMask);
 app.component("Card", Card);
 app.component("Message", Message);
-app.component("Panel", Panel);
 app.component("Select", Select);
-app.component("MultiSelect", MultiSelect)
+app.component("MultiSelect", MultiSelect);
 app.component("RadioButton", RadioButton);
 app.component("RadioButtonGroup", RadioButtonGroup);
 app.component("Checkbox", Checkbox);
 app.component("CheckboxGroup", CheckboxGroup);
 app.component("Form", Form);
 app.component("Listbox", Listbox);
-app.component("ProgressSpinner", ProgressSpinner)
-app.component("Breadcrumb", Breadcrumb)
-app.component("Dialog", Dialog)
-app.component("DataTable", DataTable)
-app.component("Column", Column)
-app.component("FileUpload", FileUpload)
-app.component("Textarea", Textarea)
+app.component("ProgressSpinner", ProgressSpinner);
+app.component("Breadcrumb", Breadcrumb);
+app.component("Dialog", Dialog);
+app.component("DataTable", DataTable);
+app.component("Column", Column);
+app.component("FileUpload", FileUpload);
+app.component("Textarea", Textarea);
 app.component("Menubar", Menubar);
 app.component("ScrollTop", ScrollTop);
-app.component("InputGroupAddon", InputGroupAddon);
-app.component("Tab", Tab);
 app.component("Tabs", Tabs);
 app.component("TabList", TabList);
-app.component("TabPanel", TabPanel);
-app.component("TabPanels", TabPanels);
-app.component("ConfirmDialog", ConfirmDialog);
+app.component("Tab", Tab);
+app.component("Chart", Chart);
+app.directive('tooltip', Tooltip);
 
 const pinia = createPinia();
 app.use(pinia);
 
+let matomo;
+
 if (isProduction()) {
-  app.use(VueMatomo, {
+  matomo = initMatomo({
     host: PRODUCTION_MATOMO_HOST,
-    siteId: 2,
+    siteId: 1,
     router: router,
     domains: "apps.nrs.gov.bc.ca",
   });
 } else if (isStaging()) {
-  app.use(VueMatomo, {
+  matomo = initMatomo({
     host: TEST_MATOMO_HOST,
     siteId: 1,
     router: router,
@@ -149,12 +148,14 @@ if (isProduction()) {
   });
 } else {
   // Local & DEV and anything else
-  app.use(VueMatomo, {
+  matomo = initMatomo({
     host: TEST_MATOMO_HOST,
     siteId: 3,
     router: router,
   });
 }
+
+app.provide('matomo', matomo);
 
 app.config.productionTip = false;
 app.config.devtools = import.meta.env.MODE !== "production";
@@ -179,6 +180,9 @@ const MyPreset = definePreset(Aura, {
     card: {
       root: {
         borderRadius: 0,
+      },
+      title: {
+        fontSize: "2.5rem",
       }
     },
     fieldset: {
@@ -188,6 +192,14 @@ const MyPreset = definePreset(Aura, {
       legend: {
         padding: 0,
         fontWeight: "inherit",
+      }
+    },
+    checkbox: {
+      root: {
+        background: "var(--p-gray-200)",
+        checkedBackground: "#017bff",
+        checkedBorderColor: "#017bff",
+        checkedHoverBackground: "#00f",
       }
     }
   }
