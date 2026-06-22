@@ -53,12 +53,12 @@ services:
   #############################################################################################
   db:
     platform: linux/x86_64
-    image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
+    image: postgis/postgis:14-3.5-alpine
     hostname: db
     environment:
-      PG_USER: gwells
-      PG_PASSWORD: ${DATABASE_PASSWORD}
-      PG_DATABASE: gwells
+      POSTGRES_USER: gwells
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: gwells
       PG_MODE: primary
       PG_PRIMARY_USER: primaryuser
       PG_PRIMARY_PASSWORD: ${PG_PRIMARY_PASSWORD}
@@ -82,7 +82,7 @@ services:
         target: /pgconf/setup.sql
         consistency: cached
     healthcheck:
-      test: ["CMD-SHELL", "/usr/pgsql-12/bin/pg_isready", "-d", "gwells"]
+      test: ["CMD-SHELL", "/usr/local/bin/pg_isready -d gwells -h localhost -U gwells"]
       interval: 20s
       timeout: 30s
       retries: 5
