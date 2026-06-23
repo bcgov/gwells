@@ -126,7 +126,7 @@
       </div>
     </Form>
 
-    <Message v-if="!!orgSubmitError" variant="warning" severity="warn">
+    <Message v-if="!!orgSubmitError" severity="warn">
       Error creating a new company.
       <div v-for="(value, key, index) in orgSubmitError.data" :key="`submit error ${index}`">
         <span class="text-capitalize">{{ key }}</span>:

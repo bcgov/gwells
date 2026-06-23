@@ -119,7 +119,6 @@
           <div>
             <Message :show="newOrgSuccess"
                     dismissible
-                    variant="success"
                     severity="success"
                     @dismissed="newOrgSuccess=false"
                     class="mb-4">
@@ -129,7 +128,6 @@
               <Button
                 type="button"
                 v-b-modal.orgModal
-                variant="primary"
                 size="sm"
                 class="py-0">
                 <i class="fa fa-plus-square-o"></i>
@@ -164,9 +162,8 @@
             <div>
               <Button
                 type="button"
-                variant="primary"
-                size="sm"
-                v-on:click="addApplication (drillApplications)"
+                size="small"
+                @click="addApplication(drillApplications)"
                 class="mb-4">
                 <i class="fa fa-plus-square-o"></i>
                 Add new well driller classification
@@ -203,9 +200,8 @@
             <div class="mb-4">
               <Button
                 type="button"
-                variant="primary"
-                size="sm"
-                v-on:click="addApplication(pumpApplications)"
+                size="small"
+                @click="addApplication(pumpApplications)"
                 class="mb-4"><i class="fa fa-plus-square-o"></i> Add new pump installer classification</Button>
             </div>
           </div>

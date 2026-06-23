@@ -18,7 +18,7 @@
       {{statusMessage}}
     </Message>
     <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="mt-4">
-      <label for="aquifer-status" class="col-span-2">Aquifer Status</label>
+      <label for="aquifer-status">Aquifer Status</label>
       <Select
         inputId="aquifer-status"
         v-model="status"

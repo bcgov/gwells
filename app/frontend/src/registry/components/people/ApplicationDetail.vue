@@ -44,9 +44,7 @@
                 centered
                 modal
                 header="Confirm cancel"
-                @shown="focusCancelModal"
-                :return-focus="$refs.cancelClassification"
-              >
+                @shown="focusCancelModal">
                 Your changes are not saved. Are you sure you want to discard your changes?
                 <template #footer>
                   <Button severity="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
@@ -65,9 +63,9 @@
                   v-on:isValid="onApplicationIsValid"
                   v-on:close="confirmCancelModal=true"/>
               </div>
-              <div class="mt-4">
-                  <button type="submit" class="btn btn-primary" id="saveClassification">Save</button>
-                  <button type="button" class="btn btn-primary" id="cancelClassification" v-on:click="confirmCancelModal=true">Cancel</button>
+              <div class="mt-4 flex gap-2">
+                <Button label="Save" type="submit" id="saveClassification" />
+                <Button label="Cancel" type="button" id="cancelClassification" severity="secondary" @click="confirmCancelModal = true" />
               </div>
             </Form>
           </div>
@@ -77,12 +75,14 @@
                 <div>
                   <h5>Classification &amp; Qualifications</h5>
                   <div class="text-right">
-                    <button
-                      class="btn btn-light btn-sm registries-edit-btn"
-                      type="button"
-                      @click="editClassification = !editClassification"
+                    <Button
                       id="editClassification"
-                      v-if="commonStore.userRoles.registry.edit"><i class="fa fa-edit" id="editClassification"></i> Edit</button>
+                      class="registries-edit-btn"
+                      label="Edit"
+                      severity="secondary"
+                      icon="fa fa-edit"
+                      @click="editClassification = !editClassification"
+                      v-if="commonStore.userRoles.registry.edit"/>
                   </div>
                 </div>
                 <div class="row" v-if="classification && classification.registries_subactivity">

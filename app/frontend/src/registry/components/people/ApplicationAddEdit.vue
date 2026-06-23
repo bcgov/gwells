@@ -13,12 +13,12 @@
 */
 <template>
   <div>
-    <div class="card w-100">
+    <div class="card">
       <div class="card-body">
         <h5 class="card-title">Classification &amp; Qualifications
-          <button type="button" class="close pull-right" aria-label="Close" v-on:click="$emit('close')">
+          <Button class="close pull-right" aria-label="Close" @click="$emit('close')" severity="secondary">
             <span aria-hidden="true">&times;</span>
-          </button>
+          </Button>
         </h5>
         <div v-if="loading">
           <div class="grid">
@@ -35,51 +35,68 @@
               <div style="font-weight: bold;">Certification</div>
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-6">
-            <div class="col-span-1">
-              <label :label-cols="3">Issued by</label>
-                <Select :options="formOptions.issuer" v-model="qualificationForm.primary_certificate.acc_cert_guid" required></Select>
-            </div>
-            <div class="col-span-1">
-              <label :label-cols="3">Certificate number</label>
-                <InputText type="text" placeholder="Enter certificate number" v-model="qualificationForm.primary_certificate_no" required></InputText>
-            </div>
-          </div>
-          <div class="grid grid-cols-3 gap-6">
-            <label class="col-span-1">Select classification</label>
-            <RadioButtonGroup class="fixed-width font-weight-normal pt-2" :options="formOptions.classifications" @change="changedClassification" v-model="qualificationForm.subactivity.registries_subactivity_code" required></RadioButtonGroup>
-          </div>
-          <div class="grid grid-cols-4 gap-6">
-            <label class="col-span-1">Qualified{{activity === 'DRILL' ? ' to drill' : '' }}</label>
-            <CheckboxGroup class="col-span-2":options="formOptions.qualifications" v-model="qualificationForm.qualifications">
-              <div v-for="item of qualifications" :key="item.value">
-                <Checkbox
-                  inputId="classificationSelector"
-                  name="classificationSelector"
-                  :value="item.value"
-                  class="col-span-1"
-                />
-                <label :for="item.value">{{ item.text }}</label>
+          <responsive-grid :cols="[2, 4, 2, 4]" gap="6" class="form-group">
+            <label for="issued-by">Issued by</label>
+            <Select
+            inputId="issued-by"
+            :options="formOptions.issuer"
+            optionLabel="text"
+            optionValue="value"
+            v-model="qualificationForm.primary_certificate.acc_cert_guid"
+            required
+            placeholder="Please select an option"/>
+            <label for="cert-num">Certificate number</label>
+            <InputText
+            inputId="cert-num"
+            type="text"
+            placeholder="Enter certificate number"
+            v-model="qualificationForm.primary_certificate_no"
+            required/>
+          </responsive-grid>
+          <responsive-grid :cols="[2, 10]" gap="2" class="form-group font-bold mb-2">
+            <div>Select classification</div>
+            <div class="flex flex-wrap lg:gap-4 gap-2 sm:flex-row">
+              <div v-for="option in formOptions.classifications" :key="option.value" class="flex items-center gap-2">
+                <RadioButton
+                  v-model="qualificationForm.subactivity.registries_subactivity_code"
+                  :value="option.value"
+                  :inputId="option.value"
+                  @change="changedClassification"
+                  required/>
+                <label :for="option.value" class="font-normal">{{ option.text }}</label>
               </div>
-            </CheckboxGroup>
-          </div>
-          <div class="grid">
-            <div class="row-span-full">
-              <h5>Adjudication</h5>
             </div>
-          </div>
-          <div class="grid">
-            <div class="grid grid-cols-2 gap-6">
-              <label class="col-span-1">Confirmed applicant is 19 years of age or older by reviewing</label>
-              <Select class="col-span-1" :options="formOptions.proofOfAge" v-model="qualificationForm.proof_of_age.code" required></Select>
+          </responsive-grid>
+          <responsive-grid :cols="[12, 8]" :sm="12" gap="2" class="form-group mb-2">
+            <label class="font-bold">Qualified{{activity === 'DRILL' ? ' to drill' : '' }}</label>
+            <div class=" grid lg:grid-cols-3">
+              <div v-for="opt of formOptions.qualifications" :key="opt.value" class="flex items-center gap-2">
+                <Checkbox
+                  v-model="qualificationForm.qualifications"
+                  :value="opt.value"
+                  :inputId="opt.value"
+                  :disabled="true"
+                />
+                <label :for="opt.value">{{ opt.text }}</label>
+              </div>
             </div>
-          </div>
-          <div class="grid">
-            <div class="grid grid-cols-6 gap-6">
-              <label class="col-span-1" description="format: yyy-mm-dd" label="" invalid-feedback="Invalid date format">Date application received</label>
-              <InputText type="date" class="col-span-1" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
-            </div>
-          </div>
+          </responsive-grid>
+          <responsive-grid :cols="[12, 4, 4]" gap="2" class="form-group block mb-2">
+            <h5>Adjudication</h5>
+            <label class="col-span-1">Confirmed applicant is 19 years of age or older by reviewing</label>
+            <Select
+              v-model="qualificationForm.proof_of_age.code"
+              :options="formOptions.proofOfAge"
+              optionValue="value"
+              optionLabel="text"
+              class="col-span-2"
+              placeholder="Please select an option"
+              required/>
+          </responsive-grid>
+          <responsive-grid :cols="2" gap="2" class="form-group mb-2">
+            <label description="format: yyy-mm-dd" label="" invalid-feedback="Invalid date format">Date application received</label>
+            <InputText type="date" v-model="qualificationForm.application_recieved_date" :state="pendingDateState"/>
+          </responsive-grid>
           <div class="grid" v-if="isEditMode">
             <div class="grid grid-cols-2 gap-6" v-if="qualificationForm.application_recieved_date">
               <label class="col-span-1" description="format: yyyy-mm-dd" invalid-feedback="Invalid date format">Approval date outcome</label>
@@ -87,7 +104,7 @@
             </div>
             <div class="grid grid-cols-2 gap-6" v-if="showApprovalOutcome">
               <label class="col-span-1">Approval outcome</label>
-                <Select :options="formOptions.approvalOutcome" v-model="qualificationForm.current_status.code"/>
+                <Select :options="formOptions.approvalOutcome" optionValue="value" optionLabel="text" v-model="qualificationForm.current_status.code"/>
             </div>
             <div class="grid grid-cols-2 gap-6" v-if="showReasonDenied">
               <label class="col-span-1">Reason denied</label>
@@ -112,7 +129,7 @@
             </div>
             <div class="grid grid-cols-2 gap-6" v-if="showRemovalReason">
               <label class="col-span-1">Removal reason</label>
-                <Select :options="formOptions.removalReasons" v-model="qualificationForm.removal_reason.code"/>
+                <Select :options="formOptions.removalReasons" optionValue="value" optionLabel="text" v-model="qualificationForm.removal_reason.code" placeholder="Please select an option"/>
             </div>
           </div>
           <!-- slot for child elements to be added by parent component -->
@@ -126,7 +143,12 @@
 <script>
 import moment from 'moment'
 import { useRegistryStore } from '@/stores/registry.js'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+
 export default {
+  components: {
+    ResponsiveGrid
+  },
   props: {
     value: Object,
     activity: {
@@ -160,10 +182,6 @@ export default {
     }
   },
   methods: {
-    changedClassification (value) {
-      const match = this.subactivityMap.filter(item => item.registries_subactivity_code === value)[0]
-      this.qualificationForm.qualifications = match.qualification_set.map(item => item.well_class)
-    },
     copyFormData (input) {
       // We need a default data structure when we're creating an application. If we're editing an
       // application, we can piggy back off the value being passed in.
@@ -228,12 +246,12 @@ export default {
     drillerOptions () { return this.registryStore.drillerOptions },
     formOptions () {
       let result = {
-        issuer: [{ value: { code: null }, text: 'Please select an option' }],
+        issuer: [],
         classifications: [],
         qualifications: [],
-        proofOfAge: [{ value: null, text: 'Please select an option' }],
+        proofOfAge: [],
         approvalOutcome: [],
-        removalReasons: [{ value: null, text: 'Please select an option' }]
+        removalReasons: []
       }
       if (this.drillerOptions) {
         // If driller options have loaded, prepare the form options.

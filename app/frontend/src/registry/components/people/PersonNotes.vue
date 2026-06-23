@@ -7,41 +7,54 @@
           <div class="flex flex-col gap-2" id="noteInputGroup" label="Add a note:" label-for="noteInput">
             <Textarea id="noteInput" v-model="noteInput" :rows="3" :max-rows="6" :disabled="submitLoading"/>
           </div>
-          <div class="flex-row">
-            <Button label="Save" type="submit" :disabled="!noteInput || submitLoading" ref="noteInputSaveBtn"/>
-            <Button label="Cancel" type="reset" severity="secondary" :disabled="!noteInput" ref="noteInputCancelBtn"/>
-            <p class="font-weight-bold text-count" :class="[invalidNewNoteLength ? 'error': '']">
-              {{ noteInput.length }}/{{ maxNoteLength }}
+          <div class="flex items-center gap-3">
+            <Button
+              type="submit"
+              label="Save"
+              :disabled="!noteInput || submitLoading"
+              ref="noteInputSaveBtn"
+            />
+            <Button
+              type="reset"
+              label="Cancel"
+              severity="secondary"
+              :disabled="!noteInput"
+              ref="noteInputCancelBtn"
+            />
+            <p class="font-bold text-count" :class="{ 'text-red-500': invalidNewNoteLength }">
+              {{ noteInput?.length || 0 }}/{{ maxNoteLength }}
             </p>
           </div>
           <Message
             class="mt-4"
             severity="success"
-            dismissible
-            :show="submitSuccess"
-            @dismissed="submitSuccess=false">Note added.</Message>
+            closable
+            v-if="submitSuccess"
+            @close="submitSuccess=false">Note added.</Message>
           <Dialog
             v-model:visible="confirmSubmitModal"
-            centered
+            center
             modal
-            title="Confirm save"
-            @shown="focusSubmitModal"
-            :return-focus="$refs.noteInputSaveBtn"
-        >
+            header="Confirm save"
+            @show="focusSubmitModal">
             Are you sure you want to save this note?
             <template #footer>
-              <Button label="Save" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn"/>
-              <Button label="Cancel" severity="secondary" @click="confirmSubmitModal=false"/>
+              <Button
+                label="Save"
+                @click="confirmSubmitModal=false;noteSubmit()"
+                ref="confirmSubmitConfirmBtn"/>
+              <Button
+                label="Cancel"
+                severity="secondary"
+                @click="confirmSubmitModal=false"/>
             </template>
           </Dialog>
           <Dialog
             v-model:visible="confirmCancelModal"
-            centered
+            center
             modal
-            title="Confirm cancel"
-            @shown="focusCancelModal"
-            :return-focus="$refs.noteInputCancelBtn"
-          >
+            header="Confirm cancel"
+            @show="focusCancelModal">
             Your note is not saved. Are you sure you want to discard your changes?
             <template #footer>
               <Button label="Cancel" severity="secondary" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn"/>
@@ -51,15 +64,13 @@
           <!-- Delete Note Modal  -->
           <Dialog
             v-model:visible="confirmDeleteModal"
-            centered
+            center
             modal
-            title="Confirm Deletion"
-            @shown="focusDeleteModal"
-            :return-focus="$refs.noteInputCancelBtn"
-          >
+            header="Confirm Deletion"
+            @show="focusDeleteModal">
             <p>Are you sure you want to delete this note?</p>
             <div v-if="activeNote" class="">
-              <p class="font-weight-bold wb">"{{activeNote.note}}"</p>
+              <p class="font-bold wb">"{{activeNote.note}}"</p>
             </div>
             <template #footer>
               <div class="buttons">
@@ -70,16 +81,14 @@
           </Dialog>
           <!-- Edit Modal -->
           <Dialog
-            v-model="confirmEditNoteModal"
-            centered
+            v-model:visable="confirmEditNoteModal"
+            center
             modal
-            title="Editing Note"
-            @shown="focusEditNoteModal"
-            :return-focus="$refs.noteInputCancelBtn"
-          >
+            header="Editing Note"
+            @show="focusEditNoteModal">
             <div>
               <Textarea id="editNoteTextArea" v-model="noteContentEdit" placeholder="Edit Note..." :rows="4" autoResize/>
-              <p class="font-weight-bold text-count" :class="[invalidEditNoteLength ? 'error': '']">
+              <p class="font-bold text-count" :class="[invalidEditNoteLength ? 'error': '']">
               {{ noteContentEdit.length }}/{{ maxNoteLength }}
               </p>
             </div>
@@ -98,10 +107,11 @@
         </div>
         <div class="mt-12 p-6 border border-gray-200 rounded-lg" v-if="notes && notes.length">
           <div
-            class="flex flex-row items-center justify-between w-full p-[0.5em] rounded-[4pt] transition-colors duration-200 hover:bg-[#F8F8F8]"
+            class="flex items-center justify-between w-full p-[0.5em] rounded-[4pt] transition-colors duration-200 hover:bg-[#F8F8F8]"
             v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
             <p>
-              <span class="font-weight-bold">{{ note.author }}</span> ({{ moment(note.date, "MMMM Do YYYY [at] LT") }}):
+              <span class="font-bold">{{ note.author }}</span>
+              {{ moment(note.date).format("MMMM Do YYYY [at] LT") }}:
               {{ note.note }}
             </p>
             <div class="flex ml-[0.5em] w-auto">
@@ -128,6 +138,7 @@
 <script>
 import { useCommonStore } from '@/stores/common'
 import smoothScroll from 'smoothscroll'
+import moment from 'moment';
 
 import ApiService from '@/common/services/ApiService.js'
 import { useRegistryStore } from '@/stores/registry.js'
@@ -163,6 +174,7 @@ export default {
     commonStore () { return useCommonStore() }
   },
   methods: {
+    moment,
     noteSubmit () {
       // submit the note as a post request, triggered after confirming via popup
       this.submitSuccess = false

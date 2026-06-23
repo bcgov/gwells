@@ -102,7 +102,6 @@
                     </Listbox>
                     <Message
                       show
-                      variant="warning"
                       class="mb-4"
                       severity="warn"
                       v-if="limitSearchToCurrentMapBounds && isCommunitySelected">

@@ -287,7 +287,6 @@
         </DataTable>
         <Button
           label="Delete this company"
-          variant="danger"
           severity="danger"
           class="mt-6 mb-6"
           :disabled="companyDetails.registrations_count > 0"
