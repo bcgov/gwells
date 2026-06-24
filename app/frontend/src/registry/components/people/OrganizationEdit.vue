@@ -205,7 +205,7 @@
                 v-model:visible="confirmSubmitModal"
                 modal
                 header="Confirm update"
-                @shown="focusSubmitModal"
+                @show="focusSubmitModal"
               >
                 Are you sure you want to save these changes?
                 <template #footer>
@@ -217,7 +217,7 @@
                 v-model:visible="confirmCancelModal"
                 modal
                 header="Confirm cancel"
-                @shown="focusCancelModal"
+                @show="focusCancelModal"
               >
                 Are you sure you want to discard your changes?
                 <template #footer>
@@ -299,7 +299,7 @@
         v-model:visible="companyDeleteModal"
         modal
         header="Confirm delete"
-        @shown="focusDeleteModal"
+        @show="focusDeleteModal"
       >
         Are you sure you want to delete this company?
         <template #footer>

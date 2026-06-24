@@ -61,7 +61,7 @@
           v-model:visible="removeSurveyModal"
           centered
           title="Confirm remove"
-          @shown="focusRemoveModal">
+          @show="focusRemoveModal">
           Are you sure you want to remove this survey?
           <template #footer>
             <Button label="Cancel" severity="secondary" @click="removeSurveyModal=false;surveyToRemove=null" ref="cancelRemoveBtn"/>

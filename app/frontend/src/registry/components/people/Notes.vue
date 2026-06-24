@@ -48,7 +48,7 @@
             centered
             modal
             header="Confirm save"
-            @shown="focusSubmitModal"
+            @show="focusSubmitModal"
           >
             Are you sure you want to save this note?
             <template #footer>
@@ -64,7 +64,7 @@
             centered
             modal
             header="Confirm cancel"
-            @shown="focusCancelModal"
+            @show="focusCancelModal"
           >
             Your note is not saved. Are you sure you want to discard your changes?
             <template #footer>
@@ -80,7 +80,7 @@
             centered
             modal
             header="Confirm Deletion"
-            @shown="focusDeleteModal"
+            @show="focusDeleteModal"
           >
             <p>Are you sure you want to delete this note?</p>
             <div v-if="activeNote" class="">
@@ -99,7 +99,7 @@
             centered
             modal
             header="Editing Note"
-            @shown="focusEditNoteModal"
+            @show="focusEditNoteModal"
           >
             <div>
               <InputText

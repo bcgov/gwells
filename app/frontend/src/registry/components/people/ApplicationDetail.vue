@@ -44,7 +44,7 @@
                 centered
                 modal
                 header="Confirm cancel"
-                @shown="focusCancelModal">
+                @show="focusCancelModal">
                 Your changes are not saved. Are you sure you want to discard your changes?
                 <template #footer>
                   <Button severity="secondary" id="confirmCancel" @click="confirmCancelModal=false" ref="cancelSubmitCancelBtn">
