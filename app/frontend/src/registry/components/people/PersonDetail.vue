@@ -7,7 +7,7 @@
       </template>
     </Breadcrumb>
   </div>
-  <div v-if="showSpinner" class="rounded-lg ml-20 mr-20 bg-white mb-4 px-12">
+  <div v-if="loading" class="ml-20 mr-20 bg-white">
     <div class="fa-2x text-center">
       <i class="fa fa-circle-o-notch fa-spin"></i>
     </div>
@@ -24,8 +24,9 @@
         <Message show severity="success" >Successfully uploaded all files</Message>
       </div>
     </template>
+
     <template #content>
-      <div v-if="currentDriller != {}">
+      <div v-if="currentDriller && Object.keys(currentDriller).length">
         <div class="row">
           <div class="col-12">
             <h4 class="card-title">{{ currentDriller.first_name }} {{ currentDriller.surname }}</h4>
@@ -39,18 +40,20 @@
       </div>
 
       <!-- Personal information -->
-      <div class="mb-4">
-        <div class="p-2 p-md-3">
+      <div class="card mb-3">
+        <div class="card-body p-2 p-md-3">
           <div class="grid grid-cols-12">
-            <div class="col-9">
+            <div class="col-span-9">
               <h5 class="card-title mb-4">Personal Information</h5>
             </div>
-            <div class="col-3 text-right">
-              <button
-                class="btn btn-light btn-sm registries-edit-btn"
-                type="button"
+            <div class="col-span-3 text-right">
+              <Button
+                id="registriesEditButton"
+                label="Edit"
+                icon="fa fa-edit"
+                severity="secondary"
                 @click="editPerson = !editPerson"
-                v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
+                v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit"/>
             </div>
           </div>
           <person-edit
@@ -59,49 +62,29 @@
             :record="currentDriller.person_guid"
             @updated="editPerson = false; updateRecord()"
             @canceled="editPerson = false"></person-edit>
-          <div v-if="!editPerson">
-            <div class="row mb-2">
-              <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                Surname:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.surname }}
-              </div>
-              <div class="col-5 col-md-2">
-                First name:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.first_name }}
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2">
-                Well Driller ORCS:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.well_driller_orcs_no }}
-              </div>
-              <div class="col-5 col-md-2">
-                Pump Installer ORCS:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ currentDriller.pump_installer_orcs_no }}
-              </div>
-            </div>
-          </div>
+          <responsive-grid :cols="[2, 4, 2, 4, 2, 4, 2, 4]" gap="2" v-if="!editPerson">
+            <div>Surname:</div>
+            <div>{{ currentDriller.surname }}</div>
+            <div>First name:</div>
+            <div>{{ currentDriller.first_name }}</div>
+            <div>Well Driller ORCS:</div>
+            <div>{{ currentDriller.well_driller_orcs_no }}</div>
+            <div>Pump Installer ORCS:</div>
+            <div>{{ currentDriller.pump_installer_orcs_no }}</div>
+          </responsive-grid>
         </div>
       </div>
 
       <!-- Registrations -->
-      <div class="card mb-4"
+      <div class="card mb-3"
           v-for="(registration, index) in currentDriller.registrations"
           :key="`registration ${index}`">
         <div class="card-body p-2 p-md-3">
-          <h5 class="card-title">{{ registration.activity_description }} Registration</h5>
+          <h5 class="card-title">{{ registration.activity_description }}  Registration</h5>
 
           <!-- Classifications -->
           <h6>Classifications</h6>
-          <div class="mb-4">
+          <div class="mb-3">
             <div class="table-responsive">
               <table id="classification-table" class="table">
                 <thead>
@@ -129,13 +112,15 @@
             <div v-if="show(registration.registries_activity)">
               <Form @submit="saveApplication(registration.registries_activity)">
                 <application-add
-                    class="mb-4"
+                    class="mb-3"
                     v-on:close="closeApplication(registration.registries_activity)"
                     :modelValue="getApplication(registration.registries_activity)"
                     :activity="registration.registries_activity"
                     mode="edit">
-                    <button type="submit" class="btn btn-primary" variant="primary">Save</button>
-                    <button type="button" class="btn btn-light" @click="closeApplication(registration.registries_activity)">Cancel</button>
+                    <div class="mt-4 flex gap-2">
+                      <Button label="Save" type="submit"/>
+                      <Button label="Cancel" type="button" severity="secondary" @click="closeApplication(registration.registries_activity)"/>
+                    </div>
                 </application-add>
               </Form>
             </div>
@@ -150,20 +135,18 @@
           </div>
 
           <!-- Registration information -->
-          <div class="row">
-            <div class="col">
-              <h6 class="card-title mb-4">{{ registration.activity_description }} Registration Details</h6>
+          <responsive-grid :cols="[8, 4]" gap="2" class="items-center">
+            <h6 class="card-title mb-4">{{ registration.activity_description }} Registration Details</h6>
+            <div class="flex justify-end">
+              <Button
+              class="registries-edit-btn"
+              label="Edit"
+              icon="fa fa-edit"
+              severity="secondary"
+              @click="editRegistration = (editRegistration === (index + 1) ? 0 : (index + 1))"
+              v-if="commonStore.userRoles.registry.edit"/>
             </div>
-            <div class="col text-right">
-              <button
-                class="btn btn-light btn-sm registries-edit-btn"
-                type="button"
-                @click="editRegistration = (editRegistration === (index + 1) ? 0 : (index + 1))"
-                v-if="commonStore.userRoles.registry.edit">
-                <span><i class="fa fa-edit"></i> Edit</span>
-                </button>
-            </div>
-          </div>
+          </responsive-grid>
           <person-edit
             class="mb-6"
             section="registration"
@@ -172,32 +155,25 @@
             @updated="editRegistration = 0; updateRecord()"
             @canceled="editRegistration = 0"></person-edit>
           <div v-if="editRegistration !== (index + 1)">
-            <div class="row mb-6">
-              <div class="col-5 col-md-2">
-                Registration number:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.registration_no }}
-              </div>
-            </div>
+            <responsive-grid :cols="3" gap="2" class="mb-6">
+              <div>Registration number:</div>
+              <div>{{ registration.registration_no }}</div>
+            </responsive-grid>
           </div>
 
           <!-- Company information -->
-          <div class="row">
-            <div class="col">
-              <h6 class="card-title mb-4">{{ registration.activity_description }} Company Information</h6>
-            </div>
-            <div class="col text-right">
-              <button
-                class="btn btn-light btn-sm registries-edit-btn"
-                type="button"
+          <responsive-grid :cols="[8, 4]" gap="2" class="items-center mb-2">
+            <h6 class="card-title mb-4">{{ registration.activity_description }} Company Information</h6>
+            <div class="flex justify-end">
+              <Button
+                severity="secondary"
                 @click="editCompany = (editCompany === (index + 1) ? 0 : (index + 1))"
                 v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit">
                 <span v-if="!registration.organization"><i class="fa fa-plus"></i> Add company</span>
                 <span v-else><i class="fa fa-refresh"></i> Change company</span>
-                </button>
+              </Button>
             </div>
-          </div>
+          </responsive-grid>
           <person-edit
             section="company"
             :record="registration"
@@ -205,70 +181,26 @@
             @updated="editCompany = 0; updateRecord()"
             @canceled="editCompany = 0"></person-edit>
           <div v-if="registration.organization && editCompany !== (index + 1)">
-            <div class="row mb-2">
-              <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                Company name:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.name }}
-              </div>
-              <div class="col-5 col-md-2">
-                Street address:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.street_address }}
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                City:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.city }}
-              </div>
-              <div class="col-5 col-md-2">
-                Province:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.province_state }}
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                Postal Code:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.postal_code }}
-              </div>
-              <div class="col-5 col-md-2">
-                Office number:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.main_tel }}
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2 mb-1 mb-sm-0">
-                Email Address:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.email }}
-              </div>
-              <div class="col-5 col-md-2">
-                Fax number:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.fax_tel }}
-              </div>
-            </div>
-            <div class="row mb-2">
-              <div class="col-5 col-md-2">
-                Website:
-              </div>
-              <div class="col-7 col-md-4">
-                {{ registration.organization.website_url }}
-              </div>
-            </div>
+            <responsive-grid :cols="3" gap="2">
+              <div>Company name:</div>
+              <div>{{ registration.organization.name }}</div>
+              <div>Street address:</div>
+              <div>{{ registration.organization.street_address }}</div>
+              <div>City:</div>
+              <div>{{ registration.organization.city }}</div>
+              <div>Province:</div>
+              <div>{{ registration.organization.province_state }}</div>
+              <div>Postal Code:</div>
+              <div>{{ registration.organization.postal_code }}</div>
+              <div>Office number:</div>
+              <div>{{ registration.organization.main_tel }}</div>
+              <div>Email Address:</div>
+              <div>{{ registration.organization.email }}</div>
+              <div>Fax number:</div>
+              <div>{{ registration.organization.fax_tel }}</div>
+              <div>Website:</div>
+              <div>{{ registration.organization.website_url }}</div>
+            </responsive-grid>
           </div>
           <div v-else-if="!registration.organization && editCompany !== (index + 1)">
             No {{ registration.activity_description }} company.
@@ -285,29 +217,23 @@
               })"
             :key="`unregistered activity ${index}`">
             <Button
-              label="Register as a {{ item.desc }}"
-              variant="primary"
               class="my-1 registries-action-button"
               :ref="`registerButton${item.code}`"
               @click="confirmRegisterModal[item.code]=true"
-            />
+            >Register as a {{ item.desc }}</Button>
             <Dialog
               v-model:visible="confirmRegisterModal[item.code]"
               centered
               modal
-              header="`Confirm register as ${item.desc}`"
-              @shown="$refs[`confirmRegisterConfirmBtn${item.code}`][0].$el.focus()"
-              :return-focus="$refs[`registerButton${item.code}`]"
-            >
+              :header="`Confirm register as ${item.desc}`">
               Are you sure you want to register {{ currentDriller.first_name }} {{ currentDriller.surname }} as a {{ item.desc }}?
               <template #footer>
                 <Button
                   label="Confirm"
-                  variant="primary"
                   @click="confirmRegisterModal[item.code]=false;submitRegistration(item.code)"
                   :ref="`confirmRegisterConfirmBtn${item.code}`"
                   id="register-confirm"/>
-                <Button label="Cancel" variant="light" @click="confirmRegisterModal[item.code]=false" id="register-cancel"/>
+                <Button label="Cancel" severity="secondary" @click="confirmRegisterModal[item.code]=false" id="register-cancel"/>
               </template>
             </Dialog>
           </div>
@@ -322,11 +248,11 @@
               <h6 class="card-title mb-4">Contact Information at Company</h6>
             </div>
             <div class="col-3 text-right">
-              <button
-                class="btn btn-light btn-sm registries-edit-btn"
+              <Button
+                class="egistries-edit-btn"
                 type="button"
                 @click="editContact = !editContact"
-                v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</button>
+                v-if="currentDriller.person_guid && commonStore.userRoles.registry.edit"><i class="fa fa-edit"></i> Edit</Button>
             </div>
           </div>
           <person-edit
@@ -379,9 +305,9 @@
               v-on:fetchFiles="fetchFiles"
               :guid="currentDriller.person_guid"></person-documents>
           </div>
-          <div>
-            <Button label="Save" variant="primary" @click="uploadAttachments()" :disabled="variant.uploadFiles.length === 0" />
-            <Button label="Cancel" variant="light" @click="cancelUploadAttachments" />
+          <div class="mt-4 flex gap-2">
+            <Button label="Save" type="submit" @click="uploadAttachments()" :disabled="commonStore.uploadFiles.length === 0" />
+            <Button label="Cancel" severity="secondary" @click="cancelUploadAttachments" />
           </div>
         </div>
       </div>
@@ -403,8 +329,10 @@ import PersonEdit from '@/registry/components/people/PersonEdit.vue'
 import PersonNotes from '@/registry/components/people/PersonNotes.vue'
 import ChangeHistory from '@/common/components/ChangeHistory.vue'
 import ApplicationAddEdit from '@/registry/components/people/ApplicationAddEdit.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import ApiService from '@/common/services/ApiService.js'
 import { useRegistryStore } from '@/stores/registry.js'
+import { useCommonStore } from '@/stores/common.js'
 import PersonDocuments from './PersonDocuments.vue'
 
 export default {
@@ -415,7 +343,8 @@ export default {
     'person-edit': PersonEdit,
     'application-add': ApplicationAddEdit,
     ChangeHistory,
-    PersonNotes
+    PersonNotes,
+    ResponsiveGrid
   },
   data () {
     return {
@@ -445,7 +374,8 @@ export default {
         PUMP: false
       },
       person_files: {},
-      registryStore: useRegistryStore()
+      registryStore: useRegistryStore(),
+      commonStore: useCommonStore()
     }
   },
   computed: {
@@ -462,7 +392,7 @@ export default {
       }
     },
     showSpinner () {
-      return this.currentDriller == null || this.loading || this.savingApplication
+      return !this.currentDriller || this.loading || this.savingApplication
     },
     company () {
       if (this.currentDriller && this.currentDriller.companies && this.currentDriller.companies.length) {
@@ -523,8 +453,7 @@ export default {
         })
       }
       return notes
-    },
-    commonStore () { return useCommonStore() },
+    }
   },
   methods: {
     show (key) {
@@ -630,9 +559,6 @@ export default {
 <style>
 #classification-table th {
   font-weight: 400!important;
-}
-.registries-edit-btn {
-  margin-top: -5px;
 }
 .contact-label {
   margin-right: 1rem;

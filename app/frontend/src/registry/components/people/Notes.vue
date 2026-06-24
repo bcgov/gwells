@@ -48,14 +48,13 @@
             centered
             modal
             header="Confirm save"
-            @shown="focusSubmitModal"
-            :return-focus="$refs.noteInputSaveBtn"
+            @show="focusSubmitModal"
           >
             Are you sure you want to save this note?
             <template #footer>
               <div class="buttons">
-                <Button label="Save" variant="primary" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn"/>
-                <Button label="Cancel" variant="light" @click="confirmSubmitModal=false"/>
+                <Button label="Save" @click="confirmSubmitModal=false;noteSubmit()" ref="confirmSubmitConfirmBtn"/>
+                <Button label="Cancel" severity="secondary" @click="confirmSubmitModal=false"/>
               </div>
             </template>
           </Dialog>
@@ -65,8 +64,7 @@
             centered
             modal
             header="Confirm cancel"
-            @shown="focusCancelModal"
-            :return-focus="$refs.noteInputCancelBtn"
+            @show="focusCancelModal"
           >
             Your note is not saved. Are you sure you want to discard your changes?
             <template #footer>
@@ -82,8 +80,7 @@
             centered
             modal
             header="Confirm Deletion"
-            @shown="focusDeleteModal"
-            :return-focus="$refs.noteInputCancelBtn"
+            @show="focusDeleteModal"
           >
             <p>Are you sure you want to delete this note?</p>
             <div v-if="activeNote" class="">
@@ -102,8 +99,7 @@
             centered
             modal
             header="Editing Note"
-            @shown="focusEditNoteModal"
-            :return-focus="$refs.noteInputCancelBtn"
+            @show="focusEditNoteModal"
           >
             <div>
               <InputText

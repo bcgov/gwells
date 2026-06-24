@@ -4,7 +4,7 @@
     <!-- Person details -->
     <div v-if="section === 'person' || section === 'all'">
       <Form @submit="submitPersonForm" @reset="formReset">
-        <div class="grid grid-cols-12 md-12 gap-6">
+        <responsive-grid :cols="6" gap="6" class="mb-4">
           <label
             id="surnameInputGroup"
             for="surnameInput">Surname:
@@ -13,8 +13,6 @@
               v-model="personalInfoForm.surname"
               required/>
           </label>
-        </div>
-        <div class="grid grid-cols-12 md-12 gap-6" offset-md="1">
           <label
             id="firstnameInputGroup"
             for="firstnameInput">First name:
@@ -23,34 +21,32 @@
               v-model="personalInfoForm.first_name"
               required/>
           </label>
-        </div>
-        <div class="grid grid-cols-12 md-12 gap-6">
+        </responsive-grid>
+        <responsive-grid :cols="6" gap="6" class="mb-4">
           <label
             id="drillOrcsInputGroup"
             for="drillORCSInput">Well Driller ORCS:
             <InputText
               id="drillORCSInput"
               v-model="personalInfoForm.well_driller_orcs_no"/>
-            <div id="drillerORCSExample">
+            <div id="drillerORCSExample" class="text-sm">
               ORCS format: 38000-25/DRI XXXX X
             </div>
           </label>
-        </div>
-        <div class="grid grid-cols-12 md-12 gap-6" offset-md="1">
           <label
             id="pumpORCSInputGroup"
             for="pumpORCSInput">Pump installer ORCS:
             <InputText
               id="pumpORCSInput"
               v-model="personalInfoForm.pump_installer_orcs_no"/>
-            <div id="pumpORCSExample">
+            <div id="pumpORCSExample" class="text-sm">
               ORCS format: 38000-25/PUMP XXXX X
             </div>
           </label>
-        </div>
-        <div>
-          <button type="submit" class="btn btn-primary">Save</button>
-          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        </responsive-grid>
+        <div class="mt-4 flex gap-2">
+          <Button label="Save" type="submit"/>
+          <Button label="Cancel" type="button" severity="secondary" @click="$emit('canceled')" />
         </div>
       </Form>
     </div>
@@ -58,48 +54,42 @@
     <!-- Contact information -->
     <div v-if="(section === 'contact' || section === 'all')">
       <Form @submit="submitContactForm">
-        <div>
-          <div class="grid grid-cols-12 md-6 gap-6">
-            <label
-              id="emailInputGroup"
-              for="emailInput">Email Address:
-              <InputText
-                id="emailInput"
-                type="email"
-                :state="validation.contact_email"
-                aria-describedby="emailInputFeedback"
-                v-model="contactInfoForm.contact_email"/>
-              <Message severity="error" id="emailInputFeedback" v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
-                {{ error }}
-              </Message>
-            </label>
-          </div>
-          <div class="grid grid-cols-12 md-6 gap-6">
-            <label
-              id="telInputGroup"
-              for="telInput">Telephone:
-              <InputMask
-                id="telInput"
-                type="tel"
-                mask="(999) 999-9999"
-                v-model="contactInfoForm.contact_tel"/>
-            </label>
-          </div>
-          <div class="grid grid-cols-12 md-6 gap-6">
-            <label
-              id="cellInputGroup"
-              for="cellInput">Cell:
-              <InputMask
-                id="cellInput"
-                type="tel"
-                mask="(999) 999-9999"
-                v-model="contactInfoForm.contact_cell"/>
-            </label>
-          </div>
-        </div>
-        <div class="grid grid-cols-12 md-6 gap-6">
-          <button type="submit" class="btn btn-primary">Save</button>
-          <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        <responsive-grid :cols="4" gap="6" class="mb-4">
+          <label
+            id="emailInputGroup"
+            for="emailInput">Email Address:
+            <InputText
+              id="emailInput"
+              type="email"
+              :state="validation.contact_email"
+              aria-describedby="emailInputFeedback"
+              v-model="contactInfoForm.contact_email"/>
+            <Message severity="error" id="emailInputFeedback" v-for="(error, index) in fieldErrors.contact_email" :key="`emailInput error ${index}`">
+              {{ error }}
+            </Message>
+          </label>
+          <label
+            id="telInputGroup"
+            for="telInput">Telephone:
+            <InputMask
+              id="telInput"
+              type="tel"
+              mask="(999) 999-9999"
+              v-model="contactInfoForm.contact_tel"/>
+          </label>
+          <label
+            id="cellInputGroup"
+            for="cellInput">Cell:
+            <InputMask
+              id="cellInput"
+              type="tel"
+              mask="(999) 999-9999"
+              v-model="contactInfoForm.contact_cell"/>
+          </label>
+        </responsive-grid>
+        <div class="mt-4 flex gap-2">
+          <Button label="Save" type="submit"/>
+          <Button label="Cancel" type="button" severity="secondary" @click="$emit('canceled')" />
         </div>
       </Form>
     </div>
@@ -107,20 +97,19 @@
     <!-- Company -->
     <div v-if="(section === 'company' || section === 'all') && !!record">
       <Form @submit="submitCompanyForm">
-        <label
-          id="companyInputGroup"
-          for="companyInput"
-          >${record.activity_description} company:
-          <v-select
+        <label id="companyInputGroup" for="companyInput">{{record.activity_description}} company:
+          <Select
             id="companyInput"
             v-model="registrationCompanyForm.organization"
             :options="companies"
-            placeholder="Begin typing a company name"
-            label="org_verbose_name">
-          </v-select>
+            optionLabel="org_verbose_name"
+            optionValue="name"
+            placeholder="Begin typing a company name"/>
         </label>
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        <div class="mt-4 flex gap-2">
+          <Button label="Save" type="submit"/>
+          <Button label="Cancel" type="button" severity="secondary" @click="$emit('canceled')" />
+        </div>
       </Form>
     </div>
 
@@ -136,8 +125,10 @@
             id="registrationInput"
           />
         </label>
-        <button type="submit" class="btn btn-primary">Save</button>
-        <button type="button" class="btn btn-light" @click="$emit('canceled')">Cancel</button>
+        <div class="mt-4 flex gap-2">
+          <Button label="Save" type="submit"/>
+          <Button label="Cancel" type="button" severity="secondary" @click="$emit('canceled')" />
+        </div>
       </Form>
     </div>
 
@@ -148,11 +139,13 @@
 import { useRegistryStore } from '@/stores/registry.js'
 import ApiService from '@/common/services/ApiService.js'
 import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
+import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
-    'api-error': APIErrorMessage
+    'api-error': APIErrorMessage,
+    ResponsiveGrid
   },
 
   /**
@@ -211,7 +204,6 @@ export default {
       this.personalInfoForm.well_driller_orcs_no = personData.well_driller_orcs_no
 
       // add contact info
-
       this.contactInfoForm = {
         contact_tel: personData.contact_tel,
         contact_email: personData.contact_email,
