@@ -28,6 +28,7 @@ UPDATE_GWELLS_WELLS_VIEW_SQL = """
         FROM well
         WHERE geom IS NOT NULL;
         GRANT SELECT ON postgis_ftw.gwells_well_view TO ftw_reader;
+        GRANT USAGE ON SCHEMA postgis_ftw TO ftw_reader;
 """
 
 class Migration(migrations.Migration):
