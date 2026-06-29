@@ -20,8 +20,8 @@ services:
     volumes:
       - /data
     environment:
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server /data
@@ -39,8 +39,8 @@ services:
     volumes:
       - /data
     environment:
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
     command: server --address :9001 /data
@@ -185,8 +185,8 @@ services:
       # GWELLS_SERVICE_PORT: "${GWELLS_SERVICE_PORT:-5432}"
       DATABASE_SERVICE_NAME: db
       DATABASE_PORT: 5432
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       PYTHONUNBUFFERED: "1"
       SESSION_COOKIE_SECURE: "false"
       SSO_AUDIENCE: gwells-4121
@@ -205,8 +205,8 @@ services:
       S3_PRIVATE_WELL_BUCKET: well-docs
       S3_PRIVATE_AQUIFER_BUCKET: aquifer-docs
       S3_PRIVATE_REGISTRANT_BUCKET: driller-docs
-      S3_PUBLIC_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      S3_PUBLIC_SECRET_KEY: ${MINIO_SECRET_KEY}
+      S3_PUBLIC_ACCESS_KEY: ${MINIO_ROOT_USER}
+      S3_PUBLIC_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
       S3_AQUIFER_BUCKET: aquifer-docs
       S3_REGISTRANT_BUCKET: driller-docs
       S3_ROOT_BUCKET: gwells

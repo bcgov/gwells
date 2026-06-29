@@ -31,8 +31,8 @@ class MinioClient():
         S3_HOST: hostname for public document storage
         S3_ROOT_BUCKET: public Wells document storage bucket
         S3_AQUIFER_BUCKET: public Aquifers document storage buck
-        MINIO_ACCESS_KEY: private storage account
-        MINIO_SECRET_KEY: private storage secret
+        MINIO_ROOT_USER: private storage account
+        MINIO_ROOT_PASSWORD: private storage secret
         S3_PRIVATE_HOST: private storage host (must be specified even if same as public storage)
         S3_PRIVATE_BUCKET: private storage bucket
 
@@ -75,8 +75,8 @@ class MinioClient():
         self.disable_private = disable_private
 
     def create_private_client(self):
-        self.private_access_key = get_env_variable('MINIO_ACCESS_KEY')
-        self.private_secret_key = get_env_variable('MINIO_SECRET_KEY')
+        self.private_access_key = get_env_variable('MINIO_ROOT_USER')
+        self.private_secret_key = get_env_variable('MINIO_ROOT_PASSWORD')
         self.private_host = get_env_variable('S3_PRIVATE_HOST')
         self.private_bucket = get_env_variable('S3_PRIVATE_BUCKET')
         self.private_aquifers_bucket = get_env_variable('S3_PRIVATE_AQUIFER_BUCKET', default_value="aquifer-docs")

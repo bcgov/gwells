@@ -86,16 +86,16 @@ objects:
         spec:
           containers:
           - env:
-            - name: MINIO_ACCESS_KEY
+            - name: MINIO_ROOT_USER
               valueFrom:
                 secretKeyRef:
                   name: ${SECRETS}
-                  key: MINIO_ACCESS_KEY
-            - name: MINIO_SECRET_KEY
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: ${SECRETS}
-                  key: MINIO_SECRET_KEY
+                  key: MINIO_ROOT_PASSWORD
             - name: MINIO_DATA_DIR
               value: /opt/minio/s3/data
             - name: MINIO_CONFIG_DIR
