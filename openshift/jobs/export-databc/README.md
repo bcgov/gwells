@@ -1,0 +1,1 @@
+The export and export-databc jobs in OpenShift are identical.
