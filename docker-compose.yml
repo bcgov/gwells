@@ -14,17 +14,18 @@ services:
   minio-public:
     build:
       context: ./openshift/docker/minio/
-    hostname: minio
+    hostname: minio-public
     ports:
       - "9000:9000"
+      - "9001:9001"
     volumes:
-      - /data
+      - ./data-public:/data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
-    command: server /data
+    command: server /data --console-address ":9001"
     networks:
       - gwells-network
   #############################################################################################
@@ -33,17 +34,18 @@ services:
   minio-private:
     build:
       context: ./openshift/docker/minio/
-    hostname: minio
+    hostname: minio-private
     ports:
-      - "9001:9001"
+      - "9100:9000"
+      - "9101:9001"
     volumes:
-      - /data
+      - ./data-private:/data
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
       MINIO_DATA_DIR: /data
     entrypoint: /minio-entrypoint.sh
-    command: server --address :9001 /data
+    command: server /data --console-address ":9001"
     networks:
       - gwells-network
   #############################################################################################
