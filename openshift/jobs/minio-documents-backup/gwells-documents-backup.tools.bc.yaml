@@ -22,8 +22,6 @@ objects:
     spec:
       lookupPolicy:
         local: false
-    status:
-      dockerImageRepository: ""
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
@@ -73,5 +71,3 @@ objects:
         type: Docker
       triggers:
       - type: ConfigChange
-    status:
-      lastVersion: 0

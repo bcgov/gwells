@@ -176,8 +176,6 @@ objects:
         name: ${DATABASE_SERVICE_NAME}
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
@@ -326,4 +324,3 @@ objects:
             lastTriggeredImage: ""
           type: ImageChange
         - type: ConfigChange
-    status: {}

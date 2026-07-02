@@ -323,27 +323,3 @@ spec:
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
-status:
-  observedGeneration: 21
-  details:
-    message: manual change
-    causes:
-      - type: Manual
-  availableReplicas: 1
-  unavailableReplicas: 0
-  latestVersion: 13
-  updatedReplicas: 1
-  conditions:
-    - type: Available
-      status: 'True'
-      lastUpdateTime: '2025-04-09T19:28:16Z'
-      lastTransitionTime: '2025-04-09T19:28:16Z'
-      message: Deployment config has minimum availability.
-    - type: Progressing
-      status: 'True'
-      lastUpdateTime: '2025-04-09T19:28:18Z'
-      lastTransitionTime: '2025-04-09T19:27:55Z'
-      reason: NewReplicationControllerAvailable
-      message: replication controller "gwells-backend-13" successfully rolled out
-  replicas: 1
-  readyReplicas: 1

@@ -49,5 +49,3 @@ spec:
         secretReference:
           name: github-build-webhook
   runPolicy: SerialLatestOnly
-status:
-  lastVersion: 24

@@ -16,9 +16,3 @@ spec:
       storage: 5Gi
   storageClassName: netapp-file-standard
   volumeMode: Filesystem
-status:
-  phase: Bound
-  accessModes:
-    - ReadWriteOnce
-  capacity:
-    storage: 5Gi
