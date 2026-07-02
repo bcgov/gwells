@@ -14,4 +14,7 @@ nginx has been deployed as a basic tile cache. To build the nginx server and inc
 
 `oc new-build nginx:1.12~https://github.com/bcgov/gwells.git --context-dir=openshift/pg_tileserv --name=nginx-tilecache`
 
-The template `pg_tileserv.dc.yaml` will now be able to pull the nginx-tilecache container image. This image should be rebuilt when edits are made to the nginx.conf file. 
+The template `pg_tileserv.dc.yaml` will now be able to pull the nginx-tilecache container image. This image should be rebuilt when edits are made to the nginx.conf file.
+
+### Note from recent cleaning
+I cannot find the BuildConfig associated with the tileserv. In the tools directory, there is a BC called nginx-tilecache. However, it isn't in the files.
