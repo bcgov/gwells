@@ -1,0 +1,1 @@
+None of the scripts in this folder are currently run when starting the database locally.
