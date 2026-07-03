@@ -13,13 +13,10 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import sys
-import datetime
-import logging.config
 from pathlib import Path
 
 import requests
 
-from gwells import database
 from gwells.settings.base import get_env_variable
 
 BASE_DIR = str(Path(__file__).parents[2])

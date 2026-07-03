@@ -3,7 +3,6 @@ kind: Template
 labels:
   template: gwells-backup-pvc-template
 metadata:
-  creationTimestamp: null
   name: gwells-backup-pvc-template
 parameters:
   - description: Storage class for PVCs.

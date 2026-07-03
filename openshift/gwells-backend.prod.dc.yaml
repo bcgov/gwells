@@ -49,7 +49,6 @@ spec:
   template:
     metadata:
       name: gwells-backend
-      creationTimestamp: null
       labels:
         appver: gwells-backend
         name: gwells-backend
@@ -104,8 +103,6 @@ spec:
                 secretKeyRef:
                   name: gwells-pg12-production
                   key: database-password
-            - name: DATABASE_SCHEMA
-              value: public
             - name: APP_MODULE
               value: 'wsgi:application'
             - name: APP_HOME

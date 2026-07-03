@@ -2,7 +2,6 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: gwells-pg12-development
-  generation: 2
   namespace: 26e83e-dev
   labels:
     app: gwells-development
@@ -36,7 +35,6 @@ spec:
     name: gwells-pg12-development
   template:
     metadata:
-      creationTimestamp: null
       labels:
         appver: gwells-development
         name: gwells-pg12-development

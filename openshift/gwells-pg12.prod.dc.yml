@@ -3,7 +3,6 @@ kind: Template
 labels:
   template: postgresql-persistent-template
 metadata:
-  creationTimestamp: null
   name: gwells-postgresql-dc
 parameters:
   - description: The OpenShift ImageStream name.

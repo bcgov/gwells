@@ -1,13 +1,11 @@
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:
-  creationTimestamp: null
   name: jenkins-basic
 objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    creationTimestamp: null
     name: ${NAME}${SUFFIX}
   spec:
     failedBuildsHistoryLimit: 2

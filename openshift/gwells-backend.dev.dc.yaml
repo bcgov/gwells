@@ -2,7 +2,6 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: gwells-backend
-  generation: 21
   namespace: 26e83e-dev
   labels:
     app: gwells-backend
@@ -40,7 +39,6 @@ spec:
           kind: ImageStreamTag
           namespace: 26e83e-tools
           name: 'gwells-backend:latest'
-        lastTriggeredImage: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:44a95af21f33e0cdd873f010bd69f5299a8d18d26bb0b7c11eb885246b953cf6'
     - type: ConfigChange
   replicas: 1
   revisionHistoryLimit: 10
@@ -50,7 +48,6 @@ spec:
   template:
     metadata:
       name: gwells-backend
-      creationTimestamp: null
       labels:
         appver: gwells-backend
         name: gwells-backend
@@ -105,8 +102,6 @@ spec:
                 secretKeyRef:
                   name: gwells-pg12-development
                   key: database-password
-            - name: DATABASE_SCHEMA
-              value: public
             - name: APP_MODULE
               value: 'wsgi:application'
             - name: APP_HOME

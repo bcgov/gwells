@@ -12,22 +12,17 @@ objects:
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewBuild
-      creationTimestamp: null
       labels:
         name: gwells-documents-backup
         component: backups
         part-of: gwells
       name: gwells-documents-backup
       namespace: "${NAMESPACE}"
-    spec:
-      lookupPolicy:
-        local: false
   - apiVersion: build.openshift.io/v1
     kind: BuildConfig
     metadata:
       annotations:
         openshift.io/generated-by: OpenShiftNewBuild
-      creationTimestamp: null
       labels:
         name: "gwells-documents-backup-${VERSION}"
         component: backups
@@ -41,7 +36,6 @@ objects:
         to:
           kind: ImageStreamTag
           name: gwells-documents-backup:${VERSION}
-      postCommit: {}
       resources: {}
       source:
         git:

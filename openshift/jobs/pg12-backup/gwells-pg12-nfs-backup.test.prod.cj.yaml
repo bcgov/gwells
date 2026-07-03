@@ -142,7 +142,6 @@ objects:
       failedJobsHistoryLimit: ${{FAILED_JOBS_HISTORY_LIMIT}}
       jobTemplate:
         metadata:
-          creationTimestamp: null
           labels:
             app: ${TARGET}-backup
             cronjob: ${TARGET}-backup
@@ -151,8 +150,6 @@ objects:
         spec:
           backoffLimit: ${{JOB_BACKOFF_LIMIT}}
           template:
-            metadata:
-              creationTimestamp: null
             spec:
               activeDeadlineSeconds: ${{JOB_DEADLINE_SECONDS}}
               containers:

@@ -33,7 +33,6 @@ spec:
     app: gwells-frontend
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: gwells-frontend
     spec:

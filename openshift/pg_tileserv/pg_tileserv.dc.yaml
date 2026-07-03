@@ -3,7 +3,6 @@ kind: Template
 labels:
   template: pgtileserv-template
 metadata:
-  creationTimestamp: null
   name: pgtileserv-dc
 parameters:
   - name: IMAGE_TAG

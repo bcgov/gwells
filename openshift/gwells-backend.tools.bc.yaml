@@ -2,7 +2,6 @@ kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
   name: gwells-backend
-  generation: 30
   namespace: 26e83e-tools
   labels:
     appver: gwells-backend
@@ -27,7 +26,6 @@ spec:
       env:
         - name: BUILD_LOGLEVEL
           value: '4'
-        - name: PIP_INDEX_URL
         - name: UPGRADE_PIP_TO_LATEST
           value: 'true'
         - name: JWT_PUBLIC_KEY
@@ -35,7 +33,6 @@ spec:
         - name: JWT_AUDIENCE
           value: webapp-dev-local
       dockerfilePath: Dockerfile
-  postCommit: {}
   source:
     type: Git
     git:
@@ -44,8 +41,10 @@ spec:
     contextDir: app/backend
   triggers:
     - type: ConfigChange
-    - type: GitHub
-      github:
-        secretReference:
-          name: github-build-webhook
-  runPolicy: SerialLatestOnly
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'gwells-pg14:latest'

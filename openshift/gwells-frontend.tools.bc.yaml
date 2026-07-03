@@ -2,7 +2,6 @@ kind: BuildConfig
 apiVersion: build.openshift.io/v1
 metadata:
   name: gwells-frontend
-  generation: 15
   namespace: 26e83e-tools
   labels:
     appver: gwells
@@ -27,13 +26,6 @@ spec:
       env:
         - name: BUILD_LOGLEVEL
           value: "4"
-        - name: PIP_INDEX_URL
-        - name: UPGRADE_PIP_TO_LATEST
-          value: "true"
-        - name: JWT_PUBLIC_KEY
-          value: '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjpPznS8NO5XNl395Xa/wJyhhMDMJUk8s2wrG/FQ9gZnRaCbm9YFYynZzeehkpTNbb+SsLBnh0Me5DKTSlt0Gm03ULXXW6FZzL3SCE1wTx6Trm+zQ1mx07aGDbv34OtK0HitToajZrnTsGQ0TloVbQladBM74S2K0ooveV7p2qIydFjtR+DTJGiOxSLvts+qsGn/Wr2l939SRpQa/10vpYJgCLsd6Bv/0v23DpmR8WbVkLh8e3rtI0XgsJ0ZFXR80DPt3fXX3gdrNdPRB+hpOR8IZMEUzhqGRg5VXP8Lp+bbaemFanTwlFD3aUfDlOcPekxYqQeEmS6ahA/6vCpjuGwIDAQAB\n-----END PUBLIC KEY-----'
-        - name: JWT_AUDIENCE
-          value: webapp-dev-local
       dockerfilePath: Dockerfile
   postCommit: {}
   source:
