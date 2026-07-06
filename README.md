@@ -73,7 +73,6 @@ If a new field(s) are needed for export, this export_databc.py has raw sql queri
 
 - [Connecting to Minio](#connecting-to-minio)
 - [CSSO Authentication](#authentication)
-- You will need to login to [artifactory](https://artifacts.developer.gov.bc.ca/ui/login/) with your IDIR so a member of Sustainment Team can add you.
 
 ### Connecting to Minio
 
@@ -93,14 +92,6 @@ Some GWELLS pages (submitting new well reports, adding or editing aquifers, or a
 1. Clone the [GWELLS repository](https://help.github.com/en/articles/cloning-a-repository)
 2. In the root folder copy .env.template and create .env with the variables from OpenShift
 3. Then, run the application with Docker `docker-compose up -d`
-
-<!-- Login to Artifactory for pulling the backend base image:
-
-```sh
-docker login -u <svc-usn> -p <svc-pwd> artifacts.developer.gov.bc.ca/g26e-backend-docker-local
-```
-
-Replace svc-usn and svc-pwd with Artifactory service account credentials obtained from Openshift (under artifacts-default-tulivf secrets) -->
 
 ### Running GWELLS locally with a connection to Staging's Database
 
@@ -266,13 +257,12 @@ More documentation for the repository can be found in the following places
 
 - [Frontend](/app/frontend/README.md)
 - [OpenShift](/openshift/README.md)
-- [Tests](/tests/api-tests/README.md)
 
 ## New pipeline deployment instructions
 
 ### Dev Environment
 
-Current processes are set so that a PR merged into `release` branch will automatically trigger a deployment into the dev environment via github webhooks.
+Current processes are set so that a PR merged into `main` branch will automatically trigger a deployment into the dev environment via github webhooks.
 
 #### Editing webhook settings - Github
 

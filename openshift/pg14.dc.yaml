@@ -1,92 +1,104 @@
-apiVersion: v1
-kind: Template
 parameters:
   - name: "TAG"
     displayName: "Tag of the built image"
     value: "latest"
-objects:
-  - apiVersion: apps/v1
-    kind: Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"gwells-pg14:${TAG}","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"postgresql\")].image","paused":false}]'
+spec:
+  replicas: 1
+  strategy:
+    activeDeadlineSeconds: 3000
+    recreateParams:
+      timeoutSeconds: 600
+    type: Recreate
+  selector:
+    name: gwells-pg14
+  template:
     metadata:
-      annotations:
-        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"gwells-pg14:${TAG}","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"postgresql\")].image","paused":false}]'
-    spec:
-      replicas: 1
-      strategy:
-        activeDeadlineSeconds: 3000
-        recreateParams:
-          timeoutSeconds: 600
-        type: Recreate
-      selector:
+      labels:
+        appver: gwells-${ENVIRONMENT}
         name: gwells-pg14
-      template:
-        metadata:
-          labels:
-            appver: gwells-${ENVIRONMENT}
-            name: gwells-pg14
-        spec:
-          containers:
-            - name: postgresql
-              ports:
-                - containerPort: 5432
-                  protocol: TCP
-              resources:
-                limits:
-                  cpu: '2'
-                  memory: 4Gi
-                requests:
-                  cpu: 800m
-                  memory: 4Gi
-              readinessProbe:
-                exec:
-                  command:
-                    - /usr/bin/env
-                    - bash
-                    - '-c'
-                    - psql -q -d $PG_DATABASE -c 'SELECT 1'
-                initialDelaySeconds: 30
-                timeoutSeconds: 1
-                periodSeconds: 15
-                successThreshold: 1
-                failureThreshold: 5
-              livenessProbe:
-                tcpSocket:
-                  port: 5432
-                initialDelaySeconds: 30
-                timeoutSeconds: 1
-                periodSeconds: 10
-                successThreshold: 1
-                failureThreshold: 3
-              env:
-                - name: POSTGRES_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: gwells-pg12-development
-                      key: database-user
-                - name: POSTGRES_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: gwells-pg12-development
-                      key: database-password
-                - name: POSTGRES_DB
-                  valueFrom:
-                    secretKeyRef:
-                      name: gwells-pg12-development
-                      key: database-name
-              volumeMounts:
-                - name: gwells-pg12-production-data
-                  mountPath: /pgdata
-                - name: gwells-pg12-production-run
-                  mountPath: /var/run/postgresql
-                - name: gwells-pg12-production-setupcfg
-                  mountPath: /pgconf
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      name: gwells-pg14
     spec:
-      ports:
-        port: 5432
-        targetPort: 5432
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
+      containers:
+        - name: postgresql
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: 800m
+              memory: 4Gi
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - '-c'
+                - psql -q -d $PG_DATABASE -c 'SELECT 1'
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+          volumeMounts:
+            - name: gwells-pg12-production-data
+              mountPath: /pgdata
+            - name: gwells-pg12-production-run
+              mountPath: /var/run/postgresql
+            - name: gwells-pg12-production-setupcfg
+              mountPath: /pgconf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gwells-pg14
+  namespace: 26e83e-${ENV}
+spec:
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    name: 
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gwells-pg14
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: netapp-file-standard
