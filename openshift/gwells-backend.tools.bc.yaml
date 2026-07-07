@@ -41,10 +41,8 @@ spec:
     contextDir: app/backend
   triggers:
     - type: ConfigChange
-    - type: ImageChange
-      imageChangeParams:
-        automatic: true
-        from:
-          kind: ImageStreamTag
-          namespace: 26e83e-tools
-          name: 'gwells-pg14:latest'
+    - type: GitHub
+      github:
+        secretReference:
+          name: github-build-webhook
+  runPolicy: SerialLatestOnly

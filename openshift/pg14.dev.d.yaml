@@ -88,6 +88,15 @@ spec:
               mountPath: /var/run/postgresql
             - name: gwells-pg14-setupcfg
               mountPath: /pgconf
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'gwells-pg14:latest'
 ---
 apiVersion: v1
 kind: Service
