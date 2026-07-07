@@ -19,7 +19,7 @@ spec:
     type: Git
     git:
       uri: "https://www.github.com/bcgov/gwells.git"
-      ref: 2577-postgres-14
+      ref: main
     contextDir: app/database
   strategy:
     type: Docker

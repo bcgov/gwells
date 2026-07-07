@@ -1,12 +1,9 @@
-parameters:
-  - name: "TAG"
-    displayName: "Tag of the built image"
-    value: "latest"
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: gwells-pg14
   annotations:
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"gwells-pg14:${TAG}","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"postgresql\")].image","paused":false}]'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"gwells-pg14:latest","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"postgresql\")].image","paused":false}]'
 spec:
   replicas: 1
   strategy:
@@ -15,13 +12,24 @@ spec:
       timeoutSeconds: 600
     type: Recreate
   selector:
-    name: gwells-pg14
+    matchLabels:
+      name: gwells-pg14
   template:
     metadata:
       labels:
-        appver: gwells-${ENVIRONMENT}
+        appver: gwells-dev
         name: gwells-pg14
     spec:
+      volumes:
+        - name: gwells-pg14-data
+          persistentVolumeClaim:
+            claimName: gwells-pg14
+        - name: gwells-pg14-run
+          emptyDir: {}
+        - name: gwells-pg14-setupcfg
+          configMap:
+            name: gwells-pg12-development-setupcfg
+            defaultMode: 420
       containers:
         - name: postgresql
           ports:
@@ -34,13 +42,14 @@ spec:
             requests:
               cpu: 800m
               memory: 4Gi
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-pg14:latest'
           readinessProbe:
             exec:
               command:
                 - /usr/bin/env
                 - bash
                 - '-c'
-                - psql -q -d $PG_DATABASE -c 'SELECT 1'
+                - /usr/local/bin/pg_isready -d gwells -U ${POSTGRES_USER}
             initialDelaySeconds: 30
             timeoutSeconds: 1
             periodSeconds: 15
@@ -70,26 +79,27 @@ spec:
                 secretKeyRef:
                   name: gwells-pg12-development
                   key: database-name
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           volumeMounts:
-            - name: gwells-pg12-production-data
+            - name: gwells-pg14-data
               mountPath: /pgdata
-            - name: gwells-pg12-production-run
+            - name: gwells-pg14-run
               mountPath: /var/run/postgresql
-            - name: gwells-pg12-production-setupcfg
+            - name: gwells-pg14-setupcfg
               mountPath: /pgconf
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: gwells-pg14
-  namespace: 26e83e-${ENV}
 spec:
   ports:
     - protocol: TCP
       port: 5432
       targetPort: 5432
   selector:
-    name: 
+    name: gwells-pg14
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
