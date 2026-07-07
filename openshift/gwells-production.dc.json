@@ -81,8 +81,8 @@
                 }
             },
             "data": {
-                "MINIO_ACCESS_KEY": null,
-                "MINIO_SECRET_KEY": null,
+                "MINIO_ROOT_USER": null,
+                "MINIO_ROOT_PASSWORD": null,
                 "S3_HOST": null,
                 "S3_ROOT_BUCKET": null,
                 "S3_PUBLIC_ACCESS_KEY": null,
@@ -623,20 +623,20 @@
                                         }
                                     },
                                     {
-                                        "name": "MINIO_ACCESS_KEY",
+                                        "name": "MINIO_ROOT_USER",
                                         "valueFrom": {
                                             "secretKeyRef": {
                                                 "name": "minio-access-parameters${NAME_SUFFIX}",
-                                                "key": "MINIO_ACCESS_KEY"
+                                                "key": "MINIO_ROOT_USER"
                                             }
                                         }
                                     },
                                     {
-                                        "name": "MINIO_SECRET_KEY",
+                                        "name": "MINIO_ROOT_PASSWORD",
                                         "valueFrom": {
                                             "secretKeyRef": {
                                                 "name": "minio-access-parameters${NAME_SUFFIX}",
-                                                "key": "MINIO_SECRET_KEY"
+                                                "key": "MINIO_ROOT_PASSWORD"
                                             }
                                         }
                                     },

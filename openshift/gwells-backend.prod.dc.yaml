@@ -245,16 +245,16 @@ spec:
                 configMapKeyRef:
                   name: gwells-global-config-production
                   key: DB_REPLICATE
-            - name: MINIO_ACCESS_KEY
+            - name: MINIO_ROOT_USER
               valueFrom:
                 secretKeyRef:
                   name: minio-access-parameters-production
-                  key: MINIO_ACCESS_KEY
-            - name: MINIO_SECRET_KEY
+                  key: MINIO_ROOT_USER
+            - name: MINIO_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: minio-access-parameters-production
-                  key: MINIO_SECRET_KEY
+                  key: MINIO_ROOT_PASSWORD
             - name: S3_PUBLIC_ACCESS_KEY
               valueFrom:
                 secretKeyRef:

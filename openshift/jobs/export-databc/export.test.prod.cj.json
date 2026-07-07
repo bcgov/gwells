@@ -94,20 +94,20 @@
                                                 "value": "public"
                                             },
                                             {
-                                                "name": "MINIO_ACCESS_KEY",
+                                                "name": "MINIO_ROOT_USER",
                                                 "valueFrom": {
                                                     "secretKeyRef": {
                                                         "name": "minio-access-parameters-${ENV_NAME}",
-                                                        "key": "MINIO_ACCESS_KEY"
+                                                        "key": "MINIO_ROOT_USER"
                                                     }
                                                 }
                                             },
                                             {
-                                                "name": "MINIO_SECRET_KEY",
+                                                "name": "MINIO_ROOT_PASSWORD",
                                                 "valueFrom": {
                                                     "secretKeyRef": {
                                                         "name": "minio-access-parameters-${ENV_NAME}",
-                                                        "key": "MINIO_SECRET_KEY"
+                                                        "key": "MINIO_ROOT_PASSWORD"
                                                     }
                                                 }
                                             },
