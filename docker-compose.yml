@@ -53,26 +53,14 @@ services:
   #############################################################################################
   db:
     platform: linux/x86_64
-    image: crunchydata/crunchy-postgres-gis:centos7-12.2-4.2.2
+    build:
+      context: ./app/database
+      dockerfile: ./Dockerfile
     hostname: db
     environment:
-      PG_USER: gwells
-      PG_PASSWORD: ${DATABASE_PASSWORD}
-      PG_DATABASE: gwells
-      PG_MODE: primary
-      PG_PRIMARY_USER: primaryuser
-      PG_PRIMARY_PASSWORD: ${PG_PRIMARY_PASSWORD}
-      PG_ROOT_PASSWORD: ${PG_ROOT_PASSWORD}
-      PG_PRIMARY_PORT: 5432
-      TEMP_BUFFERS: 9MB
-      MAX_CONNECTIONS: 101
-      SHARED_BUFFERS: 128MB
-      MAX_WAL_SENDERS: 7
-      WORK_MEM: 5MB
-      PG_PRIMARY_HOST: db
-      PGHOST: /tmp
-      TILESERVER_USER: ftw_reader
-      TILESERVER_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: gwells
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: gwells
     ports:
       - "5432:5432"
     volumes:
@@ -82,7 +70,7 @@ services:
         target: /pgconf/setup.sql
         consistency: cached
     healthcheck:
-      test: ["CMD-SHELL", "/usr/pgsql-12/bin/pg_isready", "-d", "gwells"]
+      test: ["CMD-SHELL", "/usr/local/bin/pg_isready -d gwells -h localhost -U gwells"]
       interval: 20s
       timeout: 30s
       retries: 5

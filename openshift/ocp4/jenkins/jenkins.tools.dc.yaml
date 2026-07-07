@@ -4,7 +4,6 @@ kind: Template
 labels:
   app: jenkins
 metadata:
-  creationTimestamp: null
   name: jenkins
 objects:
 - apiVersion: v1
@@ -63,7 +62,6 @@ objects:
   metadata:
     annotations:
       template.alpha.openshift.io/wait-for-ready: "true"
-    creationTimestamp: null
     name: ${NAME}-controller${SUFFIX}
   spec:
     replicas: 1
@@ -78,7 +76,6 @@ objects:
       type: Recreate
     template:
       metadata:
-        creationTimestamp: null
         labels:
           deploymentconfig: ${NAME}-controller${SUFFIX}
       spec:
@@ -230,7 +227,6 @@ objects:
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
-    creationTimestamp: null
     name: ${NAME}-agent${SUFFIX}
   spec:
     replicas: "${{AGENT_REPLICAS}}"
@@ -245,7 +241,6 @@ objects:
       type: Recreate
     template:
       metadata:
-        creationTimestamp: null
         labels:
           deploymentconfig: ${NAME}-agent${SUFFIX}
       spec:
@@ -374,7 +369,6 @@ objects:
 - apiVersion: v1
   kind: Service
   metadata:
-    creationTimestamp: null
     name: ${NAME}-controller${SUFFIX}
   spec:
     ports:
@@ -393,7 +387,6 @@ objects:
 - apiVersion: v1
   kind: Route
   metadata:
-    creationTimestamp: null
     name: ${NAME}-controller${SUFFIX}
   spec:
     host: "gwells-${NAME}${SUFFIX}.${ROUTE_HOST_SUFFIX}"

@@ -3,7 +3,6 @@ kind: Template
 labels:
   template: postgresql-persistent-template
 metadata:
-  creationTimestamp: null
   name: gwells-postgresql-dc
 parameters:
   - description: The OpenShift ImageStream name.
@@ -176,8 +175,6 @@ objects:
         name: ${DATABASE_SERVICE_NAME}
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
@@ -326,4 +323,3 @@ objects:
             lastTriggeredImage: ""
           type: ImageChange
         - type: ConfigChange
-    status: {}

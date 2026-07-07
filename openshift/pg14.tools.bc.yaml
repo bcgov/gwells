@@ -1,0 +1,39 @@
+
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: gwells-pg14
+  labels:
+    name: gwells-pg14
+    part-of: gwells
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: gwells-pg14
+  labels:
+    app: gwells-pg14
+    name: gwells-pg14
+spec:
+  source:
+    type: Git
+    git:
+      uri: "https://www.github.com/bcgov/gwells.git"
+      ref: main
+    contextDir: app/database
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: 'gwells-pg14:latest'
+  successfulBuildsHistoryLimit: 3
+  failedBuildsHistoryLimit: 3
+  triggers:
+    - type: ConfigChange
+    - type: GitHub
+      github:
+        secretReference:
+          name: github-build-webhook

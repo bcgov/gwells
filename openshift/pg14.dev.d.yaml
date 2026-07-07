@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gwells-pg14
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"gwells-pg14:latest","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"postgresql\")].image","paused":false}]'
+spec:
+  replicas: 1
+  strategy:
+    activeDeadlineSeconds: 3000
+    recreateParams:
+      timeoutSeconds: 600
+    type: Recreate
+  selector:
+    matchLabels:
+      name: gwells-pg14
+  template:
+    metadata:
+      labels:
+        appver: gwells-dev
+        name: gwells-pg14
+    spec:
+      volumes:
+        - name: gwells-pg14-data
+          persistentVolumeClaim:
+            claimName: gwells-pg14
+        - name: gwells-pg14-run
+          emptyDir: {}
+        - name: gwells-pg14-setupcfg
+          configMap:
+            name: gwells-pg12-development-setupcfg
+            defaultMode: 420
+      containers:
+        - name: postgresql
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '2'
+              memory: 4Gi
+            requests:
+              cpu: 800m
+              memory: 4Gi
+          image: 'image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-pg14:latest'
+          readinessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - '-c'
+                - /usr/local/bin/pg_isready -d gwells -U ${POSTGRES_USER}
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 15
+            successThreshold: 1
+            failureThreshold: 5
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: gwells-pg12-development
+                  key: database-name
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: gwells-pg14-data
+              mountPath: /pgdata
+            - name: gwells-pg14-run
+              mountPath: /var/run/postgresql
+            - name: gwells-pg14-setupcfg
+              mountPath: /pgconf
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        from:
+          kind: ImageStreamTag
+          namespace: 26e83e-tools
+          name: 'gwells-pg14:latest'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gwells-pg14
+spec:
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+  selector:
+    name: gwells-pg14
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: gwells-pg14
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: netapp-file-standard

@@ -4,13 +4,11 @@ kind: Template
 labels:
   app: jenkins
 metadata:
-  creationTimestamp: null
   name: jenkins
 objects:
 - apiVersion: v1
   kind: ImageStream
   metadata:
-    creationTimestamp: null
     labels:
       shared: "true"
     name: ${NAME}-secondary
@@ -20,7 +18,6 @@ objects:
 - apiVersion: v1
   kind: BuildConfig
   metadata:
-    creationTimestamp: null
     name: ${NAME}-secondary
   spec:
     completionDeadlineSeconds: 600

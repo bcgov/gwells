@@ -2,7 +2,6 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: gwells-pg12-development
-  generation: 2
   namespace: 26e83e-dev
   labels:
     app: gwells-development
@@ -36,7 +35,6 @@ spec:
     name: gwells-pg12-development
   template:
     metadata:
-      creationTimestamp: null
       labels:
         appver: gwells-development
         name: gwells-pg12-development
@@ -148,27 +146,3 @@ spec:
       dnsPolicy: ClusterFirst
       securityContext: {}
       schedulerName: default-scheduler
-status:
-  observedGeneration: 2
-  details:
-    message: config change
-    causes:
-      - type: ConfigChange
-  availableReplicas: 1
-  unavailableReplicas: 0
-  latestVersion: 1
-  updatedReplicas: 1
-  conditions:
-    - type: Progressing
-      status: 'True'
-      lastUpdateTime: '2025-03-31T20:49:23Z'
-      lastTransitionTime: '2025-03-31T20:49:23Z'
-      reason: NewReplicationControllerAvailable
-      message: replication controller "gwells-pg12-development-1" successfully rolled out
-    - type: Available
-      status: 'True'
-      lastUpdateTime: '2025-04-02T12:58:00Z'
-      lastTransitionTime: '2025-04-02T12:58:00Z'
-      message: Deployment config has minimum availability.
-  replicas: 1
-  readyReplicas: 1

@@ -3,7 +3,6 @@ kind: Template
 labels:
   template: pgtileserv-template
 metadata:
-  creationTimestamp: null
   name: pgtileserv-dc
 parameters:
   - name: IMAGE_TAG
@@ -74,8 +73,6 @@ objects:
         name: pgtileserv${NAME_SUFFIX}
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -182,4 +179,3 @@ objects:
           restartPolicy: Always
       triggers:
         - type: ConfigChange
-    status: {}

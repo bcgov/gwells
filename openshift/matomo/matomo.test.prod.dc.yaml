@@ -2,7 +2,6 @@ kind: DeploymentConfig
 apiVersion: apps.openshift.io/v1
 metadata:
   name: matomo
-  generation: 5
   namespace: 26e83e-prod
   labels:
     app: matomo
@@ -31,7 +30,6 @@ spec:
     template: matomo-template
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: matomo
         deploymentconfig: matomo

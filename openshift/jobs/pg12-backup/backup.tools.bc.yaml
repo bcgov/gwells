@@ -3,7 +3,6 @@ kind: Template
 apiVersion: v1
 metadata:
   name: "${NAME}-build-template"
-  creationTimestamp: 
 parameters:
 - name: NAME
   displayName: Name

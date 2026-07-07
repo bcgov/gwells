@@ -16,9 +16,3 @@ spec:
       storage: 1Gi
   storageClassName: netapp-file-standard
   volumeMode: Filesystem
-status:
-  phase: Bound
-  accessModes:
-    - ReadWriteOnce
-  capacity:
-    storage: 1Gi
