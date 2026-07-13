@@ -137,7 +137,7 @@ if (isProduction()) {
     host: PRODUCTION_MATOMO_HOST,
     siteId: 1,
     router: router,
-    domains: "apps.nrs.gov.bc.ca",
+    domains: ["apps.nrs.gov.bc.ca"],
   });
 } else if (isStaging()) {
   matomo = initMatomo({
