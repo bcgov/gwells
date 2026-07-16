@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: pgtileserv-template
@@ -49,7 +49,6 @@ objects:
         appver: gwells${NAME_SUFFIX}
         component: pgtileserv
     spec:
-      host: ${HOST}
       path: /gwells/tiles
       to:
         kind: Service
@@ -93,8 +92,8 @@ objects:
           volumes:
           containers:
             - name: nginx
-              image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/nginx-tilecache:latest
-              imagePullPolicy: IfNotPresent
+              image: nginx-tilecache:latest
+              imagePullPolicy: Always
               readinessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 10
@@ -157,7 +156,7 @@ objects:
                   protocol: TCP
               readinessProbe:
                 httpGet:
-                  path: /
+                  path: /index.json
                   port: 7800
                 failureThreshold: 3
                 initialDelaySeconds: 10
@@ -179,3 +178,12 @@ objects:
           restartPolicy: Always
       triggers:
         - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - nginx
+            from:
+              kind: ImageStreamTag
+              name: nginx-tilecache:latest
+              namespace: 26e83e-tools
