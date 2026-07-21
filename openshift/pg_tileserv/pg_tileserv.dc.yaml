@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
 labels:
   template: pgtileserv-template
@@ -49,7 +49,6 @@ objects:
         appver: gwells${NAME_SUFFIX}
         component: pgtileserv
     spec:
-      host: ${HOST}
       path: /gwells/tiles
       to:
         kind: Service
@@ -79,9 +78,18 @@ objects:
       name: pgtileserv${NAME_SUFFIX}
     spec:
       replicas: 1
+      revisionHistoryLimit: 10
       selector:
         name: pgtileserv${NAME_SUFFIX}
       strategy:
+        activeDeadlineSeconds: 21600
+        resources: {}
+        rollingParams:
+          intervalSeconds: 1
+          maxSurge: 25%
+          maxUnavailable: 25%
+          timeoutSeconds: 600
+          updatePeriodSeconds: 1
         type: Rolling
       template:
         metadata:
@@ -91,9 +99,16 @@ objects:
             appver: gwells${NAME_SUFFIX}
         spec:
           volumes:
+          - name: nginx-conf
+            configMap:
+              name: nginx-conf
           containers:
             - name: nginx
-              image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/nginx-tilecache:latest
+              image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/nginx-tilecache:latest
+              volumeMounts:
+              - name: nginx-conf
+                mountPath: /etc/nginx/nginx.conf
+                subPath: nginx.conf
               imagePullPolicy: IfNotPresent
               readinessProbe:
                 failureThreshold: 3
@@ -123,24 +138,25 @@ objects:
                 limits:
                   cpu: 200m
                   memory: 256Mi
-            - capabilities: {}
-              env:
-                - name: DATABASE_HOST
-                  value: ${DATABASE_SERVICE_NAME}
-                - name: PG_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-name
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-password
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_USER
-                  value: ftw_reader
-                - name: DATABASE_URL
-                  value: postgres://$(PG_USER):$(PG_PASSWORD)@$(DATABASE_HOST)/gwells
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+            - env:
+              - name: PG_DATABASE
+                valueFrom:
+                  secretKeyRef:
+                    key: database-name
+                    name: gwells-pg12${NAME_SUFFIX}
+              - name: PG_USER
+                value: ftw_reader
+              - name: PG_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    key: database-password
+                    name: gwells-pg12${NAME_SUFFIX}
+              - name: PG_HOST
+                value: gwells-pg12${NAME_SUFFIX}
+              - name: DATABASE_URL
+                value: postgres://$(PG_USER):$(PG_PASSWORD)@$(PG_HOST)/gwells
               image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/pg_tileserv:${IMAGE_TAG}
               imagePullPolicy: IfNotPresent
               livenessProbe:
@@ -157,7 +173,7 @@ objects:
                   protocol: TCP
               readinessProbe:
                 httpGet:
-                  path: /
+                  path: /index.json
                   port: 7800
                 failureThreshold: 3
                 initialDelaySeconds: 10
@@ -175,7 +191,21 @@ objects:
                 capabilities: {}
                 privileged: false
               terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
           dnsPolicy: ClusterFirst
           restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+      test: false
       triggers:
         - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - nginx
+            from:
+              kind: ImageStreamTag
+              name: nginx-tilecache:latest
+              namespace: 26e83e-tools
