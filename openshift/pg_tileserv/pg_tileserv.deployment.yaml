@@ -1,0 +1,110 @@
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: pgtileserv${NAME_SUFFIX}
+    labels:
+      app: gwells${NAME_SUFFIX}
+      name: pgtileserv${NAME_SUFFIX}
+      appver: gwells${NAME_SUFFIX}
+  spec:
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        name: pgtileserv${NAME_SUFFIX}
+    strategy:
+      type: RollingUpdate
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+    template:
+      metadata:
+        labels:
+          app: gwells${NAME_SUFFIX}
+          name: pgtileserv${NAME_SUFFIX}
+          appver: gwells${NAME_SUFFIX}
+      spec:
+        containers:
+        - name: nginx
+          image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/nginx-tilecache:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+        - name: pgtileserv
+          image: ${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/pg_tileserv:${IMAGE_TAG}
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: DATABASE_HOST
+            value: ${DATABASE_SERVICE_NAME}
+          - name: PG_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: ${DATABASE_SERVICE_NAME}
+          - name: PG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: ${DATABASE_SERVICE_NAME}
+          - name: PG_USER
+            value: ftw_reader
+          - name: DATABASE_URL
+            value: postgres://$(PG_USER):$(PG_PASSWORD)@$(DATABASE_HOST)/gwells
+          ports:
+          - containerPort: 7800
+            protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 7800
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 7800
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: ${REQUEST_CPU}
+              memory: ${REQUEST_MEMORY}
+            limits:
+              cpu: ${LIMIT_CPU}
+              memory: ${LIMIT_MEMORY}
+          securityContext:
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
