@@ -1,0 +1,110 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "annotations": {
+      "image.openshift.io/triggers": "[{\"from\":{\"kind\":\"ImageStreamTag\",\"name\":\"matomo:test\",\"namespace\":\"26e83e-tools\"},\"fieldPath\":\"spec.template.spec.containers[?(@.name==\\\"matomo\\\")].image\",\"pause\":false}, {\"from\":{\"kind\":\"ImageStreamTag\",\"name\":\"matomo:proxy\",\"namespace\":\"26e83e-tools\"},\"fieldPath\":\"spec.template.spec.containers[?(@.name==\\\"matomo-proxy\\\")].image\",\"pause\":false}]"
+    },
+    "labels": {
+      "app": "matomo",
+      "name": "matomo",
+      "service": "matomo",
+      "template": "matomo-template"
+    },
+    "name": "matomo",
+    "namespace": "26e83e-test"
+  },
+  "spec": {
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+      "matchLabels": {
+        "app": "matomo",
+        "template": "matomo-template"
+      }
+    },
+    "strategy": {
+      "type": "RollingUpdate",
+      "rollingUpdate": {
+        "maxSurge": "25%",
+        "maxUnavailable": "25%"
+      }
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "matomo",
+          "deploymentconfig": "matomo",
+          "name": "matomo",
+          "template": "matomo-template"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "image": "docker.io/library/matomo@sha256:b355cc874a86e9b6a5fc635d12d21cbf9be6e01a04be7b6ff46616ee28e5017c",
+            "imagePullPolicy": "Always",
+            "name": "matomo",
+            "ports": [
+              {
+                "containerPort": 9000,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/www/html",
+                "name": "matomo-source"
+              },
+              {
+                "mountPath": "/var/www/html/config",
+                "name": "matomo-config"
+              }
+            ]
+          },
+          {
+            "image": "image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo-proxy@sha256:76d7f6f07975dca65818684a3362f91a39690b333ad346d549b11a3691dea59a",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "matomo-proxy",
+            "ports": [
+              {
+                "containerPort": 8080,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {},
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/www/html",
+                "name": "matomo-source"
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "terminationGracePeriodSeconds": 30,
+        "volumes": [
+          {
+            "emptyDir": {},
+            "name": "matomo-source"
+          },
+          {
+            "name": "matomo-config",
+            "persistentVolumeClaim": {
+              "claimName": "matomo-config"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
