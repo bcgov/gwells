@@ -1,0 +1,111 @@
+{
+  "apiVersion": "apps/v1",
+  "kind": "Deployment",
+  "metadata": {
+    "labels": {
+      "app": "gwells-production",
+      "app-name": "gwells",
+      "env-name": "production",
+      "name": "gwells-minio-production"
+    },
+    "name": "gwells-minio-production",
+    "namespace": "26e83e-prod"
+  },
+  "spec": {
+    "replicas": 1,
+    "revisionHistoryLimit": 10,
+    "selector": {
+      "matchLabels": {
+        "app": "gwells-production",
+        "name": "gwells-minio-production"
+      }
+    },
+    "strategy": {
+      "type": "Recreate"
+    },
+    "template": {
+      "metadata": {
+        "creationTimestamp": null,
+        "labels": {
+          "app": "gwells-production",
+          "name": "gwells-minio-production"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "args": [
+              "/minio-entrypoint.sh server /opt/minio/s3/data"
+            ],
+            "command": [
+              "/bin/sh",
+              "-c"
+            ],
+            "env": [
+              {
+                "name": "MINIO_ACCESS_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "MINIO_ACCESS_KEY",
+                    "name": "gwells-minio-secrets"
+                  }
+                }
+              },
+              {
+                "name": "MINIO_SECRET_KEY",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "key": "MINIO_SECRET_KEY",
+                    "name": "gwells-minio-secrets"
+                  }
+                }
+              },
+              {
+                "name": "MINIO_DATA_DIR",
+                "value": "/opt/minio/s3/data"
+              }
+            ],
+            "image": "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-minio:latest",
+            "imagePullPolicy": "Always",
+            "name": "gwells-minio-production",
+            "ports": [
+              {
+                "containerPort": 9000,
+                "protocol": "TCP"
+              }
+            ],
+            "resources": {
+              "limits": {
+                "cpu": "250m"
+              },
+              "requests": {
+                "cpu": "100m"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/opt/minio/s3/data",
+                "name": "minio-vol"
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "terminationGracePeriodSeconds": 30,
+        "volumes": [
+          {
+            "name": "minio-vol",
+            "persistentVolumeClaim": {
+              "claimName": "gwells-minio-production"
+            }
+          }
+        ]
+      }
+    }
+  }
+}
