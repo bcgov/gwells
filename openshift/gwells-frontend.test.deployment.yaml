@@ -45,7 +45,7 @@
                 "value": "https://gwells-backend-26e83e-test.apps.silver.devops.gov.bc.ca/gwells/api/v2/"
               }
             ],
-            "image": "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:28316126761f3a54c95e56f20039c1adcc60e5217a52461d9e556006a14d4439",
+            "image": "image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:22bc16db23dfe60d5e7f6bbe6a01efff7fe773e64a37b6f18cf3bb722a5e8efa",
             "imagePullPolicy": "Always",
             "name": "gwells-frontend",
             "ports": [
