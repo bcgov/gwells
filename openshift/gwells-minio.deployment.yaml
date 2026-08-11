@@ -1,28 +1,37 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: gwells-dev
-    name: gwells-minio-dev
-  name: gwells-minio-dev
-  namespace: 26e83e-dev
-  resourceVersion: "20141060646"
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: minio-template
+parameters:
+  - name: ENV
+    description: Use dev, test, or prod
+    required: true
+# ----------------- DEPLOYMENT -----------------
+objects:
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      labels:
+        name: gwells-minio-{ENV}
+      name: gwells-minio-{ENV}
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: gwells-dev
-      name: gwells-minio-dev
+      app: gwells-{ENV}
+      name: gwells-minio-{ENV}
   strategy:
     type: Recreate
   template:
     metadata:
+      annotations:
+        openshift.openshift.io/restartedAt: "2026-08-05T22:34:51.789Z"
       creationTimestamp: null
       labels:
-        app: gwells-dev
-        name: gwells-minio-dev
+        app: gwells-{ENV}
+        name: gwells-minio-{ENV}
     spec:
       containers:
       - args:
@@ -45,7 +54,7 @@ spec:
           value: /opt/minio/s3/data
         image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-minio:latest
         imagePullPolicy: Always
-        name: gwells-minio-dev
+        name: gwells-minio-{ENV}
         ports:
         - containerPort: 9000
           protocol: TCP
@@ -67,23 +76,4 @@ spec:
       volumes:
       - name: minio-vol
         persistentVolumeClaim:
-          claimName: gwells-minio-dev
-status:
-  availableReplicas: 1
-  conditions:
-  - lastTransitionTime: "2026-07-23T23:05:36Z"
-    lastUpdateTime: "2026-07-23T23:05:36Z"
-    message: Deployment has minimum availability.
-    reason: MinimumReplicasAvailable
-    status: "True"
-    type: Available
-  - lastTransitionTime: "2026-07-23T23:04:56Z"
-    lastUpdateTime: "2026-07-23T23:05:36Z"
-    message: ReplicaSet "gwells-minio-dev-fcd796ffc" has successfully progressed.
-    reason: NewReplicaSetAvailable
-    status: "True"
-    type: Progressing
-  observedGeneration: 1
-  readyReplicas: 1
-  replicas: 1
-  updatedReplicas: 1
+          claimName: gwells-minio-{ENV}
