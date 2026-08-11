@@ -1,0 +1,94 @@
+apiVersion: template.openshift.io/v1
+kind: Template
+labels:
+  template: matomo-template
+parameters:
+  - name: IMAGE_TAG
+    description: Use test or prod
+    required: true
+  - name: PVC_NAME
+    description: Name of the PVC to use for Matomo data storage, in dev and test use matomo-config, in prod use matomo
+    required: true
+# ----------------- DEPLOYMENT -----------------
+objects:
+  - kind: Deployment
+    apiVersion: apps/v1
+    metadata:
+      labels:
+        app: matomo
+      name: matomo
+      annotations:
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"matomo:${IMAGE_TAG}","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"matomo\")].image","pause":false}, {"from":{"kind":"ImageStreamTag","name":"matomo:proxy","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"matomo-proxy\")].image","pause":false}]'
+    spec:
+      selector:
+        matchLabels:
+          app: matomo
+          template: matomo-template
+      strategy:
+        rollingUpdate:
+          maxSurge: 25%
+          maxUnavailable: 25%
+        type: RollingUpdate
+      template:
+        metadata:
+          labels:
+            name: matomo
+          name: matomo
+        spec:
+          containers:
+          - name: matomo
+            image: docker.io/library/matomo@sha256:b355cc874a86e9b6a5fc635d12d21cbf9be6e01a04be7b6ff46616ee28e5017c
+            imagePullPolicy: Always
+            ports:
+            - containerPort: 9000
+              protocol: TCP
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /var/www/html
+              name: matomo-source
+            - mountPath: /var/www/html/config
+              name: matomo
+          - name: matomo-proxy
+            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo-proxy@sha256:76d7f6f07975dca65818684a3362f91a39690b333ad346d549b11a3691dea59a
+            imagePullPolicy: IfNotPresent
+            ports:
+            - containerPort: 8080
+              protocol: TCP
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /var/www/html
+              name: matomo-source
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - emptyDir: {}
+            name: matomo-source
+          - name: matomo
+            persistentVolumeClaim:
+              claimName: matomo
+# ----------------- PVC -----------------
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: PVC_NAME
+      namespace: 26e83e-{IMAGE_TAG}
+      finalizers:
+        - kubernetes.io/pvc-protection
+      labels:
+        app: matomo
+        name: PVC_NAME
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+      storageClassName: netapp-file-standard
+      volumeMode: Filesystem
