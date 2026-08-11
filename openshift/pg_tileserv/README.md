@@ -14,9 +14,9 @@ nginx has been deployed as a basic tile cache. To build the nginx server and inc
 
 `oc start-build nginx-tilecache -n 26e83e-tools`
 
-The template `pg_tileserv.dc.yaml` will now be able to pull the nginx-tilecache container image. This image should be rebuilt when edits are made to the nginx.conf file.
+The template `pg_tileserv.deployment.yaml` will now be able to pull the nginx-tilecache container image. This image should be rebuilt when edits are made to the nginx.conf file.
 
-To update the image, update the image stream then use the template `pg_tileserv.dc.yaml` with cli `oc process -f openshift/pg_tileserv/pg_tileserv.deployment.yaml -p NAME_SUFFIX=-<production, development, or test> -p DATABASE_SERVICE_NAME=<secret name> -p HOST=gwells-<prod, dev, or test>.apps.cluster.gov.bc.ca | oc apply -f -`
+To update the image, update the image stream then use the template `pg_tileserv.dc.yaml` with cli `oc process -f openshift/pg_tileserv/pg_tileserv.deployment.yaml -p NAME_SUFFIX=-<production, development, or staging> | oc apply -f -`
 
 ### Note from recent cleaning
 
