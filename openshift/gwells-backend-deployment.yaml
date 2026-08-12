@@ -45,22 +45,22 @@ objects:
             gunicorn.ocp4.cfg
           env:
           - name: DATABASE_SERVICE_NAME
-            value: gwells-pg12-{ENV}
+            value: gwells-pg12-${ENV}
           - name: DATABASE_NAME
             valueFrom:
               secretKeyRef:
                 key: database-name
-                name: gwells-pg12-{ENV}
+                name: gwells-pg12-${ENV}
           - name: DATABASE_USER
             valueFrom:
               secretKeyRef:
                 key: database-user
-                name: gwells-pg12-{ENV}
+                name: gwells-pg12-${ENV}
           - name: DATABASE_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: database-password
-                name: gwells-pg12-{ENV}
+                name: gwells-pg12-${ENV}
           - name: DATABASE_SCHEMA
             value: public
           - name: APP_MODULE
@@ -73,124 +73,124 @@ objects:
             valueFrom:
               secretKeyRef:
                 key: secret_key
-                name: gwells-django-{ENV}
+                name: gwells-django-${ENV}
           - name: DJANGO_ADMIN_URL
             valueFrom:
               secretKeyRef:
                 key: admin_url
-                name: gwells-django-{ENV}
+                name: gwells-django-${ENV}
           - name: DJANGO_ADMIN_USER
             valueFrom:
               secretKeyRef:
                 key: admin_user
-                name: gwells-django-{ENV}
+                name: gwells-django-${ENV}
           - name: DJANGO_ADMIN_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: admin_password
-                name: gwells-django-{ENV}
+                name: gwells-django-${ENV}
           - name: E_LICENSING_AUTH_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: E_LICENSING_AUTH_PASSWORD
-                name: gwells-e-licensing-{ENV}
+                name: gwells-e-licensing-${ENV}
           - name: E_LICENSING_AUTH_USERNAME
             valueFrom:
               secretKeyRef:
                 key: E_LICENSING_AUTH_USERNAME
-                name: gwells-e-licensing-{ENV}
+                name: gwells-e-licensing-${ENV}
           - name: E_LICENSING_URL
             valueFrom:
               configMapKeyRef:
                 key: E_LICENSING_URL
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: DJANGO_DEBUG
             valueFrom:
               configMapKeyRef:
                 key: DJANGO_DEBUG
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: CUSTOM_GDAL_GEOS
             value: "false"
           - name: S3_AQUIFER_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_AQUIFER_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_REGISTRANT_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_REGISTRANT_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_PRIVATE_ROOT_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_PRIVATE_ROOT_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_PRIVATE_AQUIFER_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_PRIVATE_AQUIFER_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_PRIVATE_REGISTRANT_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_PRIVATE_REGISTRANT_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_PRIVATE_WELL_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_PRIVATE_WELL_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_CLIENT
             valueFrom:
               configMapKeyRef:
                 key: SSO_CLIENT
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_PUBKEY
             valueFrom:
               configMapKeyRef:
                 key: SSO_PUBKEY
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_AUTH_HOST
             valueFrom:
               configMapKeyRef:
                 key: SSO_AUTH_HOST
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_AUDIENCE
             valueFrom:
               configMapKeyRef:
                 key: SSO_AUDIENCE
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_REALM
             valueFrom:
               configMapKeyRef:
                 key: SSO_REALM
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_PORT
             valueFrom:
               configMapKeyRef:
                 key: SSO_PORT
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_TEST_CLIENT
             valueFrom:
               configMapKeyRef:
                 key: SSO_TEST_CLIENT
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_TEST_AUDIENCE
             valueFrom:
               configMapKeyRef:
                 key: SSO_TEST_AUDIENCE
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: ENABLE_ADDITIONAL_DOCUMENTS
             valueFrom:
               configMapKeyRef:
                 key: ENABLE_ADDITIONAL_DOCUMENTS
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: ENABLE_AQUIFERS_SEARCH
             valueFrom:
               configMapKeyRef:
                 key: ENABLE_AQUIFERS_SEARCH
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: APP_CONTEXT_ROOT
             value: gwells
           - name: SESSION_COOKIE_SECURE
@@ -201,57 +201,57 @@ objects:
             valueFrom:
               configMapKeyRef:
                 key: DB_REPLICATE
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: MINIO_ROOT_USER
             valueFrom:
               secretKeyRef:
                 key: MINIO_ROOT_USER
-                name: minio-access-parameters-{ENV}
+                name: minio-access-parameters-${ENV}
           - name: MINIO_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: MINIO_ROOT_PASSWORD
-                name: minio-access-parameters-{ENV}
+                name: minio-access-parameters-${ENV}
           - name: S3_PUBLIC_ACCESS_KEY
             valueFrom:
               secretKeyRef:
                 key: S3_PUBLIC_ACCESS_KEY
-                name: minio-access-parameters-{ENV}
+                name: minio-access-parameters-${ENV}
           - name: S3_PUBLIC_SECRET_KEY
             valueFrom:
               secretKeyRef:
                 key: S3_PUBLIC_SECRET_KEY
-                name: minio-access-parameters-{ENV}
+                name: minio-access-parameters-${ENV}
           - name: S3_HOST
             valueFrom:
               secretKeyRef:
                 key: S3_HOST
-                name: minio-access-parameters-{ENV}
+                name: minio-access-parameters-${ENV}
           - name: S3_ROOT_BUCKET
             valueFrom:
               secretKeyRef:
                 key: S3_ROOT_BUCKET
-                name: minio-access-parameters-{ENV}
+                name: minio-access-parameters-${ENV}
           - name: S3_PRIVATE_HOST
             valueFrom:
               configMapKeyRef:
                 key: S3_PRIVATE_HOST
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_WELL_EXPORT_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_WELL_EXPORT_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: S3_PRIVATE_BUCKET
             valueFrom:
               configMapKeyRef:
                 key: S3_PRIVATE_BUCKET
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: SSO_IDP_HINT
             valueFrom:
               configMapKeyRef:
                 key: SSO_IDP_HINT
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: WEB_CONCURRENCY
             value: "4"
           - name: GUNICORN_WORKERS
@@ -262,12 +262,12 @@ objects:
             valueFrom:
               configMapKeyRef:
                 key: EMAIL_NOTIFICATION_RECIPIENT
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           - name: GEOCODER_ADDRESS_API_BASE
             valueFrom:
               configMapKeyRef:
                 key: GEOCODER_ADDRESS_API_BASE
-                name: gwells-global-config-{ENV}
+                name: gwells-global-config-${ENV}
           image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend:latest
           imagePullPolicy: Always
           livenessProbe:

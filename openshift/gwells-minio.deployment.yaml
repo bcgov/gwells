@@ -14,16 +14,16 @@ objects:
     apiVersion: apps/v1
     metadata:
       labels:
-        name: gwells-minio-{ENV}
-      name: gwells-minio-{ENV}
+        name: gwells-minio-${ENV}
+      name: gwells-minio-${ENV}
     spec:
       progressDeadlineSeconds: 600
       replicas: 1
       revisionHistoryLimit: 10
       selector:
         matchLabels:
-          app: gwells-{ENV}
-          name: gwells-minio-{ENV}
+          app: gwells-${ENV}
+          name: gwells-minio-${ENV}
       strategy:
         type: Recreate
       template:
@@ -32,8 +32,8 @@ objects:
             openshift.openshift.io/restartedAt: "2026-08-05T22:34:51.789Z"
           creationTimestamp: null
           labels:
-            app: gwells-{ENV}
-            name: gwells-minio-{ENV}
+            app: gwells-${ENV}
+            name: gwells-minio-${ENV}
         spec:
           containers:
           - args:
@@ -56,7 +56,7 @@ objects:
               value: /opt/minio/s3/data
             image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-minio:latest
             imagePullPolicy: Always
-            name: gwells-minio-{ENV}
+            name: gwells-minio-${ENV}
             ports:
             - containerPort: 9000
               protocol: TCP
@@ -78,4 +78,4 @@ objects:
           volumes:
           - name: minio-vol
             persistentVolumeClaim:
-              claimName: gwells-minio-{ENV}
+              claimName: gwells-minio-${ENV}

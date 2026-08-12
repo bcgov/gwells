@@ -10,118 +10,118 @@ parameters:
     required: true
 objects:
 # ----------------- DEPLOYMENT -------------------------------
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  labels:
-    app: pgtileserv
-  name: pgtileserv
-spec:
-  selector:
-    matchLabels:
-      name: pgtileserv
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
-  template:
-    metadata:
-      labels:
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    labels:
+      app: pgtileserv
+    name: pgtileserv
+  spec:
+    selector:
+      matchLabels:
         name: pgtileserv
-    spec:
-      containers:
-      - name: nginx
-        image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/nginx-tilecache:latest
-        env:
-        - name: PG_DATABASE
-          valueFrom:
-            secretKeyRef:
-              key: database-name
-              name: gwells-pg12-{NAME_SUFFIX}
-        - name: PG_USER
-          value: ftw_reader
-        - name: PG_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: database-password
-              name: gwells-pg12-{NAME_SUFFIX}
-        - name: PG_HOST
-          value: gwells-pg12-{NAME_SUFFIX}
-        - name: DATABASE_URL
-          value: postgres://$(PG_USER):$(PG_PASSWORD)@$(PG_HOST)/gwells
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /health
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 1
-        ports:
-        - containerPort: 8080
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /health
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          successThreshold: 1
-          timeoutSeconds: 1
-        resources:
-          limits:
-            cpu: 200m
-            memory: 256Mi
-          requests:
-            cpu: 100m
-            memory: 128Mi
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-      - name: pgtileserv
-        image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/pg_tileserv:20201112
-        imagePullPolicy: IfNotPresent
-        livenessProbe:
-          failureThreshold: 3
-          initialDelaySeconds: 5
-          periodSeconds: 30
-          successThreshold: 1
-          tcpSocket:
-            port: 7800
-          timeoutSeconds: 5
-        name: pgtileserv
-        ports:
-        - containerPort: 7800
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /
-            port: 7800
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 5
-        resources:
-          limits:
-            cpu: 200m
-            memory: 512Mi
-          requests:
-            cpu: 100m
-            memory: 256Mi
-        securityContext:
-          capabilities: {}
-          privileged: false
-        terminationMessagePath: /dev/termination-log
-        terminationMessagePolicy: File
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        labels:
+          name: pgtileserv
+      spec:
+        containers:
+        - name: nginx
+          image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/nginx-tilecache:latest
+          env:
+          - name: PG_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: gwells-pg12-${NAME_SUFFIX}
+          - name: PG_USER
+            value: ftw_reader
+          - name: PG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: gwells-pg12-${NAME_SUFFIX}
+          - name: PG_HOST
+            value: gwells-pg12-${NAME_SUFFIX}
+          - name: DATABASE_URL
+            value: postgres://$(PG_USER):$(PG_PASSWORD)@$(PG_HOST)/gwells
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        - name: pgtileserv
+          image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/pg_tileserv:20201112
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 30
+            successThreshold: 1
+            tcpSocket:
+              port: 7800
+            timeoutSeconds: 5
+          name: pgtileserv
+          ports:
+          - containerPort: 7800
+            protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 7800
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits:
+              cpu: 200m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          securityContext:
+            capabilities: {}
+            privileged: false
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
