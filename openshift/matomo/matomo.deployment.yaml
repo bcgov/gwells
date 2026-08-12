@@ -1,16 +1,15 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: matomo-template
+metadata:
+  name: matomo
+  annotations:
+    description: Template for deploying matomo, an open source web analytics platform.
 parameters:
-  - name: IMAGE_TAG
-    description: Use test or prod
-    required: true
   - name: PVC_NAME
     description: Name of the PVC to use for Matomo data storage, in dev and test use matomo-config, in prod use matomo
     required: true
-# ----------------- DEPLOYMENT -----------------
 objects:
+# ----------------- DEPLOYMENT -----------------
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -18,7 +17,7 @@ objects:
         app: matomo
       name: matomo
       annotations:
-        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"matomo:${IMAGE_TAG}","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"matomo\")].image","pause":false}, {"from":{"kind":"ImageStreamTag","name":"matomo:proxy","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"matomo-proxy\")].image","pause":false}]'
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"matomo:latest","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"matomo\")].image","pause":false}, {"from":{"kind":"ImageStreamTag","name":"matomo:proxy","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"matomo-proxy\")].image","pause":false}]'
     spec:
       selector:
         matchLabels:
@@ -37,7 +36,7 @@ objects:
         spec:
           containers:
           - name: matomo
-            image: docker.io/library/matomo@sha256:b355cc874a86e9b6a5fc635d12d21cbf9be6e01a04be7b6ff46616ee28e5017c
+            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo:latest
             imagePullPolicy: Always
             ports:
             - containerPort: 9000
@@ -51,7 +50,7 @@ objects:
             - mountPath: /var/www/html/config
               name: matomo
           - name: matomo-proxy
-            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo-proxy@sha256:76d7f6f07975dca65818684a3362f91a39690b333ad346d549b11a3691dea59a
+            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/matomo-proxy:latest
             imagePullPolicy: IfNotPresent
             ports:
             - containerPort: 8080
@@ -72,18 +71,17 @@ objects:
             name: matomo-source
           - name: matomo
             persistentVolumeClaim:
-              claimName: matomo
+              claimName: ${PVC_NAME}
 # ----------------- PVC -----------------
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
-      name: PVC_NAME
-      namespace: 26e83e-{IMAGE_TAG}
+      name: ${PVC_NAME}
       finalizers:
         - kubernetes.io/pvc-protection
       labels:
         app: matomo
-        name: PVC_NAME
+        name: ${PVC_NAME}
     spec:
       accessModes:
         - ReadWriteOnce

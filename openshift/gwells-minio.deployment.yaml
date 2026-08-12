@@ -1,7 +1,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: minio-template
+metadata:
+  name: gwells-minio
+  annotations:
+    description: Template for deploying gwells-minio an object storage system.
 parameters:
   - name: ENV
     description: Use dev, test, or prod

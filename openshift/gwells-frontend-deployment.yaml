@@ -1,11 +1,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: gwells-frontend-template
-parameters:
-  - name: ENV
-    description: Use dev, test, or prod
-    required: true
+metadata:
+  name: gwells-frontend
+  annotations:
+    description: Template for deploying gwells-frontend with gwells-application image.
 # ----------------- DEPLOYMENT -----------------
 objects:
   - kind: Deployment
@@ -15,7 +13,7 @@ objects:
         app: gwells-frontend
       name: gwells-frontend
       annotations:
-        image.openshift.io/triggers: '[{"from": {"kind": "ImageStreamTag", "name": "gwells-application:${ENV}",
+        image.openshift.io/triggers: '[{"from": {"kind": "ImageStreamTag", "name": "gwells-application:latest",
           "namespace": "26e83e-tools"}, "fieldPath": "spec.template.spec.containers[?(@.name==\"gwells-frontend\")].image",
           "paused": false}]'
     spec:
@@ -43,7 +41,7 @@ objects:
               value: https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca
             - name: API_BASE_URL
               value: https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/
-            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:1dafcc329c0023b5e7230cad3a1c89f4373d49735c229758deb2244a69c7839c
+            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application:latest
             imagePullPolicy: Always
             name: gwells-frontend
             ports:

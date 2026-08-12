@@ -1,7 +1,9 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: pg12-template
+metadata:
+  name: gwells-pg12
+  annotations:
+    description: Template for deploying gwells-pg12 database.
 parameters:
   - name: ENV
     description: Use development, test or prod
@@ -14,7 +16,7 @@ metadata:
     app: gwells-{ENV}
   name: gwells-pg12-{ENV}
   annotations:
-    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"crunchy-postgres-gis:centos7-12.4-3.0-4.5.0","namespace":"26e83e-tools"},"lastTriggeredImage":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c"},"type":"ImageChange"},{"type":"ConfigChange"}]'
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"crunchy-postgres-gis:latest","namespace":"26e83e-tools"},"lastTriggeredImage":"image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c"},"type":"ImageChange"},{"type":"ConfigChange"}]'
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -80,7 +82,7 @@ spec:
               name: crunchy-db-credentials
         - name: UNUSED
           value: justtoforceanupdate
-        image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis@sha256:3e1a64213a15aba1e0a981efa175f88c819699c0f50b99d3f84b8d5706cfa41c
+        image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/crunchy-postgres-gis:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           failureThreshold: 3

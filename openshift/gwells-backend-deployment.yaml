@@ -1,11 +1,10 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: gwells-backend-template
+metadata:
+  name: gwells-backend
+  annotations:
+    description: Template for deploying gwells-backend.
 parameters:
-  - name: IMAGE_TAG
-    description: Use dev, test, or prod
-    required: true
   - name: ENV
     description: Use development, staging, or prod
     required: true
@@ -18,7 +17,7 @@ objects:
       app: gwells-backend
     name: gwells-backend
     annotations:
-      image.openshift.io/triggers: '[{"from": {"kind": "ImageStreamTag", "name": "gwells-backend:${IMAGE_TAG}",
+      image.openshift.io/triggers: '[{"from": {"kind": "ImageStreamTag", "name": "gwells-backend:latest",
         "namespace": "26e83e-tools"}, "fieldPath": "spec.template.spec.containers[?(@.name==\"gwells-backend\")].image",
         "pause": false}]'
   spec:
@@ -269,7 +268,7 @@ objects:
               configMapKeyRef:
                 key: GEOCODER_ADDRESS_API_BASE
                 name: gwells-global-config-{ENV}
-          image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend@sha256:c0adce19568eda1df05dcf80b94755618a90aa27a58333e10a0e9da1bc60191f
+          image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-backend:latest
           imagePullPolicy: Always
           livenessProbe:
             exec:

@@ -1,21 +1,19 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: matomo-db-template
-parameters:
-  - name: IMAGE_TAG
-    description: Use test or prod
-    required: true
-# ----------------- DEPLOYMENT -----------------
+metadata:
+  name: matomo-db
+  annotations:
+    description: Template for deploying matomo-db, an open source database for Matomo analytics.
 objects:
+# ----------------- DEPLOYMENT -----------------
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
+      labels:
+        app: matomo
+      name: matomo-db
       annotations:
-        labels:
-          app: matomo
-        name: matomo-db
-        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"mariadb:${IMAGE_TAG}","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mariadb\")].image","pause":false}]'
+        image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"mariadb:latest","namespace":"26e83e-tools"},"fieldPath":"spec.template.spec.containers[?(@.name==\"mariadb\")].image","pause":false}]'
     spec:
       selector:
         matchLabels:
@@ -30,7 +28,8 @@ objects:
             name: matomo-db
         spec:
           containers:
-          - env:
+          - name: mariadb
+            env:
             - name: MYSQL_USER
               valueFrom:
                 secretKeyRef:
@@ -51,7 +50,7 @@ objects:
                 secretKeyRef:
                   key: database-name
                   name: matomo-db
-            image: registry.redhat.io/rhel8/mariadb-103@sha256:363f7f7293cd7040ba610bbea830f3bc71e2d70d1f2540a0926dc683bfff79c9
+            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/mariadb:latest
             imagePullPolicy: IfNotPresent
             livenessProbe:
               failureThreshold: 3
@@ -61,7 +60,6 @@ objects:
               tcpSocket:
                 port: 3306
               timeoutSeconds: 1
-            name: mariadb
             ports:
             - containerPort: 3306
               protocol: TCP
@@ -104,7 +102,6 @@ objects:
     apiVersion: v1
     metadata:
       name: matomo-db
-      namespace: 26e83e-{IMAGE_TAG}
       finalizers:
         - kubernetes.io/pvc-protection
       labels:

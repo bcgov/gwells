@@ -4,7 +4,6 @@ metadata:
   name: pgtileserv
   annotations:
     description: Template for deploying pgtileserv, an open source tile server that generates vector tiles from our postgres database.
-  template: pgtileserv
 parameters:
   - name: NAME_SUFFIX
     description: Suffix for the deployment name, ex. "development", "staging",  or "production"
