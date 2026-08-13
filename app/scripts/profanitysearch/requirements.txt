@@ -1,6 +1,6 @@
 inflection==0.5.0
 joblib==0.15.1
-numpy==1.18.5
+numpy==1.22.0
 profanity-check==1.0.3
 profanityfilter==2.0.6
 scikit-learn==0.22.2.post1
