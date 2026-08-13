@@ -20,7 +20,7 @@
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
     "@geolonia/mbgl-gesture-handling": "^1.0.15",
-    "@mapbox/mapbox-gl-geocoder": "^4.5.1",
+    "@mapbox/mapbox-gl-geocoder": "^5.1.2",
     "@primeuix/themes": "^2.0.3",
     "@primevue/forms": "^4.5.4",
     "@sentry/browser": "^9.6.0",
