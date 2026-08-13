@@ -4,8 +4,12 @@ metadata:
   name: gwells-frontend
   annotations:
     description: Template for deploying gwells-frontend with gwells-application image.
-# ----------------- DEPLOYMENT -----------------
+labels:
+  app: gwells-frontend
+  app-name: gwells
+  appver: gwells-frontend
 objects:
+# ----------------- DEPLOYMENT -----------------
   - kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -33,14 +37,11 @@ objects:
         spec:
           containers:
           - env:
-            - name: AXIOS_BASE_URL
-              value: https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/
-            - name: BACKEND_URL
-              value: https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca
-            - name: VITE_BACKEND_URL
-              value: https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca
-            - name: API_BASE_URL
-              value: https://gwells-backend-26e83e-prod.apps.silver.devops.gov.bc.ca/gwells/api/v2/
+            - name: VITE_FRONTEND_TILE_URL
+              value: https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/tiles
+            - name: VITE_AXIOS_BASE_URL
+              value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
+            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:bdfccc5b34dce72dc65e0aee6d29a65f350988238e53a6f66756951a98f53e11
             image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application:latest
             imagePullPolicy: Always
             name: gwells-frontend

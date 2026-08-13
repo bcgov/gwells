@@ -4,6 +4,11 @@ metadata:
   name: matomo
   annotations:
     description: Template for deploying matomo, an open source web analytics platform.
+labels:
+  app: matomo
+  name: matomo
+  service: matomo
+  template: matomo-template
 parameters:
   - name: PVC_NAME
     description: Name of the PVC to use for Matomo data storage, in dev and test use matomo-config, in prod use matomo

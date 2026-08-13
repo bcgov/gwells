@@ -4,6 +4,9 @@ metadata:
   name: gwells-minio
   annotations:
     description: Template for deploying gwells-minio an object storage system.
+labels:
+  app: gwells-${ENV}
+  name: gwells-minio-${ENV}
 parameters:
   - name: ENV
     description: Use dev, test, or prod

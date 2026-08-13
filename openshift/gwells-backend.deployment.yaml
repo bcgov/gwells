@@ -4,13 +4,17 @@ metadata:
   name: gwells-backend
   annotations:
     description: Template for deploying gwells-backend.
+labels:
+  app: gwells-backend
+  app-name: gwells
+  appver: gwells-backend
 parameters:
   - name: ENV
     description: Use development, staging, or prod
     required: true
 # ----------------- DEPLOYMENT -----------------
 objects:
-  apiVersion: apps/v1
+- apiVersion: apps/v1
   kind: Deployment
   metadata:
     labels:
