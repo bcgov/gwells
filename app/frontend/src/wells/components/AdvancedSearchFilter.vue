@@ -226,7 +226,10 @@ export default {
   },
   methods: {
     updateParamValue (param, value) {
-      this.$emit('update:modelValue', { ...this.modelValue, [param]: value })
+      if (value && value.target !== undefined) {
+        value = value.target.value
+      }
+      this.$emit('update:modelValue', { ...(this.modelValue || {}), [param]: value })
     },
     updateAnyValueCheckbox (value) {
       if (!this.anyValueCheckbox) {
