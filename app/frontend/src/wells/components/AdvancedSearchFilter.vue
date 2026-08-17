@@ -38,17 +38,18 @@
         @input="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)" />
-      <Select 
+      <Select
         v-else-if="type === 'select'"
         :id="`${id}Input`"
-        :modelValue="modelValue[paramNames[0]] ? modelValue[paramNames[0]] : null"
+        :modelValue="modelValue[paramNames[0]] ?? null"
         :invalid="isInvalid"
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
         :options="selectOptions"
         :optionValue="valueField"
         :optionLabel="textField"
-        @input="updateParamValue(paramNames[0], $event)"
+        showClear
+        @update:modelValue="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)"
         :placeholder="placeholder || '----------'"/>
