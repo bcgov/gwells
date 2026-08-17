@@ -233,6 +233,7 @@ const routes = [
     component: QaQcDashboard
   },
   { path: '/search', redirect: '/' },
+  { path: '/advanced', redirect: '/' },
   {
     path: '/',
     name: 'wells-home',
