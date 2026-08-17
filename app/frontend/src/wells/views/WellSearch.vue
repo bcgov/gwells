@@ -350,7 +350,7 @@ export default {
       this.wellsStore.setSearchParams(query)
     },
     updateQueryParams () {
-      const tabHash = (this.tabIndex === 1) ? 'advanced' : null
+      const tabHash = (this.tabIndex === 1) ? '#advanced' : null
 
       this.$router.replace({ query: this.buildQueryParams(), hash: tabHash })
     },

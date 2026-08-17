@@ -127,6 +127,7 @@
 
 <script>
 import { useWellsStore } from '@/stores/wells.js'
+import { mapStores } from 'pinia'
 import { FILTER_TRIGGER } from '@/wells/triggers.types.js'
 import SearchResultExports from '@/wells/components/SearchResultExports.vue'
 import SearchResultFilter from '@/wells/components/SearchResultFilter.vue'
@@ -153,6 +154,7 @@ export default {
     }
   },
   computed: {
+    ...mapStores(useWellsStore),
     limit () { return this.wellsStore ? this.wellsStore.searchLimit : 10 },
     errors () { return this.wellsStore ? this.wellsStore.searchErrors : {} },
     params () { return this.wellsStore ? this.wellsStore.searchParams : {} },
@@ -307,7 +309,6 @@ export default {
     }
   },
   created () {
-    this.wellsStore = useWellsStore()
     if (localStorage && localStorage.getItem('userColumnPreferences')) {
       this.wellsStore.setSearchResultColumns(JSON.parse(localStorage.getItem('userColumnPreferences')))
     }

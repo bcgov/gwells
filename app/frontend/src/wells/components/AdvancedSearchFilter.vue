@@ -20,7 +20,10 @@
     <div v-if="anyValueCheckbox" class="col-span-12 sm:col-span-3">
       <div class="pt-2 flex sm:justify-end">
         <div class="flex items-center gap-2">
-          <Checkbox :inputId="`${id}AnyValue`" v-model="modelValue[anyValueParam]" @input="updateAnyValueCheckbox($event)" binary/>
+          <Checkbox
+            :inputId="`${id}AnyValue`"
+            :modelValue="modelValue[anyValueParam]" @update:modelValue="updateAnyValueCheckbox($event)"
+            binary/>
           <label :for="`${id}AnyValue`">Any value</label>
         </div>
       </div>
@@ -57,6 +60,7 @@
         v-else-if="type === 'radio'"
         :id="`${id}Input`"
         :modelValue="modelValue[paramNames[0]]"
+        @update:modelValue="updateParamValue(paramNames[0], $event)"
         :invalid="isInvalid"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)">
