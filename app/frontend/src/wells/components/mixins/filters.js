@@ -30,7 +30,7 @@ const SEARCH_FIELDS = {
   well: {
     param: 'well',
     label: 'Well tag or ID plate number',
-    type: 'text',
+    type: 'number',
     sortable: true
   },
   licenceNumber: {

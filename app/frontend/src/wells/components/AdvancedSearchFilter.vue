@@ -20,7 +20,10 @@
     <div v-if="anyValueCheckbox" class="col-span-12 sm:col-span-3">
       <div class="pt-2 flex sm:justify-end">
         <div class="flex items-center gap-2">
-          <Checkbox :inputId="`${id}AnyValue`" v-model="modelValue[anyValueParam]" @input="updateAnyValueCheckbox($event)" binary/>
+          <Checkbox
+            :inputId="`${id}AnyValue`"
+            :modelValue="modelValue[anyValueParam]" @update:modelValue="updateAnyValueCheckbox($event)"
+            binary/>
           <label :for="`${id}AnyValue`">Any value</label>
         </div>
       </div>
@@ -38,17 +41,18 @@
         @input="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)" />
-      <Select 
+      <Select
         v-else-if="type === 'select'"
         :id="`${id}Input`"
-        :modelValue="modelValue[paramNames[0]] ? modelValue[paramNames[0]] : null"
+        :modelValue="modelValue[paramNames[0]] ?? null"
         :invalid="isInvalid"
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
         :options="selectOptions"
         :optionValue="valueField"
         :optionLabel="textField"
-        @input="updateParamValue(paramNames[0], $event)"
+        showClear
+        @update:modelValue="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)"
         :placeholder="placeholder || '----------'"/>
@@ -56,6 +60,7 @@
         v-else-if="type === 'radio'"
         :id="`${id}Input`"
         :modelValue="modelValue[paramNames[0]]"
+        @update:modelValue="updateParamValue(paramNames[0], $event)"
         :invalid="isInvalid"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)">
@@ -226,7 +231,10 @@ export default {
   },
   methods: {
     updateParamValue (param, value) {
-      this.$emit('update:modelValue', { ...this.modelValue, [param]: value })
+      if (value && value.target !== undefined) {
+        value = value.target.value
+      }
+      this.$emit('update:modelValue', { ...(this.modelValue || {}), [param]: value })
     },
     updateAnyValueCheckbox (value) {
       if (!this.anyValueCheckbox) {

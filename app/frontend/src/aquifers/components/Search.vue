@@ -36,7 +36,7 @@
         </Message>
         <Form
           @submit="triggerSearch()"
-          @reset="triggerReset">
+          @reset="triggerReset()">
           <responsive-grid :gap="4" :cols="12" :lg="[4, 8]">
             <div>
               <Button
