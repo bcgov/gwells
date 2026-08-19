@@ -171,3 +171,7 @@ app/backend/tmp
 # Exceptions
 !app/*/fixtures/*.gz
 !tests/api-tests/files/*.zip
+
+# Minio
+data-private/*
+data-public/*
