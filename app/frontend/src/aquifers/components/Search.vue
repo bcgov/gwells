@@ -87,8 +87,8 @@
                 </div>
                 <h6 class="mt-4">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
-                  <li>- <a href="#" @click.prevent="downloadXLSX(false)">Aquifer extract (XLSX)</a></li>
-                  <li>- <a href="#" @click.prevent="downloadCSV(false)">Aquifer extract (CSV)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadFile('xlsx', false)">Aquifer extract (XLSX)</a></li>
+                  <li>- <a href="#" @click.prevent="downloadFile('csv', false)">Aquifer extract (CSV)</a></li>
                 </ul>
               </div>
             </div>
@@ -117,72 +117,78 @@
         <responsive-grid cols="12" class="p-12">
           <div>
             <div v-if="searchPerformed && !searchInProgress" class="w-full">
-              <responsive-grid md="6" class="mb-4">
-                <div>
-                  <div v-if="!emptyResults">
-                    Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
-                  </div>
-                </div>
-                <div v-if="numRetiredAquifers > 0" class="text-right gap-2 flex items-center justify-end">
-                  <Checkbox
-                    v-model="showRetiredAquifers"
-                    inputId="showRetired"
-                    :binary="true"
-                    class="d-inline-block"/>
-                  <label for="showRetired">Show {{numRetiredAquifers}} retired aquifers</label>
-                </div>
-              </responsive-grid>
-            </div>
-            <DataTable
-              id="aquifers-results"
-              :value="resultsTableData || []"
-              v-if="searchPerformed"
-              paginator
-              :rows="searchResultsPerPage"
-              v-model:sort-field="sortBy"
-              v-model:sort-order="sortDesc"
-              :loading="searchInProgress"
-              :row-class="searchResultsRowClass"
-              stripedRows
-              showGridlines
-              tableStyle="min-width: 50rem">
-              <Column
-                v-for="field of aquiferListFields"
-                :key="field.key"
-                :field="field.key"
-                :header="field.label"
-                sortable>
-                <template #body="{ data }">
-                  <template v-if="field.key === 'id'">
-                    <router-link :to="{ name: 'aquifers-view', params: {id: data.aquifer_id} }">{{ data.aquifer_id }}</router-link>
+              <div v-if="numRetiredAquifers > 0" class="text-right gap-2 flex items-center justify-end mb-2">
+                <Checkbox
+                  v-model="showRetiredAquifers"
+                  inputId="showRetired"
+                  :binary="true"
+                  class="d-inline-block"/>
+                <label for="showRetired">Show {{numRetiredAquifers}} retired aquifers</label>
+              </div>
+              <DataTable
+                id="aquifers-results"
+                :value="resultsTableData || []"
+                v-if="searchPerformed"
+                paginator
+                :rows="searchResultsPerPage"
+                v-model:sort-field="sortBy"
+                v-model:sort-order="sortDesc"
+                :loading="searchInProgress"
+                :row-class="searchResultsRowClass"
+                stripedRows
+                showGridlines
+                tableStyle="min-width: 50rem">
+                <Column
+                  v-for="field of aquiferListFields"
+                  :key="field.key"
+                  :field="field.key"
+                  :header="field.label"
+                  sortable>
+                  <template #body="{ data }">
+                    <template v-if="field.key === 'id'">
+                      <router-link :to="{ name: 'aquifers-view', params: {id: data.aquifer_id} }">{{ data.aquifer_id }}</router-link>
+                    </template>
+
+                    <template v-else-if="field.key === 'retire_date'"">
+                    <span :title="data.retire_date">{{ formatDate(data.retire_date) }}</span></template>
+
+                    <span v-else>
+                      {{ data[field.key] }}
+                    </span>
                   </template>
+                </Column>
 
-                  <template v-else-if="field.key === 'retire_date'"">
-                  <span :title="data.retire_date">{{ formatDate(data.retire_date) }}</span></template>
-
-                  <span v-else>
-                    {{ data[field.key] }}
-                  </span>
+                <template #empty>
+                  No aquifers could be found.
                 </template>
-              </Column>
 
-              <template #empty>
-                No aquifers could be found.
-              </template>
-
-              <template #loading>
-                <div class="text-center my-2">
-                  <ProgressSpinner class="align-middle"/>
-                  <strong> Loading...</strong>
+                <template #loading>
+                  <div class="text-center my-2">
+                    <ProgressSpinner class="align-middle"/>
+                    <strong> Loading...</strong>
+                  </div>
+                </template>
+              </DataTable>
+              <div v-if="!emptyResults" class="my-4">
+                Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
+                <div class="my-4">
+                  <h3 class="mb-2">Export search results</h3>
+                  <Button
+                    label="Excel"
+                    outlined
+                    type="download"
+                    @click="downloadFile('xlsx', true)"
+                    class="mr-2"/>
+                  <Button
+                    label="CSV"
+                    outlined
+                    type="download"
+                    @click="downloadFile('csv', true)"/>
                 </div>
-              </template>
-            </DataTable>
+              </div>
+            </div>
           </div>
         </responsive-grid>
-        <h6 class="pl-12 pb-12 mt-4" v-if="searchResultCount > 0">Download searched aquifers :
-          <a href="#" @click.prevent="downloadXLSX(true)">XLSX</a> |
-          <a href="#" @click.prevent="downloadCSV(true)">CSV</a>
-        </h6>
       </template>
     </Card>
   </div>
@@ -191,7 +197,6 @@
 <script>
 import mapboxgl from 'mapbox-gl'
 import moment from 'moment'
-import querystring from 'querystring'
 import { isEqual, pick } from 'lodash-es'
 import { useCommonStore } from '@/stores/common.js'
 import smoothScroll from 'smoothscroll'
@@ -342,17 +347,11 @@ export default {
     navigateToNew () {
       this.$router.push({ name: 'new' })
     },
-    downloadCSV (filterOnly) {
-      let url = `${ApiService.baseURL}aquifers/csv`
+    downloadFile (type, filterOnly) {
+      let url = `${ApiService.baseURL}aquifers/${type}`
+      // if only downloading search results, add the query params to the url
       if (filterOnly) {
-        url += `?${querystring.stringify(this.searchParams)}`
-      }
-      window.open(url)
-    },
-    downloadXLSX (filterOnly) {
-      let url = `${ApiService.baseURL}aquifers/xlsx`
-      if (filterOnly) {
-        url += `?${querystring.stringify(this.searchParams)}`
+        url += `?${new URLSearchParams({...this.searchParams}).toString()}`
       }
       window.open(url)
     },
