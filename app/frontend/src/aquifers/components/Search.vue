@@ -117,13 +117,18 @@
         <responsive-grid cols="12" class="p-12">
           <div>
             <div v-if="searchPerformed && !searchInProgress" class="w-full">
-              <div v-if="numRetiredAquifers > 0" class="text-right gap-2 flex items-center justify-end mb-2">
-                <Checkbox
-                  v-model="showRetiredAquifers"
-                  inputId="showRetired"
-                  :binary="true"
-                  class="d-inline-block"/>
-                <label for="showRetired">Show {{numRetiredAquifers}} retired aquifers</label>
+              <div class="flex gap-2 justify-between mb-2">
+                <span v-if="!emptyResults">
+                  Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
+                </span>
+                <span v-if="numRetiredAquifers > 0" class="flex items-center gap-2">
+                  <Checkbox
+                    v-model="showRetiredAquifers"
+                    inputId="showRetired"
+                    :binary="true"
+                    class="d-inline-block mb-2"/>
+                  <label for="showRetired">Show {{numRetiredAquifers}} retired aquifers</label>
+                </span>
               </div>
               <DataTable
                 id="aquifers-results"
@@ -170,7 +175,6 @@
                 </template>
               </DataTable>
               <div v-if="!emptyResults" class="my-4">
-                Showing {{ displayOffset }} to {{ displayPageLength }} of {{ searchResultCount }}
                 <div class="my-4">
                   <h3 class="mb-2">Export search results</h3>
                   <Button
