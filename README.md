@@ -225,6 +225,8 @@ To download new licence data from DataBC and merge it into your DB, do
 docker-compose exec backend python manage.py import_licences
 ```
 
+There is a cronjob on OpenShift which pulls in license data from the Water Rights Licences dataset in the BC Data Catologue every morning. Import_licences.py then empties and rebuilds the well_licences table in the db.
+
 ### Making pull requests
 
 Pull requests made from branches in the bcgov/gwells repo will kick off a dev pipeline, which runs tests and deploys a preview environment containing your changes. The pull request page will update when the environment is deployed and mandatory checks (unit tests, etc.) pass or fail.
