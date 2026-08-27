@@ -42,10 +42,42 @@ class Command(BaseCommand):
             filename = options['filename']
         else:
             logging.info("Downloading licences from DataBC")
-            input_file = NamedTemporaryFile(delete=False)
-            url = "https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&outputFormat=csv&typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV&count=10000&cql_filter=POD_SUBTYPE NOT LIKE 'POD'"
-            r = requests.get(url, allow_redirects=True)
-            input_file.write(r.content)
+            # file mode read and write
+            input_file = NamedTemporaryFile(mode="w+", delete=False)
+            # params for pagination bc openmaps has a limit of 10000 records per import
+            count = 10000
+            startIndex = 0
+            headers = True
+            while True:
+              url = (
+                "https://openmaps.gov.bc.ca/geo/pub/wfs?"
+                "SERVICE=WFS&"
+                "VERSION=2.0.0&"
+                "REQUEST=GetFeature&"
+                "outputFormat=csv&"
+                "typeNames=WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV&"
+                f"count={count}&"
+                "sortBy=OBJECTID&"
+                f"startIndex={startIndex}&"
+                "cql_filter=POD_SUBTYPE NOT LIKE 'POD'"
+              )
+              r = requests.get(url, allow_redirects=True)
+              r.raise_for_status()
+              lines = r.text.splitlines()
+              rows = list(csv.DictReader(lines))
+              # only include headers on first page
+              if headers:
+                input_file.write("\n".join(lines) + "\n")
+                headers = False
+              else:
+                # dont include first line which is the headers
+                input_file.write("\n".join(lines[1:]) + "\n")
+              # if rtns less rows than count must be end of data, break loop
+              if len(rows) < count:
+                break
+              # start where count left off
+              startIndex += count
+
             filename = input_file.name
             input_file.close()
 
