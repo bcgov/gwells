@@ -57,7 +57,7 @@
               <Form @submit="drillerSearch" @reset="resetSearch" id="drillerSearchForm">
                 <div class="grid grid-cols-4">
                   <label class="col-span-3">Choose professional type:
-                    <RadioButtonGroup v-model="searchParams.activity" name="activitySelector" class="mt-2" style="    align-items: baseline;">
+                    <RadioButtonGroup v-model="searchParams.activity" name="activitySelector" class="mt-2" style="align-items: baseline;">
                       <RadioButton inputId="activityDriller" value="DRILL" style="margin-right: 0px !important;"/>
                       <label for="activityDriller" style="margin-right: 20px; margin-left: 5px;">Well Driller</label>
                       <RadioButton inputId="activityInstaller" value="PUMP" style="margin-right: 0px !important;"/>
