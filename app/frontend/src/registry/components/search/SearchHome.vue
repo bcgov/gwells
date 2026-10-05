@@ -55,13 +55,13 @@
                 For a complete list refer to the results table below.
               </div>
               <Form @submit="drillerSearch" @reset="resetSearch" id="drillerSearchForm">
-                <div class="grid grid-cols-4 mb-6 gap-6">
+                <div class="grid grid-cols-4">
                   <label class="col-span-3">Choose professional type:
-                    <RadioButtonGroup v-model="searchParams.activity" name="activitySelector" class="mt-2">
-                      <RadioButton inputId="activityDriller" value="DRILL"/>
-                      <label for="activityDriller" style="margin-right: 10px; margin-left: 5px;">Well Driller</label>
-                      <RadioButton inputId="activityInstaller" value="PUMP"/>
-                      <label for="activityInstaller" style="margin-right: 10px; margin-left: 5px;">Well Pump Installer</label>
+                    <RadioButtonGroup v-model="searchParams.activity" name="activitySelector" class="mt-2" style="align-items: baseline;">
+                      <RadioButton inputId="activityDriller" value="DRILL" style="margin-right: 0px !important;"/>
+                      <label for="activityDriller" style="margin-right: 20px; margin-left: 5px;">Well Driller</label>
+                      <RadioButton inputId="activityInstaller" value="PUMP" style="margin-right: 0px !important;"/>
+                      <label for="activityInstaller" style="margin-right: 20px; margin-left: 5px;">Well Pump Installer</label>
                     </RadioButtonGroup>
                   </label>
                 </div>
@@ -74,7 +74,7 @@
                           name="subactivitySelector"
                           :value="sub.value"
                         />
-                        <label :for="sub.value">{{ sub.text }}</label>
+                        <label :for="sub.value" style="margin-bottom: 0 !important;">{{ sub.text }}</label>
                       </div>
                     </CheckboxGroup>
                   </label>
