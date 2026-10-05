@@ -65,6 +65,7 @@
     }
 
     .mapboxgl-popup-content {
+      padding-top: 15px;
       padding-bottom: 10px;
 
       ol, ul, li {
@@ -79,6 +80,10 @@
         line-height: 1.5;
         padding: 0.25rem 0.5rem;
         border-radius: 0.2rem;
+      }
+
+      .mapboxgl-popup-close-button {
+        background-color: transparent !important;
       }
 
       .mapbox-popup-aquifer {
