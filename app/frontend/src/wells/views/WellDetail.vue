@@ -53,7 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <span class="h2">Well Summary</span>
             </div>
             <div class="float-right m-1">
-              <Button id="addNewEntryButton" asChild v-slot="slotProps">
+              <Button id="addNewEntryButton" asChild v-slot="slotProps" v-if="commonStore.authenticated">
                 <RouterLink :to="{ name: 'SubmissionsEdit', params: { id } }" :class="slotProps.class">Edit</RouterLink>
               </Button>
               <span class="text-sm mr-4 ml-4">For best print results, use the Chrome browser</span>
