@@ -17,11 +17,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <form-input
         id="waterCharacteristicsInput"
         label="Characteristics"
-        select
+        multiselect
         :options="codes?.water_quality_characteristics"
         value-field="code"
         text-field="description"
-        hint="Select one or more characteristics. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+        hint="Select one or more characteristics."
         v-model="waterQualityCharacteristicsInput"
         :errors="errors['water_quality_characteristics']"
         :loaded="fieldsLoaded['water_quality_characteristics']"/>
