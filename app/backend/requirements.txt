@@ -29,5 +29,5 @@ MarkupSafe==2.1.5
 gunicorn==22.0.0
 gevent==23.7.0
 django-settings-export==1.2.1
-urllib3==2.7.0
+urllib3==2.8.0
 pyjwt>=2.0,<=2.4.0
