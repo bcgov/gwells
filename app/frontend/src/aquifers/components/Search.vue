@@ -154,7 +154,7 @@
                       <router-link :to="{ name: 'aquifers-view', params: {id: data.aquifer_id} }">{{ data.aquifer_id }}</router-link>
                     </template>
 
-                    <template v-else-if="field.key === 'retire_date'"">
+                    <template v-else-if="field.key === 'retire_date'">
                     <span :title="data.retire_date">{{ formatDate(data.retire_date) }}</span></template>
 
                     <span v-else>

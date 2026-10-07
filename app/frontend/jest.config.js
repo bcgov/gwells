@@ -1,4 +1,13 @@
-import.meta.env.BOOTSTRAP_VUE_NO_WARN = true;
+/*
+This file is unused. Jest (the node module) has been deleted
+from the project for now, as it was already broken and the old
+packages had breaking security updates.
+The test commands were also removed from package.json to prevent
+confusion. But the commands were:
+"test:unit": "jest",
+"test:coverage": "jest --coverage",
+"test:unit:update": "jest -u",
+*/
 
 module.exports = {
   moduleFileExtensions: ["js", "jsx", "json", "vue"],

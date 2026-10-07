@@ -192,7 +192,7 @@ Steps:
 Visit the following links to browse the API and frontend applications:
 
 - Django REST API development server: <http://localhost:8000/gwells/api/>
-- Vue frontend development server: <http://localhost:8080/>
+- Vite frontend development server: <http://localhost:8080/>
 
 ### Running tests
 

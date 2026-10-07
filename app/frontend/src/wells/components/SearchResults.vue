@@ -103,7 +103,7 @@
                 {{ row[column.param] }}
               </template>
               <template v-else-if="column.param === 'licence_number'">
-                <span v-for="(licence, index) in row.licence_number">
+                <span v-for="(licence, index) in row.licence_number" :key="index">
                   <a :href="LICENCE_URL + licence">
                     {{ licence }}{{ index + 1 < row.licence_number.length ? ', ' : '' }}
                   </a>

@@ -64,7 +64,7 @@
         :invalid="isInvalid"
         @focus="$emit('focus', true)"
         @blur="$emit('blur', true)">
-        <div v-for="option in options" class="flex align-items-center gap-2">
+        <div v-for="option in options" :key="option.value" class="flex align-items-center gap-2">
           <RadioButton :inputId="option.value" :value="option.value"/>
           <label :for="option.value">{{ option.text }}</label>
         </div>

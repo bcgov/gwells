@@ -50,7 +50,7 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { Badge, Popover } from 'primevue'
+import { Badge } from 'primevue'
 import { useWellsStore } from '@/stores/wells.js'
 import { SEARCH_TRIGGER } from '@/wells/triggers.types.js'
 import Exports from '@/wells/components/Exports.vue'
@@ -58,8 +58,7 @@ import Exports from '@/wells/components/Exports.vue'
 export default {
   components: {
     'well-exports': Exports,
-    Badge,
-    Popover
+    Badge
   },
   data () {
     return {

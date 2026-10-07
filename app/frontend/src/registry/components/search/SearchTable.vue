@@ -7,7 +7,7 @@
     <DataTable id="registry-table" showGridlines stripedRows :value="searchResponse.results || []" tableStyle="min-width: 50rem">
       <!-- reusable columns -->
       <Column v-for="field in visibleFields" :header="field.name" :key="field.name">
-        <template #body="{ data, index }">
+        <template #body="{ data }">
           <template v-if="field.name === 'Name'">
             <router-link
               v-if="commonStore.userRoles?.registry?.view"
@@ -18,11 +18,11 @@
               {{ data.surname }}, {{ data.first_name }}
             </div>
             <div v-if="data.registrations && data.registrations.length">
-              <div
-                  v-for="(reg, regIndex) in data.registrations"
-                  v-if="reg?.activity === activity"
-                  :key="`reg no ${data.person_guid} ${regIndex}`">
-                {{ reg.registration_no }}</div>
+              <template v-for="(reg, regIndex) in data.registrations" :key="`reg no ${data.person_guid} ${regIndex}`">
+                <div v-if="reg?.activity === activity">
+                  {{ reg.registration_no }}
+                </div>
+              </template>
             </div>
           </template>
 

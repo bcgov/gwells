@@ -142,7 +142,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             <span><b>Licensed Status:</b> {{ recordLicence?.status }}</span>
             <span>
               <b>Licence Number{{ recordLicence.number.length > 1 ? "s" : "" }}:</b>&nbsp;
-              <a v-for="(licence, index) in recordLicence.number" :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${licence}`" target="_blank">
+              <a v-for="(licence, index) in recordLicence.number" :key="index" :href="`https://j200.gov.bc.ca/pub/ams/Default.aspx?PossePresentation=AMSPublic&amp;PosseObjectDef=o_ATIS_DocumentSearch&amp;PosseMenuName=WS_Main&Criteria_LicenceNumber=${licence}`" target="_blank">
                 {{ licence}}{{ index + 1 < recordLicence.number.length ? ", " : ""}}
               </a>
             </span>
