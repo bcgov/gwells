@@ -27,7 +27,7 @@
     <span v-if="owell.errorFetching">
       <i
         :id="popupId"
-        class="fa fa-exclamation-circle fa-xs pt-0 mt-0 d-print-none"
+        class="fa fa-exclamation-circle fa-xs pt-0 mt-0 print:hidden"
         :class="{'fa-spin': owell.fetchingAnalysis}"
         @click="togglePopover($event)"
         style="cursor: pointer;"

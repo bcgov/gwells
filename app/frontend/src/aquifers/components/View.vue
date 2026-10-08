@@ -98,7 +98,7 @@
                         v-on:click.prevent="navigateToEdit">
                         <span title="Edit" class="fa fa-edit"/> Edit
                       </Button>
-                      <a class="ml-2 print-button fa fa-print fa-lg d-print-none"
+                      <a class="ml-2 print-button fa fa-print fa-lg print:hidden"
                         v-if="!isRetired"
                         href="#"
                         title="Print"
@@ -128,7 +128,7 @@
                         <i
                           id="vulnerability-info"
                           tabindex="0"
-                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                           v-tooltip.top="'The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants.'"
                           >
                         </i>
@@ -143,7 +143,7 @@
                         <i
                           id="aquifer-subtype-info"
                           tabindex="0"
-                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                           v-tooltip.top="{
                             escape: false,
                             autoHide: false,
@@ -160,7 +160,7 @@
                         <i
                           id="aquifer-quality-concerns"
                           tabindex="0"
-                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                           v-tooltip.top="{
                             escape: false,
                             autoHide: false,
@@ -176,7 +176,7 @@
                         <i
                           id="productivity-info"
                           tabindex="0"
-                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                           v-tooltip.top="'Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high.'"
                           >
                         </i>
@@ -191,7 +191,7 @@
                         <i
                           id="calculated-demand-density-info"
                           tabindex="0"
-                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                           v-tooltip.top="'Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²'"
                           >
                         </i>
@@ -225,7 +225,7 @@
                           <i
                             id="correlated-wells-count"
                             tabindex="0"
-                            class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                            class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                             v-tooltip.top="'The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer.'"
                             >
                           </i>
@@ -244,7 +244,7 @@
                           <i
                             id="uncorrelated-wells-count"
                             tabindex="0"
-                            class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                            class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                             v-tooltip.top="'The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth.'"
                             >
                           </i>
@@ -260,7 +260,7 @@
                           <i
                             id="artesian-wells"
                             tabindex="0"
-                            class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                            class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                             v-tooltip.top="'A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump.'"
                             >
                           </i>
@@ -384,7 +384,7 @@
                               <i
                                 id="aquifer-advanced-mapping"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed.'"
                                 >
                               </i>
@@ -403,7 +403,7 @@
                               <i
                                 id="aquifer-observation-wells"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time.'"
                                 >
                               </i>
@@ -449,7 +449,7 @@
                               <i
                                 id="aquiferWaterQualityInformation"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database.'"
                                 >
                               </i>
@@ -467,7 +467,7 @@
                               <i
                                 id="aquiferConnectedInfo"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement.'"
                                 >
                               </i>
@@ -484,7 +484,7 @@
                               <i
                                 id="aquiferNumericalModel"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies.'"
                                 >
                               </i>
@@ -503,7 +503,7 @@
                               <i
                                 id="aquiferWaterBudget"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time.'"
                                 ></i>
                             </dt>
@@ -521,7 +521,7 @@
                               <i
                                 id="aquiferGroundwaterSurfaceInteractions"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface.'"
                                 >
                               </i>
@@ -540,7 +540,7 @@
                               <i
                                 id="aquiferArtesianAdvisory"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="'Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions.'"
                                 >
                               </i>
@@ -559,7 +559,7 @@
                               <i
                                 id="aquiferNotations"
                                 tabindex="0"
-                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 d-print-none"
+                                class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
                                 v-tooltip.top="{
                                   escape: false,
                                   autoHide: false,
@@ -1054,10 +1054,6 @@ export default {
 
   .color-grey {
     color: #494949
-  }
-
-  .color-info {
-    color: #38598a;
   }
 
   .main-title {
