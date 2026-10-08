@@ -5,8 +5,23 @@
       <span v-if="required" class="text-red-500 ml-1">*</span>
     </label>
     <slot />
-    <MultiSelect
+    <Select
       v-if="select"
+      :id="`${id}Input`"
+      :model-value="modelValue"
+      :invalid="validation"
+      :options="options"
+      :optionLabel="textField"
+      :optionValue="valueField"
+      :placeholder="placeholder"
+      :class="inputClass"
+      :disabled="disabled"
+      @update:modelValue="updateValue"
+      @focus="$emit('focus', true)"
+      @blur="$emit('blur', true)"
+    />
+    <MultiSelect
+      v-else-if="multiselect"
       :id="`${id}Input`"
       :model-value="modelValue"
       :invalid="validation"
@@ -78,6 +93,7 @@ export default {
       default: 'text'
     },
     select: Boolean,
+    multiselect: Boolean,
     options: Array,
     valueField: String,
     textField: String,

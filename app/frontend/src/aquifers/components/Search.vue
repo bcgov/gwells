@@ -397,7 +397,6 @@ export default {
       smoothScroll(map, 200)
     },
     triggerReset (e) {
-      e.preventDefault()
       this.search = ''
       this.selectedSections = []
       this.matchAny = false
