@@ -57,7 +57,7 @@
               <!-- Only show the badge and popover if there is tooltip content -->
               <template v-if="getTooltipContent(column.id)">
                 <Badge :id="`${column.id}-tooltip`" tabindex="0" class="ml-1">
-                  <i class="fa fa-question fa-sm"></i>
+                  <i class="fa fa-question-circle color-info fa-sm print:hidden"></i>
                 </Badge>
                 <Popover ref="op" triggers="hover focus">{{getTooltipContent(column.id)}}</Popover>
               </template>
