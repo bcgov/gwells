@@ -36,11 +36,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <form-input
         id="drillingMethod"
         :label="drillingMethodsLabel"
-        select
+        multiselect
         :options="codes?.drilling_methods"
         value-field="drilling_method_code"
         text-field="description"
-        hint="Select one or more drilling methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+        hint="Select one or more drilling methods."
         v-model="drillingMethodInput"
         :errors="errors['drilling_methods']"
         :loaded="fieldsLoaded['drilling_methods']"/>

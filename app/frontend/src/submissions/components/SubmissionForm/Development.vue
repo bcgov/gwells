@@ -17,9 +17,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <form-input
         id="developmentMethod"
         label="Development Method"
-        select
+        multiselect
         :options="codes?.development_methods"
-        hint="Select one or more methods. Hold the Ctrl (PC) or Command (Mac) key to select more than one option."
+        hint="Select one or more methods."
         text-field="description"
         value-field="development_method_code"
         v-model="developmentMethodInput"

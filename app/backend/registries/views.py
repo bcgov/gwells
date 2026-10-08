@@ -30,7 +30,6 @@ from rest_framework import filters, status, exceptions
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from drf_multiple_model.views import ObjectMultipleModelAPIView
 
 from gwells.documents import MinioClient
 from gwells.roles import REGISTRIES_VIEWER_ROLE

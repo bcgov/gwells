@@ -18,13 +18,9 @@
         <form-input id="id_search" group-class="font-weight-bold" v-model="searchString">
           <label>
             Search by well tag or ID plate number, street address, city or owner name
-            <Badge
-              id="basicSearchInfo"
-              tabindex="0"
-              class="fa fa-question fa-lg"
-              v-tooltip.top="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'"
-              @focus="show"
-              @blur="hide"/>
+            <i class="fa fa-question-circle color-info print:hidden"
+              v-tooltip.top="'Enter the well electronic filing number or physical identification plate number, or the street address, city or well owner name.'">
+            </i>
           </label>
         </form-input>
       </div>
@@ -50,15 +46,13 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { Badge } from 'primevue'
 import { useWellsStore } from '@/stores/wells.js'
 import { SEARCH_TRIGGER } from '@/wells/triggers.types.js'
 import Exports from '@/wells/components/Exports.vue'
 
 export default {
   components: {
-    'well-exports': Exports,
-    Badge
+    'well-exports': Exports
   },
   data () {
     return {
