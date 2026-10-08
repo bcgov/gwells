@@ -46,15 +46,13 @@
 
 <script>
 import { mapStores } from 'pinia'
-import { Popover } from 'primevue'
 import { useWellsStore } from '@/stores/wells.js'
 import { SEARCH_TRIGGER } from '@/wells/triggers.types.js'
 import Exports from '@/wells/components/Exports.vue'
 
 export default {
   components: {
-    'well-exports': Exports,
-    Popover
+    'well-exports': Exports
   },
   data () {
     return {

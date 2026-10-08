@@ -138,13 +138,11 @@
 <script>
 import { useRegistryStore } from '@/stores/registry.js'
 import ApiService from '@/common/services/ApiService.js'
-import APIErrorMessage from '@/common/components/APIErrorMessage.vue'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
 export default {
   name: 'PersonDetailEdit',
   components: {
-    'api-error': APIErrorMessage,
     ResponsiveGrid
   },
 

@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-unused-vars -->
 <template>
   <div>
     <Card v-if="commonStore.userRoles && commonStore.userRoles.surveys.edit" class="container">

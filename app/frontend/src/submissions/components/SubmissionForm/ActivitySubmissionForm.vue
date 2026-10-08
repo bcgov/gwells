@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 /*
 Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -535,6 +536,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 import { SelectButton } from 'primevue'
 import smoothScroll from 'smoothscroll'
 

@@ -1,4 +1,4 @@
-FROM node:22.12.0 as build
+FROM node:22.23.2 as build
 
 WORKDIR /app/frontend
 

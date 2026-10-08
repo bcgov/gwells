@@ -250,7 +250,7 @@ export class BoxZoomControl {
     }
   }
 
-  suppressClick = (clickEvent) => {
+  suppressClick (clickEvent) {
     // Stop a click event from being propagated.
     clickEvent.stopPropagation()
     // Remove this event handler so future click events are

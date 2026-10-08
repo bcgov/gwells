@@ -278,7 +278,6 @@ export default {
       return this.subclasses && (this.wellClass === 'WATR_SPPLY' || this.wellClass === 'CLS_LP_GEO')
     },
     commonStore () { return useCommonStore() },
-    submissionStore () { return useSubmissionStore() },
     codes () {
       return this.submissionStore.codes
     }

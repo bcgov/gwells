@@ -171,7 +171,7 @@ export default {
     uploadedFiles: {
       type: Object,
       isInput: false,
-      default: {}
+      default: () => ({})
     },
     showDocuments: {
       type: Boolean,
@@ -191,8 +191,10 @@ export default {
       WELL_TAGS: WELL_TAGS
     }
   },
+  created () {
+    this.submissionStore = useSubmissionStore()
+  },
   computed: {
-    submissionStore () { return useSubmissionStore() },
     commonStore () { return useCommonStore() },
     files: {
       get: function () {

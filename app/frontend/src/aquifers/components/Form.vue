@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-mutating-props -->
 /*
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -342,6 +343,7 @@
 </template>
 
 <script>
+/* eslint-disable vue/no-mutating-props */
 // import AquiferResources from './AquiferResources.vue'
 import { isEmpty, mapValues, cloneDeep } from 'lodash-es'
 import { useAquiferStore } from '@/stores/aquifers.js'

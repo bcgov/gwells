@@ -21,12 +21,9 @@
                   {{ moment(version.date).format("MMMM Do YYYY [at] LT") }}{{ version.created ? "." : ":" }}
           </div>
           <div class="ml-6">
-                  <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
-                  <div
-                      v-for="(value, key) in version.diff"
-                      v-if="!(value === '' && version.prev[key] === null)"
-                      :key="`history-item-${key}-in-version ${index}`">
-                    <div v-if="isTable(value)" class="mt-2">
+            <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
+            <div v-for="(value, key) in version.diff" :key="`history-item-${key}-in-version ${index}`">
+              <div v-if="!(value === '' && version.prev[key] === null) && isTable(value)" class="mt-2">
                 <div>
                   <span class="font-medium">
                     {{ readable(formatKey(key)) }} changed to:

@@ -1,6 +1,6 @@
 <template>
   <div :class="`grid grid-cols-12 gap-${gap}`">
-    <template v-for="(component, index) in $slots.default()">
+    <template v-for="(component, index) in $slots.default()" :key="index">
       <div :class="getClassNames(index)">
         <component :is="component"/>
       </div>
