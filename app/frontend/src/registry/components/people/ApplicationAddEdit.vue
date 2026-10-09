@@ -16,7 +16,7 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Classification &amp; Qualifications
-          <Button class="close pull-right" aria-label="Close" @click="$emit('close')" severity="secondary">
+          <Button class="close float-right" aria-label="Close" @click="$emit('close')" severity="secondary">
             <span aria-hidden="true">&times;</span>
           </Button>
         </h5>
