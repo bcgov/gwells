@@ -141,7 +141,7 @@
 </template>
 
 <script>
-import moment from 'moment'
+import { DateTime } from 'luxon'
 import { useRegistryStore } from '@/stores/registry.js'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
@@ -232,7 +232,8 @@ export default {
     },
     isDateValid (input) {
       // We accept null, undefined, '' as valid dates, in addition to correctly formatted dates
-      return input ? moment(input, 'YYYY-MM-DD', true).isValid() : true
+      // input format is yyyy-mm-dd
+      return input ? DateTime.fromISO(input).isValid : true
     },
     isAllDatesValid () {
       return (!this.approvalStatus || this.isDateValid(this.qualificationForm.application_outcome_date)) &&

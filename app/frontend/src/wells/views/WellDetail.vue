@@ -253,10 +253,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :header="field.label"
               sortable
             >
-              <!-- TODO: Check on this. I'm 90% sure this isn't the correct implementation. -->
               <template v-if="create_date" v-slot:cell(create_date)="data">
                 <div>
-                  {{ formatDate(data.item.create_date, "MMMM Do YYYY [at] LT") }}
+                  {{ DateTime.fromISO(data.item.create_date).toLocaleString(DateTime.DATETIME_FULL) }}
                 </div>
               </template>
             </Column>
@@ -585,7 +584,7 @@ import { mapStores } from 'pinia'
 import { useCommonStore } from '@/stores/common.js'
 import { useSubmissionStore } from '@/stores/submission.js'
 
-import moment from 'moment'
+import { DateTime } from 'luxon'
 
 import SingleWellMap from '@/wells/components/SingleWellMap.vue'
 import Documents from '@/wells/components/Documents.vue'
@@ -719,13 +718,6 @@ export default {
     },
     excludeZeroDecimals (value) {
       return excludeZeroDecimals(value)
-    },
-    formatDate (value, format) {
-      if (!value) {
-        return ''
-      }
-      const m = moment(value)
-      return m.isValid() ? m.format(format) : ''
     },
     handlePrint () {
       window.print()

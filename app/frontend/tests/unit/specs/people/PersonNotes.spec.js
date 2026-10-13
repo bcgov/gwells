@@ -1,12 +1,11 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import VueMoment from 'vue-moment'
 import PersonNotes from '@/registry/components/people/PersonNotes'
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueMoment)
+
 
 const GET_DEFAULT_STORE_MODULES = () => {
   return {

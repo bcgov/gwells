@@ -1,12 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import VueMoment from 'vue-moment'
 import Notes from '@/registry/components/people/Notes'
 import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueMoment)
 
 describe('Notes.vue', () => {
   let store

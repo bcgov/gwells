@@ -35,7 +35,6 @@ import App from "./App.vue";
 import router from "./router.js";
 import vSelect from "vue-select";
 import "vue-select/dist/vue-select.css";
-// import VueMoment from "vue-moment";
 import FormInput from "@/common/components/FormInput.vue";
 import * as filters from "./common/filters";
 // GWELLS js API library (helper methods for working with API)
@@ -90,10 +89,6 @@ app.use(ConfirmationService);
 //   theme: "bootstrap-v4",
 //   timeout: 1800,
 // });
-
-// TBD replace VueMoment with a maintained date library or use MomentJS directly
-// Non-functional without vue/compat
-// app.use(VueMoment);
 
 // Register global components
 app.component("v-select", vSelect);

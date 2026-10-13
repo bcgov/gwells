@@ -29,7 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </Column>
           <Column header="Date Entered">
             <template #body="{ data }">
-              <span v-if="data.create_date">{{ moment(data.create_date, "MMMM Do YYYY [at] LT") }}</span>
+              <span v-if="data.create_date">{{ DateTime.fromISO(data.create_date).toLocaleString(DateTime.DATETIME_FULL) }}</span>
             </template>
           </Column>
           <Column field="create_user" header="Entered By"/>

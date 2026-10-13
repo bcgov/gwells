@@ -18,7 +18,7 @@
             <span class="font-semibold">{{ version.user }}</span>
                   {{ version.created ? "created" : "edited" }}
                   {{ version.name ? version.name : 'record' }}
-                  {{ moment(version.date).format("MMMM Do YYYY [at] LT") }}{{ version.created ? "." : ":" }}
+                  {{ DateTime.fromISO(version.date).toLocaleString(DateTime.DATETIME_FULL) }}{{ version.created ? "." : ":" }}
           </div>
           <div class="ml-6">
             <!-- compare current value to prev value, ignoring insignificant type changes (null to empty string) -->
@@ -82,7 +82,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 export default {
   name: 'ChangeHistory',
@@ -116,7 +116,6 @@ export default {
     }
   },
   methods: {
-    moment,
     update () {
       if (!this.showHistory) { return }
 
