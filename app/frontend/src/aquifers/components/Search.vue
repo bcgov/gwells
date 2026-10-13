@@ -41,7 +41,7 @@
             <div>
               <Button
                 id="aquifers-add"
-                class="pull-right"
+                class="float-right"
                 @click="navigateToNew"
                 v-if="commonStore.userRoles.aquifers.edit"
                 label="Add new Aquifer"/>

@@ -19,7 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div v-if="isStaffEdit" id="top">Update Well Information</div>
         <div v-else>Well Activity Submission</div>
         <div class="ml-auto">
-          <SelectButton  v-if="activityType !== 'STAFF_EDIT'" size="small" v-model="formIsFlatInput" :options="selectOptions" optionLabel="name"/>
+          <SelectButton  v-if="activityType !== 'STAFF_EDIT'" size="small" v-model="formIsFlatInput" :options="selectOptions" optionLabel="name" optionValue="value"/>
         </div>
       </div>
     </h1>
@@ -510,8 +510,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div v-if="!formIsFlat">
           <Button v-if="step > 1 && !formIsFlat" label="Back" @click="gotoPrevStep"/>
         </div>
-        <div class="pr-6 text-right">
-          <Button v-if="step < maxSteps && !formIsFlat" label="Next" @click="gotoNextStep" id="nextSubmissionStep"/>
+        <div>
+          <Button v-if="step < maxSteps && !formIsFlat" label="Next" @click="gotoNextStep" id="nextSubmissionStep" class="ml-2"/>
           <span v-else>
             <Button label="Preview &amp; Submit" @click="$emit('preview')" id="formPreviewButton"/>
           </span>
