@@ -1,5 +1,5 @@
 <template>
-  <footer id="footer">
+  <footer id="footer" class="fixed bottom-0 w-full z-10">
     <Menubar class="footer-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white !pl-[10%]" :model="footItems">
       <template #item="{ item }">
         <a v-if="item.visible"
