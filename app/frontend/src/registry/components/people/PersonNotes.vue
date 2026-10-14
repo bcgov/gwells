@@ -111,7 +111,7 @@
             v-for="(note, index) in notes" :key="`note ${index}`" :id="`person-note-${index}`">
             <p>
               <span class="font-bold">{{ note.author }}</span>
-              {{ moment(note.date).format("MMMM Do YYYY [at] LT") }}:
+              {{ DateTime(note.date).toLocaleString(DateTime.DATETIME_FULL) }}:
               {{ note.note }}
             </p>
             <div class="flex ml-[0.5em] w-auto">
@@ -138,7 +138,7 @@
 <script>
 import { useCommonStore } from '@/stores/common'
 import smoothScroll from 'smoothscroll'
-import moment from 'moment';
+import { DateTime } from 'luxon';
 
 import ApiService from '@/common/services/ApiService.js'
 import { useRegistryStore } from '@/stores/registry.js'
@@ -174,7 +174,6 @@ export default {
     commonStore () { return useCommonStore() }
   },
   methods: {
-    moment,
     noteSubmit () {
       // submit the note as a post request, triggered after confirming via popup
       this.submitSuccess = false

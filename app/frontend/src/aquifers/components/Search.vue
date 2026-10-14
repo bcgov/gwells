@@ -200,7 +200,7 @@
 
 <script>
 import mapboxgl from 'mapbox-gl'
-import moment from 'moment'
+import { DateTime } from 'luxon'
 import { isEqual, pick } from 'lodash-es'
 import { useCommonStore } from '@/stores/common.js'
 import smoothScroll from 'smoothscroll'
@@ -521,9 +521,9 @@ export default {
       if (!value) {
         return ''
       }
-      const m = moment(value)
-      return m.isValid() ? m.format("MMMM Do YYYY [at] LT") : ''
-    }
+      const dt = DateTime.fromISO(value)
+      return dt.isValid ? dt.toLocaleString(DateTime.DATETIME_FULL) : ''
+    },
   },
   watch: {
     queryParams () {

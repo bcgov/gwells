@@ -1,6 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import VueMoment from 'vue-moment'
 import moxios from 'moxios'
 import PersonDetail from '@/registry/components/people/PersonDetail'
 import APIErrorMessage from '@/common/components/APIErrorMessage'
@@ -11,7 +10,6 @@ import fakePerson from '../fakePerson'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueMoment)
 
 const GET_DEFAULT_STORE_MODULES = () => {
   return {

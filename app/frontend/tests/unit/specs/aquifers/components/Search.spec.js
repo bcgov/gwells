@@ -15,7 +15,6 @@ import '../../../mocks/mapbox-gl'
 import { mount, createLocalVue } from '@vue/test-utils'
 import SearchComponent from '@/aquifers/components/Search.vue'
 import Vuex from 'vuex'
-import VueMoment from 'vue-moment'
 import axios from 'axios'
 import { cloneDeep, merge } from 'lodash'
 import { useCommonStore } from '@/stores/common.js'
@@ -25,7 +24,7 @@ jest.mock('axios')
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueMoment)
+
 
 const aquiferFixture = {
   aquifer_id: '4',

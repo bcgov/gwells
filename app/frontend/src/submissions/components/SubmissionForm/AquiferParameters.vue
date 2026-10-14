@@ -12,7 +12,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-  <form-subsection title="Pumping Test Information and Aquifer Parameters" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
+  <form-subsection title="Pumping Test Information and Aquifer Parameters" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled" style="min-width: 0;">
     <div class="table-responsive" id="aquiferParametersTable">
       <table class="table" aria-describedby="aquiferParameters">
         <thead>

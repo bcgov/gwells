@@ -596,9 +596,10 @@
 </template>
 
 <script>
-import { useCommonStore } from '@/stores/common.js'
 import { sumBy, orderBy, groupBy, range, cloneDeep } from 'lodash-es'
 import * as Sentry from '@sentry/browser'
+import { DateTime } from 'luxon'
+import { useCommonStore } from '@/stores/common.js'
 import { useAquiferStore } from '@/stores/aquifers.js'
 
 import ApiService from '@/common/services/ApiService.js'
@@ -1012,9 +1013,11 @@ export default {
       return Math.round(volume) + ' cubic metres'
     },
     formatDate (value) {
-      if (!value) return ''
-      value = new Date(value)
-      return ((value.getMonth() + 1) + '/' + value.getDate() + '/' + value.getFullYear())
+      if (!value) {
+        return ''
+      }
+      const dt = DateTime.fromISO(value)
+      return dt.isValid ? dt.toLocaleString() : ''
     }
   }
 }

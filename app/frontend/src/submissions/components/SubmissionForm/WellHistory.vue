@@ -17,7 +17,7 @@
               {{history_item[0].user}}
               Edited this Well on
               <time :datetime="history_item[0].date">
-                {{ moment(history_item[0].date, "MMMM Do YYYY [at] LT")}}
+                {{ formatDate(history_item[0].date) }}
               </time>
               <div
                 style="margin-left:20px; width: 75%;"
@@ -66,7 +66,7 @@
         <div class="font-weight-bold mt-4" v-if="showHistory">
           {{create_user}}
           created this well on
-          {{ moment(create_date, "MMMM Do YYYY [at] LT")}}
+          {{ formatDate(create_date) }}
         </div>
         <div v-if="loading">
           <div class="flex">Loading history...</div>
@@ -78,6 +78,7 @@
 
 <script>
 import ApiService from '@/common/services/ApiService.js'
+import { DateTime } from 'luxon'
 
 export default {
   name: 'WellHistory',
@@ -113,6 +114,13 @@ export default {
     }
   },
   methods: {
+    formatDate (value) {
+      if (!value) {
+        return ''
+      }
+      const dt = DateTime.fromISO(value)
+      return dt.isValid ? dt.toLocaleString(DateTime.DATETIME_FULL) : ''
+    },
     toggleShow (e) {
       this.showHistory = !this.showHistory
       if (this.showHistory && !this.loading && (!this.loaded || e.ctrlKey)) {

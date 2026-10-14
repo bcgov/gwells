@@ -1,12 +1,10 @@
 import { shallowMount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
-import VueMoment from 'vue-moment'
 import moxios from 'moxios'
 import ChangeHistory from '@/common/components/ChangeHistory'
 
 const localVue = createLocalVue()
 localVue.use(Vuex)
-localVue.use(VueMoment)
 
 describe('Notes.vue', () => {
   let store

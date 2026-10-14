@@ -17,7 +17,7 @@
         </div>
       </div>
       <div v-else>
-        <div v-if="submission.create_date">Filed: {{ moment(submission.create_date, "MMMM Do YYYY [at] LT") }}</div>
+        <div v-if="submission.create_date">Filed: {{ DateTime.fromISO(submission.create_date).toLocaleString(DateTime.DATETIME_FULL) }}</div>
         <div>By: {{submission.create_user}} </div>
         <dl class="mt-12">
           <template v-for="(value, key, i) in submission" :key="`submission data row ${i} value`">
