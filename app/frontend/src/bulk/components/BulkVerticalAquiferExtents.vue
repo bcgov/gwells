@@ -325,38 +325,6 @@ import { useCommonStore } from '@/stores/common.js'
 
 const MAX_NUMBER_OF_ROWS = 4000
 
-const BASE_TABLE_FIELDS = [
-  {
-    key: 'rowNum',
-    label: 'Row Number',
-    class: 'row-num',
-    sortable: true,
-    sortDirection: 'desc'
-  },
-  {
-    key: 'wellTagNumber',
-    label: 'Well Tag Number',
-    class: 'well',
-    sortable: true
-  },
-  {
-    key: 'aquiferId',
-    label: 'Aquifer ID',
-    class: 'aquifer-id',
-    sortable: true
-  },
-  {
-    key: 'fromDepth',
-    label: 'From Depth',
-    class: 'from-depth'
-  },
-  {
-    key: 'toDepth',
-    label: 'To Depth',
-    class: 'to-depth text-right pr-6'
-  }
-]
-
 export default {
   data () {
     return {
@@ -372,34 +340,6 @@ export default {
       numberOfCSVRows: null,
       maxNumberOfRows: MAX_NUMBER_OF_ROWS,
       showBuildingTable: false,
-      csvErrorTableFields: [
-        {
-          key: 'rowNum',
-          label: 'Row Number',
-          class: 'row-number',
-          sortable: false
-        },
-        {
-          key: 'errorMessage',
-          label: 'Error',
-          class: 'error',
-          sortable: false
-        }
-      ],
-      errorTableFields: [
-        {
-          key: 'wellTagNumber',
-          label: 'Well Tag Number',
-          class: 'well',
-          sortable: false
-        },
-        {
-          key: 'aquiferId',
-          label: 'Aquifer ID',
-          class: 'aquifer-id',
-          sortable: false
-        }
-      ],
       breadcrumbs: [
         {
           label: 'Bulk Upload',
@@ -482,20 +422,6 @@ export default {
         })
 
       return vae
-    },
-    tableFields () {
-      if (this.hasConflicts) {
-        return BASE_TABLE_FIELDS.concat([
-          {
-            key: 'conflictMessage',
-            label: 'Error',
-            class: 'conflict-msg',
-            sortable: false
-          }
-        ])
-      }
-
-      return BASE_TABLE_FIELDS
     },
     showSubmitButton () {
       if (this.hasCSVErrors) {
@@ -741,23 +667,6 @@ export default {
     },
     isUnknownWell (wellTagNumber) {
       return this.unknownWells.indexOf(wellTagNumber) !== -1
-    },
-    formatOldAquifer (row) {
-      if (row.item.isSame) {
-        return row.item.aquiferId
-      } else if (row.item.isNew) {
-        return '\u2014'
-      }
-      return row.item.oldAquiferId
-    },
-    rowClass (item, type) {
-      if (!item || type !== 'row') return
-      const classes = []
-
-      if (item.conflictMessage) {
-        classes.push('has-conflict')
-      }
-      return classes.join(' ')
     }
   }
 }

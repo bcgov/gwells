@@ -97,6 +97,7 @@ export default {
       surveyToRemove: null,
       form: {},
       errors: {},
+      // TODO: Figure out if this is used anywhere
       fields: [
         {
           key: 'survey_page',
