@@ -431,5 +431,16 @@ export default {
 
 #wells-search-map {
   height: 600px;
+
+  .mapbox-ctrl-legend-content {
+    > ul {
+      padding-inline-start: 0;
+      > ol > li {
+        display: flex;
+      }
+    }
+  }
+
 }
+
 </style>
