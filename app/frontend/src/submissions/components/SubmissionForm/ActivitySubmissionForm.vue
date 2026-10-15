@@ -85,7 +85,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
       id="wellPublicationStatus"
       v-model:wellPublicationStatusCode="form.well_publication_status"
       :errors="errors"
-      :fieldsLoaded="fieldsLoaded"
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"

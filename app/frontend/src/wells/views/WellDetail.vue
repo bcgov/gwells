@@ -707,10 +707,7 @@ export default {
       }
       return {}
     },
-    isUnpublished () {
-      //  TypeError: Cannot read properties of undefined (reading 'is_published')
-      return !this.well?.is_published
-    },
+    isUnpublished () { return !this.wellsStore.wellRecord?.is_published},
   },
   methods: {
     booleanToYesNo (value) {

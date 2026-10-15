@@ -18,7 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="wellTagNumberStaff"
           label="Well Tag Number"
           type="text"
-          :value="$route.params.id"
+          :placeholder= "$route.params.id"
           disabled/>
         <form-input
           select
