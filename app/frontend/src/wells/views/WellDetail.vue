@@ -661,6 +661,7 @@ export default {
       ],
       submissionsPerPage: 5,
       submissionsPage: 1,
+      recordLicence: { status: '', number: [] },
       loading: false,
       error: null
     }
@@ -681,7 +682,6 @@ export default {
     alternative_specs_submitted () { return this.wellsStore.wellRecord?.alternative_specs_submitted ?? '' },
     artesian_conditions () { return this.wellsStore.wellRecord?.artesian_conditions ?? false },
     drinking_water_protection_area_ind () { return this.wellsStore.wellRecord?.drinking_water_protection_area_ind ?? false },
-    recordLicence () { return this.wellLicence ?? { status: '', number: [] } },
     id () { return parseInt(this.$route.params.id) || null },
     wellDates () {
       return [{
