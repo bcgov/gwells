@@ -6,7 +6,7 @@
         <p v-if="subtitle">{{ subtitle }}</p>
       </div>
       <div v-if="!hideSave" class="col-span-12 lg:col-span-6">
-        <div class="ml-auto">
+        <div class="ml-auto float-right">
           <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
           <back-to-top-link v-if="isStaffEdit"/>
         </div>

@@ -121,7 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       :handleDateInput="handleDateInput"
     />
 
-      <!-- Type of well -->
+      <!-- Well work dates -->
       <work-dates class="my-12"
        v-if="showSection('workDates')"
        id="workDates"

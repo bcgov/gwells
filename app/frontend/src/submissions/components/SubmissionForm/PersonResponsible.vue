@@ -12,19 +12,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
     limitations under the License.
 */
 <template>
-    <fieldset>
-      <responsive-grid :cols="12">
-        <legend :id="id">
-          Person Responsible for Work
-        </legend>
-        <div class="ml-auto">
-          <Button v-if="isStaffEdit" label="Save" class="ml-2" @click="$emit('save')" :disabled="saveDisabled"/>
-          <back-to-top-link v-if="isStaffEdit"/>
-        </div>
-      </responsive-grid>
+    <form-subsection title="Person Responsible for Work" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
       <div class="flex items-center gap-2">
-        <Checkbox inputId="checkbox1" v-model="drillerSameAsPersonResponsibleInput" binary/>
-        <label for="checkbox1">Person Responsible is the same as the Person Who Completed the Work</label>
+        <div class="flex items-center gap-2 mb-2">
+          <Checkbox inputId="checkbox1" v-model="drillerSameAsPersonResponsibleInput" binary/>
+          <label for="checkbox1">Person Responsible is the same as the Person Who Completed the Work</label>
+        </div>
       </div>
       <responsive-grid :cols="12" :md="12" :lg="6">
         <div class="flex flex-col form-group" aria-describedby="personResponsibleInvalidFeedback">
@@ -68,7 +61,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['driller_name']"
           :loaded="fieldsLoaded['driller_name']"/>
       </responsive-grid>
-      <responsive-grid :cols="12" :md="12" :lg="4">
+      <responsive-grid :cols="12" :md="12" :lg="6">
         <div class="flex flex-col form-group" aria-describedby="companyOfPersonResponsibleInvalidFeedback">
           <label>Company of Person Responsible for Drilling</label>
           <v-select
@@ -111,7 +104,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           :errors="errors['consultant_company']"
           :loaded="fieldsLoaded['consultant_company']"/>
       </responsive-grid>
-    </fieldset>
+    </form-subsection>
 </template>
 
 <script>
@@ -120,6 +113,7 @@ import { useCommonStore } from '@/stores/common.js'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '@/common/services/ApiService.js'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
+import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
 
 export default {
   name: 'PersonResponsible',
@@ -155,7 +149,8 @@ export default {
     }
   },
   components: {
-    ResponsiveGrid
+    ResponsiveGrid,
+    FormSubsection
   },
   data () {
     return {
