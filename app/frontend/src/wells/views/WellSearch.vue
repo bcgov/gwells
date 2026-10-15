@@ -17,7 +17,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <template #header>
         <Message
           severity="info"
-          class="mb-4"
+          class="mt-4"
           v-for="(survey, index) in surveys"
           :key="`survey ${index}`">
           <p class="m-0">
