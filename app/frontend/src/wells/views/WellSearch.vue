@@ -116,11 +116,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </div>
         <div v-if="!wellsStore.hasSearched" class="mt-12">
           <p class="mb-2">
-            Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://portal.nrs.gov.bc.ca/web/client/contact" target="_blank">FrontCounterBC</a>.
+            Can’t find the well you are looking for? Try your search again using a different set of criteria. If you still need more assistance, Contact <a href="https://www2.gov.bc.ca/gov/content/industry/natural-resource-use/natural-resource-permits/fcbc-locations" target="_blank">FrontCounterBC</a>.
           </p>
           <p>
-            <a href="http://www.frontcounterbc.gov.bc.ca/Start/surface-water/" target="_blank">
-              Learn about and submit water license applications
+            <a href="https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-licences-approvals/apply-for-a-water-licence" target="_blank">
+              Learn about and submit water licence applications
             </a> with FrontCounterBC.
           </p>
         </div>
