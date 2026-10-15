@@ -13,19 +13,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
 */
 <template>
   <div>
-    <Message
-      severity="info"
-      class="mb-4"
-      v-for="(survey, index) in surveys"
-      :key="`survey ${index}`">
-      <p class="m-0">
-        <a :href="survey.survey_link">
-          {{ survey.survey_introduction_text }}
-        </a>
-      </p>
-    </Message>
-
     <Card class="container">
+      <Message
+        severity="info"
+        class="mb-4"
+        v-for="(survey, index) in surveys"
+        :key="`survey ${index}`">
+        <p class="m-0">
+          <a :href="survey.survey_link">
+            {{ survey.survey_introduction_text }}
+          </a>
+        </p>
+      </Message>
       <template id="wellSearchTitle" #title><h1>Well Search</h1></template>
       <template #content>
         <div>
