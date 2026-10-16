@@ -148,7 +148,7 @@
                   :key="field.key"
                   :field="field.key"
                   :header="field.label"
-                  sortable>
+                  :sortable="field.sortable">
                   <template #body="{ data }">
                     <template v-if="field.key === 'id'">
                       <router-link :to="{ name: 'aquifers-view', params: {id: data.aquifer_id} }">{{ data.aquifer_id }}</router-link>

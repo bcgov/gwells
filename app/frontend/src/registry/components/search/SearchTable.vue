@@ -6,7 +6,7 @@
 
     <DataTable id="registry-table" showGridlines stripedRows :value="searchResponse.results || []" tableStyle="min-width: 50rem">
       <!-- reusable columns -->
-      <Column v-for="field in visibleFields" :header="field.name" :key="field.name">
+      <Column v-for="field in visibleFields" :header="field.name" :key="field.name" :sortable="field.sortable">
         <template #body="{ data }">
           <template v-if="field.name === 'Name'">
             <router-link
@@ -189,6 +189,7 @@ export default {
       }
       this.registryStore.search(querystring.parse(query))
     },
+    // TODO: Look into this, we may need to use it to sort in the table
     fieldSortable (field) {
       return Boolean(field.sortable && field.sortCode)
     },

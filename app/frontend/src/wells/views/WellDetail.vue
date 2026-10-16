@@ -251,7 +251,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               :key="field.key"
               :field="field.key"
               :header="field.label"
-              sortable
+              :sortable="field.sortable"
             >
               <template v-if="create_date" v-slot:cell(create_date)="data">
                 <div>

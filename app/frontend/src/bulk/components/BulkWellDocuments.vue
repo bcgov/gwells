@@ -220,17 +220,6 @@ export default {
       showSaveSuccess: false,
       wellsList: [null],
       unknownWellIds: null,
-      wellTableFields: [
-        {
-          key: 'wellTagNumber',
-          label: 'Well',
-          sortable: true
-        },
-        {
-          key: 'documents',
-          label: 'Documents'
-        }
-      ],
       breadcrumbs: [
         {
           label: 'Bulk Upload',
@@ -499,19 +488,6 @@ export default {
     fileNameWithoutPrefix (fileName) {
       // Strips `WTN \d+` prefix from file name. A `WTN ${wellTagNumber}` gets added on upload.
       return fileName.replace(WELL_ID_RE, '')
-    },
-    fileIsInvalid (file) {
-      const wellTagNumber = this.parseWellIdFromFileName(file.name)
-
-      if (wellTagNumber) {
-        if (this.unknownWellIdsExist && this.unknownWellIds.indexOf(wellTagNumber) !== -1) {
-          return true
-        }
-
-        return false
-      }
-
-      return true
     },
     filesPicked (files) {
       // Only setFiles when files > 0 because setFiles will empty the

@@ -259,7 +259,7 @@
                   class="mb-12"
                 >
                   <template #empty>No documents with keyed aquifer IDs</template>
-                  <Column field="aquiferId" header="Aquifer">
+                  <Column field="aquiferId" header="Aquifer" sortable>
                     <template #body="{ data }">
                       <span :class="{ unknown: checkAquiferIsUnknown(data.aquiferId) }">
                         {{data.aquiferId}}
@@ -358,17 +358,6 @@ export default {
       aquifersList: [null],
       aquiferSearchResults: [],
       unknonwnAquiferIds: null,
-      aquiferTableFields: [
-        {
-          key: 'aquiferId',
-          label: 'Aquifer',
-          sortable: true
-        },
-        {
-          key: 'documents',
-          label: 'Documents'
-        }
-      ],
       breadcrumbs: [
         {
           label: 'Bulk Upload',
@@ -653,23 +642,6 @@ export default {
     fileNameWithoutPrefix (fileName) {
       // Strips aquifer ID from file name.
       return fileName.replace(AQUIFER_ID_RE, '$3')
-    },
-    fileIsInvalid (file) {
-      if (this.keyedBehaviourPicked) {
-        const aquiferId = this.parseAquiferIdFromFileName(file.name)
-
-        if (aquiferId) {
-          if (this.unknonwnAquiferIdsExist && this.unknonwnAquiferIds.indexOf(aquiferId) !== -1) {
-            return true
-          }
-
-          return false
-        }
-
-        return true
-      }
-
-      return false
     },
     filesPicked (files) {
       // Only setFiles when files > 0 because setFiles will empty the

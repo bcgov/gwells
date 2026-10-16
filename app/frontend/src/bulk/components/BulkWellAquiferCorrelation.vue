@@ -247,35 +247,6 @@ import { AQUIFER_ID_FOR_UNCORRELATED_WELLS } from '@/common/constants.js'
 
 const MAX_NUMBER_OF_ROWS = 4000
 
-const BASE_TABLE_FIELDS = [
-  {
-    key: 'wellTagNumber',
-    label: 'Well Tag Number',
-    class: 'well',
-    sortable: false
-  },
-  {
-    key: 'aquiferId',
-    label: 'New Aquifer ID',
-    class: 'aquifer-id text-right',
-    sortable: false
-  }
-]
-
-const OLD_AQUIFER_FIELD = {
-  key: 'oldAquiferId',
-  label: 'Old Aquifer ID',
-  sortable: true,
-  class: 'old-aquifer-id text-right pr-6'
-}
-
-const WARNINGS_FIELD = {
-  key: 'warnings',
-  label: 'Warnings',
-  sortable: true,
-  class: 'warnings pr-6'
-}
-
 export default {
   data () {
     return {
@@ -291,34 +262,6 @@ export default {
       tooManyCSVRows: false,
       numberOfCSVRows: null,
       maxNumberOfRows: MAX_NUMBER_OF_ROWS,
-      csvErrorTableFields: [
-        {
-          key: 'rowNum',
-          label: 'Row Number',
-          class: 'row-number',
-          sortable: false
-        },
-        {
-          key: 'errorMessage',
-          label: 'Error',
-          class: 'error',
-          sortable: false
-        }
-      ],
-      errorTableFields: [
-        {
-          key: 'wellTagNumber',
-          label: 'Well Tag Number',
-          class: 'well',
-          sortable: false
-        },
-        {
-          key: 'aquiferId',
-          label: 'Aquifer ID',
-          class: 'aquifer-id text-right pr-6',
-          sortable: false
-        }
-      ],
       breadcrumbs: [
         {
           label: 'Bulk Upload',
@@ -473,20 +416,6 @@ export default {
       wells.sort((a, b) => a.aquiferId - b.aquiferId)
 
       return wells
-    },
-    tableFields () {
-      if (this.wellUpdates === null) {
-        return BASE_TABLE_FIELDS
-      }
-
-      const baseTableFieldsCopy = BASE_TABLE_FIELDS.slice()
-
-      if (this.hasAPIValidationWarnings) {
-        baseTableFieldsCopy.push(WARNINGS_FIELD)
-      }
-
-      baseTableFieldsCopy.splice(1, 0, OLD_AQUIFER_FIELD)
-      return baseTableFieldsCopy
     },
     aquifers () {
       const aquifers = {}
@@ -704,25 +633,6 @@ export default {
     },
     isUnknownWell (wellTagNumber) {
       return this.unknownWells.indexOf(wellTagNumber) !== -1
-    },
-    formatOldAquifer (row) {
-      if (row.item.isSame) {
-        return row.item.aquiferId
-      } else if (row.item.isNew) {
-        return '\u2014'
-      }
-      return row.item.oldAquiferId
-    },
-    rowClass (item, type) {
-      if (!item || type !== 'row') return
-      const classes = []
-
-      if (item.isUpdate) {
-        classes.push('update')
-      } else if (item.isNew) {
-        classes.push('new')
-      }
-      return classes.join(' ')
     }
   }
 }
