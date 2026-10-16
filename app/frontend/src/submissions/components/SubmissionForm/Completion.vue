@@ -124,8 +124,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="wellDisinfectedInput"
           optionValue="well_disinfected_code"
           optionLabel="well_disinfected_code"
-          :options="disinfected_codes()"
-          :loading="!fieldsLoaded['well_disinfected_status']"/>
+          :options="disinfected_codes()"/>
       </div>
     </responsive-grid>
   </form-subsection>
@@ -211,6 +210,11 @@ export default {
       this.updateArtesianPressure(null, this.artesianPressurePSI)
     }
   },
+  computed: {
+    codes () {
+      return this.submissionStore.codes
+    }
+  },
   methods: {
     disinfected_codes () { // make the unknown selection disabled for users
       if (this.codes != null && this.codes.well_disinfected_codes != null) {
@@ -260,11 +264,6 @@ export default {
         this.artesianPressurePSIInput = null
         this.artesianPressure.psi = null
       }
-    }
-  },
-  computed: {
-    codes () {
-      return this.submissionStore.codes
     }
   }
 }

@@ -39,12 +39,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         </Column>
       </DataTable>
 
-      <div>
-        <router-link :to="{ name: 'well-aquifers', params: {wellTagNumber} }" class="btn btn-primary" role="button">
-          <i class="fa fa-edit"/>
-          {{this.aquifers.length > 0 ? 'Edit' : 'Add'}}
-        </router-link>
-      </div>
+      <Button
+        id="editAquiferExtents"
+        :label="this.aquifers.length > 0 ? 'Edit' : 'Add'"
+        class="mt-2"
+        icon="fa fa-edit"
+        @click="navigateToWellAquifers"
+        />
     </div>
   </fieldset>
 </template>
@@ -96,7 +97,10 @@ export default {
             this.errorNotFound = true
           }
         })
-    }
+    },
+    navigateToWellAquifers () {
+      this.$router.push({ name: 'well-aquifers', params: { wellTagNumber: this.wellTagNumber } })
+    },
   },
   created () {
     if (this.wellTagNumber === null) {

@@ -195,17 +195,17 @@ export default {
           route: { name: 'wells-home' }
         },
         {
-          label: `Well ${this.$route.params.id} Summary`,
+          label: `Well ${this.$route.params.wellTagNumber} Summary`,
           route: {
             name: "wells-detail",
-            params: { id: this.$route.params.id }
+            params: { id: this.$route.params.wellTagNumber }
           }
         },
         {
           label: `Edit Well`,
           route: {
             name: "SubmissionsEdit",
-            params: { id: this.$route.params.id },
+            params: { id: this.$route.params.wellTagNumber },
           }
         },
         {
@@ -454,9 +454,6 @@ export default {
 }
 
 #vertical-aquifer-extents-table {
-  .non-aquifer {
-  }
-
   .from-col, .to-col {
     min-width: 120px;
     width: 10%;

@@ -60,7 +60,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         :errors="errors['liner_to']"
         :loaded="fieldsLoaded['liner_to']"/>
     </responsive-grid>
-    <div class="flex">>Liner Perforations</div>
+    <div class="flex">Liner Perforations</div>
     <div class="grid grid-cols-2">
       <div class="md:col-span-1">
         <table class="table table-sm no-border">

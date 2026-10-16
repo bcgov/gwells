@@ -34,7 +34,7 @@
 
         <div>Phone: 1-877-855-3222</div>
         <div>Email: <a href="mailto:frontcounterbc@gov.bc.ca">frontcounterbc@gov.bc.ca</a></div>
-        <div>Or visit any <a href="https://portal.nrs.gov.bc.ca/web/client/locations" target="_blank">FrontCounterBC location</a>.</div>
+        <div>Or visit any <a href="https://www2.gov.bc.ca/gov/content/industry/natural-resource-use/natural-resource-permits/fcbc-locations" target="_blank">FrontCounterBC location</a>.</div>
       </div>
     </template>
   </Card>

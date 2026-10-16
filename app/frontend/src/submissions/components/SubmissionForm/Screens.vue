@@ -235,9 +235,6 @@ export default {
       screensData: []
     }
   },
-  created () {
-    this.submissionStore = useSubmissionStore()
-  },
   computed: {
     codes () {
       return this.submissionStore?.codes
@@ -307,6 +304,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // when component created, add an initial row of screens
     if (!this.screens.length) {
       for (let i = 0; i < 3; i++) {

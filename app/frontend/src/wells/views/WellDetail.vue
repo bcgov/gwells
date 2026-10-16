@@ -155,10 +155,10 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-6">
               <div>
-                <span class="font-bold">Street Address:</span> {{ street_address }}
+                <span class="font-bold">Street Address:</span> {{ well.street_address }}
               </div>
               <div>
-                <span class="font-bold">Town/City:</span> {{ city }}
+                <span class="font-bold">Town/City:</span> {{ well.city }}
               </div>
               <div>
                 <div class="my-4"><span class="font-bold">Legal Description:</span></div>
@@ -167,44 +167,44 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     <tbody>
                       <tr>
                         <th class="w-50">Lot</th>
-                        <td>{{ legal_lot }}</td>
+                        <td>{{ well.legal_lot }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Plan</th>
-                        <td>{{ legal_plan }}</td>
+                        <td>{{ well.legal_plan }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">District Lot</th>
-                        <td>{{ legal_district_lot }}</td>
+                        <td>{{ well.legal_district_lot }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Block</th>
-                        <td>{{ legal_block }}</td>
+                        <td>{{ well.legal_block }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Section</th>
-                        <td>{{ legal_section }}</td>
+                        <td>{{ well.legal_section }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Township</th>
-                        <td>{{ legal_township }}</td>
+                        <td>{{ well.legal_township }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Range</th>
-                        <td>{{ legal_range }}</td>
+                        <td>{{ well.legal_range }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Land District</th>
-                        <td>{{ land_district }}</td>
+                        <td>{{ well.land_district }}</td>
                       </tr>
                       <tr>
                         <th class="w-50">Property Identification Description (PID)</th>
-                        <td>{{ legal_pid }}</td>
+                        <td>{{ well.legal_pid }}</td>
                       </tr>
                     </tbody>
                   </table>
                   <div>
-                    <span class="font-bold">Description of Well Location:</span> {{ well_location_description }}
+                    <span class="font-bold">Description of Well Location:</span> {{ well.well_location_description }}
                   </div>
                 </div>
               </div>
@@ -215,8 +215,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 Geographic Coordinates - North American Datum of 1983 (NAD 83)
               </div>
               <div>
-                <div><span class="font-bold">Latitude:</span> {{latitude}}</div>
-                <div><span class="font-bold">Longitude:</span> {{longitude}}</div>
+                <div><span class="font-bold">Latitude:</span> {{ well.latitude }}</div>
+                <div><span class="font-bold">Longitude:</span> {{ well.longitude }}</div>
               </div>
               <div>
                 <div><span class="font-bold">UTM Easting:</span> {{ UTM.easting ? Math.round(UTM.easting) : ''}}</div>
@@ -289,28 +289,28 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_completion_data_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Completion Data</legend>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Total Depth Drilled:</b> {{ excludeZeroDecimals(total_depth_drilled) }} {{ total_depth_drilled ? 'ft bgl':''}}</span>
-            <span><b>Estimated Well Yield:</b> {{ excludeZeroDecimals(well_yield) }} {{ well_yield ? 'USgpm':'' }}</span>
-            <span><b>Static Water Level (BTOC):</b> {{ excludeZeroDecimals(static_water_level) }} {{ static_water_level ? 'feet btoc': ''}}</span>
+            <span><b>Total Depth Drilled:</b> {{ excludeZeroDecimals(well.total_depth_drilled) }} {{ well.total_depth_drilled ? 'ft bgl':''}}</span>
+            <span><b>Estimated Well Yield:</b> {{ excludeZeroDecimals(well.well_yield) }} {{ well.well_yield ? 'USgpm':'' }}</span>
+            <span><b>Static Water Level (BTOC):</b> {{ excludeZeroDecimals(well.static_water_level) }} {{ well.static_water_level ? 'feet btoc': ''}}</span>
 
-            <span><b>Finished Well Depth:</b> {{ excludeZeroDecimals(finished_well_depth) }} {{ finished_well_depth ? 'ft bgl':''}}</span>
-            <span><b>Well Cap:</b> {{ well_cap_type }}</span>
-            <span><b>Artesian Flow:</b> {{ excludeZeroDecimals(artesian_flow) }} {{ artesian_flow ? 'USgpm':'' }}</span>
+            <span><b>Finished Well Depth:</b> {{ excludeZeroDecimals(well.finished_well_depth) }} {{ well.finished_well_depth ? 'ft bgl':''}}</span>
+            <span><b>Well Cap:</b> {{ well.well_cap_type }}</span>
+            <span><b>Artesian Flow:</b> {{ excludeZeroDecimals(well.artesian_flow) }} {{ well.artesian_flow ? 'USgpm':'' }}</span>
 
-            <span><b>Final Casing Stick Up:</b> {{ excludeZeroDecimals(final_casing_stick_up) }} {{ final_casing_stick_up ? 'inches':''}}</span>
-            <span><b>Well Disinfected Status:</b> {{ well_disinfected_status }}</span>
-            <span><b>Artesian Pressure (head):</b> {{ excludeZeroDecimals(artesian_pressure_head) }}</span>
+            <span><b>Final Casing Stick Up:</b> {{ excludeZeroDecimals(well.final_casing_stick_up) }} {{ well.final_casing_stick_up ? 'inches':''}}</span>
+            <span><b>Well Disinfected Status:</b> {{ well.well_disinfected_status }}</span>
+            <span><b>Artesian Pressure (head):</b> {{ excludeZeroDecimals(well.artesian_pressure_head) }}</span>
 
-            <span><b>Depth to Bedrock:</b> {{ excludeZeroDecimals(bedrock_depth) }} {{ bedrock_depth ? 'feet bgl':''}}</span>
+            <span><b>Depth to Bedrock:</b> {{ excludeZeroDecimals(well.bedrock_depth) }} {{ well.bedrock_depth ? 'feet bgl':''}}</span>
             <span>
-              <b>Drilling Method<span v-if="drilling_methods && drilling_methods.length > 1">s</span>:</b>
-              <span v-for="(method, index) in drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+              <b>Drilling Method<span v-if="well.drilling_methods && well.drilling_methods.length > 1">s</span>:</b>
+              <span v-for="(method, index) in well.drilling_methods" :key="`drillingMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
             </span>
-            <span><b>Artesian Pressure (PSI):</b> {{ excludeZeroDecimals(artesian_pressure) }}</span>
+            <span><b>Artesian Pressure (PSI):</b> {{ excludeZeroDecimals(well.artesian_pressure) }}</span>
 
-            <span><b>Ground elevation:</b> {{ excludeZeroDecimals(ground_elevation) }} {{ ground_elevation ? 'feet':'' }}</span>
-            <span><b>Method of determining elevation:</b> {{ ground_elevation_method }}</span>
-            <span><b>Orientation of Well:</b> {{ well_orientation_status }}</span>
+            <span><b>Ground elevation:</b> {{ excludeZeroDecimals(well.ground_elevation) }} {{ well.ground_elevation ? 'feet':'' }}</span>
+            <span><b>Method of determining elevation:</b> {{ well.ground_elevation_method }}</span>
+            <span><b>Orientation of Well:</b> {{ well.well_orientation_status }}</span>
           </responsive-grid>
         </fieldset>
 
@@ -353,7 +353,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             showGridlines
             size="small"
             class="border border-gray-200"
-            :value="casing_set"
+            :value="well.casing_set"
             tableStyle="min-width: 50rem"
           >
             <Column field="start" header="From (ft bgl)">
@@ -383,18 +383,18 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="surface_seal_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Surface Seal and Backfill Details</legend>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Surface Seal Material:</b> {{ codeToDescription('surface_seal_materials', surface_seal_material) }}</span>
-            <span><b>Backfill Material Above Surface Seal:</b> {{ codeToDescription('surface_seal_materials', backfill_above_surface_seal) }}</span>
+            <span><b>Surface Seal Material:</b> {{ codeToDescription('surface_seal_materials', well.surface_seal_material) }}</span>
+            <span><b>Backfill Material Above Surface Seal:</b> {{ codeToDescription('surface_seal_materials', well.backfill_above_surface_seal) }}</span>
           </responsive-grid>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Surface Seal Installation Method:</b> {{ codeToDescription('surface_seal_methods', surface_seal_method) }}</span>
-            <span><b>Backfill Depth:</b> {{ excludeZeroDecimals(backfill_depth) }} {{ backfill_depth ? 'feet':'' }}</span>
+            <span><b>Surface Seal Installation Method:</b> {{ codeToDescription('surface_seal_methods', well.surface_seal_method) }}</span>
+            <span><b>Backfill Depth:</b> {{ excludeZeroDecimals(well.backfill_depth) }} {{ well.backfill_depth ? 'feet':'' }}</span>
           </responsive-grid>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Surface Seal Thickness:</b> {{ excludeZeroDecimals(surface_seal_thickness) }} {{ surface_seal_thickness ? 'inches':'' }}</span>
+            <span><b>Surface Seal Thickness:</b> {{ excludeZeroDecimals(well.surface_seal_thickness) }} {{ well.surface_seal_thickness ? 'inches':'' }}</span>
           </responsive-grid>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Surface Seal Depth:</b> {{ excludeZeroDecimals(surface_seal_depth) }} {{ surface_seal_depth ? 'feet':''}}</span>
+            <span><b>Surface Seal Depth:</b> {{ excludeZeroDecimals(well.surface_seal_depth) }} {{ well.surface_seal_depth ? 'feet':''}}</span>
           </responsive-grid>
         </fieldset>
 
@@ -402,12 +402,12 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <legend class="w-full mb-2">Liner Details</legend>
           <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-6">
-              <div><span class="font-bold">Liner Material:</span> {{ codeToDescription('liner_materials', liner_material) }}</div>
+              <div><span class="font-bold">Liner Material:</span> {{ codeToDescription('liner_materials', well.liner_material) }}</div>
               <div class="grid grid-cols-2">
-                <div><span class="font-bold">Liner Diameter:</span> {{ excludeZeroDecimals(liner_diameter) }} {{ liner_diameter ? 'inches':'' }}</div>
-                <div><span class="font-bold">Liner Thickness:</span> {{ excludeZeroDecimals(liner_thickness) }} {{ liner_thickness ? 'inches':'' }}</div>
-                <div><span class="font-bold">Liner from:</span> {{ excludeZeroDecimals(liner_from) }} {{ liner_from ? '(ft bgl)':'' }}</div>
-                <div><span class="font-bold">Liner to:</span> {{ excludeZeroDecimals(liner_to) }} {{ liner_to ? '(ft bgl)':'' }}</div>
+                <div><span class="font-bold">Liner Diameter:</span> {{ excludeZeroDecimals(well.liner_diameter) }} {{ well.liner_diameter ? 'inches':'' }}</div>
+                <div><span class="font-bold">Liner Thickness:</span> {{ excludeZeroDecimals(well.liner_thickness) }} {{ well.liner_thickness ? 'inches':'' }}</div>
+                <div><span class="font-bold">Liner from:</span> {{ excludeZeroDecimals(well.liner_from) }} {{ well.liner_from ? '(ft bgl)':'' }}</div>
+                <div><span class="font-bold">Liner to:</span> {{ excludeZeroDecimals(well.liner_to) }} {{ well.liner_to ? '(ft bgl)':'' }}</div>
               </div>
             </div>
             <div class="col-span-12 md:col-span-6">
@@ -417,7 +417,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 showGridlines
                 size="small"
                 class="border border-gray-200"
-                :value="linerperforation_set"
+                :value="well.linerperforation_set"
                 responsiveLayout="scroll"
                 tableStyle="min-width: 30rem"
               >
@@ -439,11 +439,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <legend class="w-full mb-2">Screen Details</legend>
           <div class="grid grid-cols-12">
             <div class="col-span-12 md:col-span-3">
-              <div><span class="font-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', screen_intake_method) }}</div>
-              <div><span class="font-bold">Type:</span> {{ codeToDescription('screen_types', screen_type) }}</div>
-              <div><span class="font-bold">Material:</span> {{ codeToDescription('screen_materials', screen_material) }}</div>
-              <div><span class="font-bold">Opening:</span> {{ codeToDescription('screen_openings', screen_opening) }}
-              <div><span class="font-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', screen_bottom) }}</div>
+              <div><span class="font-bold">Intake Method:</span> {{ codeToDescription('screen_intake_methods', well.screen_intake_method) }}</div>
+              <div><span class="font-bold">Type:</span> {{ codeToDescription('screen_types', well.screen_type) }}</div>
+              <div><span class="font-bold">Material:</span> {{ codeToDescription('screen_materials', well.screen_material) }}</div>
+              <div><span class="font-bold">Opening:</span> {{ codeToDescription('screen_openings', well.screen_opening) }}
+              <div><span class="font-bold">Bottom:</span> {{ codeToDescription('screen_bottoms', well.screen_bottom) }}</div>
               </div>
             </div>
             <div class="col-span-12 md:col-span-9">
@@ -453,7 +453,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 showGridlines
                 size="small"
                 class="border border-gray-200"
-                :value="screen_set"
+                :value="well.screen_set"
                 responsiveLayout="scroll"
                 tableStyle="min-width: 30rem"
                 >
@@ -483,39 +483,39 @@ Licensed under the Apache License, Version 2.0 (the "License");
           <responsive-grid :cols="12" :md="4">
             <span>
               <b>Developed by:</b>
-              <span v-for="(method, index) in development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method.description }}</span>
+              <span v-for="(method, index) in well.development_methods" :key="`developmentMethod${index}`"><span v-if="index > 0">,</span> {{ method }}</span>
             </span>
-            <span><b>Development Total Duration:</b> {{ excludeZeroDecimals(development_hours) }} {{ development_hours ? 'hours':'' }}</span>
+            <span><b>Development Total Duration:</b> {{ excludeZeroDecimals(well.development_hours) }} {{ well.development_hours ? 'hours':'' }}</span>
           </responsive-grid>
         </fieldset>
 
         <fieldset id="well_yield_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Yield</legend>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Estimation Method:</b> {{codeToDescription('yield_estimation_methods', yield_estimation_method)}}</span>
-            <span><b>Estimation Rate:</b> {{ excludeZeroDecimals(yield_estimation_rate) }} {{ yield_estimation_rate ? 'USgpm':'' }}</span>
-            <span><b>Estimation Duration:</b> {{ excludeZeroDecimals(yield_estimation_duration) }} {{ yield_estimation_duration ? 'hours':'' }}</span>
-            <span><b>Static Water Level Before Test:</b> {{ excludeZeroDecimals(static_level_before_test) }} {{ static_level_before_test ? 'ft (btoc)':'' }}</span>
-            <span><b>Drawdown:</b> {{ excludeZeroDecimals(drawdown) }} {{ drawdown ? 'ft (btoc)':'' }}</span>
+            <span><b>Estimation Method:</b> {{codeToDescription('yield_estimation_methods', well.yield_estimation_method)}}</span>
+            <span><b>Estimation Rate:</b> {{ excludeZeroDecimals(well.yield_estimation_rate) }} {{ well.yield_estimation_rate ? 'USgpm':'' }}</span>
+            <span><b>Estimation Duration:</b> {{ excludeZeroDecimals(well.yield_estimation_duration) }} {{ well.yield_estimation_duration ? 'hours':'' }}</span>
+            <span><b>Static Water Level Before Test:</b> {{ excludeZeroDecimals(well.static_level_before_test) }} {{ well.static_level_before_test ? 'ft (btoc)':'' }}</span>
+            <span><b>Drawdown:</b> {{ excludeZeroDecimals(well.drawdown) }} {{ well.drawdown ? 'ft (btoc)':'' }}</span>
           </responsive-grid>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Hydrofracturing Performed:</b> {{booleanToYesNo(hydro_fracturing_performed)}}</span>
-            <span><b>Increase in Yield Due to Hydrofracturing:</b> {{ excludeZeroDecimals(hydro_fracturing_yield_increase) }} {{ hydro_fracturing_yield_increase ? 'USgpm':'' }}</span>
+            <span><b>Hydrofracturing Performed:</b> {{booleanToYesNo(well.hydro_fracturing_performed)}}</span>
+            <span><b>Increase in Yield Due to Hydrofracturing:</b> {{ excludeZeroDecimals(well.hydro_fracturing_yield_increase) }} {{ well.hydro_fracturing_yield_increase ? 'USgpm':'' }}</span>
           </responsive-grid>
         </fieldset>
 
         <fieldset id="well_decommissioning_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Well Decommission Information</legend>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Reason for Decommission:</b> {{ decommission_reason }}</span>
-            <span><b>Method of Decommission:</b> {{ decommission_method }}</span>
+            <span><b>Reason for Decommission:</b> {{ well.decommission_reason }}</span>
+            <span><b>Method of Decommission:</b> {{ well.decommission_method }}</span>
           </responsive-grid>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Sealant Material:</b> {{ decommission_sealant_material }}</span>
-            <span><b>Backfill Material:</b> {{ decommission_backfill_material }}</span>
+            <span><b>Sealant Material:</b> {{ well.decommission_sealant_material }}</span>
+            <span><b>Backfill Material:</b> {{ well.decommission_backfill_material }}</span>
           </responsive-grid>
           <responsive-grid :cols="12" :md="4">
-            <span><b>Decommission Details:</b> {{ decommission_details }}</span>
+            <span><b>Decommission Details:</b> {{ well.decommission_details }}</span>
           </responsive-grid>
         </fieldset>
 
@@ -526,7 +526,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             showGridlines
             size="small"
             class="border border-gray-200"
-            :value="aquifer_parameters_set"
+            :value="well.aquifer_parameters_set"
             tableStyle="min-width: 50rem"
             >
             <Column v-for="field in aquifer_parameters_fields" :key="field.key" :field="field.key">
@@ -558,7 +558,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <fieldset id="well_comments_fieldset" class="my-4 detail-section">
           <legend class="w-full mb-2">Comments</legend>
           <p>
-            {{ comments ? comments : 'No comments submitted' }}
+            {{ well.comments ? well.comments : 'No comments submitted' }}
           </p>
         </fieldset>
 
@@ -661,12 +661,14 @@ export default {
       ],
       submissionsPerPage: 5,
       submissionsPage: 1,
+      recordLicence: { status: '', number: [] },
       loading: false,
       error: null
     }
   },
   computed: {
     ...mapStores(useCommonStore, useSubmissionStore, useWellsStore),
+    well () { return this.wellsStore.wellRecord ?? {} },
     well_tag_number () { return this.wellsStore.wellRecord?.well_tag_number ?? '' },
     well_status () { return this.wellsStore.wellRecord?.well_status ?? '' },
     observation_well_number () { return this.wellsStore.wellRecord?.observation_well_number ?? '' },
@@ -680,16 +682,15 @@ export default {
     alternative_specs_submitted () { return this.wellsStore.wellRecord?.alternative_specs_submitted ?? '' },
     artesian_conditions () { return this.wellsStore.wellRecord?.artesian_conditions ?? false },
     drinking_water_protection_area_ind () { return this.wellsStore.wellRecord?.drinking_water_protection_area_ind ?? false },
-    recordLicence () { return this.wellLicence ?? { status: '', number: [] } },
     id () { return parseInt(this.$route.params.id) || null },
     wellDates () {
       return [{
-        construction_start_date: this.construction_start_date,
-        construction_end_date: this.construction_end_date,
-        alteration_start_date: this.alteration_start_date,
-        alteration_end_date: this.alteration_end_date,
-        decommission_start_date: this.decommission_start_date,
-        decommission_end_date: this.decommission_end_date
+        construction_start_date: this.wellsStore.wellRecord?.construction_start_date,
+        construction_end_date: this.wellsStore.wellRecord?.construction_end_date,
+        alteration_start_date: this.wellsStore.wellRecord?.alteration_start_date,
+        alteration_end_date: this.wellsStore.wellRecord?.alteration_end_date,
+        decommission_start_date: this.wellsStore.wellRecord?.decommission_start_date,
+        decommission_end_date: this.wellsStore.wellRecord?.decommission_end_date
       }]
     },
     errorNotFound () {
@@ -707,10 +708,7 @@ export default {
       }
       return {}
     },
-    isUnpublished () {
-      //  TypeError: Cannot read properties of undefined (reading 'is_published')
-      return !this.well?.is_published
-    },
+    isUnpublished () { return !this.wellsStore.wellRecord?.is_published},
   },
   methods: {
     booleanToYesNo (value) {
