@@ -151,10 +151,6 @@ export default {
       type: Object,
       default: () => ({})
     },
-    fieldsLoaded: {
-      type: Object,
-      default: () => ({})
-    },
     id: {
       type: String,
       isInput: false
@@ -331,11 +327,6 @@ export default {
     getAttachmentError (index) {
       return this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']
         ? this.errors['attachment_set'][index]
-        : {}
-    },
-    getFieldsLoaded (index) {
-      return this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']
-        ? this.fieldsLoaded['attachment_set'][index]
         : {}
     },
     rowHasValues (row) {

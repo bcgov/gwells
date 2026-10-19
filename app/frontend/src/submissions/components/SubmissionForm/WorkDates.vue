@@ -20,48 +20,42 @@ limitations under the License.
         label="Start Date of Construction"
         placeholder="YYYY-MM-DD"
         v-model="constructionStartDateInput"
-        :errors="errors.construction_start_date"
-        :loaded="fieldsLoaded['construction_start_date']"/>
+        :errors="errors.construction_start_date"/>
       <form-input
         id="constructionEndDateInput"
         type="date"
         label="End Date of Construction"
         placeholder="YYYY-MM-DD"
         v-model="constructionEndDateInput"
-        :errors="errors.construction_end_date"
-        :loaded="fieldsLoaded['construction_end_date']"/>
+        :errors="errors.construction_end_date"/>
       <form-input
         id="alterationStartDateInput"
         type="date"
         label="Start Date of Alteration"
         placeholder="YYYY-MM-DD"
         v-model="alterationStartDateInput"
-        :errors="errors.alteration_start_date"
-        :loaded="fieldsLoaded['alteration_start_date']"/>
+        :errors="errors.alteration_start_date"/>
       <form-input
         id="alterationEndDateInput"
         type="date"
         label="End Date of Alteration"
         placeholder="YYYY-MM-DD"
         v-model="alterationEndDateInput"
-        :errors="errors.alteration_end_date"
-        :loaded="fieldsLoaded['alteration_end_date']"/>
+        :errors="errors.alteration_end_date"/>
       <form-input
         id="decommissionStartDateInput"
         type="date"
         label="Start Date of Decommission"
         placeholder="YYYY-MM-DD"
         v-model="decommissionStartDateInput"
-        :errors="errors.decommission_start_date"
-        :loaded="fieldsLoaded['decommission_start_date']"/>
+        :errors="errors.decommission_start_date"/>
       <form-input
         id="decommissionEndDateInput"
         type="date"
         label="End Date of Decommission"
         placeholder="YYYY-MM-DD"
         v-model="decommissionEndDateInput"
-        :errors="errors.decommission_end_date"
-        :loaded="fieldsLoaded['decommission_end_date']"/>
+        :errors="errors.decommission_end_date"/>
     </responsive-grid>
   </form-subsection>
 </template>
@@ -81,10 +75,6 @@ export default {
     decommissionStartDate: String,
     decommissionEndDate: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

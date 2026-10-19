@@ -28,8 +28,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   hint="Decimal degrees"
                   @input="handleDegreesChange"
                   v-model.number="degrees.latitude"
-                  :errors="errors['latitude']"
-                  :loaded="fieldsLoaded['latitude']"/>
+                  :errors="errors['latitude']"/>
               </div>
               <div class="col-span-12 sm:col-span-6 lg:col-span-3 lg:col-start-6">
                 <form-input
@@ -39,8 +38,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   label="Longitude"
                   hint="Decimal degrees"
                   v-model.number="degrees.longitude"
-                  :errors="errors['longitude']"
-                  :loaded="fieldsLoaded['longitude']"/>
+                  :errors="errors['longitude']"/>
               </div>
             </div>
           </div>
@@ -57,8 +55,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       hint="Degrees"
                       type="text"
                       v-model.number="dms.lat.deg"
-                      :errors="errors['latitude']"
-                      :loaded="fieldsLoaded['latitude']"/>
+                      :errors="errors['latitude']"/>
                   </div>
                   <div class="xs:col-span-3 px-2">
                     <form-input
@@ -67,8 +64,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       @input="handleDMSChange"
                       type="text"
                       v-model.number="dms.lat.min"
-                      :errors="errors['latitude']"
-                      :loaded="fieldsLoaded['latitude']"/>
+                      :errors="errors['latitude']"/>
                   </div>
                   <div class="xs:col-span-3 px-1">
                      <form-input
@@ -77,8 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       @input="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.lat.sec"
-                      :errors="errors['latitude']"
-                      :loaded="fieldsLoaded['latitude']"/>
+                      :errors="errors['latitude']"/>
                   </div>
                 </div>
               </div>
@@ -92,8 +87,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       @input="handleDMSChange"
                       hint="Degrees"
                       v-model.number="dms.long.deg"
-                      :errors="errors['longitude']"
-                      :loaded="fieldsLoaded['longitude']"/>
+                      :errors="errors['longitude']"/>
                   </div>
                   <div class="xs:col-span-3 px-2">
                     <form-input
@@ -102,8 +96,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       @input="handleDMSChange"
                       hint="Minutes"
                       v-model.number="dms.long.min"
-                      :errors="errors['longitude']"
-                      :loaded="fieldsLoaded['longitude']"/>
+                      :errors="errors['longitude']"/>
                   </div>
                   <div class="xs:col-span-3 px-1">
                      <form-input
@@ -112,8 +105,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                       @input="handleDMSChange"
                       hint="Seconds"
                       v-model.number="dms.long.sec"
-                      :errors="errors['longitude']"
-                      :loaded="fieldsLoaded['longitude']"/>
+                      :errors="errors['longitude']"/>
                   </div>
                 </div>
               </div>
@@ -132,15 +124,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 @input="handleUTMChange"
                 v-model="utm.zone"
                 text-field="name"
-                value-field="value"
-                :loaded="fieldsLoaded['utmZone']"/>
+                value-field="value"/>
               <form-input
                 id="utmEasting"
                 type="text"
                 label="UTM Easting"
                 v-model.number="utm.easting"
                 @input="handleUTMChange"
-                :loaded="fieldsLoaded['utmEasting']"
                 :max="999999"/>
               <form-input
                 id="utmNorthing"
@@ -148,8 +138,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 label="UTM Northing"
                 @input="handleUTMChange"
                 v-model.number="utm.northing"
-                :max="9999999"
-                :loaded="fieldsLoaded['utmNorthing']"/>
+                :max="9999999"/>
             </responsive-grid>
             <div class="flex" v-if="isStaffEdit">
               <form-input
@@ -159,8 +148,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 label="Coordinate Acquisition"
                 v-model="coordinateAcquisitionCodeInput"
                 text-field="description"
-                value-field="code"
-                :loaded="fieldsLoaded['coordinateAcquisitionCode']"/>
+                value-field="code"/>
             </div>
           </div>
           <div class="flex mt-4">
@@ -214,10 +202,6 @@ export default {
     longitude: null,
     coordinateAcquisitionCode: null,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

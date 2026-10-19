@@ -58,8 +58,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           type="text"
           :disabled="drillerSameAsPersonResponsible"
           v-model="drillerNameInput"
-          :errors="errors['driller_name']"
-          :loaded="fieldsLoaded['driller_name']"/>
+          :errors="errors['driller_name']"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="12" :lg="6">
         <div class="flex flex-col form-group" aria-describedby="companyOfPersonResponsibleInvalidFeedback">
@@ -94,15 +93,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Consultant Name"
           type="text"
           v-model="consultantNameInput"
-          :errors="errors['consultant_name']"
-          :loaded="fieldsLoaded['consultant_name']"/>
+          :errors="errors['consultant_name']"/>
         <form-input
           id="consultantCompany"
           label="Consultant Company"
           type="text"
           v-model="consultantCompanyInput"
-          :errors="errors['consultant_company']"
-          :loaded="fieldsLoaded['consultant_company']"/>
+          :errors="errors['consultant_company']"/>
       </responsive-grid>
     </form-subsection>
 </template>
@@ -130,11 +127,6 @@ export default {
       isInput: false
     },
     errors: {
-      type: Object,
-      default: () => ({}),
-      inInput: true
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({}),
       inInput: true

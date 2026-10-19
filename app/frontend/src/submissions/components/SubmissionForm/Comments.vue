@@ -92,10 +92,6 @@ export default {
       type: Object,
       default: () => ({})
     },
-    fieldsLoaded: {
-      type: Object,
-      default: () => ({})
-    },
     id: {
       type: String,
       isInput: false

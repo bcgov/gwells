@@ -23,8 +23,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="development_method_code"
         v-model="developmentMethodInput"
-        :errors="errors['development_method']"
-        :loaded="fieldsLoaded['development_method']"/>
+        :errors="errors['development_method']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="2">
       <form-input
@@ -32,16 +31,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Development Hours"
         type="number"
         v-model="developmentHoursInput"
-        :errors="errors['development_hours']"
-        :loaded="fieldsLoaded['development_hours']"/>
+        :errors="errors['development_hours']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="10" :lg="6">
       <form-input
         id="developmentNotes"
         label="Development Notes"
         v-model="developmentNotesInput"
-        :errors="errors['development_notes']"
-        :loaded="fieldsLoaded['development_notes']"/>
+        :errors="errors['development_notes']"/>
     </responsive-grid>
   </form-subsection>
 </template>
@@ -60,10 +57,6 @@ export default {
     developmentHours: String,
     developmentNotes: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

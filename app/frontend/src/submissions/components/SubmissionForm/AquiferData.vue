@@ -86,10 +86,6 @@ export default {
       type: Object,
       default: () => ({})
     },
-    fieldsLoaded: {
-      type: Object,
-      default: () => ({})
-    },
     isStaffEdit: {
       type: Boolean,
       isInput: false
