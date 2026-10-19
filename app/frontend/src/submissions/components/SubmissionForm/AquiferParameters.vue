@@ -33,8 +33,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="date"
                     placeholder="YYYY-MM-DD"
                     v-model="aquiferParameter.start_date_pumping_test"
-                    :errors="getAquiferParametersError(index).start_date_pumping_test"
-                    :loaded="getFieldsLoaded(index).start_date_pumping_test"/>
+                    :errors="getAquiferParametersError(index).start_date_pumping_test"/>
                 </td>
                 <td>
                   <form-input
@@ -46,8 +45,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     placeholder="Select Testing Description"
                     text-field="description"
                     value-field="pumping_test_description_code"
-                    :errors="errors['pumping_test_description']"
-                    :loaded="fieldsLoaded['pumping_test_description']"/>
+                    :errors="errors['pumping_test_description']"/>
                 </td>
                 <td>
                   <form-input
@@ -56,7 +54,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="number"
                     v-model="aquiferParameter.test_duration"
                     :errors="getAquiferParametersError(index).test_duration"
-                    :loaded="getFieldsLoaded(index).test_duration"
                     :min="1"/>
                 </td>
                 <td>
@@ -69,8 +66,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     placeholder="Select Boundary effect"
                     text-field="description"
                     value-field="boundary_effect_code"
-                    :errors="errors['boundary_effect']"
-                    :loaded="fieldsLoaded['boundary_effect']"/>
+                    :errors="errors['boundary_effect']"/>
                 </td>
               </tr>
               <tr>
@@ -92,8 +88,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     placeholder="Select Analysis Method"
                     text-field="description"
                     value-field="analysis_method_code"
-                    :errors="errors['analysis_method_code']"
-                    :loaded="fieldsLoaded['analysis_method_code']"/>
+                    :errors="errors['analysis_method_code']"/>
                 </td>
                 <td>
                   <form-input
@@ -102,8 +97,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="number"
                     :value="removeTrailingZeros(aquiferParameter.transmissivity)"
                     @input="aquiferParameter.transmissivity = $event"
-                    :errors="getAquiferParametersError(index).transmissivity"
-                    :loaded="getFieldsLoaded(index).transmissivity"/>
+                    :errors="getAquiferParametersError(index).transmissivity"/>
                 </td>
                 <td>
                   <form-input
@@ -112,8 +106,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="number"
                     :value="removeTrailingZeros(aquiferParameter.hydraulic_conductivity)"
                     @input="aquiferParameter.hydraulic_conductivity = $event"
-                    :errors="getAquiferParametersError(index).hydraulic_conductivity"
-                    :loaded="getFieldsLoaded(index).hydraulic_conductivity"/>
+                    :errors="getAquiferParametersError(index).hydraulic_conductivity"/>
                 </td>
                 <td>
                   <form-input
@@ -122,8 +115,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     type="number"
                     :value="removeTrailingZeros(aquiferParameter.storativity)"
                     @input="aquiferParameter.storativity = $event"
-                    :errors="getAquiferParametersError(index).storativity"
-                    :loaded="getFieldsLoaded(index).storativity"/>
+                    :errors="getAquiferParametersError(index).storativity"/>
                 </td>
                 <td>
                   <form-input
@@ -131,8 +123,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="'aquiferParameter_specificYield_' + index"
                     type="number"
                     v-model="aquiferParameter.specific_yield"
-                    :errors="getAquiferParametersError(index).specific_yield"
-                    :loaded="getFieldsLoaded(index).specific_yield"/>
+                    :errors="getAquiferParametersError(index).specific_yield"/>
                 </td>
                 <td>
                   <form-input
@@ -140,8 +131,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="'aquiferParameter_specificCapacity_' + index"
                     type="number"
                     v-model="aquiferParameter.specific_capacity"
-                    :errors="getAquiferParametersError(index).specific_capacity"
-                    :loaded="getFieldsLoaded(index).specific_capacity"/>
+                    :errors="getAquiferParametersError(index).specific_capacity"/>
                 </td>
               </tr>
               <tr>
@@ -155,8 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="'aquiferParameter_comments_' + index"
                     type="text"
                     v-model="aquiferParameter.comments"
-                    :errors="getAquiferParametersError(index).comments"
-                    :loaded="getFieldsLoaded(index).comments"/>
+                    :errors="getAquiferParametersError(index).comments"/>
                 </td>
               </tr>
               <tr>
@@ -192,10 +181,6 @@ export default {
   props: {
     aquiferParameters: Array,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },
@@ -263,12 +248,6 @@ export default {
     getAquiferParametersError (index) {
       if (this.errors && 'aquifer_parameters_set' in this.errors && index in this.errors['aquifer_parameters_set']) {
         return this.errors['aquifer_parameters_set'][index]
-      }
-      return {}
-    },
-    getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'aquifer_parameters_set' in this.fieldsLoaded && index in this.fieldsLoaded['aquifer_parameters_set']) {
-        return this.fieldsLoaded['aquifer_parameters_set'][index]
       }
       return {}
     },

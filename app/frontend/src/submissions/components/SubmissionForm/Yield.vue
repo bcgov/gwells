@@ -45,8 +45,8 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="ft (btoc)"/>
       <div class="flex flex-col form-group">
         <label for="hydroFracturingPerformed">Hydro-fracturing Performed</label>
-        <RadioButtonGroup 
-          class="mt-1" 
+        <RadioButtonGroup
+          class="mt-1"
           v-model="hydroFracturingPerformedInput"
           id="hydroFracturingPerformed"
           name="hydroFracturingPerformed">
@@ -116,10 +116,6 @@ export default {
     recommendedPumpDepth: String,
     recommendedPumpRate: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

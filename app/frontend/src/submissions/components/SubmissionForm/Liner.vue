@@ -23,8 +23,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         value-field="code"
         placeholder="Select material"
-        :errors="errors['liner_material']"
-        :loaded="fieldsLoaded['liner_material']"/>
+        :errors="errors['liner_material']"/>
     </responsive-grid>
     <responsive-grid :cols="6" :md="6">
       <form-input
@@ -33,34 +32,30 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="inches"
         type="number"
         v-model.number="linerDiameterInput"
-        :errors="errors['liner_diameter']"
-        :loaded="fieldsLoaded['liner_diameter']"/>
+        :errors="errors['liner_diameter']"/>
       <form-input
         id="linerThickness"
         label="Liner Thickness"
         hint="inches"
         type="number"
         v-model.number="linerThicknessInput"
-        :errors="errors['liner_thickness']"
-        :loaded="fieldsLoaded['liner_thickness']"/>
+        :errors="errors['liner_thickness']"/>
       <form-input
         id="linerFrom"
         label="Liner From"
         hint="ft (bgl)"
         type="number"
         v-model.number="linerFromInput"
-        :errors="errors['liner_from']"
-        :loaded="fieldsLoaded['liner_from']"/>
+        :errors="errors['liner_from']"/>
       <form-input
         id="linerTo"
         label="Liner To"
         hint="ft (bgl)"
         type="number"
         v-model.number="linerToInput"
-        :errors="errors['liner_to']"
-        :loaded="fieldsLoaded['liner_to']"/>
+        :errors="errors['liner_to']"/>
     </responsive-grid>
-    <div class="flex">>Liner Perforations</div>
+    <div class="flex">Liner Perforations</div>
     <div class="grid grid-cols-2">
       <div class="md:col-span-1">
         <table class="table table-sm no-border">
@@ -77,8 +72,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   class="mb-0"
                   v-model="liner.start"
-                  :errors="getLinerPerforationError(index).start"
-                  :loaded="getFieldsLoaded(index).start"/>
+                  :errors="getLinerPerforationError(index).start"/>
               </td>
               <td class="pb-0 pt-1">
                 <form-input
@@ -86,8 +80,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   class="mb-0"
                   v-model="liner.end"
-                  :errors="getLinerPerforationError(index).end"
-                  :loaded="getFieldsLoaded(index).end"/>
+                  :errors="getLinerPerforationError(index).end"/>
               </td>
               <td class="py-0">
                 <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeLinerPerfRowBtn${index}`" @click="removeRowIfOk(index)" class="mt-2"/>
@@ -132,11 +125,6 @@ export default {
       default: () => ({}),
       isInput: true
     },
-    fieldsLoaded: {
-      type: Object,
-      default: () => ({}),
-      isInput: true
-    },
     id: {
       type: String,
       isInput: false
@@ -172,12 +160,6 @@ export default {
     getLinerPerforationError (index) {
       if (this.errors && 'linerperforation_set' in this.errors && index in this.errors['linerperforation_set']) {
         return this.errors['linerperforation_set'][index]
-      }
-      return {}
-    },
-    getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'linerperforation_set' in this.fieldsLoaded && index in this.fieldsLoaded['linerperforation_set']) {
-        return this.fieldsLoaded['linerperforation_set'][index]
       }
       return {}
     },

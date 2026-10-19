@@ -20,16 +20,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         v-model="finishedWellDepthInput"
         hint="feet (below ground level)"
-        :errors="errors['finished_well_depth']"
-        :loaded="fieldsLoaded['finished_well_depth']"/>
+        :errors="errors['finished_well_depth']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
         id="decommissionReason"
         label="Reason for Well Decommission"
         v-model="decommissionReasonInput"
-        :errors="errors['decommission_reason']"
-        :loaded="fieldsLoaded['decommission_reason']"/>
+        :errors="errors['decommission_reason']"/>
       <div class="flex flex-col form-group">
         <label>Decommission Method</label>
         <RadioButtonGroup id="decommissionMethodRadio" class="mt-1" v-model="decommissionMethodInput">
@@ -45,22 +43,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="sealantMaterial"
         label="Sealant Material"
         v-model="sealantMaterialInput"
-        :errors="errors['decommission_sealant_material']"
-        :loaded="fieldsLoaded['decommission_sealant_material']"/>
+        :errors="errors['decommission_sealant_material']"/>
       <form-input
         id="backfillMaterial"
         label="Backfill Material"
         v-model="backfillMaterialInput"
-        :errors="errors['decommission_backfill_material']"
-        :loaded="fieldsLoaded['decommission_backfill_material']"/>
+        :errors="errors['decommission_backfill_material']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :lg="8">
       <form-input
         id="decommissionDetails"
         label="Decommission Details"
         v-model="decommissionDetailsInput"
-        :errors="errors['decommission_details']"
-        :loaded="fieldsLoaded['decommission_details']"/>
+        :errors="errors['decommission_details']"/>
     </responsive-grid>
   </form-subsection>
 </template>
@@ -82,10 +77,6 @@ export default {
     backfillMaterial: String,
     decommissionDetails: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

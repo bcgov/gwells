@@ -20,8 +20,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="ft (asl)"
         v-model.number="groundElevationInput"
         type="number"
-        :errors="errors['ground_elevation']"
-        :loaded="fieldsLoaded['ground_elevation']"/>
+        :errors="errors['ground_elevation']"/>
       <form-input
         select
         id="groundElevationMethod"
@@ -31,8 +30,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         placeholder="Select Method"
         :options="method_codes()"
-        :errors="errors['ground_elevation_method']"
-        :loaded="fieldsLoaded['ground_elevation_method']"/>
+        :errors="errors['ground_elevation_method']"/>
       <form-input
         id="drillingMethod"
         :label="drillingMethodsLabel"
@@ -42,8 +40,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         hint="Select one or more drilling methods."
         v-model="drillingMethodInput"
-        :errors="errors['drilling_methods']"
-        :loaded="fieldsLoaded['drilling_methods']"/>
+        :errors="errors['drilling_methods']"/>
       <form-input
         select
         id="wellOrientationStatus"
@@ -53,8 +50,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         placeholder="Select Orientation"
         :options="codes?.well_orientation_codes"
-        :errors="errors['well_orientation_status']"
-        :loaded="fieldsLoaded['well_orientation_status']"/>
+        :errors="errors['well_orientation_status']"/>
     </responsive-grid>
   </form-subsection>
 </template>
@@ -77,10 +73,6 @@ export default {
     wellOrientationStatus: null,
     drillingMethodsLabel: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

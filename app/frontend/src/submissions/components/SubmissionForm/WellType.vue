@@ -18,7 +18,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="wellTagNumberStaff"
           label="Well Tag Number"
           type="text"
-          :value="$route.params.id"
+          :placeholder= "$route.params.id"
           disabled/>
         <form-input
           select
@@ -29,7 +29,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Well Status"
           placeholder="Select status"
           :errors="errors['well_status']"
-          :loaded="fieldsLoaded['well_status']"
           id="wellStatusCodeInput"/>
       </responsive-grid>
       <responsive-grid :cols="12" :md="4">
@@ -75,7 +74,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Intended Water Use *"
           placeholder="Select intended use"
           :errors="errors['intended_water_use']"
-          :loaded="fieldsLoaded['intended_water_use']"
           :disabled="intendedWaterUseDisabled"
           id="intendedWaterUse"/>
       </responsive-grid>
@@ -118,8 +116,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :label="wellIdentificationPlateNumberLabel"
             type="number"
             v-model="idPlateNumberInput"
-            :errors="errors['identification_plate_number']"
-            :loaded="fieldsLoaded['identification_plate_number']"/>
+            :errors="errors['identification_plate_number']"/>
         </div>
         <div class="col-span-12 md:col-span-4">
           <form-input
@@ -127,8 +124,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             :label="wellIdentificationPlateAttachedLabel"
             type="text"
             v-model="wellPlateAttachedInput"
-            :errors="errors['well_identification_plate_attached']"
-            :loaded="fieldsLoaded['well_identification_plate_attached']"/>
+            :errors="errors['well_identification_plate_attached']"/>
         </div>
         <div class="col-span-12 md:col-span-4" v-if="isStaffEdit">
           <form-input
@@ -136,8 +132,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             label="Identification Plate Attached By"
             type="text"
             v-model="idPlateAttachedByInput"
-            :errors="errors['id_plate_attached_by']"
-            :loaded="fieldsLoaded['id_plate_attached_by']"/>
+            :errors="errors['id_plate_attached_by']"/>
         </div>
       </div>
       <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
@@ -146,15 +141,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Water Supply System Name"
           type="text"
           v-model="waterSupplySystemInput"
-          :errors="errors['water_supply_system_name']"
-          :loaded="fieldsLoaded['water_supply_system_name']"/>
+          :errors="errors['water_supply_system_name']"/>
         <form-input
           id="waterSupplyWell"
           label="Water Supply Well Name"
           type="text"
           v-model="waterSupplyWellInput"
-          :errors="errors['water_supply_system_well_name']"
-          :loaded="fieldsLoaded['water_supply_system_well_name']"/>
+          :errors="errors['water_supply_system_well_name']"/>
       </responsive-grid>
       <responsive-grid v-if="!isStaffEdit" :cols="12" :md="6">
         <form-input
@@ -164,7 +157,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           placeholder="YYYY-MM-DD"
           v-model="workStartDateInput"
           :errors="errors.work_start_date"
-          :loaded="fieldsLoaded['work_start_date']"
           @input="handleDateInput($event, 'workStartDate')"/>
         <form-input
           id="workEndDateInput"
@@ -173,7 +165,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           placeholder="YYYY-MM-DD"
           v-model="workEndDateInput"
           :errors="errors.work_end_date"
-          :loaded="fieldsLoaded['work_end_date']"
           @input="handleDateInput($event, 'workEndDate')"/>
       </responsive-grid>
     </form-subsection>
@@ -213,10 +204,6 @@ export default {
     wellIdentificationPlateNumberLabel: String,
     wellIdentificationPlateAttachedLabel: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

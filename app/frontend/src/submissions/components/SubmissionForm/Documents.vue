@@ -79,6 +79,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     @update:modelValue="setFileName(index)"
                     v-model="attachment.document_code"
                     :options="WELL_TAGS"
+                    optionValue="value"
+                    optionLabel="label"
+                    :placeholder="'Select Document Type'"
                     :invalid="getAttachmentError(index).document_code ? true : false"/>
                   <div :id="`attachmentCodeInvalidFeedback${index}`">
                     <div v-for="(error, e_index) in getAttachmentError(index).document_code" class="mt-1 text-sm text-red-600" :key="`Document Type input error ${e_index}`">
@@ -145,10 +148,6 @@ export default {
   props: {
     wellTagNumber: null,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },
@@ -328,11 +327,6 @@ export default {
     getAttachmentError (index) {
       return this.errors && 'attachment_set' in this.errors && index in this.errors['attachment_set']
         ? this.errors['attachment_set'][index]
-        : {}
-    },
-    getFieldsLoaded (index) {
-      return this.fieldsLoaded && 'attachment_set' in this.fieldsLoaded && index in this.fieldsLoaded['attachment_set']
-        ? this.fieldsLoaded['attachment_set'][index]
         : {}
     },
     rowHasValues (row) {

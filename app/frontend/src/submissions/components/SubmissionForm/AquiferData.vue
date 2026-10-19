@@ -47,7 +47,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="aquiferLithologyInput"
           optionValue="aquifer_lithology_code"
           :options="codes?.aquifer_lithology_codes"
-          :loading="!fieldsLoaded['aquifer_lithology']"
           optionLabel="description"
           placeholder="Select Lithology"/>
       </div>
@@ -84,10 +83,6 @@ export default {
       isInput: false
     },
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

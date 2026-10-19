@@ -24,22 +24,19 @@ Licensed under the Apache License, Version 2.0 (the "License");
           placeholder="Select material"
           text-field="description"
           value-field="surface_seal_material_code"
-          :errors="errors['surface_seal_material']"
-          :loaded="fieldsLoaded['surface_seal_material']"/>
+          :errors="errors['surface_seal_material']"/>
         <form-input
           label="Surface Seal Depth (ft)"
           id="surfaceSealDepth"
           type="number"
           v-model="surfaceSealDepthInput"
-          :errors="errors['surface_seal_depth']"
-          :loaded="fieldsLoaded['surface_seal_depth']"/>
+          :errors="errors['surface_seal_depth']"/>
         <form-input
           label="Surface Seal Thickness (in)"
           id="surfaceSealThickness"
           type="number"
           v-model="surfaceSealThicknessInput"
-          :errors="errors['surface_seal_thickness']"
-          :loaded="fieldsLoaded['surface_seal_thickness']"/>
+          :errors="errors['surface_seal_thickness']"/>
       </responsive-grid>
       <responsive-grid :cols="12" :sm="6" :md="4">
         <form-input
@@ -51,8 +48,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           text-field="description"
           value-field="surface_seal_method_code"
           v-model="surfaceSealMethodInput"
-          :errors="errors['surface_seal_method']"
-          :loaded="fieldsLoaded['surface_seal_method']"/>
+          :errors="errors['surface_seal_method']"/>
       </responsive-grid>
     </form-subsection>
     <fieldset>
@@ -62,15 +58,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
           label="Backfill Material Above Surface Seal"
           id="backfillAboveSurfaceSeal"
           v-model="backfillAboveSurfaceSealInput"
-          :errors="errors['backfill_type']"
-          :loaded="fieldsLoaded['backfill_type']"/>
+          :errors="errors['backfill_type']"/>
         <form-input
           label="Backfill Depth (ft)"
           id="backfillDepth"
           type="number"
           v-model="backfillDepthInput"
-          :errors="errors['backfill_depth']"
-          :loaded="fieldsLoaded['backfill_depth']"/>
+          :errors="errors['backfill_depth']"/>
       </responsive-grid>
     </fieldset>
   </div>
@@ -93,10 +87,6 @@ export default {
     backfillAboveSurfaceSeal: String,
     backfillDepth: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

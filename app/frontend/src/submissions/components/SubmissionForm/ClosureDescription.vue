@@ -41,8 +41,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :id="`closureFrom${index}`"
                   type="number"
                   v-model="item.start"
-                  :errors="getClosureError(index).start"
-                  :loaded="getFieldsLoaded(index).start"/>
+                  :errors="getClosureError(index).start"/>
               </td>
               <td class="input-width-small">
                 <form-input
@@ -50,8 +49,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   :id="`closureTo${index}`"
                   v-model="item.end"
                   type="number"
-                  :errors="getClosureError(index).end"
-                  :loaded="getFieldsLoaded(index).end"/>
+                  :errors="getClosureError(index).end"/>
               </td>
               <td>
                 <form-input
@@ -64,16 +62,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   placeholder="Select material"
                   value="Select material"
                   v-model="item.material"
-                  :errors="getClosureError(index).material"
-                  :loaded="getFieldsLoaded(index).material"/>
+                  :errors="getClosureError(index).material"/>
               </td>
               <td>
                 <form-input
                   group-class="mt-1 mb-0"
                   :id="`closureObservations${index}`"
                   v-model="item.observations"
-                  :errors="getClosureError(index).observations"
-                  :loaded="getFieldsLoaded(index).observations"/>
+                  :errors="getClosureError(index).observations"/>
               </td>
               <td class="pt-1 py-0">
                 <Button label="Remove" icon="fa fa-minus-square-o" size="small" :id="`removeClosureDescriptionRowBtn${index}`" @click="removeRowIfOk(item)" class="mt-2 float-right"/>
@@ -110,11 +106,6 @@ export default {
     errors: {
       type: Object,
       default: () => ({})
-    },
-    fieldsLoaded: Object,
-    id: {
-      type: String,
-      isInput: false
     },
     isStaffEdit: {
       type: Boolean,
@@ -181,12 +172,6 @@ export default {
     getClosureError (index) {
       if (this.errors && 'decommission_description_set' in this.errors && index in this.errors['decommission_description_set']) {
         return this.errors['decommission_description_set'][index]
-      }
-      return {}
-    },
-    getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'decommission_description_set' in this.fieldsLoaded && index in this.fieldsLoaded['decommission_description_set']) {
-        return this.fieldsLoaded['decommission_description_set'][index]
       }
       return {}
     },

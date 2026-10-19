@@ -18,15 +18,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="obsWellNumber"
         label="Observation Well Number"
         v-model="obsWellNumberInput"
-        :errors="errors['observation_well_number']"
-        :loaded="fieldsLoaded['observation_well_number']"/>
+        :errors="errors['observation_well_number']"/>
       <form-input
         id="obsWellStatus"
         label="Observation Well Status"
         select
         :options="codes?.observation_well_status"
         :errors="errors['observation_well_status']"
-        :loaded="fieldsLoaded['observation_well_status']"
         text-field="obs_well_status_code"
         value-field="obs_well_status_code"
         placeholder="Select status"
@@ -50,10 +48,6 @@ export default {
     obsWellStatus: null,
     obsWellNumber: null,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

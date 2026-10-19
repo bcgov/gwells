@@ -44,8 +44,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 type="number"
                 v-model="casing.start"
                 :disabled="casing.length_not_required"
-                :errors="getCasingError(index).start"
-                :loaded="getFieldsLoaded(index).start"/>
+                :errors="getCasingError(index).start"/>
             </td>
             <td>
               <form-input
@@ -54,8 +53,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 type="number"
                 v-model="casing.end"
                 :disabled="casing.length_not_required"
-                :errors="getCasingError(index).end"
-                :loaded="getFieldsLoaded(index).end"/>
+                :errors="getCasingError(index).end"/>
             </td>
             <td>
               <div class="flex flex-col gap-2 mt-1 mb-0" :aria-describedby="`casingCodeInvalidFeedback${index}`">
@@ -97,8 +95,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingDiameter_' + index"
                 type="number"
                 v-model="casing.diameter"
-                :errors="getCasingError(index).diameter"
-                :loaded="getFieldsLoaded(index).diameter"/>
+                :errors="getCasingError(index).diameter"/>
             </td>
             <td>
               <form-input
@@ -106,8 +103,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 :id="'casingWallThickness_' + index"
                 type="number"
                 v-model="casing.wall_thickness"
-                :errors="getCasingError(index).wall_thickness"
-                :loaded="getFieldsLoaded(index).wall_thickness"/>
+                :errors="getCasingError(index).wall_thickness"/>
             </td>
             <td>
               <Select
@@ -117,7 +113,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
                 optionValue="drive_shoe_code"
                 optionLabel="drive_shoe_code"
                 :options="codes?.drive_shoe_codes"
-                :loading="!fieldsLoaded['drive_shoe_status']"
                 placeholder="Select drive shoe"/>
             </td>
             <td class="pt-1 py-0">
@@ -151,10 +146,6 @@ export default {
   props: {
     casings: Array,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },
@@ -217,12 +208,6 @@ export default {
     getCasingError (index) {
       if (this.errors && 'casing_set' in this.errors && index in this.errors['casing_set']) {
         return this.errors['casing_set'][index]
-      }
-      return {}
-    },
-    getFieldsLoaded (index) {
-      if (this.fieldsLoaded && 'casing_set' in this.fieldsLoaded && index in this.fieldsLoaded['casing_set']) {
-        return this.fieldsLoaded['casing_set'][index]
       }
       return {}
     },

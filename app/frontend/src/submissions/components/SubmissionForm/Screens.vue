@@ -73,8 +73,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="screenInformation"
         label="Screen Information"
         v-model="screenInformationInput"
-        :errors="errors['screen_information']"
-        :loaded="fieldsLoaded['screen_information']"/>
+        :errors="errors['screen_information']"/>
     </responsive-grid>
     <p class="mt-4 mb-2">Screen Details</p>
     <div class="table-responsive">
@@ -110,8 +109,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   aria-label="Depth from (feet)"
                   v-model="screensData[index].start"
-                  :errors="getScreenError(index).start"
-                  :loaded="getScreenLoaded(index).start"/>
+                  :errors="getScreenError(index).start"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -120,8 +118,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   aria-label="Depth to (feet)"
                   v-model="screensData[index].end"
-                  :errors="getScreenError(index).end"
-                  :loaded="getScreenLoaded(index).end"/>
+                  :errors="getScreenError(index).end"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -130,8 +127,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   type="number"
                   aria-label="Diameter (inches)"
                   v-model="screensData[index].diameter"
-                  :errors="getScreenError(index).diameter"
-                  :loaded="getScreenLoaded(index).diameter"/>
+                  :errors="getScreenError(index).diameter"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -144,8 +140,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   text-field="description"
                   value-field="screen_assembly_type_code"
                   placeholder="Select type"
-                  :errors="getScreenError(index).assembly_type"
-                  :loaded="getScreenLoaded(index).assembly_type"/>
+                  :errors="getScreenError(index).assembly_type"/>
               </td>
               <td class="input-width-small py-0">
                 <form-input
@@ -155,8 +150,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                   aria-label="Screen Slot Size"
                   type="number"
                   v-model="screensData[index].slot_size"
-                  :errors="getScreenError(index).slot_size"
-                  :loaded="getScreenLoaded(index).slot_size"/>
+                  :errors="getScreenError(index).slot_size"/>
               </td>
               <td class="py-0">
                 <Button label="Remove" icon="fa fa-minus-square-o" size="small" @click="removeRowIfOk(index)" :id="`removeScreenRowButton${index}`" class="mt-2 float-right"/>
@@ -205,10 +199,6 @@ export default {
       type: Object,
       default: () => ({})
     },
-    fieldsLoaded: {
-      type: Object,
-      default: () => ({})
-    },
     id: {
       type: String,
       isInput: false
@@ -234,9 +224,6 @@ export default {
       rowIndexToRemove: null,
       screensData: []
     }
-  },
-  created () {
-    this.submissionStore = useSubmissionStore()
   },
   computed: {
     codes () {
@@ -286,12 +273,6 @@ export default {
       }
       return {}
     },
-    getScreenLoaded (index) {
-      if (this.fieldsLoaded && 'screen_set' in this.fieldsLoaded && index in this.fieldsLoaded['screen_set']) {
-        return this.fieldsLoaded['screen_set'][index]
-      }
-      return {}
-    },
     rowHasValues (row) {
       let keys = Object.keys(row)
       if (keys.length === 0) return false
@@ -307,6 +288,7 @@ export default {
     }
   },
   created () {
+    this.submissionStore = useSubmissionStore()
     // when component created, add an initial row of screens
     if (!this.screens.length) {
       for (let i = 0; i < 3; i++) {

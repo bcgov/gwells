@@ -85,7 +85,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
       id="wellPublicationStatus"
       v-model:wellPublicationStatusCode="form.well_publication_status"
       :errors="errors"
-      :fieldsLoaded="fieldsLoaded"
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"
@@ -115,14 +114,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
       v-model:workStartDate="form.work_start_date"
       v-model:workEndDate="form.work_end_date"
       :errors="errors"
-      :fieldsLoaded="fieldsLoaded"
       :isStaffEdit="isStaffEdit"
       :saveDisabled="editSaveDisabled"
       v-on:save="$emit('submit_edit')"
       :handleDateInput="handleDateInput"
     />
 
-      <!-- Type of well -->
+      <!-- Well work dates -->
       <work-dates class="my-12"
        v-if="showSection('workDates')"
        id="workDates"
@@ -135,7 +133,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
        v-model:workStartDate="form.work_start_date"
        v-model:workEndDate="form.work_end_date"
        :errors="errors"
-       :fieldsLoaded="fieldsLoaded"
        :isStaffEdit="isStaffEdit"
        :saveDisabled="editSaveDisabled"
        v-on:save="$emit('submit_edit')"
@@ -152,7 +149,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:companyOfPersonResponsible="form.company_of_person_responsible"
         v-model:drillerSameAsPersonResponsible="form.meta.drillerSameAsPersonResponsible"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -170,7 +166,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:ownerEmail="form.owner_email"
         v-model:ownerTel="form.owner_tel"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -251,7 +246,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="casings"
         v-model:casings="form.casing_set"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -285,7 +279,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:linerTo="form.liner_to"
         v-model:linerPerforations="form.linerperforation_set"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -305,7 +298,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:screens="form.screen_set"
         v-model:screenInformation="form.screen_information"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -415,7 +407,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:obsWellNumber="form.observation_well_number"
         v-model:obsWellStatus="form.observation_well_status"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -486,7 +477,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         id="aquiferParameters"
         v-model:aquiferParameters="form.aquifer_parameters_set"
         :errors="errors"
-        :fieldsLoaded="fieldsLoaded"
         :isStaffEdit="isStaffEdit"
         :saveDisabled="editSaveDisabled"
         v-on:save="$emit('submit_edit')"
@@ -682,7 +672,6 @@ export default {
       // these components to be re-created, allowing the created() and mounted() hooks to re-run.
       componentUpdateTrigger: 0,
       step: 1,
-      fieldsLoaded: {},
       formStepDescriptions: {
         'activityType': 'Type of work',
         'aquiferData': 'Well testing and aquifer details',
@@ -810,9 +799,7 @@ export default {
         setTimeout(() => {
           const parsedData = JSON.parse(storedData)
           this.form = Object.assign(this.form, parsedData)
-          this.fieldsLoaded = Object.assign(this.fieldsLoaded, parsedData)
           setTimeout(() => { this.loadFormSuccess = true }, 0)
-          setTimeout(() => { this.fieldsLoaded = {} }, 0)
           setTimeout(() => { this.loadFormSuccess = false }, 1000)
         }, 0)
       }

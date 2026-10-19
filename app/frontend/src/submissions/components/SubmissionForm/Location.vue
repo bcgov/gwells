@@ -29,7 +29,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-on:focus="showList(true)"
           v-on:blur="showList(false)"
           :errors="errors['street_address']"
-          :loaded="fieldsLoaded['street_address']"
           :disabled="sameAsOwnerAddress"/>
         <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="location-address-suggestions-list">
@@ -50,7 +49,6 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="text"
         v-model="cityInput"
         :errors="errors['city']"
-        :loaded="fieldsLoaded['city']"
         :disabled="sameAsOwnerAddress"/>
     </responsive-grid>
     <div class="flex flex-col">
@@ -74,50 +72,43 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Lot"
         type="text"
         v-model="legalLotInput"
-        :errors="errors['legal_lot']"
-        :loaded="fieldsLoaded['legal_lot']"/>
+        :errors="errors['legal_lot']"/>
       <form-input
         id="legalPlan"
         label="Plan"
         type="text"
         v-model="legalPlanInput"
-        :errors="errors['legal_plan']"
-        :loaded="fieldsLoaded['legal_plan']"/>
+        :errors="errors['legal_plan']"/>
       <form-input
         id="legalDistrictLot"
         label="District Lot"
         type="text"
         v-model="legalDistrictLotInput"
-        :errors="errors['legal_district_lot']"
-        :loaded="fieldsLoaded['legal_district_lot']"/>
+        :errors="errors['legal_district_lot']"/>
       <form-input
         id="legalBlock"
         label="Block"
         type="text"
         v-model="legalBlockInput"
-        :errors="errors['legal_block']"
-        :loaded="fieldsLoaded['legal_block']"/>
+        :errors="errors['legal_block']"/>
       <form-input
         id="legalSection"
         label="Section"
         type="text"
         v-model="legalSectionInput"
-        :errors="errors['legal_section']"
-        :loaded="fieldsLoaded['legal_section']"/>
+        :errors="errors['legal_section']"/>
       <form-input
         id="legalTownship"
         label="Township"
         type="text"
         v-model="legalTownshipInput"
-        :errors="errors['legal_township']"
-        :loaded="fieldsLoaded['legal_township']"/>
+        :errors="errors['legal_township']"/>
       <form-input
         id="legalRange"
         label="Range"
         type="text"
         v-model="legalRangeInput"
-        :errors="errors['legal_range']"
-        :loaded="fieldsLoaded['legal_range']"/>
+        :errors="errors['legal_range']"/>
       <form-input
         id="landDistrict"
         label="Land District"
@@ -126,8 +117,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="name"
         value-field="land_district_code"
         v-model="landDistrictInput"
-        :errors="errors['land_district']"
-        :loaded="fieldsLoaded['land_district']"/>
+        :errors="errors['land_district']"/>
     </responsive-grid>
     <div class="flex">
       <p class="mb-1">OR</p>
@@ -140,8 +130,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           type="text"
           hint="*Input a 9 digit number (including leading zeroes, if necessary)"
           v-model="legalPIDInput"
-          :errors="errors['legal_pid']"
-          :loaded="fieldsLoaded['legal_pid']"/>
+          :errors="errors['legal_pid']"/>
       </div>
     </div>
     <responsive-grid :cols="12" :md="8">
@@ -150,8 +139,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         label="Description of Well Location"
         type="text"
         v-model="wellLocationDescriptionInput"
-        :errors="errors['well_location_description']"
-        :loaded="fieldsLoaded['well_location_description']"/>
+        :errors="errors['well_location_description']"/>
     </responsive-grid>
 
     <!-- Error message when location not given -->
@@ -198,10 +186,6 @@ export default {
     legalPID: null,
     wellLocationDescription: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

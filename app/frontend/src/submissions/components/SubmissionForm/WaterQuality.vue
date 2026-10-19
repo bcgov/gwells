@@ -23,8 +23,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         text-field="description"
         hint="Select one or more characteristics."
         v-model="waterQualityCharacteristicsInput"
-        :errors="errors['water_quality_characteristics']"
-        :loaded="fieldsLoaded['water_quality_characteristics']"/>
+        :errors="errors['water_quality_characteristics']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="5" :lg="4">
       <form-input
@@ -36,24 +35,21 @@ Licensed under the Apache License, Version 2.0 (the "License");
         value-field="code"
         placeholder="Select colour"
         v-model="waterQualityColourInput"
-        :errors="errors['water_quality_colour']"
-        :loaded="fieldsLoaded['water_quality_colour']"/>
+        :errors="errors['water_quality_colour']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="5" :lg="4">
       <form-input
         id="waterQualityOdour"
         label="Water Quality Odour"
         v-model="waterQualityOdourInput"
-        :errors="errors['water_quality_odour']"
-        :loaded="fieldsLoaded['water_quality_odour']"/>
+        :errors="errors['water_quality_odour']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="5" :lg="4">
       <form-input
         id="emsID"
         label="Environmental Monitoring System (EMS) ID"
         v-model="emsIDInput"
-        :errors="errors['ems']"
-        :loaded="fieldsLoaded['ems']"/>
+        :errors="errors['ems']"/>
     </responsive-grid>
   </form-subsection>
 </template>
@@ -76,10 +72,6 @@ export default {
     waterQualityOdour: String,
     emsID: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

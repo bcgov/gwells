@@ -19,8 +19,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           id="ownerFullName"
           label="Well Owner Name *"
           v-model="ownerFullNameInput"
-          :errors="errors['owner_full_name']"
-          :loaded="fieldsLoaded['owner_full_name']"/>
+          :errors="errors['owner_full_name']"/>
       </div>
       <div class="col-span-12 md:col-span-6">
         <form-input
@@ -30,8 +29,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           @input="fetchAddressSuggestions"
           v-on:focus="showList(true)"
           v-on:blur="showList(false)"
-          :errors="errors['owner_mailing_address']"
-          :loaded="fieldsLoaded['owner_mailing_address']"/>
+          :errors="errors['owner_mailing_address']"/>
         <!-- Display the address suggestions -->
         <div v-if="addressSuggestions.length > 0" class="address-suggestions list-group list-group-flush border" id="owner-address-suggestions-list">
           <div v-for="(suggestion, index) in addressSuggestions" :key="index">
@@ -45,7 +43,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       </div>
     </div>
     <responsive-grid :cols="[12, 6, 6]" :md="4" :xl="[undefined, undefined, 3]">
-      <form-input id="ownerCity" label="City *" v-model="ownerCityInput" :errors="errors['owner_city']" :loaded="fieldsLoaded['owner_city']" required/>
+      <form-input id="ownerCity" label="City *" v-model="ownerCityInput" :errors="errors['owner_city']" required/>
       <div class="flex flex-col form-group" aria-describedby="ownerProvinceInvalidFeedback">
         <label for="ownerProvince">Province or State *</label>
         <Select
@@ -62,16 +60,15 @@ Licensed under the Apache License, Version 2.0 (the "License");
           </div>
         </div>
       </div>
-      <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']" :loaded="fieldsLoaded['owner_postal_code']"/>
+      <form-input id="ownerPostalCode" label="Postal Code *" v-model="ownerPostalCodeInput" :errors="errors['owner_postal_code']"/>
     </responsive-grid>
     <responsive-grid v-if="isStaffEdit" :cols="12" :md="6" :lg="4" :xl="[4, 3]">
-      <form-input id="ownerEmail" label="Email Address" v-model="ownerEmailInput" :errors="errors['owner_email']" :loaded="fieldsLoaded['owner_email']"/>
+      <form-input id="ownerEmail" label="Email Address" v-model="ownerEmailInput" :errors="errors['owner_email']"/>
       <form-input
         id="ownerTel"
         label="Telephone"
         v-model="ownerTelInput"
         :errors="errors['owner_tel']"
-        :loaded="fieldsLoaded['owner_tel']"
         :formatter="formatTel"
         lazy-formatter/>
     </responsive-grid>
@@ -101,10 +98,6 @@ export default {
       isInput: false
     },
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

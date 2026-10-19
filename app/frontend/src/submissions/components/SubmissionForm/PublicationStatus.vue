@@ -15,12 +15,11 @@ limitations under the License.
   <form-subsection title="Well Publication Status" :id="id" :isStaffEdit="isStaffEdit" :saveDisabled="saveDisabled">
     <responsive-grid v-if="isStaffEdit" :cols="12" :md="4">
       <Select
-        id="wellPublicationStatusCodeInput"
+        inputId="wellPublicationStatusCodeInput"
         v-model="wellPublicationStatusCodeInput"
         :options="codes?.well_publication_status_codes"
+        optionLabel="description"
         optionValue="well_publication_status_code"
-        optionLabel="well_publication_status_code"
-        :loading="!fieldsLoaded['well_publication_status']"
         placeholder="Select Publication Status"/>
     </responsive-grid>
   </form-subsection>
@@ -38,10 +37,6 @@ export default {
   props: {
     wellPublicationStatusCode: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },

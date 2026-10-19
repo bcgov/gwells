@@ -20,16 +20,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="totalDepthDrilledInput"
         type="number"
         hint="ft (bgl)"
-        :errors="errors['total_depth_drilled']"
-        :loaded="fieldsLoaded['total_depth_drilled']"/>
+        :errors="errors['total_depth_drilled']"/>
       <form-input
         id="finishedWellDepth"
         :label="finishedWellDepthLabel"
         v-model="finishedWellDepthInput"
         type="number"
         hint="ft (bgl)"
-        :errors="errors['finished_well_depth']"
-        :loaded="fieldsLoaded['finished_well_depth']"/>
+        :errors="errors['finished_well_depth']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -38,16 +36,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         type="number"
         v-model="finalCasingStickUpInput"
         hint="in"
-        :errors="errors['final_casing_stick_up']"
-        :loaded="fieldsLoaded['final_casing_stick_up']"/>
+        :errors="errors['final_casing_stick_up']"/>
       <form-input
         id="bedrockDepth"
         label="Depth to Bedrock"
         type="number"
         v-model="bedrockDepthInput"
         hint="ft (bgl)"
-        :errors="errors['depth_to_bedrock']"
-        :loaded="fieldsLoaded['depth_to_bedrock']"/>
+        :errors="errors['depth_to_bedrock']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -56,16 +52,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="staticWaterLevelInput"
         type="number"
         hint="ft (btoc)"
-        :errors="errors['static_water_level']"
-        :loaded="fieldsLoaded['static_water_level']"/>
+        :errors="errors['static_water_level']"/>
       <form-input
         id="wellYield"
         label="Estimated Well Yield"
         type="number"
         v-model="wellYieldInput"
         hint="USgpm"
-        :errors="errors['well_yield']"
-        :loaded="fieldsLoaded['well_yield']"/>
+        :errors="errors['well_yield']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <div class="flex flex-col form-group">
@@ -87,8 +81,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="artesianFlowInput"
         hint="USgpm"
         type="number"
-        :errors="errors['artesian_flow']"
-        :loaded="fieldsLoaded['artesian_flow']"/>
+        :errors="errors['artesian_flow']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
@@ -98,8 +91,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="artesianPressure.head"
         hint="ft (agl)"
         type="number"
-        :errors="errors['artesian_pressure_head']"
-        :loaded="fieldsLoaded['artesian_pressure_head']"/>
+        :errors="errors['artesian_pressure_head']"/>
       <form-input
         id="artesianPressurePSI"
         label="Artesian Pressure (PSI)"
@@ -107,16 +99,14 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model="artesianPressure.psi"
         hint="PSI"
         type="number"
-        :errors="errors['artesian_pressure']"
-        :loaded="fieldsLoaded['artesian_pressure']"/>
+        :errors="errors['artesian_pressure']"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="6" :lg="4">
       <form-input
         id="wellCapType"
         label="Well Cap Type"
         v-model="wellCapTypeInput"
-        :errors="errors['well_cap_type']"
-        :loaded="fieldsLoaded['well_cap_type']"/>
+        :errors="errors['well_cap_type']"/>
       <div class="flex flex-col form-group">
         <label for="wellDisinfectedStatusInput">Well Disinfected Status</label>
         <Select
@@ -124,8 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
           v-model="wellDisinfectedInput"
           optionValue="well_disinfected_code"
           optionLabel="well_disinfected_code"
-          :options="disinfected_codes()"
-          :loading="!fieldsLoaded['well_disinfected_status']"/>
+          :options="disinfected_codes()"/>
       </div>
     </responsive-grid>
   </form-subsection>
@@ -156,10 +145,6 @@ export default {
     finishedWellDepthLabel: String,
     wellDisinfected: null,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },
@@ -211,6 +196,11 @@ export default {
       this.updateArtesianPressure(null, this.artesianPressurePSI)
     }
   },
+  computed: {
+    codes () {
+      return this.submissionStore.codes
+    }
+  },
   methods: {
     disinfected_codes () { // make the unknown selection disabled for users
       if (this.codes != null && this.codes.well_disinfected_codes != null) {
@@ -260,11 +250,6 @@ export default {
         this.artesianPressurePSIInput = null
         this.artesianPressure.psi = null
       }
-    }
-  },
-  computed: {
-    codes () {
-      return this.submissionStore.codes
     }
   }
 }

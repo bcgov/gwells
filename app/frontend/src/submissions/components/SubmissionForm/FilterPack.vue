@@ -41,8 +41,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         value-field="filter_pack_material_code"
         v-model="filterPackMaterialInput"
         placeholder="Select material"
-        :errors="errors['filter_pack_material']"
-        :loaded="fieldsLoaded['filter_pack_material']"/>
+        :errors="errors['filter_pack_material']"/>
       <form-input
         id="filterPackMaterialSize"
         label="Filter Pack Material Size"
@@ -52,8 +51,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         value-field="filter_pack_material_size_code"
         v-model="filterPackMaterialSizeInput"
         placeholder="Select size"
-        :errors="errors['filter_pack_material_size']"
-        :loaded="fieldsLoaded['filter_pack_material_size']"/>
+        :errors="errors['filter_pack_material_size']"/>
     </responsive-grid>
   </form-subsection>
 </template>
@@ -75,10 +73,6 @@ export default {
     filterPackMaterial: String,
     filterPackMaterialSize: String,
     errors: {
-      type: Object,
-      default: () => ({})
-    },
-    fieldsLoaded: {
       type: Object,
       default: () => ({})
     },
