@@ -54,7 +54,7 @@
                 v-if="column.sortParam === 'latitude' || column.sortParam === 'longitude'"
                 class="py-1 px-0"
               ></div>
-              <!-- Only show the badge and popover if there is tooltip content -->
+              <!-- Only show the tooltip if there is tooltip content -->
               <i
                 v-if="TOOLTIP_TEXT.qaqc_table[column.id]"
                 :id="`${column.id}-tooltip`"
@@ -149,7 +149,6 @@
 </template>
 
 <script>
-import { Popover } from 'primevue'
 import { TOOLTIP_TEXT } from '@/common/constants.js'
 import QaQcFilters from '@/qaqc/components/QaQcFilters.vue'
 import QaQcExports from '@/qaqc/components/QaQcExports.vue'
@@ -162,7 +161,6 @@ export default {
   components: {
     'qaqc-filters': QaQcFilters,
     'qaqc-exports': QaQcExports,
-    Popover
   },
   data () {
     return {
@@ -367,13 +365,6 @@ export default {
       } else {
         return row.street_address
       }
-    },
-    // Show and hide popover
-    showPopover() {
-      this.$refs.op.show()
-    },
-    hidePopover() {
-      this.$refs.op.hide()
     }
   },
   watch: {

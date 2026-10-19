@@ -152,14 +152,10 @@ import ApiService from '../../../common/services/ApiService'
 import { TOOLTIP_TEXT } from '@/common/constants'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
-import { Popover } from 'primevue'
 
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
-  components: {
-    Popover
-  },
   props: {
     id: {
       type: String,
@@ -316,14 +312,6 @@ export default {
       if (document.getElementById('location-address-suggestions-list')) {
         document.getElementById('location-address-suggestions-list').style.display = show ? 'block' : 'none'
       }
-    },
-
-    // Show and hide popover
-    showPopover() {
-      this.$refs.op.show()
-    },
-    hidePopover() {
-      this.$refs.op.hide()
     }
   }
 }
