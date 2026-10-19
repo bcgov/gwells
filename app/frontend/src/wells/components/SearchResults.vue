@@ -50,8 +50,8 @@
                 :errors="resultErrors[column.param]"
                 :param-names="column.params"
                 :options="column.options || filterSelectOptions[column.id]"
-                :value-field="column.valueField"
-                :text-field="column.textField"
+                :option-value="column.valueField"
+                :option-label="column.textField"
                 :value="filterParams[column.id]"
                 @input="applyFilter(column, $event)" />
             </th>

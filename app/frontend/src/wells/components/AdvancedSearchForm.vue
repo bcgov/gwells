@@ -26,8 +26,8 @@
         :label="field.label"
         :errors="wellsStore.searchErrors[field.param]"
         :options="field.options || filterSelectOptions[field.id]"
-        :value-field="field.valueField"
-        :text-field="field.textField"
+        :option-value="field.valueField"
+        :option-label="field.textField"
         :any-value-checkbox="field.anyValueBoolean"
         v-model="filterParams[field.id]" />
     </div>
@@ -49,8 +49,8 @@
       :label="field.label"
       :errors="wellsStore.searchErrors[field.param]"
       :options="field.options || filterSelectOptions[field.id]"
-      :value-field="field.valueField"
-      :text-field="field.textField"
+      :option-value="field.valueField"
+      :option-label="field.textField"
       :any-value-checkbox="field.anyValueBoolean"
       v-model="filterParams[field.id]"
       @remove="removeSelectedFilter(field.id)"
