@@ -52,12 +52,6 @@ export default {
     exportFields () {
       return this.qaqcStore.resultColumns.filter(id => this.fieldData[id]).map(id => this.fieldData[id].param)
     },
-    csvExportUrl () {
-      return this.getExportUrl('csv')
-    },
-    excelExportUrl () {
-      return this.getExportUrl('xlsx')
-    },
     exportBaseUrl () {
       // Dynamically set the base URL based on the activeTable prop
       switch (this.qaqcStore.selectedTab) {

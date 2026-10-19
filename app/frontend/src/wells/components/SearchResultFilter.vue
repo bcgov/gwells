@@ -41,9 +41,11 @@
         :aria-describedby="`${id}InvalidFeedback`"
         :disabled="isActive"
         :options="selectOptions"
-        :optionValue="valueField"
-        :optionLabel="textField"
+        :optionValue="optionValue"
+        :optionLabel="optionLabel"
         v-model="localValue[paramNames[0]]"
+        :placeholder="placeholder || 'Filter...'"
+        showClear
         @keyup.enter="applyFilter()" />
       <div :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" class="mt-1 text-sm text-red-600" :key="`${id}Input error ${index}`">
@@ -114,11 +116,11 @@ export default {
       default: 'text'
     },
     options: Array,
-    valueField: {
+    optionValue: {
       type: String,
       default: 'value'
     },
-    textField: {
+    optionLabel: {
       type: String,
       default: 'text'
     },
@@ -141,10 +143,7 @@ export default {
       return (Object.entries(this.value).length > 0 && this.errors && this.errors.length) ? true : false
     },
     selectOptions () {
-      if (this.options === undefined) {
-        return []
-      }
-      return [{ [this.textField]: 'Filter...', [this.valueField]: null }, ...this.options]
+      return this.options || []
     }
   },
   methods: {

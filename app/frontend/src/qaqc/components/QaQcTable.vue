@@ -25,7 +25,7 @@
           :param-names="dateColumn.params"
           :options="dateColumn.options || filterSelectOptions[dateColumn.id]"
           :value="filterParams[dateColumn.id]"
-          :text-field="dateColumn.textField"
+          :option-label="dateColumn.textField"
           @input="applyFilter(dateColumn, $event)" />
       </div>
     </div>
@@ -72,8 +72,8 @@
                 :errors="resultErrors[column.param]"
                 :param-names="column.params"
                 :options="column.options || filterSelectOptions[column.id]"
-                :value-field="column.valueField"
-                :text-field="column.textField"
+                :option-value="column.valueField"
+                :option-label="column.textField"
                 :value="filterParams[column.id]"
                 @input="applyFilter(column, $event)" />
             </th>

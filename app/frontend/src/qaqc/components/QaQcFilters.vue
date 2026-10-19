@@ -41,9 +41,11 @@
         :aria-describedby="`${id}InvalidFeedback`"
         :disabled="isActive"
         :options="selectOptions"
-        :value-field="valueField"
-        :text-field="textField"
+        :optionValue="optionValue"
+        :optionLabel="optionLabel"
         v-model="localValue[paramNames[0]]"
+        :placeholder="placeholder || 'Filter...'"
+        showClear
         @keyup.enter="applyFilter" />
       <div :id="`${id}InvalidFeedback`">
         <div v-for="(error, index) in errors" class="mt-1 text-sm text-red-600" :key="`${id}Input error ${index}`">
@@ -120,11 +122,11 @@ export default {
       type: Array
     },
     options: Array,
-    textField: {
+    optionLabel: {
       type: String,
       default: 'text'
     },
-    valueField: {
+    optionValue: {
       type: String,
       default: 'value'
     },
@@ -148,8 +150,8 @@ export default {
         return []
       }
 
-      // Filter out options where the textField equals "Staff edit"
-      let filteredOptions = this.options.filter(option => option[this.textField] !== 'Staff edit')
+      // Filter out options where the optionLabel equals "Staff edit"
+      let filteredOptions = this.options.filter(option => option[this.optionLabel] !== 'Staff edit')
 
       // Determine the null value to use based on paramNames
       const nullValue = (this.paramNames[0] === 'well_subclass')
@@ -157,8 +159,7 @@ export default {
         : 'null'
 
       return [
-        { [this.textField]: 'Filter...', [this.valueField]: null },
-        { [this.textField]: 'Null', [this.valueField]: nullValue },
+        { [this.optionLabel]: 'Null', [this.optionValue]: nullValue },
         ...filteredOptions]
     },
     validation () {

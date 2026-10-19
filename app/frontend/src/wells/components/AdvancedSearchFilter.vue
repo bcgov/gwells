@@ -49,8 +49,8 @@
         :disabled="inputDisabled"
         :aria-describedby="`${id}InvalidFeedback`"
         :options="selectOptions"
-        :optionValue="valueField"
-        :optionLabel="textField"
+        :optionValue="optionValue"
+        :optionLabel="optionLabel"
         showClear
         @update:modelValue="updateParamValue(paramNames[0], $event)"
         @focus="$emit('focus', true)"
@@ -176,11 +176,11 @@ export default {
       default: 'text'
     },
     options: Array,
-    valueField: {
+    optionValue: {
       type: String,
       default: 'value'
     },
-    textField: {
+    optionLabel: {
       type: String,
       default: 'text'
     },
@@ -217,10 +217,7 @@ export default {
       return false
     },
     selectOptions () {
-      if (this.options === undefined) {
-        return []
-      }
-      return [...this.options]
+      return this.options || undefined
     },
     anyValueParam () {
       return this.paramNames.slice(-1)[0]
