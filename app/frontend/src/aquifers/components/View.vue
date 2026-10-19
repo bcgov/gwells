@@ -126,10 +126,10 @@
                       <div class="col-span-1">
                         Vulnerability
                         <i
-                          id="vulnerability-info"
+                          id="vulnerabilityInfo"
                           tabindex="0"
                           class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                          v-tooltip.top="'The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants.'"
+                          v-tooltip.top="TOOLTIP_TEXT.aquifer_details.vulnerabilityInfo"
                           >
                         </i>
                       </div>
@@ -141,16 +141,12 @@
                       <div class="col-span-1">
                         Subtype
                         <i
-                          id="aquifer-subtype-info"
+                          id="aquiferSubtype"
                           tabindex="0"
                           class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                          v-tooltip.top="{
-                            escape: false,
-                            autoHide: false,
-                            value: `There are different types of aquifers, depending on the geologic materials in which they occur. Subtype descriptions can be <a href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/understanding-aquifers/aquifer-subtype-code-description' target='_blank' rel='noopener noreferrer' class='d-print-url'>found here</a>.`,
-                            class: 'max-w-xs text-xs'
-                          }"
-                          ></i>
+                          v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferSubtype"
+                          >
+                        </i>
                       </div>
                       <div class="col-span-1">{{record.subtype}}</div>
                     </div>
@@ -158,15 +154,10 @@
                       <div class="col-span-1">
                         Quality concerns
                         <i
-                          id="aquifer-quality-concerns"
+                          id="aquiferQualityConcerns"
                           tabindex="0"
                           class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                          v-tooltip.top="{
-                            escape: false,
-                            autoHide: false,
-                            value: `Classified as unknown/none, isolated, local, or regional. For details see page 16 of the Guide to Using the <a href='https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/science-data/aquifer_maps_guide.pdf' target='_blank' rel='noopener noreferrer' class='d-print-url'>BC Aquifer Classification System</a>.`,
-                            class: 'max-w-xs text-xs'
-                          }"
+                          v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferQualityConcerns"
                           >
                         </i>
                       </div>
@@ -174,10 +165,10 @@
                       <div class="col-span-1">
                         Productivity
                         <i
-                          id="productivity-info"
+                          id="productivityInfo"
                           tabindex="0"
                           class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                          v-tooltip.top="'Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high.'"
+                          v-tooltip.top="TOOLTIP_TEXT.aquifer_details.productivityInfo"
                           >
                         </i>
                       </div>
@@ -189,10 +180,10 @@
                       <div class="col-span-1">
                         Calculated well density
                         <i
-                          id="calculated-demand-density-info"
+                          id="calculatedDemandDensity"
                           tabindex="0"
                           class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                          v-tooltip.top="'Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²'"
+                          v-tooltip.top="TOOLTIP_TEXT.aquifer_details.calculatedDemandDensity"
                           >
                         </i>
                       </div>
@@ -223,10 +214,10 @@
                       <dl>
                         <dt>Number of wells correlated to the aquifer
                           <i
-                            id="correlated-wells-count"
+                            id="correlatedWellsCount"
                             tabindex="0"
                             class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                            v-tooltip.top="'The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer.'"
+                            v-tooltip.top="TOOLTIP_TEXT.aquifer_details.correlatedWellsCount"
                             >
                           </i>
                         </dt>
@@ -242,10 +233,10 @@
                         <dt>
                           Number of uncorrelated wells within mapped aquifer extent
                           <i
-                            id="uncorrelated-wells-count"
+                            id="uncorrelatedWellsCount"
                             tabindex="0"
                             class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                            v-tooltip.top="'The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth.'"
+                            v-tooltip.top="TOOLTIP_TEXT.aquifer_details.uncorrelatedWellsCount"
                             >
                           </i>
                         </dt>
@@ -258,10 +249,10 @@
                       <dl>
                         <dt>Flowing artesian wells
                           <i
-                            id="artesian-wells"
+                            id="artesianWells"
                             tabindex="0"
                             class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                            v-tooltip.top="'A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump.'"
+                            v-tooltip.top="TOOLTIP_TEXT.aquifer_details.artesianWells"
                             >
                           </i>
                         </dt>
@@ -382,10 +373,10 @@
                           <dl>
                             <dt class="text-right">Advanced mapping
                               <i
-                                id="aquifer-advanced-mapping"
+                                id="aquiferAdvancedMapping"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferAdvancedMapping"
                                 >
                               </i>
                             </dt>
@@ -401,10 +392,10 @@
                           <dl>
                             <dt class="text-right">Observation wells
                               <i
-                                id="aquifer-observation-wells"
+                                id="aquiferObservationWells"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferObservationWells"
                                 >
                               </i>
                             </dt>
@@ -450,7 +441,7 @@
                                 id="aquiferWaterQualityInformation"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferWaterQualityInformation"
                                 >
                               </i>
                             </dt>
@@ -468,7 +459,7 @@
                                 id="aquiferConnectedInfo"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferConnectedInfo"
                                 >
                               </i>
                             </dt>
@@ -485,7 +476,7 @@
                                 id="aquiferNumericalModel"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferNumericalModel"
                                 >
                               </i>
                             </dt>
@@ -504,7 +495,7 @@
                                 id="aquiferWaterBudget"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferWaterBudget"
                                 ></i>
                             </dt>
                             <dd class="m-0">
@@ -522,7 +513,7 @@
                                 id="aquiferGroundwaterSurfaceInteractions"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferGroundwaterSurfaceInteractions"
                                 >
                               </i>
                             </dt>
@@ -541,7 +532,7 @@
                                 id="aquiferArtesianAdvisory"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="'Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions.'"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferArtesianAdvisory"
                                 >
                               </i>
                             </dt>
@@ -560,12 +551,7 @@
                                 id="aquiferNotations"
                                 tabindex="0"
                                 class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-                                v-tooltip.top="{
-                                  escape: false,
-                                  autoHide: false,
-                                  value: `Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source. For details click <a href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-allocation-notations'>here</a>.`,
-                                  class: 'max-w-xs text-xs'
-                                }"
+                                v-tooltip.top="TOOLTIP_TEXT.aquifer_details.aquiferNotations"
                                 >
                               </i>
                             </dt>
@@ -611,7 +597,7 @@ import Documents from './Documents.vue'
 import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
-import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants.js'
+import { TOOLTIP_TEXT, MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants.js'
 import { sanitizeUrl } from '@braintree/sanitize-url'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
@@ -648,6 +634,7 @@ export default {
     return {
       mapKey: 0, // component key to force updates.
       error: undefined,
+      TOOLTIP_TEXT: TOOLTIP_TEXT,
       fieldErrors: {},
       form: {},
       showSaveSuccess: false,

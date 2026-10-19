@@ -56,13 +56,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="font-weight-bold">
         2) Legal Description
         <i
-          tabindex="0"
-          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-          @mouseenter="showPopover"
-          @mouseleave="hidePopover"
-          @focus="showPopover"
-          @blur="hidePopover"/>
-        <Popover ref="op">{{ TOOLTIP_TEXT.location_vue.legal_description_fields }}</Popover>
+          class="fa fa-question-circle color-info print:hidden"
+          v-tooltip="TOOLTIP_TEXT.location_vue.legal_description_fields">
+        </i>
       </p>
     </div>
 
