@@ -33,22 +33,24 @@
               label="Survey text"
               :errors="errors['survey_introduction_text']"
               v-model="form.survey_introduction_text"
-            ></form-input>
+            />
             <form-input
               id="surveyLinkInput"
               label="Survey link"
               v-model="form.survey_link"
               :errors="errors['survey_link']"
-            ></form-input>
+            />
             <form-input
               id="surveyPageSelect"
               label="Survey page"
               select
               :options="pageOptions"
+              value-field="value"
+              text-field="text"
               placeholder="Select page"
               :errors="errors['survey_page']"
               v-model="form.survey_page"
-            ></form-input>
+            />
             <div class="flex items-center gap-2 mt-4">
               <Checkbox v-model="form" inputId="survey_enabled" name="check-button" binary />
               <label for="survey_enabled">Enable survey immediately</label>

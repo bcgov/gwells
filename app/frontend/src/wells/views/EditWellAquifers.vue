@@ -78,7 +78,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                           aria-label="Depth from (feet)"
                           v-model="aquifersData[index].start"
                           :errors="getRowError(index).start"
-                          />
+                        />
                       </td>
                       <td class="input-width-small py-0">
                         <form-input
@@ -89,7 +89,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                           aria-label="Depth to (feet)"
                           v-model="aquifersData[index].end"
                           :errors="getRowError(index).end"
-                          />
+                        />
                       </td>
                       <td class="input-width-small py-0 pr-0">
                         <InputGroupAddon
