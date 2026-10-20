@@ -83,7 +83,7 @@
                 <div class="aquifer-search-actions flex gap-2">
                   <Button class="aquifer-buttons" type="submit" id="aquifers-search-button" :disabled="searchInProgress" label="Search"/>
                   <i v-if="searchInProgress" class="fa fa-circle-o-notch fa-spin ml-1"/>
-                  <Button class="aquifer-buttons" type="reset" label="Reset"/>
+                  <Button class="aquifer-buttons" type="reset" severity="secondary" label="Reset"/>
                 </div>
                 <h6 class="mt-4">Download all aquifers</h6>
                 <ul class="aquifer-download-list">
@@ -609,11 +609,6 @@ export default {
     .custom-control-input:checked~.custom-control-label:before {
       background-color: #007bff;
     }
-  }
-
-  #aquifers-search-button {
-    background-color: #38598A;
-    border-color: #38598A;
   }
 
   .aquifer-download-list {

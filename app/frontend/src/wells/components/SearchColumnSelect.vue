@@ -46,7 +46,7 @@
       <template #footer>
         <div class="flex justify-start">
           <Button label="Apply" @click="applyChanges()" :disabled="!validation" class="mr-2"/>
-          <Button label="Cancel" severity="contrast" @click="cancelChanges()"/>
+          <Button label="Cancel" severity="secondary" @click="cancelChanges()"/>
         </div>
       </template>
     </Dialog>

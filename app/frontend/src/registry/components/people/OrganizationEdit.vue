@@ -210,7 +210,7 @@
                 Are you sure you want to save these changes?
                 <template #footer>
                   <Button label="Save" @click="confirmSubmitModal=false;submitForm()" ref="confirmSubmitConfirmBtn" />
-                  <Button label="Cancel" severity="Danger" @click="confirmSubmitModal=false" />
+                  <Button label="Cancel" severity="danger" @click="confirmSubmitModal=false" />
                 </template>
               </Dialog>
               <Dialog
