@@ -311,10 +311,6 @@ export default {
     searchResultsRowClicked (data) {
       this.$emit('rowClicked', data)
     },
-    getTooltipContent (columnId) {
-      // Return the tooltip content if it exists, or null if it doesn't
-      return this.tooltipContent[columnId] || null
-    },
     removeRegionSuffix (value) {
       if (!value || typeof value !== 'string') return ''
       // Define the suffixes to check for and remove, ordered by specificity and length
@@ -392,6 +388,7 @@ export default {
     }
   },
   created () {
+    this.qaqcStore.search()
     this.initFilterParams()
   }
 }

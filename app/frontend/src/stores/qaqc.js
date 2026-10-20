@@ -15,6 +15,7 @@ import ApiService from '@/common/services/ApiService.js'
 
 const cleanParams = (payload) => {
   // Clear any null or empty string values, to keep URLs clean.
+  if (payload === undefined || payload === null) return {}
   return Object.entries(payload).filter(([key, value]) => {
     return !(value === undefined || value === '' || value === null)
   }).reduce((cleanedParams, [key, value]) => {
@@ -99,7 +100,7 @@ export const useQAQCStore = defineStore('qaqc', {
     offset: 0,
     ordering: DEFAULT_ORDERING,
     params: {},
-    resultColumns: CROSS_REFERENCING_COLUMNS,
+    resultColumns: RECORD_COMPLIANCE_COLUMNS,
     resultFilters: {},
     results: null,
     resultCount: 0,
@@ -155,9 +156,9 @@ export const useQAQCStore = defineStore('qaqc', {
       this.search()
     },
     resetSearch () {
-      if (this.pendingSearch !== null) {
-        this.pendingSearch.cancel()
-      }
+      if (this.pendingSearch && this.pendingSearch.cancel) {
+				this.pendingSearch.cancel()
+			}
       this.hasSearched = false
       this.pendingSearch = null
       this.bounds = {}
@@ -171,12 +172,12 @@ export const useQAQCStore = defineStore('qaqc', {
       this.resultCount = 0
       this.resultFilters = {}
     },
-    search () {
+    async search () {
       this.hasSearched = true
 
-      if (this.pendingSearch !== null) {
-        this.pendingSearch.cancel()
-      }
+      if (this.pendingSearch && this.pendingSearch.cancel) {
+				this.pendingSearch.cancel()
+			}
 
       const cancelSource = axios.CancelToken.source()
       this.pendingSearch = cancelSource
@@ -198,24 +199,25 @@ export const useQAQCStore = defineStore('qaqc', {
         endpoint += '/crossreferencing'
       }
 
-      ApiService.query(endpoint, params, { cancelToken: cancelSource.token }).then((response) => {
-        this.errors = {}
-        this.results = response.data.results
-        this.resultCount = response.data.count
-      }).catch((err) => {
+      try {
+				const response = await ApiService.query(endpoint, params, { cancelToken: cancelSource.token })
+				this.errors = {}
+				this.results = response.data.results
+				this.resultCount = response.data.count
+			} catch (err) {
         // If the qaqc was cancelled, a new one is pending, so don't bother resetting.
-        if (axios.isCancel(err)) {
-          return
-        }
+				if (axios.isCancel(err)) {
+					return
+				}
 
-        if (err.response && err.response.data) {
-          this.errors = err.response.data
-        }
-        this.results = null
-        this.resultCount = 0
-      }).finally(() => {
-        this.pendingSearch = null
-      })
+				if (err.response && err.response.data) {
+					this.errors = err.response.data
+				}
+				this.results = null
+				this.resultCount = 0
+			} finally {
+				this.pendingSearch = null
+			}
     }
   }
 })
