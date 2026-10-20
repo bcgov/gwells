@@ -18,12 +18,12 @@
             />
             <div class="flex justify-between items-center mt-1">
               <div class="flex gap-2">
-              <Button
-                type="submit"
-                label="Save"
-                :disabled="!noteInput || submitLoading || invalidNewNoteLength"
-                ref="noteInputSaveBtn"
-              />
+                <Button
+                  type="submit"
+                  label="Save"
+                  :disabled="!noteInput || submitLoading || invalidNewNoteLength"
+                  ref="noteInputSaveBtn"
+                />
                 <Button
                   type="reset"
                   label="Cancel"

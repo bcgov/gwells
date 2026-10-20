@@ -203,7 +203,7 @@ export default {
       return (this.errors && this.errors.length)
     },
     labelColWidth () {
-      if (!this.anyValueCheckbox && (this.type === 'text' || this.type === 'select' || this.type === 'radio')) {
+      if (!this.anyValueCheckbox && (this.type === 'text' || this.type === 'select' || this.type === 'radio' || this.type === 'number')) {
         return 6
       }
       return 4

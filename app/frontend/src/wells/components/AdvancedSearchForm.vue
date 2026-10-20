@@ -34,7 +34,7 @@
     <div class="flex">
       <div class="my-4">
         <Button label="Search" type="submit" :disabled="wellsStore.searchInProgress"/>
-        <Button label="Reset" severity="contrast" type="reset" :disabled="wellsStore.searchInProgress" class="mx-2"/>
+        <Button label="Reset" severity="secondary" type="reset" :disabled="wellsStore.searchInProgress" class="mx-2"/>
       </div>
     </div>
     <div class="flex mt-1">

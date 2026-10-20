@@ -28,7 +28,7 @@
     <div class="my-4">
       <div>
         <Button label="Search" type="submit" :disabled="searchInProgress"/>
-        <Button label="Reset" severity="contrast" type="reset" :disabled="searchInProgress" class="mx-2"/>
+        <Button label="Reset" severity="secondary" type="reset" :disabled="searchInProgress" class="mx-2"/>
       </div>
     </div>
     <div class="flex flex-col">
