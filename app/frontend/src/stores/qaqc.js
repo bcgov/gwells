@@ -206,18 +206,18 @@ export const useQAQCStore = defineStore('qaqc', {
 				this.resultCount = response.data.count
 			} catch (err) {
         // If the qaqc was cancelled, a new one is pending, so don't bother resetting.
-				if (axios.isCancel(err)) {
+        if (axios.isCancel(err)) {
           return
-				}
+        }
 
-				if (err.response && err.response.data) {
-					this.errors = err.response.data
-				}
-				this.results = null
-				this.resultCount = 0
-			} finally {
-				this.pendingSearch = null
-			}
+        if (err.response && err.response.data) {
+          this.errors = err.response.data
+        }
+        this.results = null
+        this.resultCount = 0
+        } finally {
+        this.pendingSearch = null
+        }
     }
   }
 })
