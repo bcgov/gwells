@@ -56,13 +56,9 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <p class="font-weight-bold">
         2) Legal Description
         <i
-          tabindex="0"
-          class="fa fa-question-circle color-info fa-xs pt-0 mt-0 print:hidden"
-          @mouseenter="showPopover"
-          @mouseleave="hidePopover"
-          @focus="showPopover"
-          @blur="hidePopover"/>
-        <Popover ref="op">{{ TOOLTIP_TEXT.location_vue.legal_description_fields }}</Popover>
+          class="fa fa-question-circle color-info print:hidden"
+          v-tooltip="TOOLTIP_TEXT.location_vue.legal_description_fields">
+        </i>
       </p>
     </div>
 
@@ -156,14 +152,10 @@ import ApiService from '../../../common/services/ApiService'
 import { TOOLTIP_TEXT } from '@/common/constants'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
-import { Popover } from 'primevue'
 
 export default {
   name: 'Location',
   mixins: [inputBindingsMixin],
-  components: {
-    Popover
-  },
   props: {
     id: {
       type: String,
@@ -320,14 +312,6 @@ export default {
       if (document.getElementById('location-address-suggestions-list')) {
         document.getElementById('location-address-suggestions-list').style.display = show ? 'block' : 'none'
       }
-    },
-
-    // Show and hide popover
-    showPopover() {
-      this.$refs.op.show()
-    },
-    hidePopover() {
-      this.$refs.op.hide()
     }
   }
 }

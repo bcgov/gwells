@@ -60,6 +60,37 @@ export const TOOLTIP_TEXT = {
   },
   location_vue: {
     legal_description_fields: 'Enter as many fields as possible. Additional information that does not fit should go in "Description of Well Location."'
+  },
+  qaqc_table: {
+    diameterNull: 'Diameter in the last line of the Casing Details table on the Well Summary page. It is used to check if the casing information is missing',
+    aquiferLithologyNull: 'Raw Data in the last line of the Lithology table on the Well Summary page; It is used to check if lithology information is missing',
+    wellActivityType: 'Activity in the Well Activity table on the Well Summary page',
+    workStartDateNull: 'Work Start Date in the Well Activity Table on the Well Summary page',
+    workEndDateNull: 'Work End Date in the Well Activity Table on the Well Summary page',
+    createDate: 'When the well record was entered/created in UTC time',
+    geocodeDistance: 'The distance from well to location determined by the BC Address Geocoder API.',
+    distanceToPid: 'The distance from well to BC Parcel Fabric Polygon with matching Parcel Identifier (PID). A higher value indicates higher probability of a location error. NULL indicates no matching PID found.',
+    scoreAddress: 'Token Set Ratio score for matching wells address to reverse geocoded address (street number/name/direction). A lower score indicates a higher probability of a location error.',
+    scoreCity: 'Token Set Ratio score for matching wells city to reverse geocoded locality. A lower score indicates a higher probability of a location error.'
+  },
+  aquifer_details: {
+    vulnerabilityInfo: 'The susceptibility of an aquifer to contamination from surface sources. Three vulnerability categories are used: high, moderate, or low. Vulnerability is based on hydrogeology alone and does not consider the existing type of land use or nature of the potential contaminants.',
+    aquiferSubtype: `There are different types of aquifers, depending on the geologic materials in which they occur. Subtype descriptions can be <a href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/groundwater-wells-aquifers/understanding-aquifers/aquifer-subtype-code-description' target='_blank' rel='noopener noreferrer' class='d-print-url'>found here</a>.`,
+    aquiferQualityConcerns: `Classified as unknown/none, isolated, local, or regional. For details see page 16 of the Guide to Using the <a href='https://www2.gov.bc.ca/assets/gov/environment/air-land-water/water/science-data/aquifer_maps_guide.pdf' target='_blank' rel='noopener noreferrer' class='d-print-url'>BC Aquifer Classification System</a>.`,
+    productivityInfo: 'Productivity describes the rate of groundwater flow from wells and springs and the abundance of groundwater in an aquifer. Classified as low, medium, or high.',
+    calculatedDemandDensity: 'Calculated based on the number of wells known to be completed in the aquifer per square kilometer. Light ≤ 4 km²; Medium 4 – 20 km²; Heavy > 20 km²',
+    correlatedWellsCount: 'The total number of wells that fall within the aquifer boundaries and, based on depth and lithology, are believed to withdraw water from that aquifer.',
+    uncorrelatedWellsCount: 'The total number of wells that fall within the aquifer polygon but have not been correlated to any aquifer. These wells may potentially be located within this aquifer or may be completed within an aquitard or within another aquifer located at a different depth.',
+    artesianWells: 'A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump.',
+    aquiferAdvancedMapping: 'Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed.',
+    aquiferObservationWells: 'Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time.',
+    aquiferWaterQualityInformation: 'Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database.',
+    aquiferConnectedInfo: 'Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement.',
+    aquiferNumericalModel: 'Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies.',
+    aquiferWaterBudget: 'Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time.',
+    aquiferGroundwaterSurfaceInteractions: 'Studies that characterize the exchange of water and/or chemicals between the land surface and the subsurface.',
+    aquiferArtesianAdvisory: 'Advisories highlighting regional concerns about water availability, water quality, and flowing artesian conditions.',
+    aquiferNotations: `Water allocation notations are a water management tool that indicates a potential lack of water availability/quality in a source. For details click <a href='https://www2.gov.bc.ca/gov/content/environment/air-land-water/water/water-licensing-rights/water-allocation-notations'>here</a>.`
   }
 }
 

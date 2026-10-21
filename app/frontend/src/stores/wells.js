@@ -157,7 +157,7 @@ export const useWellsStore = defineStore('wells', {
 		},
 
 		setSearchMapCentre (payload) {
-			this.searchMap.center = payload
+			this.searchMap.centre = payload
 		},
 
 		setSearchMapZoom (payload) {

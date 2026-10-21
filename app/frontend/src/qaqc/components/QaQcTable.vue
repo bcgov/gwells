@@ -54,13 +54,13 @@
                 v-if="column.sortParam === 'latitude' || column.sortParam === 'longitude'"
                 class="py-1 px-0"
               ></div>
-              <!-- Only show the badge and popover if there is tooltip content -->
-              <template v-if="getTooltipContent(column.id)">
-                <Badge :id="`${column.id}-tooltip`" tabindex="0" class="ml-1">
-                  <i class="fa fa-question-circle color-info fa-sm print:hidden"></i>
-                </Badge>
-                <Popover ref="op" triggers="hover focus">{{getTooltipContent(column.id)}}</Popover>
-              </template>
+              <!-- Only show the tooltip if there is tooltip content -->
+              <i
+                v-if="TOOLTIP_TEXT.qaqc_table[column.id]"
+                :id="`${column.id}-tooltip`"
+                class="fa fa-question-circle color-info print:hidden"
+                v-tooltip="TOOLTIP_TEXT.qaqc_table[column.id]">
+              </i>
             </th>
           </tr>
           <tr class="filters">
@@ -149,7 +149,7 @@
 </template>
 
 <script>
-import { Badge, Popover } from 'primevue'
+import { TOOLTIP_TEXT } from '@/common/constants.js'
 import QaQcFilters from '@/qaqc/components/QaQcFilters.vue'
 import QaQcExports from '@/qaqc/components/QaQcExports.vue'
 import filterMixin from '@/wells/components/mixins/filters.js'
@@ -161,8 +161,6 @@ export default {
   components: {
     'qaqc-filters': QaQcFilters,
     'qaqc-exports': QaQcExports,
-    Badge,
-    Popover
   },
   data () {
     return {
@@ -171,19 +169,7 @@ export default {
         { value: 25, text: '25' },
         { value: 50, text: '50' }
       ],
-      // Object mapping column IDs to tooltip content
-      tooltipContent: {
-        'diameterNull': 'Diameter in the last line of the Casing Details table on the Well Summary page. It is used to check if the casing information is missing',
-        'aquiferLithologyNull': 'Raw Data in the last line of the Lithology table on the Well Summary page; It is used to check if lithology information is missing',
-        'wellActivityType': 'Activity in the Well Activity table on the Well Summary page',
-        'workStartDateNull': 'Work Start Date in the Well Activity Table on the Well Summary page',
-        'workEndDateNull': 'Work End Date in the Well Activity Table on the Well Summary page',
-        'createDate': 'When the well record was entered/created in UTC time',
-        'geocodeDistance': 'The distance from well to location determined by the BC Address Geocoder API.',
-        'distanceToPid': 'The distance from well to BC Parcel Fabric Polygon with matching Parcel Identifier (PID). A higher value indicates higher probability of a location error. NULL indicates no matching PID found.',
-        'scoreAddress': 'Token Set Ratio score for matching wells address to reverse geocoded address (street number/name/direction). A lower score indicates a higher probability of a location error.',
-        'scoreCity': 'Token Set Ratio score for matching wells city to reverse geocoded locality. A lower score indicates a higher probability of a location error.'
-      }
+      TOOLTIP_TEXT: TOOLTIP_TEXT
     }
   },
   computed: {
@@ -325,10 +311,6 @@ export default {
     searchResultsRowClicked (data) {
       this.$emit('rowClicked', data)
     },
-    getTooltipContent (columnId) {
-      // Return the tooltip content if it exists, or null if it doesn't
-      return this.tooltipContent[columnId] || null
-    },
     removeRegionSuffix (value) {
       if (!value || typeof value !== 'string') return ''
       // Define the suffixes to check for and remove, ordered by specificity and length
@@ -406,6 +388,7 @@ export default {
     }
   },
   created () {
+    this.qaqcStore.search()
     this.initFilterParams()
   }
 }

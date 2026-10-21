@@ -778,13 +778,6 @@ export default {
 
 <style lang="scss">
 
-
-.popover .arrow {
-  display: none !important;
-}
-.popover {
-  margin: 1em !important;
-}
 .well-detail .print-notice {
   font-size: 1rem;
 }

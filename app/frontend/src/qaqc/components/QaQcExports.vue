@@ -15,14 +15,31 @@
   <div v-if="qaqcStore.resultCount > 0 && qaqcStore.resultCount < maxExportSize">
     <h3>Export qaqc results</h3>
     <div class="button-container">
-      <a @click="handleExportClickEvent('xlsx')" class="qaqc-download-button">Excel</a>
-      <a @click="handleExportClickEvent('csv')" class="qaqc-download-button">CSV</a>
+      <ul>
+        <li>
+          <Button
+            label="Excel"
+            outlined
+            type="download"
+            download="search-results.xlsx"
+            @click="exportHandler('xlsx')"/>
+        </li>
+        <li>
+          <Button
+            label="CSV"
+            outlined
+            type="download"
+            download="search-results.csv"
+            @click="exportHandler('csv')"/>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
 
 <script>
 import querystring from 'querystring-es3' // Using ES module compatible version
+import ApiService from '@/common/services/ApiService.js'
 import { useQAQCStore } from '@/stores/qaqc'
 import { MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants'
 
@@ -74,24 +91,10 @@ export default {
       }
       return url
     },
-    async handleExportClickEvent (format) {
-      // Generate the URL for the file download
-      const url = this.getExportUrl(format)
+    async exportHandler (format) {
+      const exportUrl = this.getExportUrl(format)
       try {
-        const response = await fetch(url)
-        if (!response.ok) {
-          throw new Error('Network response was not ok')
-        }
-        const data = await response.blob()
-
-        const downloadUrl = window.URL.createObjectURL(data)
-
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.setAttribute('download', `search-results.${format}`)
-        document.body.appendChild(link)
-        link.click()
-        link.remove()
+        ApiService.download(exportUrl)
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error)
       }
@@ -100,31 +103,16 @@ export default {
 }
 </script>
 <style scoped>
-.button-container {
-  margin-left: 5px;
-  display: flex;
-  justify-content: start; /* Aligns items to the start */
-  gap: 5px; /* Adjust the gap as needed */
-}
-.qaqc-download-button {
-  padding: 5px 10px;
-  width: 60px;
-  background-color: transparent; /* Transparent background */
-  color: grey; /* Text color */
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  border-radius: 5px;
-  border: 1px solid grey; /* Border properties */
-  cursor: pointer;
-  transition: background-color 0.3s; /* Smooth transition for the hover effect */
-}
-
-.qaqc-download-button:hover {
-  background-color: rgba(0, 0, 0, 0.1); /* Slight grey overlay on hover */
-}
-
-.qaqc-download-button:active {
-  background-color: rgba(0, 0, 0, 0.2); /* Darker overlay when clicked */
-}
+  .button-container {
+    margin-left: 5px;
+    display: flex;
+    justify-content: start; /* Aligns items to the start */
+    gap: 5px; /* Adjust the gap as needed */
+  }
+  ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+  }
+  ul > li:first-child { margin-right: 1em; }
 </style>
