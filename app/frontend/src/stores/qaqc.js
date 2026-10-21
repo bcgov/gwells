@@ -157,7 +157,7 @@ export const useQAQCStore = defineStore('qaqc', {
     },
     resetSearch () {
       if (this.pendingSearch && this.pendingSearch.cancel) {
-				this.pendingSearch.cancel()
+        this.pendingSearch.cancel()
 			}
       this.hasSearched = false
       this.pendingSearch = null
@@ -176,7 +176,7 @@ export const useQAQCStore = defineStore('qaqc', {
       this.hasSearched = true
 
       if (this.pendingSearch && this.pendingSearch.cancel) {
-				this.pendingSearch.cancel()
+        this.pendingSearch.cancel()
 			}
 
       const cancelSource = axios.CancelToken.source()
@@ -200,14 +200,14 @@ export const useQAQCStore = defineStore('qaqc', {
       }
 
       try {
-				const response = await ApiService.query(endpoint, params, { cancelToken: cancelSource.token })
+        const response = await ApiService.query(endpoint, params, { cancelToken: cancelSource.token })
 				this.errors = {}
 				this.results = response.data.results
 				this.resultCount = response.data.count
 			} catch (err) {
         // If the qaqc was cancelled, a new one is pending, so don't bother resetting.
 				if (axios.isCancel(err)) {
-					return
+          return
 				}
 
 				if (err.response && err.response.data) {
