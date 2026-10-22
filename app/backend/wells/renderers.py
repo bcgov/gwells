@@ -108,7 +108,7 @@ COLUMN_LABELS = {
     "diameter": "Diameter",
     "observation_well_number": "Observation Well Number",
     "observation_well_status": "Observation Well Status",
-    "ems": "Environmental Monitoring System (EMS) ID",
+    "ems": "Environmental Monitoring Data System (EnMoDS) ID",
     "aquifer": "Aquifer ID Number",
     "utm_zone_code": "Zone",
     "utm_northing": "UTM Northing",

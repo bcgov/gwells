@@ -47,7 +47,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <responsive-grid :cols="12" :md="5" :lg="4">
       <form-input
         id="emsID"
-        label="Environmental Monitoring System (EMS) ID"
+        label="Environmental Monitoring Data System (EnMoDS) ID"
         v-model="emsIDInput"
         :errors="errors['ems']"/>
     </responsive-grid>

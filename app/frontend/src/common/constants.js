@@ -84,7 +84,7 @@ export const TOOLTIP_TEXT = {
     artesianWells: 'A flowing artesian well is one that has been drilled into an aquifer where the pressure within the aquifer forces the groundwater to rise above the land surface naturally without using a pump.',
     aquiferAdvancedMapping: 'Aquifers with advanced mapping have been mapped in three dimensions. Generally, cross-sections and/or three-dimensional models, have been developed.',
     aquiferObservationWells: 'Groundwater Observation Wells are used to monitor aquifer groundwater levels and chemistry over time.',
-    aquiferWaterQualityInformation: 'Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring System (EMS) database.',
+    aquiferWaterQualityInformation: 'Indicates there are wells correlated to the aquifer with water quality information in the Environmental Monitoring Data System (EnMoDS) database.',
     aquiferConnectedInfo: 'Likelihood of hydraulic connection between groundwater and surface water requires aquifer specific assessment and professional judgement.',
     aquiferNumericalModel: 'Numerical groundwater flow models are mathematical representations of groundwater flow in an aquifer and the interactions with adjacent surface water bodies.',
     aquiferWaterBudget: 'Water budget studies are an accounting of all the water flowing into and out of an aquifer and/or a watershed over a specified time.',
