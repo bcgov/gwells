@@ -61,7 +61,7 @@ export function createWellPopupElement (features, map, $router, options = {}) {
       text: streetAddress || '—'
     },
     ems ? {
-      prefix: 'EMS ID: ',
+      prefix: 'EnMoDS ID: ',
       text: ems
     } : null,
     observationWellNumber ? {

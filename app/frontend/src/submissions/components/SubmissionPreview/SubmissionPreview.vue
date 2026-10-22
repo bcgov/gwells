@@ -368,7 +368,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <span><b>Water Quality Odour:</b> {{ form.water_quality_odour }}</span>
       </responsive-grid>
       <responsive-grid :cols="12" :lg="6">
-        <span><b>EMS ID:</b> {{ form.ems }}</span>
+        <span><b>EnMoDS ID:</b> {{ form.ems }}</span>
       </responsive-grid>
     </fieldset>
     <fieldset class="my-4 detail-section" v-if="sections.wellCompletion">

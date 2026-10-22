@@ -1016,7 +1016,7 @@ class Well(AuditModelStructure):
                     'collect groundwater information).'))
 
     ems = models.CharField(max_length=10, blank=True, null=True,
-                           verbose_name="Environmental Monitoring System (EMS) ID")
+                           verbose_name="Environmental Monitoring Data System (EnMoDS) ID")
 
     utm_zone_code = models.CharField(
         max_length=10, blank=True, null=True, verbose_name="Zone")

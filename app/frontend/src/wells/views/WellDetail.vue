@@ -79,7 +79,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
             <span><b>Owner Name:</b> {{ owner_full_name }}</span>
             <span><b>Well Subclass:</b> {{ well_subclass }}</span>
-            <span><b>Environmental Monitoring System (EMS) ID:</b> {{ ems }}</span>
+            <span><b>Environmental Monitoring Data System (EnMoDS) ID:</b> {{ enmods }}</span>
 
             <span><b>Intended Water Use:</b> {{ intended_water_use }}</span>
             <span>
@@ -676,7 +676,7 @@ export default {
     well_class () { return this.wellsStore.wellRecord?.well_class ?? '' },
     owner_full_name () { return this.wellsStore.wellRecord?.owner_full_name ?? '' },
     well_subclass () { return this.wellsStore.wellRecord?.well_subclass ?? '' },
-    ems () { return this.wellsStore.wellRecord?.ems ?? '' },
+    enmods () { return this.wellsStore.wellRecord?.ems ?? '' },
     intended_water_use () { return this.wellsStore.wellRecord?.intended_water_use ?? '' },
     aquifer () { return this.wellsStore.wellRecord?.aquifer ?? '' },
     alternative_specs_submitted () { return this.wellsStore.wellRecord?.alternative_specs_submitted ?? '' },

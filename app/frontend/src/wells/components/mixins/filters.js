@@ -572,7 +572,7 @@ const SEARCH_FIELDS = {
   },
   ems: {
     param: 'ems',
-    label: 'EMS Id',
+    label: 'EnMoDS Id',
     type: 'text',
     anyValueBoolean: true,
     sortable: true

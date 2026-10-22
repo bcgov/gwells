@@ -334,7 +334,7 @@ class WellListFilter(AnyOrAllFilterSet):
     comments = filters.CharFilter(lookup_expr='icontains')
     ems_has_value = filters.BooleanFilter(field_name='ems',
                                           method='filter_has_value',
-                                          label='Any value for EMS id')
+                                          label='Any value for EnMoDS id')
     diameter = filters.RangeFilter()
     finished_well_depth = filters.RangeFilter()
     total_depth_drilled = filters.RangeFilter()

@@ -447,7 +447,7 @@
                             </dt>
                             <dd class="m-0">
                               <router-link :to="{ name: 'wells-home', query: {'match_any':false, 'ems_has_value':true, 'aquifer': id}, hash: '#advanced'}">
-                                {{ licenceDetails['num_wells_with_ems'] }} wells with an EMS ID
+                                {{ licenceDetails['num_wells_with_ems'] }} wells with an EnMoDS ID
                               </router-link>
                             </dd>
                           </dl>
