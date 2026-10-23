@@ -22,7 +22,8 @@
         <div class="flex items-center gap-2">
           <Checkbox
             :inputId="`${id}AnyValue`"
-            :modelValue="modelValue[anyValueParam]" @update:modelValue="updateAnyValueCheckbox($event)"
+            :modelValue="modelValue[anyValueParam]"
+            @update:modelValue="updateAnyValueCheckbox($event)"
             binary/>
           <label :for="`${id}AnyValue`">Any value</label>
         </div>
