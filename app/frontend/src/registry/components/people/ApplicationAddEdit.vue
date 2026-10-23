@@ -75,7 +75,7 @@
                   v-model="qualificationForm.qualifications"
                   :value="opt.value"
                   :inputId="opt.value"
-                  :disabled="true"
+                  disabled
                 />
                 <label :for="opt.value">{{ opt.text }}</label>
               </div>

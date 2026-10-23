@@ -12,7 +12,7 @@
     limitations under the License.
 */
 <template>
-  <Form @submit.prevent>
+  <Form>
     <Button label="Add/remove columns" severity="contrast" @click="showModal"/>
     <Dialog v-model:visible="modalShown" header="Column Display" id="columnSelectModal" centered modal>
       <table class="table">
@@ -24,21 +24,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="column in columns" :key="column.id">
+          <tr v-for="(column, index) in localColumns" :key="column.id">
             <td>{{ column.label }}</td>
             <td>
               <Checkbox
                 :id="`${column.id}ColumnSelect`"
                 binary
-                v-model="localSelectedColumnIdsDict[column.id]"
-                @input="$event ? selectColumn(column.id) : deselectColumn(column.id)"/>
+                v-model="column.selected"/>
             </td>
             <td>
               <Select
                 :id="`${column.id}ColumnOrder`"
                 :options="columnOrderRange"
-                v-model="columnOrders[column.id]"
-                @input="setColumnOrder(column.id, $event)"/>
+                optionLabel="label"
+                optionValue="value"
+                v-model="columnOrderRange[index].value"
+                @change="setColumnOrder(index, $event.value)"/>
             </td>
           </tr>
         </tbody>
@@ -184,8 +185,7 @@ export default {
   },
   data () {
     return {
-      localSelectedColumnIds: [],
-      columnOrders: {},
+      localColumns: [],
       modalShown: false,
     }
   },
@@ -197,31 +197,11 @@ export default {
       return RESULT_COLUMNS.filter(
         columnId => this.columnData[columnId] !== undefined)
     },
-    unselectedColumnIds () {
-      return this.availableColumnIds.filter(id => !this.selectedColumnIds.includes(id))
-    },
-    columns () {
-      const columns = this.availableColumnIds.map((columnId) => {
-        const columnData = this.columnData[columnId]
-        const label = columnData.resultLabel ? columnData.resultLabel : columnData.label
-        return {
-          id: columnId,
-          label: label
-        }
-      })
-      return Object.freeze(columns)
-    },
     columnOrderRange () {
-      return Array.from(Array(this.availableColumnIds.length).keys()).map(i => i + 1)
+      return Array.from({ length: this.localColumns.length }, (_, i) => ({ label: i + 1, value: i }))
     },
     validation () {
-      return this.localSelectedColumnIds.length > 0
-    },
-    localSelectedColumnIdsDict () {
-      return this.columns.reduce((dict, column) => {
-        dict[column.id] = this.localSelectedColumnIds.includes(column.id)
-        return dict
-      }, {})
+      return this.localColumns.some((column) => column.selected)
     }
   },
   methods: {
@@ -234,61 +214,55 @@ export default {
     hideModal () {
       this.modalShown = false
     },
-    selectColumn (columnId) {
-      this.localSelectedColumnIds.push(columnId)
-    },
-    deselectColumn (columnId) {
-      const index = this.localSelectedColumnIds.indexOf(columnId)
-
-      if (index >= 0) {
-        this.localSelectedColumnIds.splice(index, 1)
-      }
-    },
-    setColumnOrder (columnId, order) {
-      const oldColumnOrder = this.columnOrders[columnId]
-      const newColumnOrders = {}
-      newColumnOrders[columnId] = order
-      Object.entries(this.columnOrders).forEach(([entryId, entryOrder]) => {
-        if (entryId === columnId) {
-          newColumnOrders[entryId] = order
-        } else if (entryOrder >= order && entryOrder < oldColumnOrder) {
-          newColumnOrders[entryId] = entryOrder + 1
-        } else {
-          newColumnOrders[entryId] = entryOrder
+    initColumns () {
+      let columns = this.selectedColumnIds.map((columnId) => {
+        const columnData = this.columnData[columnId]
+        return {
+          id: columnId,
+          label: columnData.resultLabel ? columnData.resultLabel : columnData.label,
+          selected: true,
         }
       })
-      this.columnOrders = newColumnOrders
-    },
-    initColumnOrders () {
-      const orderedColumns = [...this.selectedColumnIds, ...this.unselectedColumnIds]
-      orderedColumns.forEach((columnId, index) => {
-        this.columnOrders[columnId] = index + 1
+      this.availableColumnIds.forEach((columnId) => {
+        if (this.selectedColumnIds.includes(columnId)) return
+        const columnData = this.columnData[columnId]
+        columns.push({
+          id: columnId,
+          label: columnData.resultLabel ? columnData.resultLabel : columnData.label,
+          selected: false,
+        })
       })
+      this.localColumns = columns
+    },
+    setColumnOrder (prevIndex, nextIndex) {
+      // Don't think this is possible, but including just-in-case
+      if (nextIndex === prevIndex) return
+
+      const column = this.localColumns[prevIndex]
+      // Remove the column and reinsert it
+      this.localColumns.splice(prevIndex, 1)
+      this.localColumns.splice(nextIndex, 0, column)
     },
     applyChanges () {
-      const columnIds = [...this.localSelectedColumnIds]
-      columnIds.sort((columnA, columnB) => {
-        return this.columnOrders[columnA] - this.columnOrders[columnB]
+      let newColumnIds = []
+      this.localColumns.forEach((column) => {
+        if (column.selected) {
+          newColumnIds.push(column.id)
+        }
       })
-      localStorage.setItem('userColumnPreferences', JSON.stringify(columnIds))
-      this.wells.setSearchResultColumns(columnIds)
+      localStorage.setItem('userColumnPreferences', JSON.stringify(newColumnIds))
+      this.wells.setSearchResultColumns(newColumnIds)
       this.hideModal()
     },
     cancelChanges () {
-      this.localSelectedColumnIds = [...this.selectedColumnIds]
-      this.initColumnOrders()
+      this.initColumns()
       this.hideModal()
     }
   },
   created () {
-    if (localStorage && localStorage.getItem('userColumnPreferences')) {
-      this.localSelectedColumnIds = JSON.parse(localStorage.getItem('userColumnPreferences'))
-    } else {
-      this.localSelectedColumnIds = [...this.selectedColumnIds]
-    }
-    this.initColumnOrders()
-    // listen for reset wells search so we can adjust our selected search columns
     this.wells = useWellsStore()
+    this.initColumns()
+    // listen for reset wells search so we can adjust our selected search columns
     if (this.wells.$onAction) {
       this.unsubscribeAction = this.wells.$onAction(({ name }) => {
         if (name === 'resetWellsSearch') {

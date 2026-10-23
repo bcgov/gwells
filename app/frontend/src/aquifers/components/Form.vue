@@ -224,7 +224,7 @@
           <Checkbox
             v-model="privateDocument"
             inputId="isPrivateCheckbox"
-            :binary="true"
+            binary
             :disabled="fieldDisabled"/>
           <label for="isPrivateCheckbox" class="ml-2">Are these documents private?</label>
       </div>

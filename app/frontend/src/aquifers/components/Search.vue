@@ -125,7 +125,7 @@
                   <Checkbox
                     v-model="showRetiredAquifers"
                     inputId="showRetired"
-                    :binary="true"
+                    binary
                     class="d-inline-block mb-2"/>
                   <label for="showRetired">Show {{numRetiredAquifers}} retired aquifers</label>
                 </span>
