@@ -79,7 +79,13 @@ Licensed under the Apache License, Version 2.0 (the "License");
 
             <span><b>Owner Name:</b> {{ owner_full_name }}</span>
             <span><b>Well Subclass:</b> {{ well_subclass }}</span>
-            <span><b>Environmental Monitoring Data System (EnMoDS) ID:</b> {{ enmods }}</span>
+            <span><b>Environmental Monitoring Data System (EnMoDS) ID:</b>
+              <a
+              v-if="enmods"
+              href="https://enmodswr.nrs.gov.bc.ca/search/basic/"
+              target="_blank"
+              >{{ enmods }}</a>
+            </span>
 
             <span><b>Intended Water Use:</b> {{ intended_water_use }}</span>
             <span>
