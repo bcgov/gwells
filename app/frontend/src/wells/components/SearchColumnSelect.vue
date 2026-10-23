@@ -215,16 +215,19 @@ export default {
       this.modalShown = false
     },
     initColumns () {
-      let columns = this.selectedColumnIds.map((columnId) => {
+      let columns = []
+      this.selectedColumnIds.forEach((columnId) => {
         const columnData = this.columnData[columnId]
-        return {
+        if (!columnData) return
+        columns.push({
           id: columnId,
           label: columnData.resultLabel ? columnData.resultLabel : columnData.label,
           selected: true,
-        }
+        })
       })
       this.availableColumnIds.forEach((columnId) => {
         if (this.selectedColumnIds.includes(columnId)) return
+        // availableColumnIds already filters out undefined ids
         const columnData = this.columnData[columnId]
         columns.push({
           id: columnId,
