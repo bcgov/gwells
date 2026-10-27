@@ -50,7 +50,7 @@
               <div class="pl-2 pr-2 aquifer-search-column mt-4">
                 <h4>Basic Search</h4>
                 <h5 class="search-title">Search by aquifer name or number (leave blank to see all aquifers)</h5>
-                <div class="search-title mt-4 mb-4">
+                <div class="search-title">
                   <InputText
                     type="text"
                     id="aquifers-search-field"
@@ -597,7 +597,6 @@ export default {
   .search-title {
     font-size: 1.1em;
     padding: 0;
-    margin: 0;
   }
 
   .aquifer-checkbox-group {
