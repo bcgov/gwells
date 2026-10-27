@@ -68,7 +68,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               <a
                 v-if="observation_well_number"
                 id="obs_well_number"
-                :href="`https://governmentofbc.maps.arcgis.com/apps/webappviewer/index.html?id=b53cb0bf3f6848e79d66ffd09b74f00d&find=OBS%20WELL%20${observation_well_number}`"
+                :href="`https://experience.arcgis.com/experience/a5a830881eeb4725ba20d96e08371a5d#widget_22=text:${observation_well_number}`"
                 target="_blank"
               >{{ observation_well_number }}</a>
             </span>
