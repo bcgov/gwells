@@ -42,6 +42,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 <script>
 import { useSubmissionStore } from '@/stores/submission'
 import FormSubsection from '../FormSubcomponents/FormSubsection.vue'
+import { DateTime } from 'luxon'
 
 export default {
   props: {
@@ -72,6 +73,7 @@ export default {
       submissionsPage: 1,
       submissionsBusy: false,
       submissionsRecordsCount: 0,
+      DateTime: DateTime,
       tableHeaders: [
         {
           label: 'Report',

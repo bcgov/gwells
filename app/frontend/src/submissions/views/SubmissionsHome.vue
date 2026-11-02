@@ -405,9 +405,11 @@ export default {
           this.formSubmitSuccess = true;
           this.formSubmitSuccessWellTag = response.data.well;
 
-          this.$refs.activitySubmissionForm.onFormSave();
-          // Save completed notification
+          if (this.$refs.activitySubmissionForm) {
+            this.$refs.activitySubmissionForm.onFormSave();
+          }
 
+          // Save completed notification
           if (this.isStaffEdit) {
             this.$nextTick(() => {
               this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Changes saved.', life: 3000 });
@@ -510,9 +512,9 @@ export default {
       let cleanErrors = parseErrors(this.errors);
       let errTxt = cleanErrors.length > 1 ? "Input errors." : "Input error.";
       // Error notifications
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: errTxt, life: 2000 });
+      this.$toast.add({ severity: 'error', summary: 'Error', detail: errTxt, life: 3000 });
       cleanErrors.forEach((e) => {
-        this.$toast.add({ severity: 'error', summary: 'Error', detail: e, life: 2000 });
+        this.$toast.add({ severity: 'error', summary: 'Error', detail: e, life: 3000 });
       });
     },
     formChanges() {
@@ -998,7 +1000,7 @@ export default {
       if (this.$route.name === "SubmissionsEdit") {
         this.activityType = "STAFF_EDIT";
         this.formIsFlat = true;
-        this.fetchWellDataForStaffEdit();
+        this.fetchWellDataForStaffEdit({ reloadPage: false });
       } else {
         // Some of our child components need the well tags, we dispatch the request here, in hopes
         // that the data will be available by the time those components render.

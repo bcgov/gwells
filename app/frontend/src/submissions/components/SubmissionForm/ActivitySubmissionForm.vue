@@ -485,7 +485,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <vertical-aquifer-extents class="my-12"
         v-if="showSection('aquiferParameters')"
         id="vertical-aquifer-extents"
-        :wellTagNumber="wellTagNumber"
+        v-model:wellTagNumber="form.well"
       />
 
       <edit-history class="my-12"
