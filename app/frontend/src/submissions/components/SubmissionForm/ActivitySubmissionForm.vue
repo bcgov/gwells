@@ -500,7 +500,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div v-if="!formIsFlat">
           <Button v-if="step > 1 && !formIsFlat" label="Back" @click="gotoPrevStep"/>
         </div>
-        <div>
+        <div class="w-full flex justify-end">
           <Button v-if="step < maxSteps && !formIsFlat" label="Next" @click="gotoNextStep" id="nextSubmissionStep" class="ml-2"/>
           <span v-else>
             <Button label="Preview &amp; Submit" @click="$emit('preview')" id="formPreviewButton"/>
@@ -568,7 +568,7 @@ import {
 } from '@/common/constants.js'
 
 export default {
-  name: 'SubmissionsForm',
+  name: 'ActivitySubmissionForm',
   mixins: [inputBindingsMixin],
   props: {
     form: {
