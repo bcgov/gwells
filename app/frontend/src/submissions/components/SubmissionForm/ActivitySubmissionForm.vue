@@ -919,7 +919,6 @@ export default {
             }
             if (this.trackValueChanges && !this.loading && !this.formSubmitLoading) {
               if (this.formChanges()) {
-                console.log(`form.${key} changed from ${oldValue} to ${newValue}`)
                 this.formValueChanged = true
                 this.form.meta.valueChanged[key] = true
               } else {
