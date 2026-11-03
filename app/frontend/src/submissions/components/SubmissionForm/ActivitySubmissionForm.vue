@@ -197,6 +197,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- save for coords not working -->
       <!-- Coords -->
       <coords class="my-12"
         v-if="showSection('wellCoords')"
@@ -906,11 +907,19 @@ export default {
     // for every single form field!
     if (this.$route.name === 'SubmissionsEdit') {
       Object.keys(this.form).forEach((key) => {
+        // ignore meta key causes recursion, only watch form fields
+        if (key === 'meta') {
+          return
+        }
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
+            if (newValue === oldValue) {
+              return
+            }
             if (this.trackValueChanges && !this.loading && !this.formSubmitLoading) {
               if (this.formChanges()) {
+                console.log(`form.${key} changed from ${oldValue} to ${newValue}`)
                 this.formValueChanged = true
                 this.form.meta.valueChanged[key] = true
               } else {

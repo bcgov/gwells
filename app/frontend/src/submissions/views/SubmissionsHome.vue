@@ -414,7 +414,8 @@ export default {
             this.$nextTick(() => {
               this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Changes saved.', life: 3000 });
             });
-            this.events.$emit("well-edited", true);
+            // to do events handled differently in Vue 3 find a replacement
+            // this.events.$emit("well-edited", true);
             this.fetchWellDataForStaffEdit({ reloadPage: false });
             this.wellsStore.resetWellData();
           } else {
@@ -932,7 +933,6 @@ export default {
         }
       });
     },
-    // this functions isnt working
     handlePreviewButton() {
       if (!this.formChanges()) {
          this.$toast.add({ severity: 'error', summary: 'Please add some data to your submission.', life: 3000 });
@@ -950,7 +950,6 @@ export default {
       }
 
       this.preview = true;
-      console.log(this.preview);
 
       // clear the error alert (otherwise it looks like there are new errors after clicking preview)
       this.formSubmitError = false;
