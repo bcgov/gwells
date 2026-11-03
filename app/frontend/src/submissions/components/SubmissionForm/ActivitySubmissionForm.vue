@@ -905,7 +905,7 @@ export default {
     // switch to using computed properties, which would be faster. We'd have to add a getter and setter
     // for every single form field!
     if (this.$route.name === 'SubmissionsEdit') {
-      Object.keys(this.$options.props.form).forEach((key) => {
+      Object.keys(this.form).forEach((key) => {
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
