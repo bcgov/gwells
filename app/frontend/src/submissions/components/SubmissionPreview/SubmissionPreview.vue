@@ -15,7 +15,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   <div>
     <h1 class="card-title">
       <div class="flex">
-        <div>
+        <div class="w-full">
           <div>Well Activity Submission<span v-if="!reportSubmitted"> Preview</span></div>
           <Button v-if="reportSubmitted" label="Submit New Report" @click="$emit('startNewReport')"/>
           <Button v-else label="Back to Edit" class="float-right" @click="$emit('back')"/>
@@ -74,7 +74,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-4 detail-section">
       <legend>Location Information</legend>
       <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-6">
           <div><span><b>Street Address:</b> {{ form.street_address }}</span></div>
           <div><span><b>Town/City:</b> {{ form.city }}</span></div>
           <div>
@@ -128,7 +128,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
             </div>
           </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-6 xl:col-start-3">
+        <div class="col-span-12 lg:col-span-6 xl:col-span-6">
           <div>
             <coords-map :latitude="form.latitude" :longitude="form.longitude" :draggable="false" :drinking_water="form.drinking_water_protection_area_ind"/>
           </div>
@@ -483,7 +483,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
     <fieldset class="my-4 detail-section">
       <legend>General Disclaimer</legend>
       <div class="grid grid-cols-12">
-        <div class="col-span-12 lg:col-span-9">
+        <div class="col-span-12">
           This information is collected by the Ministry of Water, Land and Resource Stewardship under section 26 (c)
           of the Freedom of Information and Protection of Privacy Act and section 117 (1) of the
           Water Sustainability Act (WSA).
@@ -511,19 +511,16 @@ Licensed under the Apache License, Version 2.0 (the "License");
     </fieldset>
 
     <!-- Back / Next / Submit controls -->
-    <div v-if="!reportSubmitted" class="mt-12">
-      <div>
-        <Button label="Back to Edit" @click="$emit('back')"/>
-      </div>
-      <div class="pr-6 text-right">
-        <Button label="Submit" id="formSubmitButton" type="submit" ref="activitySubmitBtn" :disabled="formSubmitLoading"/>
-      </div>
+    <div v-if="!reportSubmitted" class="mt-12 flex justify-between">
+      <Button label="Back to Edit" @click="$emit('back')"/>
+      <Button label="Submit" id="formSubmitButton" type="submit" ref="activitySubmitBtn" :disabled="formSubmitLoading"/>
     </div>
   </div>
 </template>
 
 <script>
 import { useCommonStore } from '@/stores/common.js'
+import { useSubmissionStore } from '@/stores/submission.js'
 import CoordsMap from '@/submissions/components/SubmissionForm/CoordsMap.vue'
 import convertCoordinatesMixin from '@/common/convertCoordinatesMixin.js'
 import filterBlankRows from '@/common/filterBlankRows'

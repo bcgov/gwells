@@ -15,7 +15,6 @@ import "@/common/helpers/browserUpdate.js";
 import { createApp } from "vue";
 import * as Sentry from "@sentry/browser";
 import * as Integrations from "@sentry/integrations";
-// import VueNoty from "vuejs-noty";
 import { createPinia } from "pinia";
 import PrimeVue from 'primevue/config';
 import { definePreset } from '@primeuix/themes';
@@ -25,10 +24,11 @@ import {
   Select, MultiSelect, RadioButton, RadioButtonGroup,
   Checkbox, CheckboxGroup, Listbox, ProgressSpinner,
   Breadcrumb, Dialog, DataTable, Column, FileUpload,
-  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip
+  Textarea, Menubar, ScrollTop, Tabs, TabList, Tab, Tooltip, Toast
 } from 'primevue';
 import { Form } from '@primevue/forms';
 import Chart from 'primevue/chart';
+import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import { initMatomo } from '@certible/use-matomo';
 import App from "./App.vue";
@@ -83,12 +83,7 @@ if (isProduction()) {
 
 app.use(router);
 app.use(ConfirmationService);
-// TBD replace VueNoty with a more modern notification library
-// app.use(VueNoty, {
-//   layout: "topRight",
-//   theme: "bootstrap-v4",
-//   timeout: 1800,
-// });
+app.use(ToastService);
 
 // Register global components
 app.component("v-select", vSelect);
@@ -120,6 +115,7 @@ app.component("Tabs", Tabs);
 app.component("TabList", TabList);
 app.component("Tab", Tab);
 app.component("Chart", Chart);
+app.component("Toast", Toast);
 app.directive('tooltip', Tooltip);
 
 const pinia = createPinia();

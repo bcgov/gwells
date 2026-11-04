@@ -102,14 +102,13 @@ export default {
       this.$router.push({ name: 'well-aquifers', params: { wellTagNumber: this.wellTagNumber } })
     },
   },
-  created () {
-    if (this.wellTagNumber === null) {
-      this.error = `Unable to load well '${this.wellTagNumber}'`
-      return
-    }
-
-    this.fetchAquifersForWell()
-  }
+  watch: {
+    wellTagNumber () {
+      if (this.wellTagNumber !== null && this.wellTagNumber !== undefined) {
+       this.fetchAquifersForWell()
+      }
+    },
+  },
 }
 </script>
 

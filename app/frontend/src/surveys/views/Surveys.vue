@@ -162,7 +162,12 @@ export default {
       ApiService.post('surveys', this.form).then(() => {
         this.getSurveys()
         this.resetForm()
-        this.$noty.success('Survey created.')
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Survey created.',
+          life: 5000
+        })
       }).catch((e) => {
         this.errors = e.response.data
       })
@@ -195,9 +200,19 @@ export default {
     removeSurvey (id) {
       ApiService.delete('surveys', id).then(() => {
         this.getSurveys()
-        this.$noty.success('Survey removed.')
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Survey removed.',
+          life: 5000
+        })
       }).catch((e) => {
-        this.$noty.error('Error deleting survey. Please try again later.')
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error removing survey. Please try again later.',
+          life: 5000
+        })
       })
     },
     focusRemoveModal () {
@@ -209,7 +224,12 @@ export default {
         survey_enabled: currentVal
       }).then((r) => {
         this.getSurveys()
-        this.$noty.success(`Survey ${r.data.survey_enabled ? 'enabled' : 'disabled'}.`)
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: `Survey ${r.data.survey_enabled ? 'enabled' : 'disabled'}.`,
+          life: 5000
+        })
       })
     }
   },

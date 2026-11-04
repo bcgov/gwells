@@ -13,6 +13,7 @@ governing permissions and limitations under the License. */
       </div>
     </div>
     <div v-else>
+      <Toast />
       <div class="container mb-4 !px-0" v-if="breadcrumbs && breadcrumbs.length">
         <Breadcrumb class="p-0" :model="breadcrumbs">
           <template #item="{ item }">
@@ -94,7 +95,6 @@ governing permissions and limitations under the License. */
               modal
               header="Confirm submission"
               @show="$refs.confirmSubmitConfirmBtn.$el.focus()"
-              @after-hide="$refs.activitySubmitBtn.$el.focus()"
             >
               Are you sure you want to submit this activity report?
               <template #footer>
@@ -378,10 +378,7 @@ export default {
       this.formSubmitSuccessWellTag = null;
       this.errors = {};
       // Save notification
-      const savingNotification = this.$noty.info(
-        '<div class="loader"></div><div class="notifyText">Saving...</div>',
-        { timeout: false }
-      );
+      const savingNotification = this.$toast.add({ severity: 'secondary', summary: 'Saving...', life: 3000 });
 
       // Depending on the type of submission (construction/decommission/alteration/edit) we post to
       // different endpoints.
@@ -407,25 +404,21 @@ export default {
           this.formSubmitSuccess = true;
           this.formSubmitSuccessWellTag = response.data.well;
 
-          this.$refs.activitySubmissionForm.onFormSave();
-          // Save completed notification
+          if (this.$refs.activitySubmissionForm) {
+            this.$refs.activitySubmissionForm.onFormSave();
+          }
 
+          // Save completed notification
           if (this.isStaffEdit) {
             this.$nextTick(() => {
-              this.$noty.success(
-                '<div class="notifyText">Changes saved.</div>',
-                { killer: true }
-              );
+              this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Changes saved.', life: 3000 });
             });
             this.events.$emit("well-edited", true);
             this.fetchWellDataForStaffEdit({ reloadPage: false });
             this.wellsStore.resetWellData();
           } else {
             this.$nextTick(() => {
-              this.$noty.success(
-                '<div aria-label="Close" class="closeBtn">x</div><div class="notifyText">Well report submitted.</div>',
-                { killer: true }
-              );
+              this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Well report submitted.', life: 3000 });
             });
 
             this.$nextTick(function () {
@@ -450,10 +443,7 @@ export default {
 
           if (this.commonStore.uploadFiles.length > 0) {
             if (response.data.filing_number) {
-              this.$noty.info(
-                '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',
-                { timeout: false }
-              );
+              this.$toast.add({ severity: 'info', summary: 'File upload in progress...', life: 3000 });
               this.commonStore.uploadTheFiles({
                 documentType: "submissions",
                 recordId: response.data.filing_number,
@@ -461,43 +451,28 @@ export default {
                 .then(() => {
                   this.commonStore.fileUploadSucceeded();
                   this.fetchFiles();
-                  this.$noty.success(
-                    '<div class="notifyText">Successfully uploaded all files.</div>',
-                    { killer: true }
-                  );
+                  this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Successfully uploaded all files.', life: 3000 });
                 })
                 .catch((error) => {
                   this.commonStore.fileUploadFail();
                   console.error(error);
-                  this.$noty.error(
-                    '<div class="notifyText">Error uploading files.</div>',
-                    { killer: true }
-                  );
+                  this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Error uploading files.', life: 3000 });
                 });
             } else {
-              this.$noty.info(
-                '<div class="loader"></div><div class="notifyText">File upload in progress...</div>',
-                { timeout: false }
-              );
+              this.$toast.add({ severity: 'info', summary: 'File upload in progress...', life: 3000 });
               this.commonStore.uploadTheFiles({
                 documentType: "wells",
                 recordId: response.data.well,
               })
                 .then(() => {
-                  this.$noty.success(
-                    '<div class="notifyText">Successfully uploaded all files.</div>',
-                    { killer: true }
-                  );
+                  this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Successfully uploaded all files.', life: 3000 });
                   this.commonStore.fileUploadSucceeded();
                   this.fetchFiles();
                 })
                 .catch((error) => {
                   this.commonStore.fileUploadFail();
                   console.error(error);
-                  this.$noty.error(
-                    '<div class="notifyText">Error uploading files.</div>',
-                    { killer: true }
-                  );
+                  this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Error uploading files.', life: 3000 });
                 });
             }
           }
@@ -536,17 +511,9 @@ export default {
       let cleanErrors = parseErrors(this.errors);
       let errTxt = cleanErrors.length > 1 ? "Input errors." : "Input error.";
       // Error notifications
-      this.$noty.error('<div class="errorTitle">' + errTxt + "</div>", {
-        timeout: 2000,
-        killer: true,
-      });
+      this.$toast.add({ severity: 'error', summary: 'Error', detail: errTxt, life: 3000 });
       cleanErrors.forEach((e) => {
-        this.$noty.error(
-          '<div aria-label="Close" class="closeBtn">x</div><div class="errorText"><b>Error: </b>' +
-            e +
-            "</div>",
-          { timeout: false }
-        );
+        this.$toast.add({ severity: 'error', summary: 'Error', detail: e, life: 3000 });
       });
     },
     formChanges() {
@@ -966,10 +933,7 @@ export default {
     },
     handlePreviewButton() {
       if (!this.formChanges()) {
-        this.$noty.info(
-          '<div class="errorTitle">Please add some data to your submission.</div>',
-          { killer: true }
-        );
+         this.$toast.add({ severity: 'error', summary: 'Please add some data to your submission.', life: 3000 });
         return;
       }
 
@@ -1033,7 +997,7 @@ export default {
       if (this.$route.name === "SubmissionsEdit") {
         this.activityType = "STAFF_EDIT";
         this.formIsFlat = true;
-        this.fetchWellDataForStaffEdit();
+        this.fetchWellDataForStaffEdit({ reloadPage: false });
       } else {
         // Some of our child components need the well tags, we dispatch the request here, in hopes
         // that the data will be available by the time those components render.
@@ -1282,7 +1246,6 @@ function initialState() {
 </script>
 
 <style lang="scss">
-@use "vuejs-noty/dist/vuejs-noty.css" as *;
 
 .slide-leave-active,
 .slide-enter-active {

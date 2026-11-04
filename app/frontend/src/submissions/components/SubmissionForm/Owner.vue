@@ -163,7 +163,7 @@ export default {
         addressString: this.ownerAddressInput
       }
 
-      const searchParams = querystring.stringify(params)
+      const searchParams = new URLSearchParams({ params }).toString();
       try {
         ApiService.getAddresses(searchParams).then((response) => {
           if (response.data) {
@@ -232,9 +232,35 @@ export default {
 </script>
 
 <style>
-  .address-suggestions {
-    list-style-type: none;
-    position: absolute;
-    z-index: 10;
+  #ownerMailingAddress {
+    margin-bottom: 0 !important;
   }
+
+  .address-suggestions {
+    position: absolute;
+    list-style-type: none;
+    z-index: 10;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+  }
+
+  .address-suggestions .list-group-item {
+      padding: 0.75rem 1.25rem;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+  }
+
+  /* on hover and focus */
+  .address-suggestions .list-group-item:hover,
+  .address-suggestions .list-group-item:focus {
+      background-color: #f8f9fa;
+      color: #212529;
+      outline: none;
+  }
+
 </style>

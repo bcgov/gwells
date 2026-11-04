@@ -96,7 +96,11 @@ export default {
       }).catch((e) => {
         this.loading = false
 
-        this.$noty.info('Error retrieving activity report summary. Please try again later.', { killer: true })
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error retrieving activity report summary. Please try again later.',
+          life: 5000
+        })
         throw e
       })
     },

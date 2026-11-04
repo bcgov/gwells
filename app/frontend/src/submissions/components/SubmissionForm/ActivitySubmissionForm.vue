@@ -197,6 +197,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-on:save="$emit('submit_edit')"
       />
 
+      <!-- save for coords not working -->
       <!-- Coords -->
       <coords class="my-12"
         v-if="showSection('wellCoords')"
@@ -485,7 +486,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
       <vertical-aquifer-extents class="my-12"
         v-if="showSection('aquiferParameters')"
         id="vertical-aquifer-extents"
-        :wellTagNumber="wellTagNumber"
+        v-model:wellTagNumber="form.well"
       />
 
       <edit-history class="my-12"
@@ -500,7 +501,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         <div v-if="!formIsFlat">
           <Button v-if="step > 1 && !formIsFlat" label="Back" @click="gotoPrevStep"/>
         </div>
-        <div>
+        <div class="w-full flex justify-end">
           <Button v-if="step < maxSteps && !formIsFlat" label="Next" @click="gotoNextStep" id="nextSubmissionStep" class="ml-2"/>
           <span v-else>
             <Button label="Preview &amp; Submit" @click="$emit('preview')" id="formPreviewButton"/>
@@ -513,8 +514,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:visible="confirmLoadModal"
         modal
         header="Confirm load submission data"
-        @show="$refs.confirmLoadConfirmBtn.$el.focus()"
-        @after-hide="$refs.loadFormBtn.$el.focus()">
+        @show="$refs.confirmLoadConfirmBtn.$el.focus()">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
         <template #footer>
           <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>
@@ -568,7 +568,7 @@ import {
 } from '@/common/constants.js'
 
 export default {
-  name: 'SubmissionsForm',
+  name: 'ActivitySubmissionForm',
   mixins: [inputBindingsMixin],
   props: {
     form: {
@@ -905,10 +905,17 @@ export default {
     // switch to using computed properties, which would be faster. We'd have to add a getter and setter
     // for every single form field!
     if (this.$route.name === 'SubmissionsEdit') {
-      Object.keys(this.$options.props.form).forEach((key) => {
+      Object.keys(this.form).forEach((key) => {
+        // ignore meta key causes recursion, only watch form fields
+        if (key === 'meta') {
+          return
+        }
         // We have to add the watches in beforeCreate.
         this.$options.watch[`form.${key}`] = {
           handler (newValue, oldValue) {
+            if (newValue === oldValue) {
+              return
+            }
             if (this.trackValueChanges && !this.loading && !this.formSubmitLoading) {
               if (this.formChanges()) {
                 this.formValueChanged = true
