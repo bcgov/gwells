@@ -1,5 +1,5 @@
 <template>
-  <Dialog id="orgAddModal" :visible="visible" modal header="Add a Company" @update:visible="$emit('update:visible', $event)" @shown="focusInput()" :style="{ width: '50rem' }">
+  <Dialog id="orgAddModal" :visible="visible" modal header="Add a Company" @update:visible="$emit('update:visible', $event)" @show="focusInput()" :style="{ width: '50rem' }">
     <div class="col-span-12" v-if="error">
       <api-error :error="error" :on-clear="() => registryStore.setError(null)"></api-error>
     </div>

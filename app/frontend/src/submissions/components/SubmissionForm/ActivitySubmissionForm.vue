@@ -514,8 +514,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
         v-model:visible="confirmLoadModal"
         modal
         header="Confirm load submission data"
-        @show="$refs.confirmLoadConfirmBtn.$el.focus()"
-        @after-hide="$refs.loadFormBtn.$el.focus()">
+        @show="$refs.confirmLoadConfirmBtn.$el.focus()">
         Are you sure you want to load the previously saved activity report? Your current report will be overwritten.
         <template #footer>
           <Button label="Load" @click="confirmLoadModal=false;loadForm()" ref="confirmLoadConfirmBtn"/>

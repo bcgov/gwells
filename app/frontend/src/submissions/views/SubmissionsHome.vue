@@ -95,7 +95,6 @@ governing permissions and limitations under the License. */
               modal
               header="Confirm submission"
               @show="$refs.confirmSubmitConfirmBtn.$el.focus()"
-              @after-hide="$refs.activitySubmitBtn.$el.focus()"
             >
               Are you sure you want to submit this activity report?
               <template #footer>
@@ -414,8 +413,7 @@ export default {
             this.$nextTick(() => {
               this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Changes saved.', life: 3000 });
             });
-            // to do events handled differently in Vue 3 find a replacement
-            // this.events.$emit("well-edited", true);
+            this.events.$emit("well-edited", true);
             this.fetchWellDataForStaffEdit({ reloadPage: false });
             this.wellsStore.resetWellData();
           } else {
