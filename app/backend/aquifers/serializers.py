@@ -236,7 +236,9 @@ class AquiferDetailSerializerV1(serializers.ModelSerializer):
         details['wells_updated'] = instance.well_set.all().aggregate(
             Max('update_date')
         )
-        details['num_wells'] = instance.well_set.all().count()
+
+        # Number of published wells correlated to this aquifer
+        details['num_wells'] = instance.well_set.filter(well_publication_status='Published').count()
         details['obs_wells'] = instance.well_set.filter(
             observation_well_number__isnull=False
         ).values('well_tag_number', 'observation_well_number')
