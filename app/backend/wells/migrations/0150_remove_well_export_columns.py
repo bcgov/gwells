@@ -110,8 +110,6 @@ select
     registries_person.surname as person_responsible,
     registries_organization.name as company_of_person_responsible,
     aquifer_id as aquifer_id,
-    aquifer_vulnerability_index as avi,
-    testing_duration as testing_duration,
     aquifer_lithology_code as aquifer_lithology_code,
     artesian_pressure_head as artesian_pressure_head,
     artesian_conditions as artesian_conditions
@@ -233,7 +231,6 @@ select
     registries_person.surname as person_responsible,
     registries_organization.name as company_of_person_responsible,
     aquifer_id as aquifer_id,
-    testing_duration as test_duration,
     aquifer_lithology_code as aquifer_lithology_code,
     artesian_pressure_head as "artesian_pressure_head_ft-agl",
     artesian_conditions as artesian_conditions
