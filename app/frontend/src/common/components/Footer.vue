@@ -53,5 +53,10 @@ export default {
 #footer a {
   color: #ffffff !important;
 }
+.footer-nav-links .p-menubar-root-list {
+  background: #003366 !important;
+  top: auto !important;
+  bottom: 100% !important;
+}
 
 </style>

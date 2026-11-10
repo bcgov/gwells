@@ -1,5 +1,6 @@
 <template>
   <header id="header">
+    <!-- if small window navitems are in hamburger menu -->
     <Menubar :model="windowWidth <= 640 ? navItems : []" class="flex items-center print:block be-blue">
       <template #start>
         <div class="flex items-center justify-between px-6 py-2 mx-auto">
@@ -29,12 +30,15 @@
         <keycloak-auth class="flex hidden sm:block print:hidden" v-if="auth !== 'hide'" id="keycloak-auth"/>
       </template>
       <template #item="{ item, label }">
-          <router-link v-if="item" :to="item.route">
-            {{ label }}
-          </router-link>
+        <!-- login in hamburger menu for small windows -->
+        <keycloak-auth v-if="auth !== 'hide' && item.label === 'Login'" id="keycloak-auth"/>
+        <router-link v-if="item && item.label !== 'Login'" :to="item.route">
+          {{ label }}
+        </router-link>
       </template>
     </Menubar>
-    <Menubar v-if="windowWidth > 640" class="bc-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white" :model="navItems">
+    <!-- navitems in menu bar for large windows -->
+    <Menubar v-if="windowWidth > 640" class="bc-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white mb-6" :model="navItems">
       <template #item="{ item, label }">
         <router-link v-if="item" :to="item.route" class="px-3 hover:underline">
           {{ label }}
@@ -95,6 +99,8 @@ export default {
         { label: 'QA/QC Dashboard', route: { name: 'qaqc' }, visible: this.show.qaqc },
         { label: 'Admin', route: { name: 'Surveys' }, visible: this.show.surveys },
         { label: 'Groundwater Information', route: { name: 'groundwater-information' }, visible: true },
+        // if on small screen and user is not logged in, show login button in menu
+        { label: 'Login', visible: this.auth !== 'hide' && this.windowWidth <= 640},
       ]
     }
   },
@@ -161,9 +167,24 @@ export default {
     height: 0px !important;
   }
 }
+@media (max-width: 640px) {
+  .p-menubar-end {
+    display: none !important;
+  }
+  .p-menubar-button {
+    margin-left: auto !important;
+  }
+}
 .be-blue {
   background: #003366 !important;
   border: none !important;
   border-radius: 0px !important;
+}
+.p-menubar ul {
+  background: #39598A !important;
+}
+.p-menubar-mobile .p-menubar-button
+{
+  margin-left: auto;
 }
 </style>
