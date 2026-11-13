@@ -112,11 +112,13 @@
                 <div v-if="userRoles.registry.view" class="flex flex-col gap-2 mb-6">
                   <label for="registrationStatusSelect">Registration status:</label>
                   <Select
-                  :options="regStatusOptions"
-                  v-model="searchParams.status"
-                  id="registrationStatusSelect"
-                  name="registryStatuses"
-                  class="w-full md:w-80"/>
+                    :options="regStatusOptions"
+                    optionLabel="text"
+                    optionValue="value"
+                    v-model="searchParams.status"
+                    id="registrationStatusSelect"
+                    name="registryStatuses"
+                    class="w-full md:w-80"/>
                 </div>
                 <div class="flex flex-col gap-2 mb-6">
                   <label>Region:</label>
@@ -147,8 +149,7 @@
                     v-model="searchParams.limit"
                     :options="[10, 25]"
                     inputId="registriesResultsNumberSelect"
-                    class="ml-2 w-24"
-                  />
+                    class="ml-2 w-24"/>
                 </div>
                 <div class="flex flex-col gap-2 mb-6">
                   <legend for="mapOptionsRadioGroup" class="flex flex-col gap-2">Map options:</legend>

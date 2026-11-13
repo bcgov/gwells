@@ -41,7 +41,6 @@ objects:
               value: https://gwells-frontend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/tiles
             - name: VITE_AXIOS_BASE_URL
               value: https://gwells-backend-26e83e-dev.apps.silver.devops.gov.bc.ca/gwells/api/v2/
-            image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application@sha256:bdfccc5b34dce72dc65e0aee6d29a65f350988238e53a6f66756951a98f53e11
             image: image-registry.openshift-image-registry.svc:5000/26e83e-tools/gwells-application:latest
             imagePullPolicy: Always
             name: gwells-frontend
