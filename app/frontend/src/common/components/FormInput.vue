@@ -39,6 +39,7 @@
       v-else
       :id="`${id}Input`"
       :type="type"
+      :max="type === 'date' && '2150-12-31'"
       :invalid="validation"
       :model-value="modelValue"
       :disabled="disabled"
