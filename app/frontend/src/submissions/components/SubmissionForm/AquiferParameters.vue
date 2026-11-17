@@ -96,7 +96,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="'aquiferParameter_transmissivity_' + index"
                     type="number"
                     :model-value="removeTrailingZeros(aquiferParameter.transmissivity)"
-                    @input="aquiferParameter.transmissivity = $event"
+                    @update:modelValue="aquiferParameter.transmissivity = $event"
                     :errors="getAquiferParametersError(index).transmissivity"/>
                 </td>
                 <td>
@@ -105,7 +105,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="'aquiferParameter_hydraulicConductivity_' + index"
                     type="number"
                     :model-value="removeTrailingZeros(aquiferParameter.hydraulic_conductivity)"
-                    @input="aquiferParameter.hydraulic_conductivity = $event"
+                    @update:modelValue="aquiferParameter.hydraulic_conductivity = $event"
                     :errors="getAquiferParametersError(index).hydraulic_conductivity"/>
                 </td>
                 <td>
@@ -114,7 +114,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
                     :id="'aquiferParameter_storativity_' + index"
                     type="number"
                     :model-value="removeTrailingZeros(aquiferParameter.storativity)"
-                    @input="aquiferParameter.storativity = $event"
+                    @update:modelValue="aquiferParameter.storativity = $event"
                     :errors="getAquiferParametersError(index).storativity"/>
                 </td>
                 <td>
