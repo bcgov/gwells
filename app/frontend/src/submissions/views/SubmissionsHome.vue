@@ -413,7 +413,7 @@ export default {
             this.$nextTick(() => {
               this.$toast.add({ severity: 'success', summary: 'Success', detail: 'Changes saved.', life: 3000 });
             });
-            this.events.$emit("well-edited", true);
+            // this.events.$emit("well-edited", true);
             this.fetchWellDataForStaffEdit({ reloadPage: false });
             this.wellsStore.resetWellData();
           } else {

@@ -2544,10 +2544,10 @@ class AquiferParameters(AuditModel):
         max_digits=30, decimal_places=10, blank=True, null=True, verbose_name='Hydraulic Conductivity')
     
     specific_yield = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+        max_digits=10, decimal_places=7, blank=True, null=True, verbose_name='Specific Yield')
     
     specific_capacity = models.DecimalField(
-        max_digits=5, decimal_places=2, blank=True, null=True, verbose_name='Specific Yield')
+        max_digits=10, decimal_places=7, blank=True, null=True, verbose_name='Specific Capacity')
    
     analysis_method = models.ForeignKey(AnalysisMethodCode, db_column='analysis_method_code',
                                     on_delete=models.PROTECT, blank=True, null=True,
