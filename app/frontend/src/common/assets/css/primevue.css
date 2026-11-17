@@ -50,3 +50,8 @@
   background-color: #ABAEB7 !important;
   border-color: #ABAEB7 !important;
 }
+
+.p-inputtext:disabled,
+.p-inputtext[readonly] {
+  caret-color: transparent;
+}

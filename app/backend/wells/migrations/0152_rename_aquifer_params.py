@@ -36,7 +36,7 @@ ORDER BY
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wells', '0150_remove_well_export_columns'),
+        ('wells', '0151_edit_descriptions'),
     ]
 
     operations = [
