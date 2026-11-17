@@ -23,8 +23,8 @@ const SEARCH_FIELDS = {
     param: 'match_any',
     type: 'radio',
     options: [
-      { text: 'Any field match', value: 'true' },
-      { text: 'All field match', value: 'false' }
+      { text: 'Any field match', value: true },
+      { text: 'All field match', value: false }
     ]
   },
   well: {

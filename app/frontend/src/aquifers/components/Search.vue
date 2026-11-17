@@ -59,9 +59,9 @@
                 </div>
                 <h4 class="pt-6">Advanced Search</h4>
                 <div class="mb-4 flex flex-row gap-4">
-                  <RadioButton value="true" v-model="matchAny" inputId="matchTrue"/>
+                  <RadioButton :value="true" v-model="matchAny" inputId="matchTrue"/>
                   <label for="matchTrue">Any field match</label>
-                  <RadioButton value="false" v-model="matchAny" inputId="matchFalse"/>
+                  <RadioButton :value="false" v-model="matchAny" inputId="matchFalse"/>
                   <label for="matchFalse">All field match</label>
                 </div>
                 <CheckboxGroup
