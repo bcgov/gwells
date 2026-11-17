@@ -17,19 +17,15 @@
       <label v-if="(type === 'text' || type === 'number' || type === 'select') && !anyValueCheckbox" :id="`${id}Label`" :label-for="`${id}Input`" class="col-form-label">{{ label }}</label>
       <legend v-else tabindex="-1" :id="`${id}Label`" class="col-form-label">{{ label }}</legend>
     </div>
-    <div v-if="anyValueCheckbox" class="col-span-12 sm:col-span-3">
-      <div class="pt-2 flex sm:justify-end">
-        <div class="flex items-center gap-2">
-          <Checkbox
-            :inputId="`${id}AnyValue`"
-            :modelValue="modelValue[anyValueParam]"
-            @update:modelValue="updateAnyValueCheckbox($event)"
-            binary/>
-          <label :for="`${id}AnyValue`">Any value</label>
-        </div>
+    <div :class="`col-span-${removable ? 11 : 12} sm:col-start-${labelColWidth + 1} sm:col-end-${removable ? 12 : 13}${anyValueCheckbox ? ' flex' : ''}`">
+      <div v-if="anyValueCheckbox" class="flex items-center gap-2 pr-2">
+        <Checkbox
+          :inputId="`${id}AnyValue`"
+          :modelValue="modelValue[anyValueParam]"
+          @update:modelValue="updateAnyValueCheckbox($event)"
+          binary/>
+        <label :for="`${id}AnyValue`" class="!mb-0 w-max">Any value</label>
       </div>
-    </div>
-    <div v-if="!anyValueCheckbox" :class="`col-span-${removable ? 11 : 12} sm:col-start-${labelColWidth + 1} sm:col-end-${removable ? 12 : 13}`">
       <InputText
         v-if="type === 'text' || type === 'number'"
         :type="type"
@@ -204,7 +200,10 @@ export default {
       return (this.errors && this.errors.length)
     },
     labelColWidth () {
-      if (!this.anyValueCheckbox && (this.type === 'text' || this.type === 'select' || this.type === 'radio' || this.type === 'number')) {
+      if (this.anyValueCheckbox) {
+        return 4
+      }
+      if (this.type === 'text' || this.type === 'select' || this.type === 'radio' || this.type === 'number') {
         return 6
       }
       return 4
