@@ -598,6 +598,7 @@ import SingleAquiferMap from './SingleAquiferMap.vue'
 import PieChart from './PieChart.vue'
 import ObservationWell from './ObservationWell.vue'
 import { TOOLTIP_TEXT, MAX_API_RESULT_AND_EXPORT_COUNT } from '@/common/constants.js'
+import Papa from 'papaparse'
 import { sanitizeUrl } from '@braintree/sanitize-url'
 import ResponsiveGrid from '@/common/components/ResponsiveGrid.vue'
 
@@ -967,17 +968,26 @@ export default {
           this.setAquiferWells(wells || [])
         })
     },
+    // gets obs well status from Data BC
     getWaterLevels (owell) {
       owell.hasLevelAnalysis = false
       owell.fetchingAnalysis = true
       let wellNumber = owell.observation_well_number
-      const url = `https://catalogue.data.gov.bc.ca/api/3/action/datastore_search?resource_id=a8933793-eadb-4a9c-992c-da4f6ac8ca51&fields=EMS_ID,Well_Num,trend_line_slope,category&filters=%7b%22Well_Num%22:%22${wellNumber}%22%7d`
 
-      return ApiService.query(url).then((response) => {
+      // Dataset Groundwater Observation Well Water-Level Trends - Annual Results by Well from Data BC Catalogue
+      const url = 'https://catalogue.data.gov.bc.ca/dataset/a74f1b97-17f7-499b-84e7-6455e169e425/resource/a8933793-eadb-4a9c-992c-da4f6ac8ca51/download/gw_well_table.csv'
+
+      // query csv match obs well num and save result to owell as waterLevels
+      return ApiService.query(url, null, { responseTye: 'text' }).then((response) => {
+        const parsed = Papa.parse(response.data, { header: true, skipEmptyLines: true })
+        const record = parsed.data.find((item) =>
+          // trim so well 080 will match 80
+          String(item.Well_Num ?? '').trim().replace(/^0+(?=\d)/, '') === wellNumber
+        )
         owell.errorFetching = false
         owell.fetchingAnalysis = false
-        if (response.data.result.records.length > 0) {
-          const { category } = response.data.result.records[0]
+        if (record && record.Results_All) {
+          const category = record.Results_All
           owell.hasLevelAnalysis = category.toUpperCase() !== 'N/A'
           owell.waterLevels = category
         }

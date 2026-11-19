@@ -1,7 +1,7 @@
 <template>
   <div>
     <gwells-header ref="header"/>
-    <main role="main" class="p-0 pt-0">
+    <main role="main" class="p-0 mt-4">
       <router-view/>
     </main>
     <ScrollTop/>
