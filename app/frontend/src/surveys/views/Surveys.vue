@@ -52,7 +52,7 @@
               v-model="form.survey_page"
             />
             <div class="flex items-center gap-2 mt-4">
-              <Checkbox v-model="form" inputId="survey_enabled" name="check-button" binary />
+              <Checkbox v-model="form.survey_enabled" inputId="survey_enabled" name="check-button" binary />
               <label for="survey_enabled">Enable survey immediately</label>
             </div>
             <div class="mt-6">
