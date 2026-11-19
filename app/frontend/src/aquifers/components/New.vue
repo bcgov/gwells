@@ -62,7 +62,7 @@ export default {
   },
   methods: {
     navigateToView () {
-      this.$router.push({ name: 'home' })
+      this.$router.push({ name: 'aquifers-home' })
     },
     handleSuccess ({ data }) {
       if (this.commonStore.uploadFiles.length > 0) {

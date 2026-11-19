@@ -268,8 +268,8 @@ export default {
       // Focus the "cancel" button in the confirm remove popup.
       this.$refs.cancelRemoveBtn.$el.focus()
     },
-    parseDescription (index, value) {
-      const lithology = new Lithology(value)
+    parseDescription (index, event) {
+      const lithology = new Lithology(event.target.value)
       this.lithSoils[index] = lithology.parseSoilTerms()
     },
     lithologyIsEmpty (lithology) {
