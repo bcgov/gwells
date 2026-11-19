@@ -38,13 +38,15 @@
       </template>
     </Menubar>
     <!-- navitems in menu bar for large windows -->
-    <Menubar v-if="windowWidth > 640" class="bc-nav-links [&>ul>li+li]:border-l [&>ul>li]:border-white mb-6" :model="navItems">
-      <template #item="{ item, label }">
-        <router-link v-if="item" :to="item.route" class="px-3 hover:underline">
-          {{ label }}
-        </router-link>
-      </template>
-    </Menubar>
+    <nav v-if="windowWidth > 640" class="bc-nav-links mb-6">
+      <Menubar :model="navItems" class="[&>ul>li+li]:border-l [&>ul>li]:border-white container">
+          <template #item="{ item, label }">
+            <router-link v-if="item" :to="item.route" class="px-3 hover:underline">
+              {{ label }}
+            </router-link>
+          </template>
+      </Menubar>
+    </nav>
   </header>
 </template>
 
@@ -183,8 +185,11 @@ export default {
 .p-menubar ul {
   background: #39598A !important;
 }
-.p-menubar-mobile .p-menubar-button
-{
+.p-menubar-mobile .p-menubar-button {
   margin-left: auto;
+}
+.p-menubar {
+  border: none !important;
+  border-radius: 0px !important;
 }
 </style>
