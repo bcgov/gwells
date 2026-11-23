@@ -80,7 +80,8 @@ export const useWellsStore = defineStore('wells', {
 		storedWellId: (state) => state.wellId,
 		searchMapCentre: (state) => state.searchMap.centre,
 		searchMapZoom: (state) => state.searchMap.zoom,
-		wellFileDownloads: (state) => state.downloads
+		wellFileDownloads: (state) => state.downloads,
+		searchQueryParams: (state) => buildSearchParams(state)
 	},
 
 	actions: {

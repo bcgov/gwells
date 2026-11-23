@@ -55,7 +55,6 @@ import wellsArtesianLegendSrc from '../../common/assets/images/wells-artesian.sv
 import wellsClosedLegendSrc from '../../common/assets/images/wells-closed.svg'
 import { setupFeatureTooltips } from '../../common/mapbox/popup'
 import { useCommonStore } from '@/stores/common'
-import { useQAQCStore } from '@/stores/qaqc'
 import { mapStores } from 'pinia'
 
 const WELL_FEATURE_PROPERTIES_FOR_POPUP = [
@@ -132,9 +131,9 @@ export default {
     this.map = null
   },
   computed: {
-    ...mapStores(useCommonStore, useQAQCStore),
+    ...mapStores(useCommonStore, useWellsStore),
     hasSearchParams () {
-      return Object.keys(this.qaqcStore.searchQueryParams).length > 0
+      return Object.keys(this.wellsStore.searchQueryParams).length > 0
     },
     showUnpublished () {
       return Boolean(this.commonStore?.userRoles.wells.edit)
@@ -322,7 +321,7 @@ export default {
       this.pendingLocationSearch = axios.CancelToken.source()
 
       const params = {
-        ...this.searchQueryParams,
+        ...this.wellsStore.searchQueryParams,
         ...convertLngLatBoundsToDirectionBounds(this.map.getBounds()),
         geojson: true
       }
