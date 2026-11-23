@@ -220,7 +220,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
               </div>
             </div>
             <div class="col-span-12 md:col-span-6">
-              <single-well-map :latitude="latitude" :longitude="longitude"/>
+              <single-well-map :latitude="well.latitude" :longitude="well.longitude"/>
               <div class="font-bold mt-12">
                 Geographic Coordinates - North American Datum of 1983 (NAD 83)
               </div>
