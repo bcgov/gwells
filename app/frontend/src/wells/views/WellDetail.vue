@@ -613,9 +613,7 @@ export default {
     Documents,
     ResponsiveGrid
   },
-  mixins: [
-    convertCoordinatesMixin, codeToDescription
-  ],
+  mixins: [convertCoordinatesMixin, codeToDescription],
   data () {
     return {
       TOOLTIP_TEXT: TOOLTIP_TEXT,
