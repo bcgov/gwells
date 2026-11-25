@@ -73,11 +73,10 @@
                     :key="option.value"
                     class="flex items-center gap-2">
                     <Checkbox
-                      v-model="selectedSections"
-                      :inputId="option.text"
-                      :name="option.text"
-                      :value="option.text"/>
-                    <label :for="option.text">{{ option.text }}</label>
+                      :inputId="option.value"
+                      :name="option.value"
+                      :value="option.value"/>
+                    <label :for="option.value">{{ option.text }}</label>
                   </div>
                 </CheckboxGroup>
                 <div class="aquifer-search-actions flex gap-2">
