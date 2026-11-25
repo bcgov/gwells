@@ -55,3 +55,7 @@
 .p-inputtext[readonly] {
   caret-color: transparent;
 }
+
+.p-select-list:has(> .p-select-option-group) > .p-select-option {
+  margin-left: 0.5rem;
+}

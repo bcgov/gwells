@@ -34,10 +34,6 @@ export const WELL_TAGS_PRIVATE = [
 
 export const WELL_TAGS = [
   {
-    text: 'Select Document Type',
-    value: null
-  },
-  {
     label: 'Public Document',
     options: WELL_TAGS_PUBLIC
   },
