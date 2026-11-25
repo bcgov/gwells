@@ -30,11 +30,11 @@ Licensed under the Apache License, Version 2.0 (the "License");
         hint="USgpm"
         v-model="yieldEstimationRateInput"/>
       <form-input
-        id="yieldEstimationRate"
-        label="Yield Estimation Rate"
+        id="yieldEstimationDuration"
+        label="Yield Estimation Duration"
         type="number"
-        hint="USgpm"
-        v-model="yieldEstimationRateInput"/>
+        hint="Hours"
+        v-model="yieldEstimationDurationInput"/>
     </responsive-grid>
     <responsive-grid :cols="12" :md="4" :lg="3">
       <form-input
