@@ -91,6 +91,7 @@ import DrillerOrgAddress from '@/registry/components/search/table-helpers/Drille
 
 export default {
   name: 'RegisterTable',
+  props: ['sortField', 'sortOrder'],
   components: {
     'driller-subactivity': DrillerSubactivity,
     'driller-registration-status': DrillerRegistrationStatus,
