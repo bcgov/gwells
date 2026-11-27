@@ -223,7 +223,7 @@
               To update contact information email <a href="mailto:Groundwater@gov.bc.ca" class="text-blue-500 hover:underline">groundwater@gov.bc.ca</a>.
             </div>
             <div cols="12" class="mt-2">
-              <registry-table @sort="sortTable"/>
+              <registry-table :sortField="tableSortField" :sortOrder="tableSortOrder" @sort="sortTable"/>
             </div>
           </div>
           <div id="searched-registry-download" v-if="hasResults && userRoles.registry.view">
@@ -274,7 +274,9 @@ export default {
       },
       surveys: [],
       registryStore: useRegistryStore(),
-      commonStore: useCommonStore()
+      commonStore: useCommonStore(),
+      tableSortField: undefined,
+      tableSortOrder: undefined
     }
   },
   computed: {
@@ -391,6 +393,8 @@ export default {
       if (!this.lastSearchedParams) {
         return
       }
+      this.tableSortField = field
+      this.tableSortOrder = order
       this.lastSearchedParams.raw['ordering'] = order === 1 ? field : `-${field}`
       this.registryStore.search(this.lastSearchedParams.raw)
     },
