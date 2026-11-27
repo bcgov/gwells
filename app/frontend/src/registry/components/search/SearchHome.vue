@@ -127,6 +127,7 @@
                     v-model="searchParams.region"
                     :options="regionOptions"
                     optionLabel="name"
+                    optionValue="regional_area_guid"
                     :virtualScrollerOptions="{ itemSize: 38 }"
                     listStyle="max-height:200px;"
                   />
