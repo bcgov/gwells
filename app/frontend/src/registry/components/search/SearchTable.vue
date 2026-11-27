@@ -4,9 +4,17 @@
       <ProgressSpinner/>
     </div>
 
-    <DataTable id="registry-table" showGridlines stripedRows :value="searchResponse.results || []" tableStyle="min-width: 50rem">
+    <DataTable 
+      id="registry-table"
+      showGridlines
+      stripedRows
+      :value="searchResponse.results || []"
+      :sort-field="sortField"
+      :sort-order="sortOrder"
+      tableStyle="min-width: 50rem"
+      @sort="onSort">
       <!-- reusable columns -->
-      <Column v-for="field in visibleFields" :header="field.name" :key="field.name" :sortable="field.sortable">
+      <Column v-for="field in visibleFields" :header="field.name" :key="field.name" :field="field.sortCode" :sortable="field.sortable">
         <template #body="{ data }">
           <template v-if="field.name === 'Name'">
             <router-link
@@ -71,7 +79,7 @@
 <script>
 import { useCommonStore } from '@/stores/common.js'
 import smoothScroll from 'smoothscroll'
-import querystring from 'querystring'
+import querystring from 'querystring-es3'
 
 import { useRegistryStore } from '@/stores/registry.js'
 import DrillerSubactivity from '@/registry/components/search/table-helpers/DrillerSubactivity.vue'
@@ -159,8 +167,6 @@ export default {
       return this.fields.filter(field => (field.visible === 'public' || this.commonStore?.userRoles?.registry?.view) && (field.activity === this.activity || field.activity == 'all'))
     }
   },
-  watch: {
-  },
   methods: {
     /**
      * Gets called when the user clicks on the next button, load the next result page.
@@ -189,14 +195,8 @@ export default {
       }
       this.registryStore.search(querystring.parse(query))
     },
-    // TODO: Look into this, we may need to use it to sort in the table
-    fieldSortable (field) {
-      return Boolean(field.sortable && field.sortCode)
-    },
-    sortBy (field) {
-      if (this.fieldSortable(field)) {
-        this.$emit('sort', field.sortCode)
-      }
+    onSort (field) {
+      this.$emit('sort', { field: field.sortField, order: field.sortOrder})
     },
     /**
      * Scrolls user's screen to the top of the SearchTable component.

@@ -145,7 +145,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
   </form-subsection>
 </template>
 <script>
-import querystring from 'querystring'
+import querystring from 'querystring-es3'
 import { useSubmissionStore } from '@/stores/submission'
 import inputBindingsMixin from '@/common/inputBindingsMixin.js'
 import ApiService from '../../../common/services/ApiService'
